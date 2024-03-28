@@ -1,0 +1,2328 @@
+- en: Chapter 3\. Types, Values, and Variables
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第3章。类型、值和变量
+- en: Computer programs work by manipulating values, such as the number 3.14 or the
+    text “Hello World.” The kinds of values that can be represented and manipulated
+    in a programming language are known as types, and one of the most fundamental
+    characteristics of a programming language is the set of types it supports. When
+    a program needs to retain a value for future use, it assigns the value to (or
+    “stores” the value in) a variable. Variables have names, and they allow use of
+    those names in our programs to refer to values. The way that variables work is
+    another fundamental characteristic of any programming language. This chapter explains
+    types, values, and variables in JavaScript. It begins with an overview and some
+    definitions.
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 计算机程序通过操作值来工作，例如数字 3.14 或文本“Hello World”。在编程语言中可以表示和操作的值的种类称为类型，编程语言的最基本特征之一是它支持的类型集合。当程序需要保留一个值以供将来使用时，它将该值分配给（或“存储”在）一个变量中。变量有名称，并且允许在我们的程序中使用这些名称来引用值。变量的工作方式是任何编程语言的另一个基本特征。本章解释了
+    JavaScript 中的类型、值和变量。它从概述和一些定义开始。
+- en: 3.1 Overview and Definitions
+  id: totrans-2
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 3.1 概述和定义
+- en: 'JavaScript types can be divided into two categories: *primitive types* and
+    *object types*. JavaScript’s primitive types include numbers, strings of text
+    (known as strings), and Boolean truth values (known as booleans). A significant
+    portion of this chapter is dedicated to a detailed explanation of the numeric
+    ([§3.2](#numbers)) and string ([§3.3](#text)) types in JavaScript. Booleans are
+    covered in [§3.4](#booleans).'
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 类型可以分为两类：*原始类型* 和 *对象类型*。JavaScript 的原始类型包括数字、文本字符串（称为字符串）和布尔真值（称为布尔值）。本章的重要部分详细解释了
+    JavaScript 中的数字（[§3.2](#numbers)）和字符串（[§3.3](#text)）类型。布尔值在[§3.4](#booleans)中介绍。
+- en: The special JavaScript values `null` and `undefined` are primitive values, but
+    they are not numbers, strings, or booleans. Each value is typically considered
+    to be the sole member of its own special type. [§3.5](#nullundefined) has more
+    about `null` and `undefined`. ES6 adds a new special-purpose type, known as Symbol,
+    that enables the definition of language extensions without harming backward compatibility.
+    Symbols are covered briefly in [§3.6](#symbols).
+  id: totrans-4
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 特殊的 JavaScript 值 `null` 和 `undefined` 是原始值，但它们不是数字、字符串或布尔值。每个值通常被认为是其自己特殊类型的唯一成员。关于
+    `null` 和 `undefined` 的更多内容请参见[§3.5](#nullundefined)。ES6 添加了一种新的特殊类型，称为 Symbol，它可以在不影响向后兼容性的情况下定义语言扩展。Symbols
+    在[§3.6](#symbols)中简要介绍。
+- en: Any JavaScript value that is not a number, a string, a boolean, a symbol, `null`,
+    or `undefined` is an object. An object (that is, a member of the type *object*)
+    is a collection of *properties* where each property has a name and a value (either
+    a primitive value or another object). One very special object, the *global object*,
+    is covered in [§3.7](#global), but more general and more detailed coverage of
+    objects is in [Chapter 6](ch06.xhtml#objects).
+  id: totrans-5
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 任何不是数字、字符串、布尔值、符号、`null` 或 `undefined` 的 JavaScript 值都是对象。对象（即类型 *object* 的成员）是一个*属性*集合，其中每个属性都有一个名称和一个值（可以是原始值或另一个对象）。一个非常特殊的对象，*全局对象*，在[§3.7](#global)中介绍，但��一般和更详细的对象覆盖在[第6章](ch06.xhtml#objects)中。
+- en: An ordinary JavaScript object is an unordered collection of named values. The
+    language also defines a special kind of object, known as an array, that represents
+    an ordered collection of numbered values. The JavaScript language includes special
+    syntax for working with arrays, and arrays have some special behavior that distinguishes
+    them from ordinary objects. Arrays are the subject of [Chapter 7](ch07.xhtml#arrays).
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个普通的 JavaScript 对象是一个无序的命名值集合。该语言还定义了一种特殊类型的对象，称为数组，表示一个有序的编号值集合。JavaScript
+    语言包括特殊的语法用于处理数组，并且数组具有一些特殊的行为，使它们与普通对象有所区别。数组是[第7章](ch07.xhtml#arrays)的主题。
+- en: In addition to basic objects and arrays, JavaScript defines a number of other
+    useful object types. A Set object represents a set of values. A Map object represents
+    a mapping from keys to values. Various “typed array” types facilitate operations
+    on arrays of bytes and other binary data. The RegExp type represents textual patterns
+    and enables sophisticated matching, searching, and replacing operations on strings.
+    The Date type represents dates and times and supports rudimentary date arithmetic.
+    Error and its subtypes represent errors that can arise when executing JavaScript
+    code. All of these types are covered in [Chapter 11](ch11.xhtml#builtintypes).
+  id: totrans-7
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了基本对象和数组之外，JavaScript 还定义了许多其他有用的对象类型。Set 对象表示一组值。Map 对象表示从键到值的映射。各种“类型化数组”类型便于对字节数组和其他二进制数据进行操作。RegExp
+    类型表示文本模式，并支持对字符串进行复杂的匹配、搜索和替换操作。Date 类型表示日期和时间，并支持基本的日期算术。Error 及其子类型表示执行 JavaScript
+    代码时可能出现的错误。所有这些类型在[第11章](ch11.xhtml#builtintypes)中介绍。
+- en: 'JavaScript differs from more static languages in that functions and classes
+    are not just part of the language syntax: they are themselves values that can
+    be manipulated by JavaScript programs. Like any JavaScript value that is not a
+    primitive value, functions and classes are a specialized kind of object. They
+    are covered in detail in Chapters [8](ch08.xhtml#functions) and [9](ch09.xhtml#classes).'
+  id: totrans-8
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 与更静态的语言不同之处在于函数和类不仅仅是语言语法的一部分：它们本身是 JavaScript 程序可以操作的值。与任何不是原始值的
+    JavaScript 值一样，函数和类是一种特殊类型的对象。它们在[第8章](ch08.xhtml#functions)和[第9章](ch09.xhtml#classes)中详细介绍。
+- en: The JavaScript interpreter performs automatic garbage collection for memory
+    management. This means that a JavaScript programmer generally does not need to
+    worry about destruction or deallocation of objects or other values. When a value
+    is no longer reachable—when a program no longer has any way to refer to it—the
+    interpreter knows it can never be used again and automatically reclaims the memory
+    it was occupying. (JavaScript programmers do sometimes need to take care to ensure
+    that values do not inadvertently remain reachable—and therefore nonreclaimable—longer
+    than necessary.)
+  id: totrans-9
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript解释器执行自动垃圾回收以进行内存管理。这意味着JavaScript程序员通常不需要担心对象或其他值的销毁或释放。当一个值不再可达时——当程序不再有任何方式引用它时——解释器知道它永远不会再被使用，并自动回收它占用的内存。（JavaScript程序员有时需要小心确保值不会意外地保持可达——因此不可回收——时间比必要长。）
+- en: 'JavaScript supports an object-oriented programming style. Loosely, this means
+    that rather than having globally defined functions to operate on values of various
+    types, the types themselves define methods for working with values. To sort the
+    elements of an array `a`, for example, we don’t pass `a` to a `sort()` function.
+    Instead, we invoke the `sort()` method of `a`:'
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript支持面向对象的编程风格。宽松地说，这意味着与其在全局定义函数来操作各种类型的值，类型本身定义了用于处理值的方法。例如，要对数组`a`的元素进行排序，我们不会将`a`传递给`sort()`函数。相反，我们调用`a`的`sort()`方法：
+- en: '[PRE0]'
+  id: totrans-11
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: Method definition is covered in [Chapter 9](ch09.xhtml#classes). Technically,
+    it is only JavaScript objects that have methods. But numbers, strings, boolean,
+    and symbol values behave as if they have methods. In JavaScript, `null` and `undefined`
+    are the only values that methods cannot be invoked on.
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 方法定义在[第9章](ch09.xhtml#classes)中介绍。技术上，只有JavaScript对象有方法。但���数字、字符串、布尔值和符号值的行为就好像它们有方法一样。在JavaScript中，只有`null`和`undefined`是不能调用方法的值。
+- en: 'JavaScript’s object types are *mutable* and its primitive types are *immutable*.
+    A value of a mutable type can change: a JavaScript program can change the values
+    of object properties and array elements. Numbers, booleans, symbols, `null`, and
+    `undefined` are immutable—it doesn’t even make sense to talk about changing the
+    value of a number, for example. Strings can be thought of as arrays of characters,
+    and you might expect them to be mutable. In JavaScript, however, strings are immutable:
+    you can access the text at any index of a string, but JavaScript provides no way
+    to alter the text of an existing string. The differences between mutable and immutable
+    values are explored further in [§3.8](#mutableandimmutable).'
+  id: totrans-13
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript的对象类型是*可变*的，而其原始类型是*不可变*的。可变类型的值可以改变：JavaScript程序可以更改对象属性和数组元素的值。数字、布尔值、符号、`null`和`undefined`是不可变的——例如，谈论更改数字的值甚至没有意义。字符串可以被视为字符数组，你可能期望它们是可变的。然而，在JavaScript中，字符串是不可变的：你可以访问字符串的任何索引处的文本，但JavaScript没有提供一种方法来更改现有字符串的文本。可变和不可变值之间的差异在[§3.8](#mutableandimmutable)中进一步探讨。
+- en: JavaScript liberally converts values from one type to another. If a program
+    expects a string, for example, and you give it a number, it will automatically
+    convert the number to a string for you. And if you use a non-boolean value where
+    a boolean is expected, JavaScript will convert accordingly. The rules for value
+    conversion are explained in [§3.9](#conversions). JavaScript’s liberal value conversion
+    rules affect its definition of equality, and the `==` equality operator performs
+    type conversions as described in [§3.9.1](#conversionsandequality). (In practice,
+    however, the `==` equality operator is deprecated in favor of the strict equality
+    operator `===`, which does no type conversions. See [§4.9.1](ch04.xhtml#equalityops)
+    for more about both operators.)
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript自由地将一个类型的值转换为另一个类型。例如，如果一个程序期望一个字符串，而你给了它一个数字，它会自动为你将数字转换为字符串。如果你在期望布尔值的地方使用了非布尔值，JavaScript会相应地进行转换。值转换的规则在[§3.9](#conversions)中解释。JavaScript自由的值转换规则影响了它对相等性的定义，`==`相等运算符执行如[§3.9.1](#conversionsandequality)中描述的类型转换。（然而，在实践中，`==`相等运算符已被弃用，而是使用严格相等运算符`===`，它不进行类型转换。有关这两个运算符的更多信息，请参见[§4.9.1](ch04.xhtml#equalityops)。）
+- en: 'Constants and variables allow you to use names to refer to values in your programs.
+    Constants are declared with `const` and variables are declared with `let` (or
+    with `var` in older JavaScript code). JavaScript constants and variables are *untyped*:
+    declarations do not specify what kind of values will be assigned. Variable declaration
+    and assignment are covered in [§3.10](#variabledeclaration).'
+  id: totrans-15
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 常量和变量允许您在程序中使用名称引用值。常量使用`const`声明，变量使用`let`声明（或在旧的JavaScript代码中使用`var`）。JavaScript的常量和变量是*无类型*的：声明不指定将分配什么类型的值。变量声明和赋值在[§3.10](#variabledeclaration)中介绍。
+- en: As you can see from this long introduction, this is a wide-ranging chapter that
+    explains many fundamental details about how data is represented and manipulated
+    in JavaScript. We’ll begin by diving right in to the details of JavaScript numbers
+    and text.
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从这个长篇介绍中可以看出，这是一个涵盖广泛的章节，解释了JavaScript中数据如何表示和操作的许多基本细节。我们将从直接深入讨论JavaScript数字和文本的细节开始。
+- en: 3.2 Numbers
+  id: totrans-17
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 3.2 数字
+- en: JavaScript’s primary numeric type, Number, is used to represent integers and
+    to approximate real numbers. JavaScript represents numbers using the 64-bit floating-point
+    format defined by the IEEE 754 standard,^([1](ch03.xhtml#idm46198571886872)) which
+    means it can represent numbers as large as ±1.7976931348623157 × 10^(308) and
+    as small as ±5 × 10^(−324).
+  id: totrans-18
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript的主要数值类型Number用于表示整数和近似实数。JavaScript使用IEEE 754标准定义的64位浮点格式表示数字，^([1](ch03.xhtml#idm46198571886872))这意味着它可以表示大约±1.7976931348623157
+    × 10^(308)和小约±5 × 10^(−324)的数字。
+- en: The JavaScript number format allows you to exactly represent all integers between
+    −9,007,199,254,740,992 (−2^(53)) and 9,007,199,254,740,992 (2^(53)), inclusive.
+    If you use integer values larger than this, you may lose precision in the trailing
+    digits. Note, however, that certain operations in JavaScript (such as array indexing
+    and the bitwise operators described in [Chapter 4](ch04.xhtml#expressions)) are
+    performed with 32-bit integers. If you need to exactly represent larger integers,
+    see [§3.2.5](#bigint).
+  id: totrans-19
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript数字格式允许您精确表示介于−9,007,199,254,740,992（−2^(53)）和9,007,199,254,740,992（2^(53)）之间的所有整数，包括这两个数。如果使用大于此值的整数值，可能会失去尾数的精度。但请注意，JavaScript中的某些操作（如数组索引和第4章中描述的位运算符）是使用32位整数执行的。如果需要精确表示更大的整数，请参阅[§3.2.5](#bigint)。
+- en: When a number appears directly in a JavaScript program, it’s called a *numeric
+    literal*. JavaScript supports numeric literals in several formats, as described
+    in the following sections. Note that any numeric literal can be preceded by a
+    minus sign (-) to make the number negative.
+  id: totrans-20
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当一个数字直接出现在JavaScript程序中时，它被称为*数字文字*。JavaScript支持几种格式的数字文字，如下面的部分所述。请注意，任何数字文字都可以在前面加上减号（-）以使数字为负数。
+- en: 3.2.1 Integer Literals
+  id: totrans-21
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 3.2.1 整数文字
+- en: 'In a JavaScript program, a base-10 integer is written as a sequence of digits.
+    For example:'
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在JavaScript程序中，十进制整数被写为数字序列。例如：
+- en: '[PRE1]'
+  id: totrans-23
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: 'In addition to base-10 integer literals, JavaScript recognizes hexadecimal
+    (base-16) values. A hexadecimal literal begins with `0x` or `0X`, followed by
+    a string of hexadecimal digits. A hexadecimal digit is one of the digits 0 through
+    9 or the letters a (or A) through f (or F), which represent values 10 through
+    15\. Here are examples of hexadecimal integer literals:'
+  id: totrans-24
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了十进制整数文字，JavaScript还识别十六进制（基数16）值。十六进制文字以`0x`或`0X`开头，后跟一串十六进制数字。十六进制数字是数字0到9或字母a（或A）到f（或F）中的一个，表示值10到15。以��是十六进制整数文字的示例：
+- en: '[PRE2]'
+  id: totrans-25
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: 'In ES6 and later, you can also express integers in binary (base 2) or octal
+    (base 8) using the prefixes `0b` and `0o` (or `0B` and `0O`) instead of `0x`:'
+  id: totrans-26
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在ES6及更高版本中，你还可以使用前缀`0b`和`0o`（或`0B`和`0O`）来表示二进制（基数2）或八进制（基数8）中的整数，而不是`0x`：
+- en: '[PRE3]'
+  id: totrans-27
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: 3.2.2 Floating-Point Literals
+  id: totrans-28
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 3.2.2 浮点数文字
+- en: Floating-point literals can have a decimal point; they use the traditional syntax
+    for real numbers. A real value is represented as the integral part of the number,
+    followed by a decimal point and the fractional part of the number.
+  id: totrans-29
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 浮点文字可以有小数点；它们使用实数的传统语法。一个实数由数字的整数部分表示，后跟一个小数点和数字的小数部分。
+- en: 'Floating-point literals may also be represented using exponential notation:
+    a real number followed by the letter e (or E), followed by an optional plus or
+    minus sign, followed by an integer exponent. This notation represents the real
+    number multiplied by 10 to the power of the exponent.'
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 浮点文字也可以使用指数表示法表示：一个实数后跟字母e（或E），后跟一个可选的加号或减号，后跟一个整数指数。这种表示法表示实数乘以10的指数次幂。
+- en: 'More succinctly, the syntax is:'
+  id: totrans-31
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 更简洁地说，语法是：
+- en: '[PRE4]'
+  id: totrans-32
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: 'For example:'
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 例如：
+- en: '[PRE5]'
+  id: totrans-34
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: 3.2.3 Arithmetic in JavaScript
+  id: totrans-35
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 3.2.3 JavaScript中的算术
+- en: JavaScript programs work with numbers using the arithmetic operators . that
+    the language provides. These include `+` for addition, `-` for subtraction, `*`
+    for multiplication, `/` for division, and `%` for modulo (remainder after division).
+    ES2016 adds `**` for exponentiation. Full details on these and other operators
+    can be found in [Chapter 4](ch04.xhtml#expressions).
+  id: totrans-36
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript程序使用语言提供的算术运算符与数字一起工作。这些包括`+`用于加法，`-`用于减法，`*`用于乘法，`/`用于除法，`%`用于取模（除法后的余数）。ES2016添加了`**`用于指数运算。关于这些和其他运算符的详细信息可以在[第4章](ch04.xhtml#expressions)中找到。
+- en: 'In addition to these basic arithmetic operators, JavaScript supports more complex
+    mathematical operations through a set of functions and constants defined as properties
+    of the `Math` object:'
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了这些基本算术运算符外，JavaScript通过一组函数和常量定义为`Math`对象的属性支持更复杂的数学运算：
+- en: '[PRE6]'
+  id: totrans-38
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: 'ES6 defines more functions on the `Math` object:'
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ES6在`Math`对象上定义了更多函数：
+- en: '[PRE7]'
+  id: totrans-40
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: 'Arithmetic in JavaScript does not raise errors in cases of overflow, underflow,
+    or division by zero. When the result of a numeric operation is larger than the
+    largest representable number (overflow), the result is a special infinity value,
+    `Infinity`. Similarly, when the absolute value of a negative value becomes larger
+    than the absolute value of the largest representable negative number, the result
+    is negative infinity, `-Infinity`. The infinite values behave as you would expect:
+    adding, subtracting, multiplying, or dividing them by anything results in an infinite
+    value (possibly with the sign reversed).'
+  id: totrans-41
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript中的算术运算不会在溢出、下溢或除以零的情况下引发错误。当数值运算的结果大于最大可表示的数（溢出）时，结果是一个特殊的无穷大值，`Infinity`。同样，当负值的绝对值变得大于最大可表示的负数的绝对值时，结果是负无穷大，`-Infinity`。无穷大值的行为如你所期望的那样：将它们相加、相减、相乘或相除的结果是一个无穷大值（可能带有相反的符号）。
+- en: Underflow occurs when the result of a numeric operation is closer to zero than
+    the smallest representable number. In this case, JavaScript returns 0\. If underflow
+    occurs from a negative number, JavaScript returns a special value known as “negative
+    zero.” This value is almost completely indistinguishable from regular zero and
+    JavaScript programmers rarely need to detect it.
+  id: totrans-42
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下溢发生在数值运算的结果接近零而不是最小可表示数时。在这种情况下，JavaScript返回0。如果下溢发生在负数中，JavaScript返回一个称为“负零”的特殊值。这个值几乎与普通零完全无法区分，JavaScript程序员很少需要检测它。
+- en: 'Division by zero is not an error in JavaScript: it simply returns infinity
+    or negative infinity. There is one exception, however: zero divided by zero does
+    not have a well-defined value, and the result of this operation is the special
+    not-a-number value, `NaN`. `NaN` also arises if you attempt to divide infinity
+    by infinity, take the square root of a negative number, or use arithmetic operators
+    with non-numeric operands that cannot be converted to numbers.'
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 JavaScript 中，除以零不会导致错误：它只是返回正无穷大或负无穷大。然而，有一个例外：零除以零没有明确定义的值，这个操作的结果是特殊的非数字值
+    `NaN`。如果尝试将无穷大除以无穷大、对负数取平方根或使用无法转换为数字的非数字操作数进行算术运算，也会产生 `NaN`。
+- en: 'JavaScript predefines global constants `Infinity` and `NaN` to hold the positive
+    infinity and not-a-number value, and these values are also available as properties
+    of the `Number` object:'
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 预定义全局常量 `Infinity` 和 `NaN` 分别表示正无穷大和非数字值，并且这些值也作为 `Number` 对象的属性可用：
+- en: '[PRE8]'
+  id: totrans-45
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: 'The not-a-number value has one unusual feature in JavaScript: it does not compare
+    equal to any other value, including itself. This means that you can’t write `x
+    === NaN` to determine whether the value of a variable `x` is `NaN`. Instead, you
+    must write `x != x` or `Number.isNaN(x)`. Those expressions will be true if, and
+    only if, `x` has the same value as the global constant `NaN`.'
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 JavaScript 中，非数字值具有一个不寻常的特征：它与任何其他值（包括自身）都不相等。这意味着您不能写 `x === NaN` 来确定变量 `x`
+    的值是否为 `NaN`。相反，您必须写 `x != x` 或 `Number.isNaN(x)`。只有当 `x` 的值与全局常量 `NaN` 相同时，这些表达式才为真。
+- en: The global function `isNaN()` is similar to `Number.isNaN()`. It returns `true`
+    if its argument is `NaN`, or if that argument is a non-numeric value that cannot
+    be converted to a number. The related function `Number.isFinite()` returns `true`
+    if its argument is a number other than `NaN`, `Infinity`, or `-Infinity`. The
+    global `isFinite()` function returns `true` if its argument is, or can be converted
+    to, a finite number.
+  id: totrans-47
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 全局函数 `isNaN()` 类似于 `Number.isNaN()`。如果其参数是 `NaN`，或者该参数是无法转换为数字的非数字值，则返回 `true`。相关函数
+    `Number.isFinite()` 如果其参数是除 `NaN`、`Infinity` 或 `-Infinity` 之外的数字，则返回 `true`。全局函数
+    `isFinite()` 如果其参数是有限数字或可以转换为有限数字，则返回 `true`。
+- en: 'The negative zero value is also somewhat unusual. It compares equal (even using
+    JavaScript’s strict equality test) to positive zero, which means that the two
+    values are almost indistinguishable, except when used as a divisor:'
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 负零值也有些不寻常。它与正零相等（即使使用 JavaScript 的严格相等测试），这意味着这两个值几乎无法区分，除非用作除数：
+- en: '[PRE9]'
+  id: totrans-49
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: 3.2.4 Binary Floating-Point and Rounding Errors
+  id: totrans-50
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 3.2.4 二进制浮点数和舍入误差
+- en: There are infinitely many real numbers, but only a finite number of them (18,437,736,874,454,810,627,
+    to be exact) can be represented exactly by the JavaScript floating-point format.
+    This means that when you’re working with real numbers in JavaScript, the representation
+    of the number will often be an approximation of the actual number.
+  id: totrans-51
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 实数有无限多个，但只有有限数量的实数（准确地说是 18,437,736,874,454,810,627）可以被 JavaScript 浮点格式精确表示。这意味着当您在
+    JavaScript 中使用实数时，该数字的表示通常是实际数字的近似值。
+- en: 'The IEEE-754 floating-point representation used by JavaScript (and just about
+    every other modern programming language) is a binary representation, which can
+    exactly represent fractions like `1/2`, `1/8`, and `1/1024`. Unfortunately, the
+    fractions we use most commonly (especially when performing financial calculations)
+    are decimal fractions: `1/10`, `1/100`, and so on. Binary floating-point representations
+    cannot exactly represent numbers as simple as `0.1`.'
+  id: totrans-52
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 使用的 IEEE-754 浮点表示法（几乎所有现代编程语言都使用）是二进制表示法，可以精确表示分数如 `1/2`、`1/8` 和
+    `1/1024`。不幸的是，我们最常���用的分数（尤其是在进行财务计算时）是十进制分数：`1/10`、`1/100` 等。二进制浮点表示法无法精确表示像
+    `0.1` 这样简单的数字。
+- en: 'JavaScript numbers have plenty of precision and can approximate `0.1` very
+    closely. But the fact that this number cannot be represented exactly can lead
+    to problems. Consider this code:'
+  id: totrans-53
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 数字具有足够的精度，可以非常接近地近似 `0.1`。但是，这个数字无法精确表示可能会导致问题。考虑以下代码：
+- en: '[PRE10]'
+  id: totrans-54
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: 'Because of rounding error, the difference between the approximations of .3
+    and .2 is not exactly the same as the difference between the approximations of
+    .2 and .1\. It is important to understand that this problem is not specific to
+    JavaScript: it affects any programming language that uses binary floating-point
+    numbers. Also, note that the values `x` and `y` in the code shown here are *very*
+    close to each other and to the correct value. The computed values are adequate
+    for almost any purpose; the problem only arises when we attempt to compare values
+    for equality.'
+  id: totrans-55
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于四舍五入误差，.3 和 .2 的近似值之间的差异并不完全等同于 .2 和 .1 的近似值之间的差异。重要的是要理解这个问题并不特定于 JavaScript：它影响任何使用二进制浮点数的编程语言。此外，请注意代码中的值
+    `x` 和 `y` 非常接近彼此和正确值。计算出的值对于几乎任何目的都是足够的；问题只在我们尝试比较相等值时才会出现。
+- en: If these floating-point approximations are problematic for your programs, consider
+    using scaled integers. For example, you might manipulate monetary values as integer
+    cents rather than fractional dollars.
+  id: totrans-56
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果这些浮点数近似值对您的程序有问题，请考虑使用缩放整数。例如，您可以将货币值作为整数分而不是小数美元进行操作。
+- en: 3.2.5 Arbitrary Precision Integers with BigInt
+  id: totrans-57
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 3.2.5 使用 BigInt 进行任意精度整数运算
+- en: One of the newest features of JavaScript, defined in ES2020, is a new numeric
+    type known as BigInt. As of early 2020, it has been implemented in Chrome, Firefox,
+    Edge, and Node, and there is an implementation in progress in Safari. As the name
+    implies, BigInt is a numeric type whose values are integers. The type was added
+    to JavaScript mainly to allow the representation of 64-bit integers, which are
+    required for compatibility with many other programming languages and APIs. But
+    BigInt values can have thousands or even millions of digits, should you have need
+    to work with numbers that large. (Note, however, that BigInt implementations are
+    not suitable for cryptography because they do not attempt to prevent timing attacks.)
+  id: totrans-58
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 的最新特性之一，定义在 ES2020 中，是一种称为 BigInt 的新数值类型。截至 2020 年初，它已经在 Chrome、Firefox、Edge
+    和 Node 中实现，并且 Safari 中正在进行实现。顾名思义，BigInt 是一个数值类型，其值为整数。JavaScript 主要添加了这种类型，以允许表示
+    64 位整数，这对于与许多其他编程语言和 API 兼容是必需的。但是 BigInt 值可以有数千甚至数百万位数字，如果你需要处理如此大的数字的话。（但是请注意，BigInt
+    实现不适用于加密，因为它们不会尝试防止时间攻击。）
+- en: 'BigInt literals are written as a string of digits followed by a lowercase letter
+    `n`. By default, the are in base 10, but you can use the `0b`, `0o`, and `0x`
+    prefixes for binary, octal, and hexadecimal BigInts:'
+  id: totrans-59
+  prefs: []
+  type: TYPE_NORMAL
+  zh: BigInt 字面量写为一个由数字组成的字符串，后面跟着一个小写字母 `n`。默认情况下，它们是以 10 进制表示的，但你可以使用 `0b`、`0o`
+    和 `0x` 前缀来表示二进制、八进制和十六进制的 BigInt：
+- en: '[PRE11]'
+  id: totrans-60
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: 'You can use `BigInt()` as a function for converting regular JavaScript numbers
+    or strings to BigInt values:'
+  id: totrans-61
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你可以将 `BigInt()` 作为一个函数，用于将常规的 JavaScript 数字或字符串转换为 BigInt 值：
+- en: '[PRE12]'
+  id: totrans-62
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: 'Arithmetic with BigInt values works like arithmetic with regular JavaScript
+    numbers, except that division drops any remainder and rounds down (toward zero):'
+  id: totrans-63
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与 BigInt 值进行算术运算的方式与常规 JavaScript 数字的算术运算类似，只是除法会舍弃任何余数并向下取整（朝着零的方向）：
+- en: '[PRE13]'
+  id: totrans-64
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: 'Although the standard `+`, `-`, `*`, `/`, `%`, and `**` operators work with
+    BigInt, it is important to understand that you may not mix operands of type BigInt
+    with regular number operands. This may seem confusing at first, but there is a
+    good reason for it. If one numeric type was more general than the other, it would
+    be easy to define arithmetic on mixed operands to simply return a value of the
+    more general type. But neither type is more general than the other: BigInt can
+    represent extraordinarily large values, making it more general than regular numbers.
+    But BigInt can only represent integers, making the regular JavaScript number type
+    more general. There is no way around this problem, so JavaScript sidesteps it
+    by simply not allowing mixed operands to the arithmetic operators.'
+  id: totrans-65
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管标准的 `+`、`-`、`*`、`/`、`%` 和 `**` 运算符可以与 BigInt 一起使用，但重要的是要理解，你不能将 BigInt 类型的操作数与常规数字操作数混合使用。这一开始可能看起来令人困惑，但这是有充分理由的。如果一个数值类型比另一个更通用，那么可以很容���地定义混合操作数的算术运算，只需返回更通用类型的值。但是没有一个类型比另一个更通用：BigInt
+    可以表示非常大的值，使其比常规数字更通用。但 BigInt 只能表示整数，使得常规的 JavaScript 数字类型更通用。这个问题没有解决的方法，所以 JavaScript
+    通过简单地不允许混合操作数来绕过它。
+- en: 'Comparison operators, by contrast, do work with mixed numeric types (but see
+    [§3.9.1](#conversionsandequality) for more about the difference between `==` and
+    `===`):'
+  id: totrans-66
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 相比之下，比较运算符可以处理混合数值类型（但请参阅 [§3.9.1](#conversionsandequality) 了解有关 `==` 和 `===`
+    之间差异的更多信息）：
+- en: '[PRE14]'
+  id: totrans-67
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: The bitwise operators (described in [§4.8.3](ch04.xhtml#bitwiseoperators)) generally
+    work with BigInt operands. None of the functions of the `Math` object accept BigInt
+    operands, however.
+  id: totrans-68
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 位运算符（在 [§4.8.3](ch04.xhtml#bitwiseoperators) 中描述）通常与 BigInt 操作数一起使用。然而，`Math`
+    对象的函数都不接受 BigInt 操作数。
+- en: 3.2.6 Dates and Times
+  id: totrans-69
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 3.2.6 日期和时间
+- en: 'JavaScript defines a simple Date class for representing and manipulating the
+    numbers that represent dates and times. JavaScript Dates are objects, but they
+    also have a numeric representation as a *timestamp* that specifies the number
+    of elapsed milliseconds since January 1, 1970:'
+  id: totrans-70
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 定义了一个简单的 Date 类来表示和操作表示日期和时间的数字。JavaScript 的日期是对象，但它们也有一个数值表示作为 *时间戳*，指定自
+    1970 年 1 月 1 日以来经过的毫秒数：
+- en: '[PRE15]'
+  id: totrans-71
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: The Date class and its methods are covered in detail in [§11.4](ch11.xhtml#datesandtimes).
+    But we will see Date objects again in [§3.9.3](#objtoprim) when we examine the
+    details of JavaScript type conversions.
+  id: totrans-72
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Date 类及其方法在 [§11.4](ch11.xhtml#datesandtimes) 中有详细介绍。但是我们将在 [§3.9.3](#objtoprim)
+    中再次看到 Date 对象，当我们检查 JavaScript 类型转换的细节时。
+- en: 3.3 Text
+  id: totrans-73
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 3.3 文本
+- en: 'The JavaScript type for representing text is the *string*. A string is an immutable
+    ordered sequence of 16-bit values, each of which typically represents a Unicode
+    character. The *length* of a string is the number of 16-bit values it contains.
+    JavaScript’s strings (and its arrays) use zero-based indexing: the first 16-bit
+    value is at position 0, the second at position 1, and so on. The *empty string*
+    is the string of length 0\. JavaScript does not have a special type that represents
+    a single element of a string. To represent a single 16-bit value, simply use a
+    string that has a length of 1.'
+  id: totrans-74
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 用于表示文本的 JavaScript 类型是 *字符串*。字符串是一个不可变的有序 16 位值序列，其中每个值通常表示一个 Unicode 字符。字符串的
+    *长度* 是它包含的 16 位值的数量。JavaScript 的字符串（以及其数组）使用从零开始的索引：第一个 16 位值位于位置 0，第二个位于位置 1，依此类推。*空字符串*
+    是长度为 0 的字符串。JavaScript 没有一个特殊的类型来表示字符串的单个元素。要表示一个单个的 16 位值，只需使用长度为 1 的字符串。
+- en: 3.3.1 String Literals
+  id: totrans-75
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 3.3.1 字符串字面量
+- en: To include a string in a JavaScript program, simply enclose the characters of
+    the string within a matched pair of single or double quotes or backticks (`'`
+    or `"` or [PRE16]
+  id: totrans-76
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要在 JavaScript 程序中包含一个字符串，只需将字符串的字符置于匹配的一对单引号、双引号或反引号中（`'` 或 `"` 或 [PRE16]）。
+- en: '""  // The empty string: it has zero characters'
+  id: totrans-77
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '""  // 空字符串：它没有任何字符'
+- en: '''testing'''
+  id: totrans-78
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '''testing'''
+- en: '"3.14"'
+  id: totrans-79
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"3.14"'
+- en: '''name="myform"'''
+  id: totrans-80
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '''name="myform"'''
+- en: '"Wouldn''t you prefer O''Reilly''s book?"'
+  id: totrans-81
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"你不想要 O''Reilly 的书吗？"'
+- en: '"τ is the ratio of a circle''s circumference to its radius"'
+  id: totrans-82
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"τ 是圆周率"'
+- en: '`"She said ''hi''", he said.`'
+  id: totrans-83
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`"她说 ''嗨''，" 他说。`'
+- en: '[PRE17]'
+  id: totrans-84
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: '// A string representing 2 lines written on one line:'
+  id: totrans-85
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 一个表示在一行上写的 2 行的字符串：
+- en: '''two\nlines'''
+  id: totrans-86
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '''two\nlines'''
+- en: '// A one-line string written on 3 lines:'
+  id: totrans-87
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 一个写在 3 行上的一行字符串：
+- en: '"one\'
+  id: totrans-88
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"one\'
+- en: long\
+  id: totrans-89
+  prefs: []
+  type: TYPE_NORMAL
+  zh: long\
+- en: line"
+  id: totrans-90
+  prefs: []
+  type: TYPE_NORMAL
+  zh: line"
+- en: '// A two-line string written on two lines:'
+  id: totrans-91
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 两行字符串分别写在两行上：
+- en: '`the newline character at the end of this line'
+  id: totrans-92
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`这一行末尾的换行符'
+- en: is included literally in this string`
+  id: totrans-93
+  prefs: []
+  type: TYPE_NORMAL
+  zh: is included literally in this string`
+- en: '[PRE18]'
+  id: totrans-94
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: <button onclick="alert('Thank you')">Click Me</button>
+  id: totrans-95
+  prefs: []
+  type: TYPE_NORMAL
+  zh: <button onclick="alert('Thank you')">Click Me</button>
+- en: '[PRE19]'
+  id: totrans-96
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE19]'
+- en: '''You\''re right, it can\''t be a quote'''
+  id: totrans-97
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '''你\''是对的，这不可能是引用'''
+- en: '[PRE20]'
+  id: totrans-98
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE20]'
+- en: let msg = "Hello, " + "world";   // Produces the string "Hello, world"
+  id: totrans-99
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let msg = "Hello, " + "world";   // 生成字符串 "Hello, world"
+- en: let greeting = "Welcome to my blog," + " " + name;
+  id: totrans-100
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let greeting = "Welcome to my blog," + " " + name;
+- en: '[PRE21]'
+  id: totrans-101
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE21]'
+- en: s.length
+  id: totrans-102
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.length
+- en: '[PRE22]'
+  id: totrans-103
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE22]'
+- en: let s = "Hello, world"; // Start with some text.
+  id: totrans-104
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let s = "Hello, world"; // 以一些文本开头。
+- en: // Obtaining portions of a string
+  id: totrans-105
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 获取字符串的部分
+- en: 's.substring(1,4)        // => "ell": the 2nd, 3rd, and 4th characters.'
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.substring(1,4)        // => "ell": 第 2、3、4 个字符。'
+- en: 's.slice(1,4)            // => "ell": same thing'
+  id: totrans-107
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.slice(1,4)            // => "ell": 同上'
+- en: 's.slice(-3)             // => "rld": last 3 characters'
+  id: totrans-108
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.slice(-3)             // => "rld": 最后 3 个字符'
+- en: 's.split(", ")           // => ["Hello", "world"]: split at delimiter string'
+  id: totrans-109
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.split(", ")           // => ["Hello", "world"]: 在分隔符字符串处分割'
+- en: // Searching a string
+  id: totrans-110
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 搜索字符串
+- en: 's.indexOf("l")          // => 2: position of first letter l'
+  id: totrans-111
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.indexOf("l")          // => 2: 第一个字母 l 的位置'
+- en: 's.indexOf("l", 3)       // => 3: position of first "l" at or after 3'
+  id: totrans-112
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.indexOf("l", 3)       // => 3: 第一个 "l" 在或之后 3 的位置'
+- en: 's.indexOf("zz")         // => -1: s does not include the substring "zz"'
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.indexOf("zz")         // => -1: s 不包含子字符串 "zz"'
+- en: 's.lastIndexOf("l")      // => 10: position of last letter l'
+  id: totrans-114
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.lastIndexOf("l")      // => 10: 最后一个字母 l 的位置'
+- en: // Boolean searching functions in ES6 and later
+  id: totrans-115
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // ES6 及更高版本中的布尔搜索函数
+- en: 's.startsWith("Hell")    // => true: the string starts with these'
+  id: totrans-116
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.startsWith("Hell")    // => true: 字符串以这些开头'
+- en: 's.endsWith("!")         // => false: s does not end with that'
+  id: totrans-117
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.endsWith("!")         // => false: s 不以此结尾'
+- en: 's.includes("or")        // => true: s includes substring "or"'
+  id: totrans-118
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.includes("or")        // => true: s 包含子字符串 "or"'
+- en: // Creating modified versions of a string
+  id: totrans-119
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 创建字符串的修改版本
+- en: s.replace("llo", "ya")  // => "Heya, world"
+  id: totrans-120
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.replace("llo", "ya")  // => "Heya, world"
+- en: s.toLowerCase()         // => "hello, world"
+  id: totrans-121
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.toLowerCase()         // => "hello, world"
+- en: s.toUpperCase()         // => "HELLO, WORLD"
+  id: totrans-122
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.toUpperCase()         // => "HELLO, WORLD"
+- en: 's.normalize()           // Unicode NFC normalization: ES6'
+  id: totrans-123
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.normalize()           // Unicode NFC 标准化：ES6
+- en: s.normalize("NFD")      // NFD normalization. Also "NFKC", "NFKD"
+  id: totrans-124
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.normalize("NFD")      // NFD 标准化。也可用 "NFKC", "NFKD"
+- en: // Inspecting individual (16-bit) characters of a string
+  id: totrans-125
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 检查字符串的各个（16 位）字符
+- en: 's.charAt(0)             // => "H": the first character'
+  id: totrans-126
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.charAt(0)             // => "H": 第一个字符'
+- en: 's.charAt(s.length-1)    // => "d": the last character'
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.charAt(s.length-1)    // => "d": 最后一个字符'
+- en: 's.charCodeAt(0)         // => 72: 16-bit number at the specified position'
+  id: totrans-128
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.charCodeAt(0)         // => 72: 指定位置的 16 位数字'
+- en: 's.codePointAt(0)        // => 72: ES6, works for codepoints > 16 bits'
+  id: totrans-129
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.codePointAt(0)        // => 72: ES6，适用于大于 16 位的码点'
+- en: // String padding functions in ES2017
+  id: totrans-130
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // ES2017 中的字符串填充函数
+- en: '"x".padStart(3)         // => "  x": add spaces on the left to a length of
+    3'
+  id: totrans-131
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"x".padStart(3)         // => "  x": 在左侧添加空格，使长度为 3'
+- en: '"x".padEnd(3)           // => "x  ": add spaces on the right to a length of
+    3'
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"x".padEnd(3)           // => "x  ": 在右侧添加空格，使长度为 3'
+- en: '"x".padStart(3, "*")    // => "**x": add stars on the left to a length of 3'
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"x".padStart(3, "*")    // => "**x": 在左侧添加星号，使长度为 3'
+- en: '"x".padEnd(3, "-")      // => "x--": add dashes on the right to a length of
+    3'
+  id: totrans-134
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"x".padEnd(3, "-")      // => "x--": 在右侧添加破折号，使长度为 3'
+- en: // Space trimming functions. trim() is ES5; others ES2019
+  id: totrans-135
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 修剪空格函数。trim() 是 ES5；其他是 ES2019
+- en: '" test ".trim()         // => "test": remove spaces at start and end'
+  id: totrans-136
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '" test ".trim()         // => "test": 删除开头和结尾的空格'
+- en: '" test ".trimStart()    // => "test ": remove spaces on left. Also trimLeft'
+  id: totrans-137
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '" test ".trimStart()    // => "test ": 删除左侧的空格。也可用 trimLeft'
+- en: '" test ".trimEnd()      // => " test": remove spaces at right. Also trimRight'
+  id: totrans-138
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '" test ".trimEnd()      // => " test": 删除右侧的空格。也可用 trimRight'
+- en: // Miscellaneous string methods
+  id: totrans-139
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 其他字符串方法
+- en: 's.concat("!")           // => "Hello, world!": just use + operator instead'
+  id: totrans-140
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's.concat("!")           // => "Hello, world!": 只需使用 + 运算符'
+- en: '"<>".repeat(5)          // => "<><><><><>": concatenate n copies. ES6'
+  id: totrans-141
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"<>".repeat(5)          // => "<><><><><>": 连接 n 个副本。ES6'
+- en: '[PRE23]'
+  id: totrans-142
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE23]'
+- en: let s = "hello, world";
+  id: totrans-143
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let s = "hello, world";
+- en: s[0]                  // => "h"
+  id: totrans-144
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s[0]                  // => "h"
+- en: s[s.length-1]         // => "d"
+  id: totrans-145
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s[s.length-1]         // => "d"
+- en: '[PRE24]'
+  id: totrans-146
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE24]'
+- en: let s = `hello world`;
+  id: totrans-147
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let s = `hello world`;
+- en: '[PRE25]'
+  id: totrans-148
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE25]'
+- en: let name = "Bill";
+  id: totrans-149
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let name = "Bill";
+- en: let greeting = `Hello ${ name }.`;  // greeting == "Hello Bill."
+  id: totrans-150
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let greeting = `Hello ${ name }.`;  // greeting == "Hello Bill."
+- en: '[PRE26]'
+  id: totrans-151
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE26]'
+- en: let errorMessage = `\
+  id: totrans-152
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let errorMessage = `\
+- en: '\u2718 Test failure at ${filename}:${linenumber}:'
+  id: totrans-153
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '\u2718 Test failure at ${filename}:${linenumber}:'
+- en: ${exception.message}
+  id: totrans-154
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ${exception.message}
+- en: 'Stack trace:'
+  id: totrans-155
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'Stack trace:'
+- en: ${exception.stack}
+  id: totrans-156
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ${exception.stack}
+- en: '`;'
+  id: totrans-157
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`;'
+- en: '[PRE27]'
+  id: totrans-158
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE27]'
+- en: '`\n`.length            // => 1: the string has a single newline character'
+  id: totrans-159
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`\n`.length            // => 1: 字符串有一个换行符'
+- en: 'String.raw`\n`.length  // => 2: a backslash character and the letter n'
+  id: totrans-160
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'String.raw`\n`.length  // => 2: 一个反斜杠字符和字母 n'
+- en: '[PRE28]'
+  id: totrans-161
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE28]'
+- en: /^HTML/;             // Match the letters H T M L at the start of a string
+  id: totrans-162
+  prefs: []
+  type: TYPE_NORMAL
+  zh: /^HTML/;             // 匹配字符串开头的字母 H T M L
+- en: '/[1-9][0-9]*/;       // Match a nonzero digit, followed by any # of digits'
+  id: totrans-163
+  prefs: []
+  type: TYPE_NORMAL
+  zh: /[1-9][0-9]*/;       // 匹配非零数字，后跟任意数量的数字
+- en: /\bjavascript\b/i;   // Match "javascript" as a word, case-insensitive
+  id: totrans-164
+  prefs: []
+  type: TYPE_NORMAL
+  zh: /\bjavascript\b/i;   // 匹配 "javascript" 作为一个单词，不区分大小写
+- en: '[PRE29]'
+  id: totrans-165
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE29]'
+- en: 'let text = "testing: 1, 2, 3";   // Sample text'
+  id: totrans-166
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let text = "testing: 1, 2, 3";   // 示例文本'
+- en: let pattern = /\d+/g;            // Matches all instances of one or more digits
+  id: totrans-167
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let pattern = /\d+/g;            // 匹配所有一个或多个数字的实例
+- en: 'pattern.test(text)               // => true: a match exists'
+  id: totrans-168
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'pattern.test(text)               // => true: 存在匹配项'
+- en: 'text.search(pattern)             // => 9: position of first match'
+  id: totrans-169
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'text.search(pattern)             // => 9: 第一个匹配项的位置'
+- en: 'text.match(pattern)              // => ["1", "2", "3"]: array of all matches'
+  id: totrans-170
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'text.match(pattern)              // => ["1", "2", "3"]: 所有匹配项的数组'
+- en: 'text.replace(pattern, "#")       // => "testing: #, #, #"'
+  id: totrans-171
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'text.replace(pattern, "#")       // => "testing: #, #, #"'
+- en: 'text.split(/\D+/)                // => ["","1","2","3"]: split on nondigits'
+  id: totrans-172
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'text.split(/\D+/)                // => ["","1","2","3"]: 以非数字为分隔符进行分割'
+- en: '[PRE30]'
+  id: totrans-173
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE30]'
+- en: a === 4
+  id: totrans-174
+  prefs: []
+  type: TYPE_NORMAL
+  zh: a === 4
+- en: '[PRE31]'
+  id: totrans-175
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE31]'
+- en: if (a === 4) {
+  id: totrans-176
+  prefs: []
+  type: TYPE_NORMAL
+  zh: if (a === 4) {
+- en: b = b + 1;
+  id: totrans-177
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: b = b + 1;
+- en: '} else {'
+  id: totrans-178
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '} else {'
+- en: a = a + 1;
+  id: totrans-179
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: a = a + 1;
+- en: '}'
+  id: totrans-180
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: '[PRE32]'
+  id: totrans-181
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE32]'
+- en: undefined
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: undefined
+- en: 'null'
+  id: totrans-183
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'null'
+- en: '0'
+  id: totrans-184
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '0'
+- en: '-0'
+  id: totrans-185
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '-0'
+- en: NaN
+  id: totrans-186
+  prefs: []
+  type: TYPE_NORMAL
+  zh: NaN
+- en: '""  // the empty string'
+  id: totrans-187
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '""  // 空字符串'
+- en: '[PRE33]'
+  id: totrans-188
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE33]'
+- en: if (o !== null) ...
+  id: totrans-189
+  prefs: []
+  type: TYPE_NORMAL
+  zh: if (o !== null) ...
+- en: '[PRE34]'
+  id: totrans-190
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE34]'
+- en: if (o) ...
+  id: totrans-191
+  prefs: []
+  type: TYPE_NORMAL
+  zh: if (o) ...
+- en: '[PRE35]'
+  id: totrans-192
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE35]'
+- en: if ((x === 0 && y === 0) || !(z === 0)) {
+  id: totrans-193
+  prefs: []
+  type: TYPE_NORMAL
+  zh: if ((x === 0 && y === 0) || !(z === 0)) {
+- en: // x and y are both zero or z is non-zero
+  id: totrans-194
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // x 和 y 都为零或 z 非零
+- en: '}'
+  id: totrans-195
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: '[PRE36]'
+  id: totrans-196
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE36]'
+- en: let strname = "string name";      // A string to use as a property name
+  id: totrans-197
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let strname = "string name";      // 用作属性名称的字符串
+- en: let symname = Symbol("propname"); // A Symbol to use as a property name
+  id: totrans-198
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let symname = Symbol("propname"); // 用作属性名称的符号
+- en: 'typeof strname                    // => "string": strname is a string'
+  id: totrans-199
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'typeof strname                    // => "string": strname是一个字符串'
+- en: 'typeof symname                    // => "symbol": symname is a symbol'
+  id: totrans-200
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'typeof symname                    // => "symbol": symname是一个符号'
+- en: let o = {};                       // Create a new object
+  id: totrans-201
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let o = {};                       // 创建一个新对象
+- en: o[strname] = 1;                   // Define a property with a string name
+  id: totrans-202
+  prefs: []
+  type: TYPE_NORMAL
+  zh: o[strname] = 1;                   // 使用字符串名称定义属性
+- en: o[symname] = 2;                   // Define a property with a Symbol name
+  id: totrans-203
+  prefs: []
+  type: TYPE_NORMAL
+  zh: o[symname] = 2;                   // 使用符号名称定义属性
+- en: 'o[strname]                        // => 1: access the string-named property'
+  id: totrans-204
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'o[strname]                        // => 1: 访问以字符串命名的属性'
+- en: 'o[symname]                        // => 2: access the symbol-named property'
+  id: totrans-205
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'o[symname]                        // => 2: 访问以符号命名的属性'
+- en: '[PRE37]'
+  id: totrans-206
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE37]'
+- en: let s = Symbol("sym_x");
+  id: totrans-207
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let s = Symbol("sym_x");
+- en: s.toString()             // => "Symbol(sym_x)"
+  id: totrans-208
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.toString()             // => "Symbol(sym_x)"
+- en: '[PRE38]'
+  id: totrans-209
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE38]'
+- en: let s = Symbol.for("shared");
+  id: totrans-210
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let s = Symbol.for("shared");
+- en: let t = Symbol.for("shared");
+  id: totrans-211
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let t = Symbol.for("shared");
+- en: s === t          // => true
+  id: totrans-212
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s === t          // => true
+- en: s.toString()     // => "Symbol(shared)"
+  id: totrans-213
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.toString()     // => "Symbol(shared)"
+- en: Symbol.keyFor(t) // => "shared"
+  id: totrans-214
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Symbol.keyFor(t) // => "shared"
+- en: '[PRE39]'
+  id: totrans-215
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE39]'
+- en: let s = "hello";   // Start with some lowercase text
+  id: totrans-216
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let s = "hello";   // ���一些小写文本开始
+- en: s.toUpperCase();   // Returns "HELLO", but doesn't alter s
+  id: totrans-217
+  prefs: []
+  type: TYPE_NORMAL
+  zh: s.toUpperCase();   // 返回"HELLO"，但不改变s
+- en: 's                  // => "hello": the original string has not changed'
+  id: totrans-218
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 's                  // => "hello": 原始字符串没有改变'
+- en: '[PRE40]'
+  id: totrans-219
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE40]'
+- en: 'let o = { x: 1 };  // Start with an object'
+  id: totrans-220
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let o = { x: 1 };  // 从一个对象开始'
+- en: o.x = 2;           // Mutate it by changing the value of a property
+  id: totrans-221
+  prefs: []
+  type: TYPE_NORMAL
+  zh: o.x = 2;           // 通过更改属性的值来改变它
+- en: o.y = 3;           // Mutate it again by adding a new property
+  id: totrans-222
+  prefs: []
+  type: TYPE_NORMAL
+  zh: o.y = 3;           // 通过添加新属性再次改变它
+- en: let a = [1,2,3];   // Arrays are also mutable
+  id: totrans-223
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let a = [1,2,3];   // 数组也是可变的
+- en: a[0] = 0;          // Change the value of an array element
+  id: totrans-224
+  prefs: []
+  type: TYPE_NORMAL
+  zh: a[0] = 0;          // 改变数组元素的值
+- en: a[3] = 4;          // Add a new array element
+  id: totrans-225
+  prefs: []
+  type: TYPE_NORMAL
+  zh: a[3] = 4;          // 添加一个新的数组元素
+- en: '[PRE41]'
+  id: totrans-226
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE41]'
+- en: 'let o = {x: 1}, p = {x: 1};  // Two objects with the same properties'
+  id: totrans-227
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let o = {x: 1}, p = {x: 1};  // 具有相同属性的两个对象'
+- en: 'o === p                      // => false: distinct objects are never equal'
+  id: totrans-228
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'o === p                      // => false: 不同的对象永远不相等'
+- en: let a = [], b = [];          // Two distinct, empty arrays
+  id: totrans-229
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let a = [], b = [];          // 两个不同的空数组
+- en: 'a === b                      // => false: distinct arrays are never equal'
+  id: totrans-230
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'a === b                      // => false: 不同的数组永远不相等'
+- en: '[PRE42]'
+  id: totrans-231
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE42]'
+- en: let a = [];   // The variable a refers to an empty array.
+  id: totrans-232
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let a = [];   // 变量a指向一个空数组。
+- en: let b = a;    // Now b refers to the same array.
+  id: totrans-233
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let b = a;    // 现在b指向同一个数组。
+- en: b[0] = 1;     // Mutate the array referred to by variable b.
+  id: totrans-234
+  prefs: []
+  type: TYPE_NORMAL
+  zh: b[0] = 1;     // 改变变量b引用的数组。
+- en: 'a[0]          // => 1: the change is also visible through variable a.'
+  id: totrans-235
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'a[0]          // => 1: 更改也通过变量a可见。'
+- en: 'a === b       // => true: a and b refer to the same object, so they are equal.'
+  id: totrans-236
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'a === b       // => true: a和b指向同一个对象，所以它们相等。'
+- en: '[PRE43]'
+  id: totrans-237
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE43]'
+- en: let a = ["a","b","c"];              // An array we want to copy
+  id: totrans-238
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let a = ["a","b","c"];              // 我们想要复制的数组
+- en: let b = [];                         // A distinct array we'll copy into
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let b = [];                         // 我们将复制到的不同数组
+- en: for(let i = 0; i < a.length; i++) { // For each index of a[]
+  id: totrans-240
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(let i = 0; i < a.length; i++) { // 对于a[]的每个索引
+- en: b[i] = a[i];                    // Copy an element of a into b
+  id: totrans-241
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: b[i] = a[i];                    // 将a的一个元素复制到b
+- en: '}'
+  id: totrans-242
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: let c = Array.from(b);              // In ES6, copy arrays with Array.from()
+  id: totrans-243
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let c = Array.from(b);              // 在ES6中，使用Array.from()复制数组
+- en: '[PRE44]'
+  id: totrans-244
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE44]'
+- en: function equalArrays(a, b) {
+  id: totrans-245
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function equalArrays(a, b) {
+- en: if (a === b) return true;                // Identical arrays are equal
+  id: totrans-246
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: if (a === b) return true;                // 相同的数组是相等的
+- en: if (a.length !== b.length) return false; // Different-size arrays not equal
+  id: totrans-247
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: if (a.length !== b.length) return false; // 不同大小的数组不相等
+- en: for(let i = 0; i < a.length; i++) {      // Loop through all elements
+  id: totrans-248
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: for(let i = 0; i < a.length; i++) {      // 遍历所有元素
+- en: if (a[i] !== b[i]) return false;     // If any differ, arrays not equal
+  id: totrans-249
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: if (a[i] !== b[i]) return false;     // 如果有任何不同，数组不相等
+- en: '}'
+  id: totrans-250
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '}'
+- en: return true;                             // Otherwise they are equal
+  id: totrans-251
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return true;                             // 否则它们是相等的
+- en: '}'
+  id: totrans-252
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: '[PRE45]'
+  id: totrans-253
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE45]'
+- en: '10 + " objects"     // => "10 objects":  Number 10 converts to a string'
+  id: totrans-254
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '10 + " objects"     // => "10 objects": 数字10转换为字符串'
+- en: '"7" * "4"           // => 28: both strings convert to numbers'
+  id: totrans-255
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"7" * "4"           // => 28: 两个字符串都转换为数字'
+- en: let n = 1 - "x";    // n == NaN; string "x" can't convert to a number
+  id: totrans-256
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let n = 1 - "x";    // n == NaN; 字符串"x"无法转换为数字
+- en: 'n + " objects"      // => "NaN objects": NaN converts to string "NaN"'
+  id: totrans-257
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'n + " objects"      // => "NaN objects": NaN转换为字符串"NaN"'
+- en: '[PRE46]'
+  id: totrans-258
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE46]'
+- en: 'null == undefined // => true: These two values are treated as equal.'
+  id: totrans-259
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'null == undefined // => true: 这两个值被视为相等。'
+- en: '"0" == 0          // => true: String converts to a number before comparing.'
+  id: totrans-260
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"0" == 0          // => true: 在比较之前，字符串转换为数字。'
+- en: '0 == false        // => true: Boolean converts to number before comparing.'
+  id: totrans-261
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '0 == false        // => true: 在比较之前，布尔值转换为数字。'
+- en: '"0" == false      // => true: Both operands convert to 0 before comparing!'
+  id: totrans-262
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"0" == false      // => true: 在比较之前，两个操作数都转换为0！'
+- en: '[PRE47]'
+  id: totrans-263
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE47]'
+- en: Number("3")    // => 3
+  id: totrans-264
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Number("3")    // => 3
+- en: 'String(false)  // => "false":  Or use false.toString()'
+  id: totrans-265
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'String(false)  // => "false": 或者使用false.toString()'
+- en: Boolean([])    // => true
+  id: totrans-266
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Boolean([])    // => true
+- en: '[PRE48]'
+  id: totrans-267
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE48]'
+- en: x + ""   // => String(x)
+  id: totrans-268
+  prefs: []
+  type: TYPE_NORMAL
+  zh: x + ""   // => String(x)
+- en: +x       // => Number(x)
+  id: totrans-269
+  prefs: []
+  type: TYPE_NORMAL
+  zh: +x       // => Number(x)
+- en: x-0      // => Number(x)
+  id: totrans-270
+  prefs: []
+  type: TYPE_NORMAL
+  zh: x-0      // => Number(x)
+- en: '!!x      // => Boolean(x): Note double !'
+  id: totrans-271
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '!!x      // => Boolean(x): 注意双重！'
+- en: '[PRE49]'
+  id: totrans-272
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE49]'
+- en: let n = 17;
+  id: totrans-273
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let n = 17;
+- en: let binary = "0b" + n.toString(2);  // binary == "0b10001"
+  id: totrans-274
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let binary = "0b" + n.toString(2);  // 二进制 == "0b10001"
+- en: let octal = "0o" + n.toString(8);   // octal == "0o21"
+  id: totrans-275
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let octal = "0o" + n.toString(8);   // 八进制 == "0o21"
+- en: let hex = "0x" + n.toString(16);    // hex == "0x11"
+  id: totrans-276
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let hex = "0x" + n.toString(16);    // hex == "0x11"
+- en: '[PRE50]'
+  id: totrans-277
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE50]'
+- en: let n = 123456.789;
+  id: totrans-278
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let n = 123456.789;
+- en: n.toFixed(0)         // => "123457"
+  id: totrans-279
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toFixed(0)         // => "123457"
+- en: n.toFixed(2)         // => "123456.79"
+  id: totrans-280
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toFixed(2)         // => "123456.79"
+- en: n.toFixed(5)         // => "123456.78900"
+  id: totrans-281
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toFixed(5)         // => "123456.78900"
+- en: n.toExponential(1)   // => "1.2e+5"
+  id: totrans-282
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toExponential(1)   // => "1.2e+5"
+- en: n.toExponential(3)   // => "1.235e+5"
+  id: totrans-283
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toExponential(3)   // => "1.235e+5"
+- en: n.toPrecision(4)     // => "1.235e+5"
+  id: totrans-284
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toPrecision(4)     // => "1.235e+5"
+- en: n.toPrecision(7)     // => "123456.8"
+  id: totrans-285
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toPrecision(7)     // => "123456.8"
+- en: n.toPrecision(10)    // => "123456.7890"
+  id: totrans-286
+  prefs: []
+  type: TYPE_NORMAL
+  zh: n.toPrecision(10)    // => "123456.7890"
+- en: '[PRE51]'
+  id: totrans-287
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE51]'
+- en: parseInt("3 blind mice")     // => 3
+  id: totrans-288
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("3 blind mice")     // => 3
+- en: parseFloat(" 3.14 meters")   // => 3.14
+  id: totrans-289
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseFloat(" 3.14 meters")   // => 3.14
+- en: parseInt("-12.34")           // => -12
+  id: totrans-290
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("-12.34")           // => -12
+- en: parseInt("0xFF")             // => 255
+  id: totrans-291
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("0xFF")             // => 255
+- en: parseInt("0xff")             // => 255
+  id: totrans-292
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("0xff")             // => 255
+- en: parseInt("-0XFF")            // => -255
+  id: totrans-293
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("-0XFF")            // => -255
+- en: parseFloat(".1")             // => 0.1
+  id: totrans-294
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseFloat(".1")             // => 0.1
+- en: parseInt("0.1")              // => 0
+  id: totrans-295
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("0.1")              // => 0
+- en: 'parseInt(".1")               // => NaN: integers can''t start with "."'
+  id: totrans-296
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt(".1")               // => NaN：整数不能以 "." 开头
+- en: 'parseFloat("$72.47")         // => NaN: numbers can''t start with "$"'
+  id: totrans-297
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseFloat("$72.47")         // => NaN：数字不能以 "$" 开头
+- en: '[PRE52]'
+  id: totrans-298
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE52]'
+- en: 'parseInt("11", 2)     // => 3: (1*2 + 1)'
+  id: totrans-299
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("11", 2)     // => 3：(1*2 + 1)
+- en: 'parseInt("ff", 16)    // => 255: (15*16 + 15)'
+  id: totrans-300
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("ff", 16)    // => 255：(15*16 + 15)
+- en: 'parseInt("zz", 36)    // => 1295: (35*36 + 35)'
+  id: totrans-301
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("zz", 36)    // => 1295：(35*36 + 35)
+- en: 'parseInt("077", 8)    // => 63: (7*8 + 7)'
+  id: totrans-302
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("077", 8)    // => 63：(7*8 + 7)
+- en: 'parseInt("077", 10)   // => 77: (7*10 + 7)'
+  id: totrans-303
+  prefs: []
+  type: TYPE_NORMAL
+  zh: parseInt("077", 10)   // => 77：(7*10 + 7)
+- en: '[PRE53]'
+  id: totrans-304
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE53]'
+- en: '({x: 1, y: 2}).toString()    // => "[object Object]"'
+  id: totrans-305
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '({x: 1, y: 2}).toString()    // => "[object Object]"'
+- en: '[PRE54]'
+  id: totrans-306
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE54]'
+- en: '[1,2,3].toString()                  // => "1,2,3"'
+  id: totrans-307
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[1,2,3].toString()                  // => "1,2,3"'
+- en: (function(x) { f(x); }).toString()  // => "function(x) { f(x); }"
+  id: totrans-308
+  prefs: []
+  type: TYPE_NORMAL
+  zh: (function(x) { f(x); }).toString()  // => "function(x) { f(x); }"
+- en: /\d+/g.toString()                   // => "/\\d+/g"
+  id: totrans-309
+  prefs: []
+  type: TYPE_NORMAL
+  zh: /\d+/g.toString()                   // => "/\\d+/g"
+- en: let d = new Date(2020,0,1);
+  id: totrans-310
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let d = new Date(2020,0,1);
+- en: d.toString()  // => "Wed Jan 01 2020 00:00:00 GMT-0800 (Pacific Standard Time)"
+  id: totrans-311
+  prefs: []
+  type: TYPE_NORMAL
+  zh: d.toString()  // => "Wed Jan 01 2020 00:00:00 GMT-0800 (Pacific Standard Time)"
+- en: '[PRE55]'
+  id: totrans-312
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE55]'
+- en: let d = new Date(2010, 0, 1);   // January 1, 2010, (Pacific time)
+  id: totrans-313
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let d = new Date(2010, 0, 1);   // 2010年1月1日（太平洋时间）
+- en: d.valueOf()                     // => 1262332800000
+  id: totrans-314
+  prefs: []
+  type: TYPE_NORMAL
+  zh: d.valueOf()                     // => 1262332800000
+- en: '[PRE56]'
+  id: totrans-315
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE56]'
+- en: 'Number([])    // => 0: this is unexpected!'
+  id: totrans-316
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Number([])    // => 0：这是意外的！
+- en: 'Number([99])  // => 99: really?'
+  id: totrans-317
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Number([99])  // => 99：真的吗？
+- en: '[PRE57]'
+  id: totrans-318
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE57]'
+- en: let i;
+  id: totrans-319
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let i;
+- en: let sum;
+  id: totrans-320
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let sum;
+- en: '[PRE58]'
+  id: totrans-321
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE58]'
+- en: let i, sum;
+  id: totrans-322
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let i, sum;
+- en: '[PRE59]'
+  id: totrans-323
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE59]'
+- en: let message = "hello";
+  id: totrans-324
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let message = "hello";
+- en: let i = 0, j = 0, k = 0;
+  id: totrans-325
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let i = 0, j = 0, k = 0;
+- en: let x = 2, y = x*x; // Initializers can use previously declared variables
+  id: totrans-326
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let x = 2, y = x*x; // 初始化器可以使用先前声明的变量
+- en: '[PRE60]'
+  id: totrans-327
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE60]'
+- en: const H0 = 74;         // Hubble constant (km/s/Mpc)
+  id: totrans-328
+  prefs: []
+  type: TYPE_NORMAL
+  zh: const H0 = 74;         // 哈勃常数（km/s/Mpc）
+- en: const C = 299792.458;  // Speed of light in a vacuum (km/s)
+  id: totrans-329
+  prefs: []
+  type: TYPE_NORMAL
+  zh: const C = 299792.458;  // 真空中的光速（km/s）
+- en: 'const AU = 1.496E8;    // Astronomical Unit: distance to the sun (km)'
+  id: totrans-330
+  prefs: []
+  type: TYPE_NORMAL
+  zh: const AU = 1.496E8;    // 天文单位：到太阳的距离（km）
+- en: '[PRE61]'
+  id: totrans-331
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE61]'
+- en: for(let i = 0, len = data.length; i < len; i++) console.log(data[i]);
+  id: totrans-332
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(let i = 0, len = data.length; i < len; i++) console.log(data[i]);
+- en: for(let datum of data) console.log(datum);
+  id: totrans-333
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(let datum of data) console.log(datum);
+- en: for(let property in object) console.log(property);
+  id: totrans-334
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(let property in object) console.log(property);
+- en: '[PRE62]'
+  id: totrans-335
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE62]'
+- en: for(const datum of data) console.log(datum);
+  id: totrans-336
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(const datum of data) console.log(datum);
+- en: for(const property in object) console.log(property);
+  id: totrans-337
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(const property in object) console.log(property);
+- en: '[PRE63]'
+  id: totrans-338
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE63]'
+- en: const x = 1;        // Declare x as a global constant
+  id: totrans-339
+  prefs: []
+  type: TYPE_NORMAL
+  zh: const x = 1;        // 将 x 声明为全局常量
+- en: if (x === 1) {
+  id: totrans-340
+  prefs: []
+  type: TYPE_NORMAL
+  zh: if (x === 1) {
+- en: let x = 2;      // Inside a block x can refer to a different value
+  id: totrans-341
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: let x = 2;      // 在一个块内，x 可能指向不同的值
+- en: console.log(x); // Prints 2
+  id: totrans-342
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: console.log(x); // 打印 2
+- en: '}'
+  id: totrans-343
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: 'console.log(x);     // Prints 1: we''re back in the global scope now'
+  id: totrans-344
+  prefs: []
+  type: TYPE_NORMAL
+  zh: console.log(x);     // 打印 1：我们现在回到了全局范围
+- en: let x = 3;          // ERROR! Syntax error trying to re-declare x
+  id: totrans-345
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let x = 3;          // 错误！尝试重新声明 x 的语法错误
+- en: '[PRE64]'
+  id: totrans-346
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE64]'
+- en: let i = 10;
+  id: totrans-347
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let i = 10;
+- en: i = "ten";
+  id: totrans-348
+  prefs: []
+  type: TYPE_NORMAL
+  zh: i = "ten";
+- en: '[PRE65]'
+  id: totrans-349
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE65]'
+- en: var x;
+  id: totrans-350
+  prefs: []
+  type: TYPE_NORMAL
+  zh: var x;
+- en: var data = [], count = data.length;
+  id: totrans-351
+  prefs: []
+  type: TYPE_NORMAL
+  zh: var data = [], count = data.length;
+- en: for(var i = 0; i < count; i++) console.log(data[i]);
+  id: totrans-352
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(var i = 0; i < count; i++) console.log(data[i]);
+- en: '[PRE66]'
+  id: totrans-353
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE66]'
+- en: let [x,y] = [1,2];  // Same as let x=1, y=2
+  id: totrans-354
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let [x,y] = [1,2];  // 同 let x=1, y=2
+- en: '[x,y] = [x+1,y+1];  // Same as x = x + 1, y = y + 1'
+  id: totrans-355
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[x,y] = [x+1,y+1];  // 同 x = x + 1, y = y + 1'
+- en: '[x,y] = [y,x];      // Swap the value of the two variables'
+  id: totrans-356
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[x,y] = [y,x];      // 交换两个变量的值'
+- en: '[x,y]               // => [3,2]: the incremented and swapped values'
+  id: totrans-357
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[x,y]               // => [3,2]：递增和交换的值'
+- en: '[PRE67]'
+  id: totrans-358
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE67]'
+- en: // Convert [x,y] coordinates to [r,theta] polar coordinates
+  id: totrans-359
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 将[x,y]坐标转换为[r,theta]极坐标
+- en: function toPolar(x, y) {
+  id: totrans-360
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function toPolar(x, y) {
+- en: return [Math.sqrt(x*x+y*y), Math.atan2(y,x)];
+  id: totrans-361
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return [Math.sqrt(x*x+y*y), Math.atan2(y,x)];
+- en: '}'
+  id: totrans-362
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: // Convert polar to Cartesian coordinates
+  id: totrans-363
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 将极坐标转换为直角坐标
+- en: function toCartesian(r, theta) {
+  id: totrans-364
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function toCartesian(r, theta) {
+- en: return [r*Math.cos(theta), r*Math.sin(theta)];
+  id: totrans-365
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return [r*Math.cos(theta), r*Math.sin(theta)];
+- en: '}'
+  id: totrans-366
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: let [r,theta] = toPolar(1.0, 1.0);  // r == Math.sqrt(2); theta == Math.PI/4
+  id: totrans-367
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let [r,theta] = toPolar(1.0, 1.0);  // r == Math.sqrt(2); theta == Math.PI/4
+- en: let [x,y] = toCartesian(r,theta);   // [x, y] == [1.0, 1,0]
+  id: totrans-368
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let [x,y] = toCartesian(r,theta);   // [x, y] == [1.0, 1,0]
+- en: '[PRE68]'
+  id: totrans-369
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE68]'
+- en: 'let o = { x: 1, y: 2 }; // The object we''ll loop over'
+  id: totrans-370
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let o = { x: 1, y: 2 }; // 我们将循环的对象'
+- en: for(const [name, value] of Object.entries(o)) {
+  id: totrans-371
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(const [name, value] of Object.entries(o)) {
+- en: console.log(name, value); // Prints "x 1" and "y 2"
+  id: totrans-372
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: console.log(name, value); // 打印 "x 1" 和 "y 2"
+- en: '}'
+  id: totrans-373
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: '[PRE69]'
+  id: totrans-374
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE69]'
+- en: let [x,y] = [1];     // x == 1; y == undefined
+  id: totrans-375
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let [x,y] = [1];     // x == 1; y == undefined
+- en: '[x,y] = [1,2,3];     // x == 1; y == 2'
+  id: totrans-376
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[x,y] = [1,2,3];     // x == 1; y == 2'
+- en: '[,x,,y] = [1,2,3,4]; // x == 2; y == 4'
+  id: totrans-377
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[,x,,y] = [1,2,3,4]; // x == 2; y == 4'
+- en: '[PRE70]'
+  id: totrans-378
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE70]'
+- en: let [x, ...y] = [1,2,3,4];  // y == [2,3,4]
+  id: totrans-379
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let [x, ...y] = [1,2,3,4];  // y == [2,3,4]
+- en: '[PRE71]'
+  id: totrans-380
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE71]'
+- en: let [a, [b, c]] = [1, [2,2.5], 3]; // a == 1; b == 2; c == 2.5
+  id: totrans-381
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let [a, [b, c]] = [1, [2,2.5], 3]; // a == 1; b == 2; c == 2.5
+- en: '[PRE72]'
+  id: totrans-382
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE72]'
+- en: let [first, ...rest] = "Hello"; // first == "H"; rest == ["e","l","l","o"]
+  id: totrans-383
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let [first, ...rest] = "Hello"; // first == "H"; rest == ["e","l","l","o"]
+- en: '[PRE73]'
+  id: totrans-384
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE73]'
+- en: 'let transparent = {r: 0.0, g: 0.0, b: 0.0, a: 1.0}; // A RGBA color'
+  id: totrans-385
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let transparent = {r: 0.0, g: 0.0, b: 0.0, a: 1.0}; // 一个 RGBA 颜色'
+- en: let {r, g, b} = transparent;  // r == 0.0; g == 0.0; b == 0.0
+  id: totrans-386
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let {r, g, b} = transparent;  // r == 0.0; g == 0.0; b == 0.0
+- en: '[PRE74]'
+  id: totrans-387
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE74]'
+- en: // Same as const sin=Math.sin, cos=Math.cos, tan=Math.tan
+  id: totrans-388
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 同 const sin=Math.sin, cos=Math.cos, tan=Math.tan
+- en: const {sin, cos, tan} = Math;
+  id: totrans-389
+  prefs: []
+  type: TYPE_NORMAL
+  zh: const {sin, cos, tan} = Math;
+- en: '[PRE75]'
+  id: totrans-390
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE75]'
+- en: // Same as const cosine = Math.cos, tangent = Math.tan;
+  id: totrans-391
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 同 const cosine = Math.cos, tangent = Math.tan;
+- en: 'const { cos: cosine, tan: tangent } = Math;'
+  id: totrans-392
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'const { cos: cosine, tan: tangent } = Math;'
+- en: '[PRE76]'
+  id: totrans-393
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE76]'
+- en: 'let points = [{x: 1, y: 2}, {x: 3, y: 4}];     // An array of two point objects'
+  id: totrans-394
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let points = [{x: 1, y: 2}, {x: 3, y: 4}];     // 一个包含两个点对象的数组'
+- en: 'let [{x: x1, y: y1}, {x: x2, y: y2}] = points; // destructured into 4 variables.'
+  id: totrans-395
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let [{x: x1, y: y1}, {x: x2, y: y2}] = points; // 解构成 4 个变量'
+- en: (x1 === 1 && y1 === 2 && x2 === 3 && y2 === 4) // => true
+  id: totrans-396
+  prefs: []
+  type: TYPE_NORMAL
+  zh: (x1 === 1 && y1 === 2 && x2 === 3 && y2 === 4) // => true
+- en: '[PRE77]'
+  id: totrans-397
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE77]'
+- en: 'let points = { p1: [1,2], p2: [3,4] };         // An object with 2 array props'
+  id: totrans-398
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let points = { p1: [1,2], p2: [3,4] };         // 一个具有 2 个数组属性的对象'
+- en: 'let { p1: [x1, y1], p2: [x2, y2] } = points;   // destructured into 4 vars'
+  id: totrans-399
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let { p1: [x1, y1], p2: [x2, y2] } = points;   // 解构成 4 个变量'
+- en: (x1 === 1 && y1 === 2 && x2 === 3 && y2 === 4) // => true
+  id: totrans-400
+  prefs: []
+  type: TYPE_NORMAL
+  zh: (x1 === 1 && y1 === 2 && x2 === 3 && y2 === 4) // => true
+- en: '```'
+  id: totrans-401
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '```'
+- en: Complex destructuring syntax like this can be hard to write and hard to read,
+    and you may be better off just writing out your assignments explicitly with traditional
+    code like `let x1 = points.p1[0];`.
+  id: totrans-402
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 像这样复杂的解构语法可能很难编写和阅读，你可能最好还是用传统的代码明确地写出你的赋值，比如`let x1 = points.p1[0];`。
+- en: 3.11 Summary
+  id: totrans-403
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 3.11 总结
+- en: 'Some key points to remember about this chapter:'
+  id: totrans-404
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本章需要记住的一些关键点：
+- en: How to write and manipulate numbers and strings of text in JavaScript.
+  id: totrans-405
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如何在JavaScript中编写和操作数字和文本字符串。
+- en: 'How to work with JavaScript’s other primitive types: booleans, Symbols, `null`,
+    and `undefined`.'
+  id: totrans-406
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如何处理JavaScript的其他基本类型：布尔值、符号、`null`和`undefined`。
+- en: The differences between immutable primitive types and mutable reference types.
+  id: totrans-407
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 不可变的基本类型和可变的引用类型之间的区别。
+- en: How JavaScript converts values implicitly from one type to another and how you
+    can do so explicitly in your programs.
+  id: totrans-408
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: JavaScript如何隐式地将值从一种类型转换为另一种类型，以及你如何在程序中显式地进行转换。
+- en: How to declare and initialize constants and variables (including with destructuring
+    assignment) and the lexical scope of the variables and constants you declare.
+  id: totrans-409
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如何声明和初始化常量和变量（包括解构赋值），以及你声明的变量和常量的词法作用域。
+- en: ^([1](ch03.xhtml#idm46198571886872-marker)) This is the format for numbers of
+    type `double` in Java, C++, and most modern programming languages.
+  id: totrans-410
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ^([1](ch03.xhtml#idm46198571886872-marker)) 这是Java、C++和大多数现代编程语言中`double`类型的数字的格式。
+- en: '^([2](ch03.xhtml#idm46198578212696-marker)) There are JavaScript extensions,
+    such as TypeScript and Flow ([§17.8](ch17.xhtml#flow)), that allow types to be
+    specified as part of variable declarations with syntax like `let x: number = 0;`.'
+  id: totrans-411
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '^([2](ch03.xhtml#idm46198578212696-marker)) 有一些JavaScript的扩展，比如TypeScript和Flow
+    ([§17.8](ch17.xhtml#flow))，允许在变量声明中指定类型，语法类似于`let x: number = 0;`。'

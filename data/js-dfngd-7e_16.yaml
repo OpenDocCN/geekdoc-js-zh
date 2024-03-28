@@ -1,0 +1,2915 @@
+- en: Chapter 16\. Server-Side JavaScript with Node
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第 16 章 用 Node 进行服务器端 JavaScript
+- en: 'Node is JavaScript with bindings to the underlying operating system, making
+    it possible to write JavaScript programs that read and write files, execute child
+    processes, and communicate over the network. This makes Node useful as a:'
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 是 JavaScript 与底层操作系统的绑定，使得编写 JavaScript 程序读写文件、执行子进程和在网络上通信成为可能。这使得 Node
+    作为以下用途变得有用：
+- en: Modern alternative to shell scripts that does not suffer from the arcane syntax
+    of bash and other Unix shells.
+  id: totrans-2
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 现代替代 shell 脚本的方式，不受 bash 和其他 Unix shell 繁琐语法的困扰。
+- en: General-purpose programming language for running trusted programs, not subject
+    to the security constraints imposed by web browsers on untrusted code.
+  id: totrans-3
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 用于运行受信任程序的通用编程语言，不受 Web 浏览器对不受信任代码施加的安全约束。
+- en: Popular environment for writing efficient and highly concurrent web servers.
+  id: totrans-4
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 编写高效且高���并发的 Web 服务器的流行环境。
+- en: The defining feature of Node is its single-threaded event-based concurrency
+    enabled by an asynchronous-by-default API. If you have programmed in other languages
+    but have not done much JavaScript coding, or if you’re an experienced client-side
+    JavaScript programmer used to writing code for web browers, using Node will be
+    a bit of an adjustment, as is any new programming language or environment. This
+    chapter begins by explaining the Node programming model, with an emphasis on concurrency,
+    Node’s API for working with streaming data, and Node’s Buffer type for working
+    with binary data. These initial sections are followed by sections that highlight
+    and demonstrate some of the most important Node APIs, including those for working
+    with files, networks, processes, and threads.
+  id: totrans-5
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 的定义特点是其单线程事件驱动并通过默认异步 API 实现的并发性。如果你已经在其他语言中编程过但并没有做过太多 JavaScript 编码，或者如果你是一位经验丰富的客户端
+    JavaScript 程序员，习惯为 Web 浏览器编写代码，那么使用 Node 将需要一些调整，就像任何新的编程语言或环境一样。本章首先解释了 Node
+    的编程模型，重点是并发性，Node 用于处理流数据的 API，以及 Node 用于处理二进制数据的缓冲区类型。这些初始部分之后是突出和演示一些最重要的 Node
+    API 的部分，包括用于处理文件、网络、进程和线程的 API。
+- en: One chapter is not enough to document all of Node’s APIs, but my hope is that
+    this chapter will explain enough of the fundamentals to make you productive with
+    Node, and confident that you can master any new APIs you need.
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一章不足以记录所有 Node 的 API，但我希望这一章能够解释足够的基础知识，让你能够在 Node 上提高效率，并确信你可以掌握任何你需要的新 API。
+- en: 16.1 Node Programming Basics
+  id: totrans-7
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.1 Node 编程基础
+- en: We’ll begin this chapter with a quick look at how Node programs are structured
+    and how they interact with the operating system.
+  id: totrans-8
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们将从快速了解 Node 程序的结构以及它们如何与操作系统交互开始这一章节。
+- en: 16.1.1 Console Output
+  id: totrans-9
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.1.1 控制台输出
+- en: 'If you are used to JavaScript programming for web browsers, one of the minor
+    surprises about Node is that `console.log()` is not just for debugging, but is
+    Node’s easiest way to display a message to the user, or, more generally, to send
+    output to the stdout stream. Here’s the classic “Hello World” program in Node:'
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你习惯于为 Web 浏览器编程的 JavaScript，那么关于 Node 的一个小惊喜是 `console.log()` 不仅用于调试，而且是 Node
+    显示消息给用户或者更一般地向 stdout 流发送输出的最简单方式。以下是 Node 中经典的“Hello World”程序：
+- en: '[PRE0]'
+  id: totrans-11
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: There are lower-level ways to write to stdout, but no fancier or more official
+    way than simply calling `console.log()`.
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有更低级别的方法可以写入 stdout，但没有比简单调用 `console.log()` 更花哨或更正式的方式。
+- en: In web browsers, `console.log()`, `console.warn()`, and `console.error()` typically
+    display little icons next to their output in the developer console to indicate
+    the variety of the log message. Node does not do this, but output displayed with
+    `console.error()` is distinguished from output displayed with `console.log()`
+    because `console.error()` writes to the stderr stream. If you’re using Node to
+    write a program that is designed to have stdout redirected to a file or a pipe,
+    you can use `console.error()` to display text to the console where the user will
+    see it, even though text printed with `console.log()` is hidden.
+  id: totrans-13
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 Web 浏览器中，`console.log()`、`console.warn()` 和 `console.error()` 通常在开发者控制台中的输出旁边显示小图标，以指示日志消息的种类。Node
+    不会这样做，但使用 `console.error()` 显示的输出与使用 `console.log()` 显示的输出有所区别，因为 `console.error()`
+    写入 stderr 流。如果你正在使用 Node 编写一个程序，该程序旨在将 stdout 重定向到文件或管道，你可以使用 `console.error()`
+    将文本显示到用户将看到的控制台，即使使用 `console.log()` 打印的文本是隐藏的。
+- en: 16.1.2 Command-Line Arguments and Environment Variables
+  id: totrans-14
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.1.2 命令行参数和环境变量
+- en: If you have previously written Unix-style programs designed to be invoked from
+    a terminal or other command-line interface, you know that these programs typically
+    get their input primarily from command-line arguments and secondarily from environment
+    variables.
+  id: totrans-15
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你之前编写过设计为从终端或其他命令行界面调用的类 Unix 风格程序，你会知道这些程序通常主要从命令行参数获取输入，其次从环境变量获取输入。
+- en: Node follows these Unix conventions. A Node program can read its command-line
+    arguments from the array of strings `process.argv`. The first element of this
+    array is always the path to the Node executable. The second argument is the path
+    to the file of JavaScript code that Node is executing. Any remaining elements
+    in this array are the space-separated arguments that you passed on the command-line
+    when you invoked Node.
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 遵循这些 Unix 约定。一个 Node 程序可以从字符串数组 `process.argv` 中读取其命令行参数。这个数组的第一个元素始终是
+    Node 可执行文件的路径。第二个参数是 Node 正在执行的 JavaScript 代码文件的路径。在这个数组中的任何剩余元素都是你在调用 Node 时通过命令行传递的以空格分隔的参数。
+- en: 'For example, suppose you save this very short Node program to the file *argv.js*:'
+  id: totrans-17
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 例如，假设你将这个非常简短的 Node 程序保存到名为 *argv.js* 的文件中：
+- en: '[PRE1]'
+  id: totrans-18
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: 'You can then execute the program and see output like this:'
+  id: totrans-19
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然后你可以执行该程序并看到如下输出：
+- en: '[PRE2]'
+  id: totrans-20
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: 'There are a couple of things to note here:'
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里有几点需要注意：
+- en: The first and second elements of `process.argv` will be fully qualified filesystem
+    paths to the Node executable and the file of JavaScript that is being executed,
+    even if you did not type them that way.
+  id: totrans-22
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`process.argv` 的第一个和第二个元素将是完全限定的文件系统路径，指向 Node 可执行文件和正在执行的 JavaScript 文件，即使你没有以这种方式输入它们。'
+- en: Command-line arguments that are intended for and interpreted by the Node executable
+    itself are consumed by the Node executable and do not appear in `process.argv`.
+    (The `--trace-uncaught` command-line argument isn’t actually doing anything useful
+    in the previous example; it is just there to demonstrate that it does not appear
+    in the output.) Any arguments (such as `--arg1` and `filename`) that appear after
+    the name of the JavaScript file will appear in `process.argv`.
+  id: totrans-23
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 用于Node可执行文件本身的命令行参数由Node可执行文件消耗，不会出现在`process.argv`中。（在上面的示例中，`--trace-uncaught`命令行参数实际上并没有做任何有用的事情；它只是用来演示它不会出现在输出中。）任何出现在JavaScript文件名之后的参数（如`--arg1`和`filename`）将出现在`process.argv`中。
+- en: Node programs can also take input from Unix-style environment variables. Node
+    makes these available though the `process.env` object. The property names of this
+    object are environment variable names, and the property values (always strings)
+    are the values of those variables.
+  id: totrans-24
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node程序也可以从类Unix环境变量中获取输入。Node通过`process.env`对象使这些变量可用。该对象的属性名称是环境变量名称，属性值（始终为字符串）是这些变量的值。
+- en: 'Here is a partial list of environment variables on my system:'
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这是我系统上环境变量的部分列表：
+- en: '[PRE3]'
+  id: totrans-26
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: You can use `node -h` or `node --help` to find out what the `-p` and `-e` command-line
+    arguments do. However, as a hint, note that you could rewrite the line above as
+    `node --eval 'process.env' --print`.
+  id: totrans-27
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你可以使用`node -h`或`node --help`来查找`-p`和`-e`命令行参数的作用。然而，作为提示，注意你可以将上面的行重写为`node
+    --eval 'process.env' --print`。
+- en: 16.1.3 Program Life Cycle
+  id: totrans-28
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.1.3 程序生命周期
+- en: The `node` command expects a command-line argument that specifies the file of
+    JavaScript code to be run. This initial file typically imports other modules of
+    JavaScript code, and may also define its own classes and functions. Fundamentally,
+    however, Node executes the JavaScript code in the specified file from top to bottom.
+    Some Node programs exit when they are done executing the last line of code in
+    the file. Often, however, a Node program will keep running long after the initial
+    file has been executed. As we’ll discuss in the following sections, Node programs
+    are often asynchronous and based on callbacks and event handlers. Node programs
+    do not exit until they are done running the initial file and until all callbacks
+    have been called and there are no more pending events. A Node-based server program
+    that listens for incoming network connections will theoretically run forever because
+    it will always be waiting for more events.
+  id: totrans-29
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`node`命令需要一个命令行参数来指定要运行的JavaScript代码文件。这个初始文件通常导入其他JavaScript代码模块，并可能定义自己的类和函数。然而，从根本上说，Node会按顺序执行指定文件中的JavaScript代码。一些Node程序在执行文件中的最后一行代码后完成执行时退出。然而，通常情况下，一个Node程序将在执行初始文件后继续运行。正如我们将在接下来的章节中讨论的那样，Node程序通常是异步的，基于回调和事件处理程序。Node程序直到运行完初始文件并且所有回调都被调用且没有更多待处理事件时才会退出。一个基于Node的服务器程序监听传入的网络连接，理论上会永远运行，因为它总是��等待更多事件。'
+- en: A program can force itself to exit by calling `process.exit()`. Users can usually
+    terminate a Node program by typing Ctrl-C in the terminal window where the program
+    is running. A program can ignore Ctrl-C by registering a signal handler function
+    with `process.on("SIGINT", ()=>{})`.
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个程序可以通过调用`process.exit()`来强制退出。用户通常可以通过在运行程序的终端窗口中键入Ctrl-C来终止Node程序。程序可以通过注册一个信号处理程序函数`process.on("SIGINT",
+    ()=>{})`来忽略Ctrl-C。
+- en: 'If code in your program throws an exception and no `catch` clause catches it,
+    the program will print a stack trace and exit. Because of Node’s asynchronous
+    nature, exceptions that occur in callbacks or event handlers must be handled locally
+    or not handled at all, which means that handling exceptions that occur in the
+    asynchronous parts of your program can be a difficult problem. If you don’t want
+    these exceptions to cause your program to completely crash, register a global
+    handler function that will be invoked instead of crashing:'
+  id: totrans-31
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果程序中的代码抛出异常而没有`catch`子句捕获它，程序将打印堆栈跟踪并退出。由于Node的异步特性，发生在回调或事件处理程序中的异常必须在本地处理或根本不处理，这意味着处理程序中异步部分发生的异常可能是一个困难的问题。如果你不希望这些异常导致程序完全崩溃，注册一个全局处理程序函数将被调用而不是崩溃：
+- en: '[PRE4]'
+  id: totrans-32
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: 'A similar situation arises if a Promise created by your program is rejected
+    and there is no `.catch()` invocation to handle it. As of Node 13, this is not
+    a fatal error that causes your program to exit, but it does print a verbose error
+    message to the console. In some future version of Node, unhandled Promise rejections
+    are expected to become fatal errors. If you do not want unhandled rejections,
+    to print error messages or terminate your program, register a global handler function:'
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你的程序创建的Promise被拒绝并且没有`.catch()`调用来处理它，会出现类似的情况。截至Node 13，这不是导致程序退出的致命错误，但会在控制台打印详细的错误消息。在未来的某个Node版本中，未处理的Promise拒绝预计将成为致命错误。如果你不希望未处理的拒绝打印错误消息或终止程序，注册一个全局处理程序函数：
+- en: '[PRE5]'
+  id: totrans-34
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: 16.1.4 Node Modules
+  id: totrans-35
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.1.4 Node 模块
+- en: '[Chapter 10](ch10.xhtml#modules) documented JavaScript module systems, covering
+    both Node modules and ES6 modules. Because Node was created before JavaScript
+    had a module system, Node had to create its own. Node’s module system uses the
+    `require()` function to import values into a module and the `exports` object or
+    the `module.exports` property to export values from a module. These are a fundamental
+    part of the Node programming model, and they are covered in detail in [§10.2](ch10.xhtml#nodemodules).'
+  id: totrans-36
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[第10章](ch10.xhtml#modules)记录了JavaScript模块系统，涵盖了Node模块和ES6模块。因为Node是在JavaScript拥有模块系统之前创建的，所以Node不得不创建自己的模块系统。Node的模块系统使用`require()`函数将值导入模块，使用`exports`对象或`module.exports`属性从模块导出值。这些是Node编程模型的基本部分，并在[§10.2](ch10.xhtml#nodemodules)中详细介绍。'
+- en: Node 13 adds support for standard ES6 modules as well as require-based modules
+    (which Node calls “CommonJS modules”). The two module systems are not fully compatible,
+    so this is somewhat tricky to do. Node needs to know—before it loads a module—whether
+    that module will be using `require()` and `module.exports` or if it will be using
+    `import` and `export`. When Node loads a file of JavaScript code as a CommonJS
+    module, it automatically defines the `require()` function along with identifiers
+    `exports` and `module`, and it does not enable the `import` and `export` keywords.
+    On the other hand, when Node loads a file of code as an ES6 module, it must enable
+    the `import` and `export` declarations, and it must *not* define extra identifiers
+    like `require`, `module`, and `exports`.
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 13添加了对标准ES6模块和基于require的模块（Node称之为“CommonJS模块”）的支持。这两种模块系统并不完全兼容，因此这有点棘手。Node需要在加载模块之前知道该模块是否将使用`require()`和`module.exports`，还是将使用`import`和`export`。当Node将JavaScript代码文件加载为CommonJS模块时，它会自动定义`require()`函数以及标识符`exports`和`module`，并且不会启用`import`和`export`关键字。另一方面，当Node将代码文件加载为ES6模块时，它必须启用`import`和`export`声明，并且不能定义额外的标识符如`require`、`module`和`exports`。
+- en: The simplest way to tell Node what kind of module it is loading is to encode
+    this information in the file extension. If you save your JavaScript code in a
+    file that ends with *.mjs*, then Node will always load it as an ES6 module, will
+    expect it to use `import` and `export`, and will not provide a `require()` function.
+    And if you save your code in a file that ends with *.cjs*, then Node will always
+    treat it as a CommonJS module, will provide a `require()` function, and will throw
+    a SyntaxError if you use `import` or `export` declarations.
+  id: totrans-38
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 告诉Node正在加载的模块的类型最简单的方法是将这些信息编码在文件扩展名中。如果您将JavaScript代码保存在以*.mjs*结尾的文件中，那么Node将始终将其作为ES6模块加载，期望它使用`import`和`export`，并且不会提供`require()`函数。如果您将代码保存在以*.cjs*结尾的文件中，那么Node将始终将其视为CommonJS模块，提供`require()`��数，并且如果您使用`import`或`export`声明，则会抛出SyntaxError。
+- en: 'For files that do not have an explicit *.mjs* or *.cjs* extension, Node looks
+    for a file named *package.json* in the same directory as the file and then in
+    each of the containing directories. Once the nearest *package.json* file is found,
+    Node checks for a top-level `type` property in the JSON object. If the value of
+    the `type` property is “module”, then Node loads the file as an ES6 module. If
+    the value of that property is “commonjs”, then Node loads the file as a CommonJS
+    module. Note that you do not need to have a *package.json* file to run Node programs:
+    when no such file is found (or when the file is found but it does not have a `type`
+    property), Node defaults to using CommonJS modules. This *package.json* trick
+    only becomes necessary if you want to use ES6 modules with Node and do not want
+    to use the *.mjs* file extension.'
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于没有明确*.mjs*或*.cjs*扩展名的文件，Node会在与文件相同的目录中查找名为*package.json*的文件，然后在每个包含目录中查找。一旦找到最近的*package.json*文件，Node会检查JSON对象中的顶级`type`属性。如果`type`属性的值是“module”，那么Node会将文件加载为ES6模块。如果该属性的值是“commonjs”，那么Node会将文件加载为CommonJS模块。请注意，您不需要有*package.json*文件来运行Node程序：当找不到这样的文件时（或者找到文件但它没有`type`属性时），Node会默认使用CommonJS模块。只有当您想要在Node中使用ES6模块而不想使用*.mjs*文件扩展名时，才需要使用这个*package.json*技巧。
+- en: 'Because there is an enormous amount of existing Node code written using CommonJS
+    module format, Node allows ES6 modules to load CommonJS modules using the `import`
+    keyword. The reverse is not true, however: a CommonJS module cannot use `require()`
+    to load an ES6 module.'
+  id: totrans-40
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于有大量使用CommonJS模块格式编写的现有Node代码，Node允许ES6模块使用`import`关键字加载CommonJS模块。然而，反之则不成立：CommonJS模块无法使用`require()`加载ES6模块。
+- en: 16.1.5 The Node Package Manager
+  id: totrans-41
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.1.5 Node包管理器
+- en: When you install Node, you typically get a program named npm as well. This is
+    the Node Package Manager, and it helps you download and manage libraries that
+    your program depends on. npm keeps track of those dependencies (as well as other
+    information about your program) in a file named *package.json* in the root directory
+    of your project. This *package.json* file created by npm is where you would add
+    `"type":"module"` if you wanted to use ES6 modules for your project.
+  id: totrans-42
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 安装Node时，通常也会得到一个名为npm的程序。这是Node包管理器，它帮助您下载和管理程序所依赖的库。npm会在项目的根目录中的名为*package.json*的文件中跟踪这些依赖项（以及关于您的程序的其他信息）。由npm创建的这个*package.json*文件是您想要为项目使用ES6模块时会添加`"type":"module"`的地方。
+- en: This chapter does not cover npm in any detail (but see [§17.4](ch17.xhtml#packagemanagers)
+    for a little more depth). I’m mentioning it here because unless you write programs
+    that do not use any external libraries, you will almost certainly be using npm
+    or a tool like it. Suppose, for example, that you are going to be developing a
+    web server and plan to use the Express framework ([*https://expressjs.com*](https://expressjs.com))
+    to simplify the task. To get started, you might create a directory for your project,
+    and then, in that directory type `npm init`. npm will ask you for your project
+    name, version number, etc., and will then create an initial *package.json* file
+    based on your responses.
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本章不会详细介绍npm（但请参见[§17.4](ch17.xhtml#packagemanagers)以获取更多深入信息）。我在这里提到它是因为除非您编写的程序不使用任何外部库，否则您几乎肯定会使用npm或类似工具。例如，假设您将要开发一个Web服务器，并计划使用Express框架（[*https://expressjs.com*](https://expressjs.com)）来简化任务。要开始，您可以为项目创建一个目录，然后在该目录中输入`npm
+    init`。npm会询问您项目名称、版本号等信息，然后根据您的回答创建一个初始的*package.json*文件。
+- en: 'Now to start using Express, you’d type `npm install express`. This tells npm
+    to download the Express library along with all of its dependencies and install
+    all the packages in a local *node_modules/* directory:'
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在要开始使用Express，您可以输入`npm install express`。这告诉npm下载Express库以及其所有依赖项，并将所有包安装在本地*node_modules/*目录中：
+- en: '[PRE6]'
+  id: totrans-45
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: When you install a package with npm, npm records this dependency—that your project
+    depends on Express—in the *package.json* file. With this dependency recorded in
+    *package.json*, you could give another programmer a copy of your code and your
+    *package.json*, and they could simply type `npm install` to automatically download
+    and install all of the libraries that your program needs in order to run.
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当你使用 npm 安装一个包时，npm 会记录这种依赖关系——即你的项目依赖于 Express——在 *package.json* 文件中。有了在 *package.json*
+    中记录的这种依赖关系，你可以将你的代码和 *package.json* 的副本交给另一个程序员，他们只需输入 `npm install` 就可以自动下载和安装程序运行所需的所有库。
+- en: 16.2 Node Is Asynchronous by Default
+  id: totrans-47
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.2 节点默认是异步的
+- en: JavaScript is a general-purpose programming language, so it is perfectly possible
+    to write CPU-intensive programs that multiply large matrices or perform complicated
+    statistical analyses. But Node was designed and optimized for programs—like network
+    servers—that are I/O intensive. And in particular, Node was designed to make it
+    possible to easily implement highly concurrent servers that can handle many requests
+    at the same time.
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 是一种通用编程语言，因此完全可以编写乘法大矩阵或执行复杂统计分析等 CPU 密集型程序。但 Node 是为 I/O 密集型的程序（如网络服务器）而设计和优化的。特别是，Node
+    的设计使得轻松实现高度并发的服务器成为可能，可以同时处理许多请求。
+- en: Unlike many programming languages, however, Node does not achieve concurrency
+    with threads. Multithreaded programming is notoriously hard to do correctly, and
+    difficult to debug. Also, threads are a relatively heavyweight abstraction and
+    if you want to write a server that can handle hundreds of concurrent requests,
+    using hundreds of threads may require a prohibitive amount of memory. So Node
+    adopts the single-threaded JavaScript programming model that the web uses, and
+    this turns out to be a vast simplification that makes the creation of network
+    servers a routine skill rather than an arcane one.
+  id: totrans-49
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，与许多编程语言不同，Node 不使用线程来实现并发。多线程编程通常很难正确完成，也很难调试。此外，线程是一个相对较重的抽象，如果你想编写一个能够处理数百个并发请求的服务器，使用数百个线程可能需要大量的内存。因此，Node
+    采用了 Web 使用的单线程 JavaScript 编程模型，这实际上是一种巨大的简化，使得创建网络服务器成为一种常规技能而不是一种神秘技能。
+- en: 'Node achieves high levels of concurrency while maintaining a single-threaded
+    programming model by making its API asynchronous and nonblocking by default. Node
+    takes its nonblocking approach very seriously and to an extreme that may surprise
+    you. You probably expect functions that read from and write to the network to
+    be asynchronous, but Node goes further and defines nonblocking asynchronous functions
+    for reading and writing files from the local filesystem. This makes sense, when
+    you think about it: the Node API was designed in the days when spinning hard drives
+    were still the norm and there really were milliseconds of blocking “seek time”
+    while waiting for the disc to spin around before a file operation could begin.
+    And in modern datacenters, the “local” filesystem may actually be across the network
+    somewhere with network latencies on top of drive latencies. But even if reading
+    a file asynchronously seems normal to you, Node takes it still further: the default
+    functions for initiating a network connection or looking up a file modification
+    time, for example, are also nonblocking.'
+  id: totrans-50
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 通过将其 API 默认设置为异步和非阻塞来保持高并发水平，同时保持单线程编程模型。Node 非常认真地采取了非阻塞的方法，甚至可能会让你感到惊讶。你可能期望从网络读取和写入的函数是异步的，但
+    Node 更进一步，为从本地文件系统读取和写入文件定义了非阻塞异步函数。这是有道理的，当你考虑到：Node API 是在旋转硬盘仍然是标准的时代设计的，而在进行文件操作之前确实有毫秒级的阻塞“寻道时间”，等待磁盘旋转以开始文件操作。在现代数据中心，所谓的“本地”文件系统实际上可能在网络的某个地方，上面还有网络延迟。但即使异步读取文件对你来说是正常的，Node
+    仍然更进一步：例如，用于启动网络连接或查找文件修改时间的默认函数也是非阻塞的。
+- en: 'Some functions in Node’s API are synchronous but nonblocking: they run to completion
+    and return without ever needing to block. But most of the interesting functions
+    perform some kind of input or output, and these are asynchronous functions so
+    they can avoid even the tiniest amount of blocking. Node was created before JavaScript
+    had a Promise class, so asynchronous Node APIs are callback-based. (If you have
+    not yet read or have already forgotten [Chapter 13](ch13.xhtml#async), this would
+    be a good time to skip back to that chapter.) Generally, the last argument you
+    pass to an asynchronous Node function is a callback. Node uses *error-first callbacks*,
+    which are typically invoked with two arguments. The first argument to an error-first
+    callback is normally `null` in the case where no error occurred, and the second
+    argument is whatever data or response was produced by the original asynchronous
+    function you called. The reason for putting the error argument first is to make
+    it impossible for you to omit it, and you should always check for a non-null value
+    in this argument. If it is an Error object, or even an integer error code or string
+    error message, then something went wrong. In this case, the second argument to
+    your callback function is likely to be `null`.'
+  id: totrans-51
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 的 API 中有一些同步但非阻塞的函数：它们运行完成并返回而无需阻塞。但大多数有趣的函数执行某种输入或输出，这些是异步函数，因此它们可以避免甚至最微小的阻塞。Node
+    是在 JavaScript 拥有 Promise 类之前创建的，因此异步 Node API 是基于回调的。（如果你还没有阅读或已经忘记[第 13 章](ch13.xhtml#async)，现在是回到那一章的好时机。）通常，你传递给异步
+    Node 函数的最后一个参数是一个回调函数。Node 使用 *错误优先回调*，通常用两个参数调用。错误优先回调的第一个参数通常在没有错误发生的情况下为 `null`，第二个参数是由你调用的原始异步函数产生的数据或响应。将错误参数放在第一位的原因是为了让你无法忽略它，你应该始终检查这个参数中是否有非空值。如果它是一个错误对象，甚至是一个整数错误代码或字符串错误消息，那么出现了问题。在这种情况下，你回调函数的第二个参数可能是
+    `null`。
+- en: 'The following code demonstrates how to use the nonblocking `readFile()` function
+    to read a configuration file, parse it as JSON, and then pass the parsed configuration
+    object to another callback:'
+  id: totrans-52
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 以下代码演示了如何使用非阻塞的`readFile()`函数读取配置文件，将其解析为 JSON，然后将解析后的配置对象传递给另一个回调函数：
+- en: '[PRE7]'
+  id: totrans-53
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: 'Node predates standardized promises, but because it is fairly consistent about
+    its error-first callbacks, it is easy to create Promise-based variants of its
+    callback-based APIs using the `util.promisify()` wrapper. Here’s how we could
+    rewrite the `readConfigFile()` function to return a Promise:'
+  id: totrans-54
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 早于标准化的 promises，但由于它在错误优先回调方面相当一致，使用`util.promisify()`包装器可以轻松创建基于 Promise
+    的变体。这是我们如何重写`readConfigFile()`函数以返回一个 Promise：
+- en: '[PRE8]'
+  id: totrans-55
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: 'We can also simpify the preceding Promise-based function using `async` and
+    `await` (again, if you have not yet read through [Chapter 13](ch13.xhtml#async),
+    this would be a good time to do so):'
+  id: totrans-56
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们还可以使用`async`和`await`简化前面基于 Promise 的函数（再次，如果您尚未阅读[第13章](ch13.xhtml#async)，现在是一个好时机）：
+- en: '[PRE9]'
+  id: totrans-57
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: The `util.promisify()` wrapper can produce a Promise-based version of many Node
+    functions. In Node 10 and later, the `fs.promises` object has a number of predefined
+    Promise-based functions for working with the filesystem. We’ll discuss them later
+    in this chapter, but note that in the preceding code, we could replace `pfs.readFile()`
+    with `fs.promises.readFile()`.
+  id: totrans-58
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`util.promisify()`包装器可以生成许多 Node 函数的基于 Promise 的版本。在 Node 10及更高版本中，`fs.promises`对象有许多预定义的基于
+    Promise 的函数，用于处理文件系统。我们将在本章后面讨论它们，但请注意，在前面的代码中，我们可以用`fs.promises.readFile()`替换`pfs.readFile()`。'
+- en: We had said that Node’s programming model is async-by-default. But for programmer
+    convenience, Node does define blocking, synchronous variants of many of its functions,
+    especially in the filesystem module. These functions typically have names that
+    are clearly labeled with `Sync` at the end.
+  id: totrans-59
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们曾经说过，Node 的编程模型是默认异步的。但为了程序员的方便，Node 确实定义了许多阻塞的同步变体函数，特别是在文件系统模块中。这些函数通常以`Sync`结尾的名称清晰标记。
+- en: 'When a server is first starting up and is reading its configuration files,
+    it is not handling network requests yet, and little or no concurrency is actually
+    possible. So in this situation, there is really no need to avoid blocking, and
+    we can safely use blocking functions like `fs.readFileSync()`. We can drop the
+    `async` and `await` from this code and write a purely synchronous version of our
+    `readConfigFile()` function. Instead of invoking a callback or returning a Promise,
+    this function simply returns the parsed JSON value or throws an exception:'
+  id: totrans-60
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当服务器首次启动并读取其配置文件时，它尚未处理网络请求，实际上几乎不可能发生并发。因此，在这种情况下，没有必要避免阻塞，我们可以安全地使用像`fs.readFileSync()`这样的阻塞函数。我们可以从这段代码中删除`async`和`await`，并编写我们的`readConfigFile()`函数的纯同步版本。这个函数不是调用回调或返回
+    Promise，而是简单地返回解析后的 JSON 值或抛出异常：
+- en: '[PRE10]'
+  id: totrans-61
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: In addition to its error-first two-argument callbacks, Node also has a number
+    of APIs that use event-based asynchrony, typically for handling streaming data.
+    We’ll cover Node events in more detail later.
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了其错误优先的两参数回调之外，Node 还有许多使用基于事件的异步性的 API，通常用于处理流数据。我们稍后会更详细地介绍 Node 事件。
+- en: Now that we’ve discussed Node’s aggressively nonblocking API, let’s turn back
+    to the topic of concurrency. Node’s built-in nonblocking functions work using
+    the operating system’s version of callbacks and event handlers. When you call
+    one of these functions, Node takes action to get the operation started, then registers
+    some kind of event handler with the operating system so that it will be notified
+    when the operation is complete. The callback you passed to the Node function gets
+    stored internally so that Node can invoke your callback when the operating system
+    sends the appropriate event to Node.
+  id: totrans-63
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在我们已经讨论了 Node 的积极非阻塞 API，让我们回到并发的话题。Node 的内置非阻塞函数使用操作系统版本的回调和事件处理程序。���您调用这些函数之一时，Node
+    会采取行动启动操作，然后向操作系统注册某种事件处理程序，以便在操作完成时通知它。您传递给 Node 函数的回调被内部存储，以便 Node 在操作系统向其发送适当事件时调用您的回调。
+- en: This kind of concurrency is often called event-based concurrency. At its core,
+    Node has a single thread that runs an “event loop.” When a Node program starts,
+    it runs whatever code you’ve told it to run. This code presumably calls at least
+    one nonblocking function causing a callback or event handler to be registered
+    with the operating system. (If not, then you’ve written a synchronous Node program,
+    and Node simply exits when it reaches the end.) When Node reaches the end of your
+    program, it blocks until an event happens, at which time the OS starts it running
+    again. Node maps the OS event to the JavaScript callback you registered and then
+    invokes that function. Your callback function may invoke more nonblocking Node
+    functions, causing more OS event handlers to be registered. Once your callback
+    function is done running, Node goes back to sleep again and the cycle repeats.
+  id: totrans-64
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这种并发通常称为基于事件的并发。在其核心，Node 有一个运行“事件循环”的单个线程。当一个 Node 程序启动时，它运行您告诉它运行的任何代码。这段代码可能调用至少一个非阻塞函数，导致注册回调或事件处理程序与操作系统。
+    (如果没有，那么您编写了一个同步的 Node 程序，当它到达末尾时，Node 简单地退出。) 当 Node 到达程序末尾时，它会阻塞，直到发生事件，此时操作系统再次启动它。Node将操作系统事件映射到您注册的
+    JavaScript 回调，然后调用该函数。您的回调函数可能调用更多的非阻塞 Node 函数，导致注册更多的操作系统事件处理程序。一旦您的回调函数运行完毕，Node
+    再次进入休眠状态，循环重复。
+- en: For web servers and other I/O-intensive applications that spend most of their
+    time waiting for input and output, this style of event-based concurrency is efficient
+    and effective. A web server can concurrently handle requests from 50 different
+    clients without needing 50 different threads as long as it uses nonblocking APIs
+    and there is some kind of internal mapping from network sockets to JavaScript
+    functions to invoke when activity occurs on those sockets.
+  id: totrans-65
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对于 Web 服务器和其他大部分时间都在等待输入和输出的 I/O 密集型应用程序来说，这种基于事件的并发方式是高效且有效的。只要使用非阻塞 API 并且存在一种从网络套接字到
+    JavaScript 函数的内部映射，Web 服务器就可以同时处理来自 50 个不同客户端的请求，而无需使用 50 个不同的线程。
+- en: 16.3 Buffers
+  id: totrans-66
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.3 缓冲区
+- en: One of the datatypes you’re likely to use frequently in Node—especially when
+    reading data from files or from the network—is the Buffer class. A Buffer is a
+    lot like a string, except that it is a sequence of bytes instead of a sequence
+    of characters. Node was created before core JavaScript supported typed arrays
+    (see [§11.2](ch11.xhtml#typedarrays)) and there was no Uint8Array to represent
+    an array of unsigned bytes. Node defined the Buffer class to fill that need. Now
+    that Uint8Array is part of the JavaScript language, Node’s Buffer class is a subclass
+    of Uint8Array.
+  id: totrans-67
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 Node 中你经常会使用的一种数据类型是 Buffer 类。一个 Buffer 很像一个字符串，只不过它是一系列字节而不是一系列字符。在核心 JavaScript
+    支持类型化数组之前（参见 [§11.2](ch11.xhtml#typedarrays)），也没有 Uint8Array 来表示无符号字节的数组。Node
+    定义了 Buffer 类来填补这个需求。现在 Uint8Array 是 JavaScript 语言的一部分，Node 的 Buffer 类是 Uint8Array
+    的子类。
+- en: 'What distinguishes Buffer from its Uint8Array superclass is that it is designed
+    to interoperate with JavaScript strings: the bytes in a buffer can be initialized
+    from character strings or converted to character strings. A character encoding
+    maps each character in some set of characters to an integer. Given a string of
+    text and a character encoding, we can *encode* the characters in the string into
+    a sequence of bytes. And given a (properly encoded) sequence of bytes and a character
+    encoding, we can *decode* those bytes into a sequence of characters. Node’s Buffer
+    class has methods that perform both encoding and decoding, and you can recognize
+    these methods because they expect an `encoding` argument that specifies the encoding
+    to be used.'
+  id: totrans-68
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Buffer 与其 Uint8Array 超类的区别在于它设计用于与 JavaScript 字符串互操作：缓冲区中的字节可以从字符字符串初始化或转换为字符字符串。字符编码将某个字符集中的每个字符映射到一个整数。给定一个文本字符串和一个字符编码，我们可以将字符串中的字符
+    *编码* 为一系列字节。给定一个（正确编码的）字节序列和一个字符编码，我们可以将这些字节 *解码* 为一系列字符。Node 的 Buffer 类有执行编码和解码的方法，你可以通过这些方法来识别，因为它们期望一个
+    `encoding` 参数来指定要使用的编码。
+- en: 'Encodings in Node are specified by name, as strings. The supported encodings
+    are:'
+  id: totrans-69
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 Node 中，编码是以字符串形式指定的。支持的编码有：
+- en: '`"utf8"`'
+  id: totrans-70
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`"utf8"`'
+- en: This is the default when no encoding is specified, and is the Unicode encoding
+    you are most likely to use.
+  id: totrans-71
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这是在没有指定编码时的默认编码，也是你最有可能使用的 Unicode 编码。
+- en: '`"utf16le"`'
+  id: totrans-72
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`"utf16le"`'
+- en: Two-byte Unicode characters, with little-endian ordering. Codepoints above `\uffff`
+    are encoded as a pair of two-byte sequences. Encoding `"ucs2"` is an alias.
+  id: totrans-73
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 两字节的 Unicode 字符，采用小端序排序。编码为 `\uffff` 以上的码点会被编码为一对两字节序列。编码 `"ucs2"` 是一个别名。
+- en: '`"latin1"`'
+  id: totrans-74
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`"latin1"`'
+- en: The one-byte-per-character ISO-8859-1 encoding that defines a character set
+    suitable for many Western European languages. Because there is a one-to-one mapping
+    between bytes and latin-1 characters, this encoding is also known as `"binary"`.
+  id: totrans-75
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 每个字符一个字节的 ISO-8859-1 编码，定义了适用于许多西欧语言的字符集。因为字节和 latin-1 字符之间有一对一的映射，所以这种编码也被称为
+    `"binary"`。
+- en: '`"ascii"`'
+  id: totrans-76
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`"ascii"`'
+- en: The 7-bit English-only ASCII encoding, a strict subset of the `"utf8"` encoding.
+  id: totrans-77
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 仅包含 7 位英文 ASCII 编码，是 `"utf8"` 编码的严格子集。
+- en: '`"hex"`'
+  id: totrans-78
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`"hex"`'
+- en: This encoding converts each byte to a pair of ASCII hexadecimal digits.
+  id: totrans-79
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这种编码将每个字节转换为一对 ASCII 十六进制数字。
+- en: '`"base64"`'
+  id: totrans-80
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`"base64"`'
+- en: This encoding converts each sequence of three bytes into a sequence of four
+    ascii characters.
+  id: totrans-81
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这种编码将每个三字节序列转换为四个 ASCII 字符。
+- en: 'Here is some example code that demonstrates how to work with Buffers and how
+    to convert to and from strings:'
+  id: totrans-82
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里有一些示例代码，演示如何使用 Buffer 以及如何进行字符串和 Buffer 之间的转换：
+- en: '[PRE11]'
+  id: totrans-83
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: If you write a Node program that actually manipulates binary data, you may find
+    yourself using the Buffer class extensively. On the other hand, if you are just
+    working with text that is read from or written to a file or the network, then
+    you may only encounter Buffer as an intermediate representation of your data.
+    A number of Node APIs can take input or return output as either strings or Buffer
+    objects. Typically, if you pass a string, or expect a string to be returned, from
+    one of these APIs, you’ll need to specify the name of the text encoding you want
+    to use. And if you do this, then you may not need to use a Buffer object at all.
+  id: totrans-84
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你编写一个实际操作二进制数据的 Node 程序，你可能会大量使用 Buffer 类。另一方面，如果你只是处理从文件或网络读取或写入的文本，那么你可能只会遇到
+    Buffer 作为数据的中间表示。许多 Node API 可以将输入或返回输出作为字符串或 Buffer 对象。通常，如果你从这些 API 中传递一个字符串，或者期望返回一个字符串，你需要指定要使用的文本编码的名称。如果你这样做了，那么你可能根本不需要使用
+    Buffer 对象。
+- en: 16.4 Events and EventEmitter
+  id: totrans-85
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.4 事件和 EventEmitter
+- en: 'As described, all of Node’s APIs are asynchronous by default. For many of them,
+    this asynchrony takes the form of two-argument error-first callbacks that are
+    invoked when the requested operation is complete. But some of the more complicated
+    APIs are event-based instead. This is typically the case when the API is designed
+    around an object rather than a function, or when a callback function needs to
+    be invoked multiple times, or when there are multiple types of callback functions
+    that may be required. Consider the `net.Server` class, for example: an object
+    of this type is a server socket that is used to accept incoming connections from
+    clients. It emits a “listening” event when it first starts listening for connections,
+    a “connection” event every time a client connects, and a “close” event when it
+    has been closed and is no longer listening.'
+  id: totrans-86
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如描述的那样，Node 的所有 API 默认都是异步的。对于其中的许多 API，这种异步性采用的形式是两个参数的错误优先回调，当请求的操作完成时调用。但是一些更复杂的
+    API 是基于事件的。当 API 设计围绕对象而不是函数时，或者当需要多次调用回调函数时，或者当可能需要多种类型的回调函数时，通常会出现这种情况。例如，考虑
+    `net.Server` 类：这种类型的对象是一个服务器套接字，用于接受来自客户端的传入连接。当它首次开始监听连接时，会发出“listening”事件，每当客户端连接时会发出“connection”事件，当关闭并不再监听时会发出“close”事件。
+- en: 'In Node, objects that emit events are instances of EventEmitter or a subclass
+    of EventEmitter:'
+  id: totrans-87
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 Node 中，发出事件的对象是 EventEmitter 的实例或 EventEmitter 的子类：
+- en: '[PRE12]'
+  id: totrans-88
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: 'The main feature of EventEmitters is that they allow you to register event
+    handler functions with the `on()` method. EventEmitters can emit multiple types
+    of events, and event types are identified by name. To register an event handler,
+    call the `on()` method, passing the name of the event type and the function that
+    should be invoked when an event of that type occurs. EventEmitters can invoke
+    handler functions with any number of arguments, and you need to read the documentation
+    for a specific kind of event from a specific EventEmitter to know what arguments
+    you should expect to be passed:'
+  id: totrans-89
+  prefs: []
+  type: TYPE_NORMAL
+  zh: EventEmitters 的主要特点是它们允许您使用 `on()` 方法注册事件处理程序函数。EventEmitters 可以发出多种类型的事件，事件类型通过名称标识。要注册事件处理程��，请调用
+    `on()` 方法，传递事件类型的名称以及当事件发生时应该调用的函数。EventEmitters 可以使用任意数量的参数调用处理程序函数，您需要阅读特定 EventEmitter
+    的特定类型事件的文档，以了解您应该期望传递的参数：
+- en: '[PRE13]'
+  id: totrans-90
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: If you prefer more explicit method names for registering event listeners, you
+    can also use `addListener()`. And you can remove a previously registered event
+    listener with `off()` or `removeListener()`. As a special case, you can register
+    an event listener that will be automatically removed after it is triggered for
+    the first time by calling `once()` instead of `on()`.
+  id: totrans-91
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您更喜欢使用更明确的方法名称来注册事件侦听器，也可以使用 `addListener()`。您可以使用 `off()` 或 `removeListener()`
+    来删除先前注册的事件侦听器。作为特例，您可以通过调用 `once()` 而不是 `on()` 来注册一个在第一次触发后将自动删除的事件侦听器。
+- en: 'When an event of a particular type occurs for a particular EventEmitter object,
+    Node invokes all of the handler functions that are currently registered on that
+    EventEmitter for events of that type. They are invoked in order from the first
+    registered to the last registered. If there is more than one handler function,
+    they are invoked sequentially on a single thread: there is no parallelism in Node,
+    remember. And, importantly, event handling functions are invoked synchronously,
+    not asynchronously. What this means is that the `emit()` method does not queue
+    up event handlers to be invoked at some later time. `emit()` invokes all the registered
+    handlers, one after the other, and does not return until the last event handler
+    has returned.'
+  id: totrans-92
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当特定类型的事件发生在特定的 EventEmitter 对象上时，Node 会调用该 EventEmitter 上当前注册的所有处理程序函数来处理该类型的事件。它们按照从第一个注册到最后注册的顺序依次调用。如果有多个处理程序函数，它们将在单个线程上依次调用：请记住，Node
+    中没有并行处理。重要的是，事件处理函数是同步调用的，而不是异步调用的。这意味着 `emit()` 方法不会将事件处理程序排队以在以后的某个时间调用。`emit()`
+    会依次调用所有已注册的处理程序，并且在最后一个事件处理程序返回之前不会返回。
+- en: What this means, in effect, is that when one of the built-in Node APIs emits
+    an event, that API is basically blocking on your event handlers. If you write
+    an event handler that calls a blocking function like `fs.readFileSync()`, no further
+    event handling will happen until your synchronous file read is complete. If your
+    program is one—like a network server—that needs to be responsive, then it is important
+    that you keep your event handler functions nonblocking and fast. If you need to
+    do a lot of computation when an event occurs, it is often best to use the handler
+    to schedule that computation asynchronously using `setTimeout()` (see [§11.10](ch11.xhtml#timerapi)).
+    Node also defines `setImmediate()`, which schedules a function to be invoked immediately
+    after all pending callbacks and events have been handled.
+  id: totrans-93
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 实际上，这意味着当内置的 Node API 发出事件时，该 API 基本上会阻塞在您的事件处理程序上。如果编写一个调用像 `fs.readFileSync()`
+    这样的阻塞函数的事件处理程序，直到同步文件读取完成，将不会发生进一步的事件处理。如果您的程序是一个需要响应的网络服务器之类的程序，那么重要的是保持事件处理程序函数非阻塞和快速。如果需要在事件发生时进行大量计算，通常最好使用处理程序使用
+    `setTimeout()` 异步调度该计算（参见 [§11.10](ch11.xhtml#timerapi)）。Node 还定义了 `setImmediate()`，它会在处理完所有挂起的回调和事件后立即调度一个函数。
+- en: The EventEmitter class also defines an `emit()` method that causes the registered
+    event handler functions to be invoked. This is useful if you are defining your
+    own event-based API, but is not commonly used when you’re just programming with
+    existing APIs. `emit()` must be invoked with the name of the event type as its
+    first argument. Any additional arguments that are passed to `emit()` become arguments
+    to the registered event handler functions. The handler functions are also invoked
+    with the `this` value set to the EventEmitter object itself, which is often convenient.
+    (Remember, though, that arrow functions always use the `this` value of the context
+    in which they are defined, and they cannot be invoked with any other `this` value.
+    Nevertheless, arrow functions are often the most convenient way to write event
+    handlers.)
+  id: totrans-94
+  prefs: []
+  type: TYPE_NORMAL
+  zh: EventEmitter类还定义了一个`emit()`方法，导致注册的事件处理程序函数被调用。如果您正在定义自己的基于事件的API，这很有用，但在使用现有API进行编程时通常不常用。`emit()`必须以事件类型的名称作为第一个参数调用。传递给`emit()`的任何其他参数都成为注册的事件处理程序函数的参数。处理程序函数还使用设置为EventEmitter对象本身的`this`值调用，这通常很方便。（请记住，箭头函数总是使用定义它们的上下文的`this`值，并且不能使用任何其他`this`值调用。尽管如此，箭头函数通常是编写事件处理程序的最方便方式。）
+- en: Any value returned by an event handler function is ignored. If an event handler
+    function throws an exception, however, it propagates out from the `emit()` call
+    and prevents the execution of any handler functions that were registered after
+    the one that threw the exception.
+  id: totrans-95
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 事件处理程序函数返回的任何值都会被忽略。但是，如果事件处理程序函数抛出异常，则它会从`emit()`调用中传播出去，并阻止执行任何在抛出异常之后注册的处理程序函数。
+- en: Recall that Node’s callback-based APIs use error-first callbacks, and it is
+    important that you always check the first callback argument to see if an error
+    occurred. With event-based APIs, the equivalent is “error” events. Since event-based
+    APIs are often used for networking and other forms of streaming I/O, they are
+    vulnerable to unpredictable asynchronous errors, and most EventEmitters define
+    an “error” event that they emit when an error occurs. Whenever you use an event-based
+    API, you should make it a habit to register a handler for “error” events. “Error”
+    events get special treatment by the EventEmitter class. If `emit()` is called
+    to emit an “error” event, and if there are no handlers registered for that event
+    type, then an exception will be thrown. Since this occurs asynchronously, there
+    is no way for you to handle the exception in a `catch` block, so this kind of
+    error typically causes your program to exit.
+  id: totrans-96
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请记住，Node的基于回调的API使用错误优先回调，重要的是您始终检查第一个回调参数以查看是否发生错误。对于基于事件的API，等效的是“error”事件。由于基于事件的API通常用于网络和其他形式的流式I/O，它们容易受到不可预测的异步错误的影响，大多数EventEmitters在发生错误时定义了一个“error”事件。每当使用基于事件的API时，您应该养成注册“error”事件处理程序的习惯。“error”事件在EventEmitter类中得到特殊处理。如果调用`emit()`来发出“error”事件，并且没有为该事件类型注册处理程序，则将抛出异常。由于这是异步发生的，因此您无法在`catch`块中处理异常，因此这种错误通常会导致程序退出。
+- en: 16.5 Streams
+  id: totrans-97
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.5 流
+- en: When implementing an algorithm to process data, it is almost always easiest
+    to read all the data into memory, do the processing, and then write the data out.
+    For example, you could write a Node function to copy a file like this.^([1](ch16.xhtml#idm46198489626936))
+  id: totrans-98
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在实现处理数据的算法时，几乎总是最容易将所有数据读入内存，进行处理，然后将数据写出。例如，您可以编写一个Node函数来复制文件，就像这样。^([1](ch16.xhtml#idm46198489626936))
+- en: '[PRE14]'
+  id: totrans-99
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: This `copyFile()` function uses asynchronous functions and callbacks, so it
+    does not block and is suitable for use in concurrent programs like servers. But
+    notice that it must allocate enough memory to hold the entire contents of the
+    file in memory at once. This may be fine in some use cases, but it starts to fail
+    if the files to be copied are very large, or if your program is highly concurrent
+    and there may be many files being copied at the same time. Another shortcoming
+    of this `copyFile()` implementation is that it cannot start writing the new file
+    until it has finished reading the old file.
+  id: totrans-100
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这个`copyFile()`函数使用异步函数和回调函数，因此不会阻塞，并适用于像服务器这样的并发程序。但请注意，它必须分配足够的内存来一次性容纳整个文件的内容。在某些情况下这可能没问题，但如果要复制的文件非常大，或者您的程序高度并发且可能同时复制许多文件时，它就会开始出现问题。这个`copyFile()`实现的另一个缺点是它在完成读取旧文件之前无法开始写入新文件。
+- en: The solution to these problems is to use streaming algorithms where data “flows”
+    into your program, is processed, and then flows out of your program. The idea
+    is that your algorithm processes the data in small chunks and the full dataset
+    is never held in memory at once. When streaming solutions are possible, they are
+    more memory efficient and can also be faster. Node’s networking APIs are stream-based
+    and Node’s filesystem module defines streaming APIs for reading and writing files,
+    so you are likely to use a streaming API in many of the Node programs that you
+    write. We’ll see a streaming version of the `copyFile()` function in [“Flowing
+    mode”](#flowing_mode).
+  id: totrans-101
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 解决这些问题的方法是使用流算法，其中数据“流”进入您的程序，被处理，然后流出您的程序。思路是您的算法以小块处理数据，完整数据集不会一次性保存在内存中。当流式解决方案可行时，它们更节省内存，并且也可能更快。Node的网络API是基于流的，Node的文件系统模块为读取和写入文件定义了流API，因此您可能会在编写的许多Node程序中使用流API。我们将在[“流动模式”](#flowing_mode)中看到`copyFile()`函数的流式版本。
+- en: 'Node supports four basic stream types:'
+  id: totrans-102
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node支持四种基本的流类型：
+- en: Readable
+  id: totrans-103
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可读
+- en: Readable streams are sources of data. The stream returned by `fs.createReadStream()`,
+    for example, is a stream from which the content of a specified file can be read.
+    `process.stdin` is another Readable stream that returns data from standard input.
+  id: totrans-104
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可读流是数据的来源。例如，由`fs.createReadStream()`返回的流是可以读取指定文件内容的流。`process.stdin`是另一个可读流，返回标准输入的数据。
+- en: Writable
+  id: totrans-105
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可写
+- en: 'Writable streams are sinks or destinations for data. The return value of `fs.createWriteStream()`,
+    for example, is a Writable stream: it allows data to be written to it in chunks,
+    and outputs all of that data to a specified file.'
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可写流是数据的接收端或目的地。例如，`fs.createWriteStream()` 的返回值是一个可写流：它允许以块的形式向其写入数据，并将所有数据输出到指定的文件。
+- en: Duplex
+  id: totrans-107
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 双工
+- en: Duplex streams combine a Readable stream and a Writable stream into one object.
+    The Socket objects returned by `net.connect()` and other Node networking APIs,
+    for example, are Duplex streams. If you write to a socket, your data is sent across
+    the network to whatever computer the socket is connected to. And if you read from
+    a socket, you access the data written by that other computer.
+  id: totrans-108
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 双工流将可读流和可写流合并为一个对象。例如，`net.connect()` 返回的 Socket 对象和其他 Node 网络 API 返回的对象都是双工流。如果向套接字写入数据，则数据将通过网络发送到套接字连接的计算机。如果从套接字读取数据，则可以访问另一台计算机写入的数据。
+- en: Transform
+  id: totrans-109
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 转换
+- en: 'Transform streams are also readable and writable, but they differ from Duplex
+    streams in an important way: data written to a Transform stream becomes readable—usually
+    in some transformed form—from the same stream. The `zlib.createGzip()` function,
+    for example, returns a Transform stream that compresses (with the *gzip* algorithm)
+    the data written to it. In a similar way, the `crypto.createCipheriv()` function
+    returns a Transform stream that encrypts or decrypts data that is written to it.'
+  id: totrans-110
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 转换流也是可读和可写的，但与双工流有一个重要的区别：写入转换流的数据变得可读，通常以某种转换形式从同一流中读取。例如，`zlib.createGzip()`
+    函数返回一个转换流，用于压缩（使用 *gzip* 算法）写入其中的数据。类似地，`crypto.createCipheriv()` 函数返回一个转换流，用于加密或解密写入其中的数据。
+- en: By default, streams read and write buffers. If you call the `setEncoding()`
+    method of a Readable stream, it will return decoded strings to you instead of
+    Buffer objects. And if you write a string to a Writable buffer, it will be automatically
+    encoded using the buffer’s default encoding or whatever encoding you specify.
+    Node’s stream API also supports an “object mode” where streams read and write
+    objects more complex than buffers and strings. None of Node’s core APIs use this
+    object mode, but you may encounter it in other libraries.
+  id: totrans-111
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 默认情况下，流读取和写入缓冲区。如果调用可读流的 `setEncoding()` 方法，它将返回解码后的字符串，而不是 Buffer 对象。如果向可写缓冲区写入字符串，它将自动使用缓冲区的默认编码或您指定的任何编码进行编码。Node
+    的流 API 还支持“对象模式”，其中流读取和写入比缓冲区和字符串更复杂的对象。Node 的核心 API 都不使用此对象模式，但您可能会在其他库中遇到它。
+- en: 'Readable streams have to read their data from somewhere, and Writable streams
+    have to write their data to somewhere, so every stream has two ends: an input
+    and an output or a source and a destination. The tricky thing about stream-based
+    APIs is that the two ends of the stream will almost always flow at different speeds.
+    Perhaps the code that reads from a stream wants to read and process data more
+    quickly than the data is actually being written into the stream. Or the reverse:
+    perhaps data is written to a stream more quickly than it can be read and pulled
+    out of the stream on the other end. Stream implementations almost always include
+    an internal buffer to hold data that has been written but not yet read. Buffering
+    helps to ensure that there is data available to read when it’s requested, and
+    that there is space to hold data when it is written. But neither of these things
+    can ever be guaranteed, and it is the nature of stream-based programming that
+    readers will sometimes have to wait for data to be written (because the stream
+    buffer is empty), and writers will sometimes have to wait for data to be read
+    (because the stream buffer is full).'
+  id: totrans-112
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可读流必须从某处读取数据，可写流必须将数据写入某处，因此每个流都有两个端点：一个输入和一个输出，或者一个源和一个目的地。基于流的 API 的棘手之处在于流的两端几乎总是以不同的速度流动。也许从流中读取数据的代码想要比实际写入流中的数据更快地读取和处理数据。或者反过来：也许数据被写入流中的速度比从流的另一端读取和提取数据的速度更快。流实现几乎总是包含一个内部缓冲区，用于保存已写入但尚未读取的数据。缓冲有助于确保在请求时有可读取的数据，并且在写入数据时有空间可用于保存数据。但是这两件事情都无法保证，基于流的编程的本质是读取者有时必须等待数据被写入（因为流缓冲区为空），写入者有时必须等待数据被读取（因为流缓冲区已满）。
+- en: 'In programming environments that use thread-based concurrency, stream APIs
+    typically have blocking calls: a call to read data does not return until data
+    arrives in the stream and a call to write data blocks until there is enough room
+    in the stream’s internal buffer to accommodate the new data. With an event-based
+    concurrency model, however, blocking calls do not make sense, and Node’s stream
+    APIs are event- and callback-based. Unlike other Node APIs, there are not “Sync”
+    versions of the methods that will be described later in this chapter.'
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在使用基于线程的并发性编程环境中，流式 API 通常具有阻塞调用：读取数据的调用在数据到达流之前不会返回，写入数据的调用会阻塞，直到流的内部缓冲区有足够的空间来容纳新数据。然而，在基于事件的并发模型中，阻塞调用是没有意义的，Node
+    的流式 API 是基于事件和回调的。与其他 Node API 不同，本章后面将描述的方法没有“Sync”版本。
+- en: 'The need to coordinate stream readability (buffer not empty) and writability
+    (buffer not full) via events makes Node’s stream APIs somewhat complicated. This
+    is compounded by the fact that these APIs have evolved and changed over the years:
+    for Readable streams, there are two completely distinct APIs that you can use.
+    Despite the complexity, it is worth understanding and mastering Node’s streaming
+    APIs because they enable high-throughput I/O in your programs.'
+  id: totrans-114
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通过事件协调流的可读性（缓冲区不为空）和可写性（缓冲区不满）的需求使得 Node 的流式 API 稍显复杂。这一复杂性加剧了这些 API 多年来的演变和变化：对于可读流，有两种完全不同的
+    API 可供使用。尽管复杂，但值得理解和掌握 Node 的流式 API，因为它们能够在程序中实现高吞吐量的 I/O。
+- en: The subsections that follow demonstrate how to read and write from Node’s stream
+    classes.
+  id: totrans-115
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来的小节演示了如何从 Node 的流类中读取和写入。
+- en: 16.5.1 Pipes
+  id: totrans-116
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.5.1 管道
+- en: 'Sometimes, you need to read data from a stream simply to turn around and write
+    that same data to another stream. Imagine, for example, that you are writing a
+    simple HTTP server that serves a directory of static files. In this case, you
+    will need to read data from a file input stream and write it out to a network
+    socket. But instead of writing your own code to handle the reading and writing,
+    you can instead simply connect the two sockets together as a “pipe” and let Node
+    handle the complexities for you. Simply pass the Writable stream to the `pipe()`
+    method of the Readable stream:'
+  id: totrans-117
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有时，您需要从流中读取数据，然后将相同的数据写入另一个流。例如，想象一下，您正在编写一个简单的HTTP服务器，用于提供静态文件目录。在这种情况下，您需要从文件输入流中读取数据，并将其写入网络套接字。但是，您可以简单地将两个套接字连接在一起作为“管道”，让
+    Node 为您处理复杂性，而不是编写自己的处理读取和写入的代码。只需将可写流传递给可读流的`pipe()`方法：
+- en: '[PRE15]'
+  id: totrans-118
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: 'The following utility function pipes one stream to another and invokes a callback
+    when done or when an error occurs:'
+  id: totrans-119
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 以下实用函数将一个流导向另一个流，并在完成或发生错误时调用回调函数：
+- en: '[PRE16]'
+  id: totrans-120
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: 'Transform streams are particularly useful with pipes, and create pipelines
+    that involve more than two streams. Here’s an example function that compresses
+    a file:'
+  id: totrans-121
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 转换流在管道中特别有用，并创建涉及两个以上流的管道。以下是一个压缩文件的示例函数：
+- en: '[PRE17]'
+  id: totrans-122
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: 'Using the `pipe()` method to copy data from a Readable stream to a Writable
+    stream is easy, but in practice, you often need to process the data somehow as
+    it streams through your program. One way to do this is to implement your own Transform
+    stream to do that processing, and this approach allows you to avoid manually reading
+    and writing the streams. Here, for example, is a function that works like the
+    Unix `grep` utility: it reads lines of text from an input stream, but writes only
+    the lines that match a specified regular expression:'
+  id: totrans-123
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用`pipe()`方法将数据从一个可读流复制到一个可写流很容易，但在实践中，通常需要以某种方式处理数据，因为它在程序中流动。一种方法是实现自己的转换流来进行处理，这种方法允许您避免手动读取和写入流。例如，下面是一个类似Unix
+    `grep`实用程序的函数：它从输入流中读取文本行，但只写入与指定正则表达式匹配的行：
+- en: '[PRE18]'
+  id: totrans-124
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: 16.5.2 Asynchronous Iteration
+  id: totrans-125
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.5.2 异步迭代
+- en: In Node 12 and later, Readable streams are asynchronous iterators, which means
+    that within an `async` function you can use a `for/await` loop to read string
+    or Buffer chunks from a stream using code that is structured like synchronous
+    code would be. (See [§13.4](ch13.xhtml#async-iterators) for more on asynchronous
+    iterators and `for/await` loops.)
+  id: totrans-126
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 Node 12 及更高版本中，可读流是异步迭代器，这意味着在`async`函数中，您可以使用`for/await`循环从流中读取字符串或缓冲区块，使用的代码结构类似于同步代码。
+    （有关异步迭代器和`for/await`循环的更多信息，请参见[§13.4](ch13.xhtml#async-iterators)。）
+- en: 'Using an asynchronous iterator is almost as easy as using the `pipe()` method,
+    and is probably easier when you need to process each chunk you read in some way.
+    Here’s how we could rewrite the `grep` program in the previous section using an
+    `async` function and a `for/await` loop:'
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用异步迭代器几乎和使用`pipe()`方法一样简单，当您需要以某种方式处理每个读取的块时，可能更容易。以下是我们如何使用`async`函数和`for/await`循环重写前一节中的`grep`程序的方法：
+- en: '[PRE19]'
+  id: totrans-128
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE19]'
+- en: 16.5.3 Writing to Streams and Handling Backpressure
+  id: totrans-129
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.5.3 写入流和处理背压
+- en: The async `grep()` function in the preceding code example demonstrated how to
+    use a Readable stream as an asynchronous iterator, but it also demonstrated that
+    you can write data to a Writable stream simply by passing it to the `write()`
+    method. The `write()` method takes a buffer or string as the first argument. (Object
+    streams expect other kinds of objects, but are beyond the scope of this chapter.)
+    If you pass a buffer, the bytes of that buffer will be written directly. If you
+    pass a string, it will be encoded to a buffer of bytes before being written. Writable
+    streams have a default encoding that is used when you pass a string as the only
+    argument to `write()`. The default encoding is typically “utf8,” but you can set
+    it explicitly by calling `setDefaultEncoding()` on the Writable stream. Alternatively,
+    when you pass a string as the first argument to `write()` you can pass an encoding
+    name as the second argument.
+  id: totrans-130
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 前面代码示例中的异步`grep()`函数演示了如何将可读流用作异步迭代器，但它还演示了您可以通过将其传递给`write()`方法来简单地向可写流写入数据。`write()`方法将缓冲区或字符串作为第一个参数。
+    （对象流期望其他类型的对象，但超出了本章的范围。）如果传递缓冲区，则将直接写入该缓冲区的字节。如果传递字符串，则在写入之前将其编码为字节的缓冲区。当您将字符串作为`write()`的唯一参数传递时，可写流具有默认编码。默认编码通常为“utf8”，但您可以通过在可写流上调用`setDefaultEncoding()`来显式设置它。或者，当您将字符串作为`write()`的第一个参数传递时，可以将编码名称作为第二个参数传递。
+- en: '`write()` optionally takes a callback function as its third argument. This
+    will be invoked when the data has actually been written and is no longer in the
+    Writable stream’s internal buffer. (This callback may also be invoked if an error
+    occurs, but this is not guaranteed. You should register an “error” event handler
+    on the Writable stream to detect errors.)'
+  id: totrans-131
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`write()`可选地将回调函数作为其第三个参数。当数据实际写入并不再位于可写流的内部缓冲区中时，将调用此函数。 （如果发生错误，也可能调用此回调，但不能保证。您应在可写流上注册“error”事件处理程序以检测错误。）'
+- en: The `write()` method has a very important return value. When you call `write()`
+    on a stream, it will always accept and buffer the chunk of data you have passed.
+    It then returns `true` if the internal buffer is not yet full. Or, if the buffer
+    is now full or overfull, it returns `false`. This return value is advisory, and
+    you can ignore it—Writable streams will enlarge their internal buffer as much
+    as needed if you keep calling `write()`. But remember that the reason to use a
+    streaming API in the first place is to avoid the cost of keeping lots of data
+    in memory at once.
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`write()`方法具有非常重要的返回值。当您在流上调用`write()`时，它将始终接受并缓冲您传递的数据块。如果内部缓冲区尚未满，则返回`true`。或者，如果缓冲区现在已满或过满，则返回`false`。此返回值是建议性的，您可以忽略它——如果您继续调用`write()`，可写流将根据需要扩大其内部缓冲区。但请记住，首先使用流式
+    API 的原因是避免一次性在内存中保存大量数据的成本。'
+- en: 'A return value of `false` from the `write()` method is a form of *backpressure*:
+    a message from the stream that you have written data more quickly than it can
+    be handled. The proper response to this kind of backpressure is to stop calling
+    `write()` until the stream emits a “drain” event, signaling that there is once
+    again room in the buffer. Here, for example, is a function that writes to a stream,
+    and then invokes a callback when it is OK to write more data to the stream:'
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从`write()`方法返回`false`的返回值是一种*背压*形式：流向你发送的消息，表示你写入数据的速度比处理速度快。对这种背压的正确响应是停止调用`write()`，直到流发出“drain”事件，表示缓冲区中再次有空间。例如，下面是一个向流写入数据的函数，并在可以继续向流写入更多数据时调用回调函数：
+- en: '[PRE20]'
+  id: totrans-134
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE20]'
+- en: 'The fact that it is sometimes OK to call `write()` multiple times in a row
+    and sometimes you have to wait for an event between writes makes for awkward algorithms.
+    This is one of the reasons that using the `pipe()` method is so appealing: when
+    you use `pipe()`, Node handles backpressure for you automatically.'
+  id: totrans-135
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有时可以连续调用`write()`多次，有时必须在写入之间等待事件，这导致算法变得笨拙。这就是使用`pipe()`方法如此吸引人的原因之一：当你使用`pipe()`时，Node会自动为你处理背压。
+- en: 'If you are using `await` and `async` in your program, and are treating Readable
+    streams as asynchronous iterators, it is straightforward to implement a Promise-based
+    version of the `write()` utility function above to properly handle backpressure.
+    In the async `grep()` function we just looked at, we did not handle backpressure.
+    The async `copy()` function in the following example demonstrates how it can be
+    done correctly. Note that this function just copies chunks from a source stream
+    to a destination stream and calling `copy(source, destination)` is much like calling
+    `source.pipe(destination)`:'
+  id: totrans-136
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你在程序中使用`await`和`async`，并将可读流视为异步迭代器，那么实现上面的`write()`实用程序的基于Promise的版本以正确处理背压是很简单的。在我们刚刚看过的异步`grep()`函数中，我们没有处理背压。下面示例中的异步`copy()`函数演示了如何正确处理背压。请注意，此函数只是将源流中的块复制到目标流中，并调用`copy(source,
+    destination)`就像调用`source.pipe(destination)`一样：
+- en: '[PRE21]'
+  id: totrans-137
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE21]'
+- en: Before we conclude this discussion of writing to streams, note again that failing
+    to respond to backpressure can cause your program to use more memory than it should
+    when the internal buffer of a Writable stream overflows and grows larger and larger.
+    If you are writing a network server, this can be a remotely exploitable security
+    issue. Suppose you write an HTTP server that delivers files over the network,
+    but you didn’t use `pipe()` and you didn’t take the time to handle backpressure
+    from the `write()` method. An attacker could write an HTTP client that initiates
+    requests for large files (such as images) but never actually reads the body of
+    the request. Since the client is not reading the data over the network, and the
+    server isn’t responding to backpressure, buffers on the server are going to overflow.
+    With enough concurrent connections from the attacker, this can turn into a denial-of-service
+    attack that slows your server down or even crashes it.
+  id: totrans-138
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在我们结束对流写入的讨论之前，再次注意，不响应背压可能导致程序使用的内存超出预期，当可写流的内部缓冲区溢出并不断增大时。如果你正在编写一个网络服务器，这可能是一个远程可利用的安全问题。假设你编写了一个通过网络传输文件的HTTP服务器，但你没有使用`pipe()`，也没有花时间处理`write()`方法的背压。攻击者可以编写一个HTTP客户端，发起对大文件（如图像）的请求，但实际上从未读取请求的主体。由于客户端没有从网络中读取数据，而服务器也没有响应背压，服务器上的缓冲区将会溢出。如果攻击者有足够的并发连接，这可能会演变成一个拒绝服务攻击，使你的服务器变慢甚至崩溃。
+- en: 16.5.4 Reading Streams with Events
+  id: totrans-139
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.5.4 使用事件读取流
+- en: Node’s readable streams have two modes, each of which has its own API for reading.
+    If you can’t use pipes or asynchronous iteration in your program, you will need
+    to pick one of these two event-based APIs for handling streams. It is important
+    that you use only one or the other and do not mix the two APIs.
+  id: totrans-140
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node的可读流有两种模式，每种模式都有自己的读取API。如果你的程序不能使用管道或异步迭代，你将需要选择这两种基于事件的API之一来处理流。重要的是你只使用其中一种API，不要混合使用这两种API。
+- en: Flowing mode
+  id: totrans-141
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 流动模式
+- en: 'In *flowing mode*, when readable data arrives, it is immediately emitted in
+    the form of a “data” event. To read from a stream in this mode, simply register
+    an event handler for “data” events, and the stream will push chunks of data (buffers
+    or strings) to you as soon as they becomes available. Note that there is no need
+    to call the `read()` method in flowing mode: you only need to handle “data” events.
+    Note that newly created streams do not start off in flowing mode. Registering
+    a “data” event handler switches a stream into flowing mode. Conveniently, this
+    means that a stream does not emit “data” events until you register the first “data”
+    event handler.'
+  id: totrans-142
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在*流动模式*中，当可读数据到达时，它会立即以“data”事件的���式发出。要在此模式下从流中读取数据，只需为“data”事件注册事件处理程序，流将在数据块（缓冲区或字符串）可用时将其推送给你。请注意，在流动模式下不需要调用`read()`方法：你只需要处理“data”事件。请注意，新创建的流不会立即处于流动模式。注册“data”事件处理程序会将流切换到流动模式。方便的是，这意味着流在注册第一个“data”事件处理程序之前不会发出“data”事件。
+- en: If you are using flowing mode to read data from a Readable stream, process it,
+    then write it to a Writable stream, then you may need to handle backpressure from
+    the Writable stream. If the `write()` method returns `false` to indicate that
+    the write buffer is full, you can call `pause()` on the Readable stream to temporarily
+    stop `data` events. Then, when you get a “drain” event from the Writable stream,
+    you can call `resume()` on the Readable stream to start the “data” events flowing
+    again.
+  id: totrans-143
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你正在使用流模式从可读流中读取数据，处理数据，然后将其写入可写流，那么你可能需要处理可写流的背压。如果`write()`方法返回`false`表示写入缓冲区已满，你可以在可读流上调用`pause()`来暂时停止`data`事件。然后，当你从可写流中收到“drain”事件时，你可以在可读流上调用`resume()`来重新开始“data”事件的流动。
+- en: A stream in flowing mode emits an “end” event when the end of the stream is
+    reached. This event indicates that no more “data” events will ever be emitted.
+    And, as with all streams, an “error” event is emitted if an error occurs.
+  id: totrans-144
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 流在流动模式下在达到流的末尾时会发出一个“end”事件。这个事件表示不会再发出更多的“data”事件。并且，��所有流一样，如果发生错误，将会发出一个“error”事件。
+- en: At the beginning of this section on streams, we showed a nonstreaming `copyFile()`
+    function and promised a better version to come. The following code shows how to
+    implement a streaming `copyFile()` function that uses the flowing mode API and
+    handles backpressure. This would have been easier to implement with a `pipe()`
+    call, but it serves here as a useful demonstration of the multiple event handlers
+    that are used to coordinate data flow from one stream to the other.
+  id: totrans-145
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在流部分的开头，我们展示了一个非流式的`copyFile()`函数，并承诺会有一个更好的版本。以下代码展示了如何实现一个使用流动模式API并处理背压的流式`copyFile()`函数。这本来更容易通过`pipe()`调用来实现，但在这里作为协调从一个流到另一个流的数据流的多个事件处理程序的有用演示。
+- en: '[PRE22]'
+  id: totrans-146
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE22]'
+- en: Paused mode
+  id: totrans-147
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 暂停模式
+- en: The other mode for Readable streams is “paused mode.” This is the mode that
+    streams start in. If you never register a “data” event handler and never call
+    the `pipe()` method, then a Readable stream remains in paused mode. In paused
+    mode, the stream does not push data to you in the form of “data” events. Instead,
+    you pull data from the stream by explicitly calling its `read()` method. This
+    is not a blocking call, and if there is no data available to read on the stream,
+    it will return `null`. Since there is not a synchronous API to wait for data,
+    the paused mode API is also event-based. A Readable stream in paused mode emits
+    “readable” events when data becomes available to read on the stream. In response,
+    your code should call the `read()` method to read that data. You must do this
+    in a loop, calling `read()` repeatedly until it returns `null`. It is necessary
+    to completely drain the stream’s buffer like this in order to trigger a new “readable”
+    event in the future. If you stop calling `read()` while there is still readable
+    data, you will not get another “readable” event and your program is likely to
+    hang.
+  id: totrans-148
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可读流的另一种模式是“暂停模式”。这是流开始的模式。如果你从未注册“data”事件处理程序，也从未调用`pipe()`方法，那么可读流将保持在暂停模式。在暂停模式下，流不会以“data”事件的形式向你推送数据。相反，你需要通过显式调用其`read()`方法来从流中拉取数据。这不是一个阻塞调用，如果流上没有可读数据，它将返回`null`。由于没有同步API来等待数据，暂停模式API也是基于事件的。在暂停模式下，当流上有数据可读时，可读流会发出“readable”事件。作为响应，你的代码应该调用`read()`方法来读取数据。你必须在循环中这样做，重复调用`read()`直到它返回`null`。这样完全排空流的缓冲区是必要的，以便在将来触发新的“readable”事件。如果在仍然有可读数据时停止调用`read()`，你将不会收到另一个“readable”事件，你的程序可能会挂起。
+- en: Streams in paused mode emit “end” and “error” events just like flowing mode
+    streams do. If you are writing a program that reads data from a Readable stream
+    and writes it to a Writable stream, then paused mode may not be a good choice.
+    In order to properly handle backpressure, you only want to read when the input
+    stream is readable and the output stream is not backed up. In paused mode, that
+    means reading and writing until `read()` returns `null` or `write()` returns `false`,
+    and then starting reading or writing again on a `readable` or `drain` event. This
+    is inelegant, and you may find that flowing mode (or pipes) is easier in this
+    case.
+  id: totrans-149
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 暂停模式下的流会像流动模式下的流一样发出“end”和“error”事件。如果你正在编写一个从可读流读取数据并将其写入可写流的程序，那么暂停模式可能不是一个好选择。为了正确处理背压，你只想在输入流可读且输出流没有积压时才读取。在暂停模式下，这意味着读取和写入直到`read()`返回`null`或`write()`返回`false`，然后在`readable`或`drain`事件上重新开始读取或写入。这是不够优雅的，你可能会发现在这种情况下流动模式（或管道）更容易。
+- en: The following code demonstrates how you can compute a SHA256 hash for the contents
+    of a specified file. It uses a Readable stream in paused mode to read the contents
+    of a file in chunks, then passes each chunk to the object that computes the hash.
+    (Note that in Node 12 and later, it would be simpler to write this function using
+    a `for/await` loop.)
+  id: totrans-150
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 以下代码演示了如何计算指定文件内容的SHA256哈希。它使用一个处于暂停模式的可读流以块的形式读取文件的内容，然后将每个块传递给计算哈希的对象。（请注意，在Node
+    12及更高版本中，使用`for/await`循环编写此函数会更简单。）
+- en: '[PRE23]'
+  id: totrans-151
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE23]'
+- en: 16.6 Process, CPU, and Operating System Details
+  id: totrans-152
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.6 进程、CPU和操作系统详细信息
+- en: 'The global Process object has a number of useful properties and functions that
+    generally relate to the state of the currently running Node process. Consult the
+    Node documentation for complete details, but here are some properties and functions
+    you should be aware of:'
+  id: totrans-153
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 全局Process对象具有许多有用的属性和函数，通常与当前运行的Node进程的状态有关。请查阅Node文档以获取完整详情，但以下是一些你应该知道的属性和函数：
+- en: '[PRE24]'
+  id: totrans-154
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE24]'
+- en: 'The “os” module (which, unlike `process`, needs to be explicitly loaded with
+    `require()`) provides access to similarly low-level details about the computer
+    and operating system that Node is running on. You may never need to use any of
+    these features, but it is worth knowing that Node makes them available:'
+  id: totrans-155
+  prefs: []
+  type: TYPE_NORMAL
+  zh: “os”模块（与`process`不同，需要使用`require()`显式加载）提供了关于Node运行的计算机和操作系统的类似低级细节的访问。你可能永远不需要使用这些功能中的任何一个，但值得知道Node提供了它们：
+- en: '[PRE25]'
+  id: totrans-156
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE25]'
+- en: 16.7 Working with Files
+  id: totrans-157
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.7 处理文件
+- en: Node’s “fs” module is a comprehensive API for working with files and directories.
+    It is complemented by the “path” module, which defines utility functions for working
+    with file and directory names. The “fs” module contains a handful of high-level
+    functions for easily reading, writing, and copying files. But most of the functions
+    in the module are low-level JavaScript bindings to Unix system calls (and their
+    equivalents on Windows). If you have worked with low-level filesystem calls before
+    (in C or other languages), then the Node API will be familiar to you. If not,
+    you may find parts of the “fs” API to be terse and unintuitive. The function to
+    delete a file, for example, is called `unlink()`.
+  id: totrans-158
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node的“fs”模块是一个用于处理文件和目录的全面API。它由“path”模块补充，后者定义了用于处理文件和目录名称的实用函数。“fs”模块包含一些高级函数，用于轻松读取、写入和复制文件。但是，该模块中的大多数函数都是低级JavaScript绑定到Unix系统调用（以及它们在Windows上的��效物）。如果之前有过低级文件系统调用的经验（在C或其他语言中），那么Node
+    API对你来说将是熟悉的。如果没有，你可能会发现“fs”API的某些部分很简洁和不直观。例如，删除文件的函数称为`unlink()`。
+- en: The “fs” module defines a large API, mainly because there are usually multiple
+    variants of each fundamental operation. As discussed at the beginning of the chapter,
+    most functions such as `fs.readFile()` are nonblocking, callback-based, and asynchronous.
+    Typically, though, each of these functions has a synchronous blocking variant,
+    such as `fs.readFileSync()`. In Node 10 and later, many of these functions also
+    have a Promise-based asynchronous variant such as `fs.promises.readFile()`. Most
+    “fs” functions take a string as their first argument, specifying the path (filename
+    plus optional directory names) to the file that is to be operated on. But a number
+    of these functions also support a variant that takes an integer “file descriptor”
+    as the first argument instead of a path. These variants have names that begin
+    with the letter “f.” For example, `fs.truncate()` truncates a file specified by
+    path, and `fs.ftruncate()` truncates a file specified by file descriptor. There
+    is a Promise-based `fs.promises.truncate()` that expects a path and another Promise-based
+    version that is implemented as a method of a FileHandle object. (The FileHandle
+    class is the equivalent of a file descriptor in the Promise-based API.) Finally,
+    there are a handful of functions in the “fs” module that have variants whose names
+    are prefixed with the letter “l.” These “l” variants are like the base function
+    but do not follow symbolic links in the filesystem and instead operate directly
+    on the symbolic links themselves.
+  id: totrans-159
+  prefs: []
+  type: TYPE_NORMAL
+  zh: “fs”模块定义了一个庞大的API，主要是因为通常每个基本操作都有多个变体。正如本章开头所讨论的，大多数函数（如`fs.readFile()`）都是非阻塞的、基于回调的和异步的。通常情况下，每个函数都有一个同步阻塞的变体，比如`fs.readFileSync()`。在Node
+    10及更高版本中，许多这些函数还有基于Promise的异步变体，比如`fs.promises.readFile()`。大多数“fs”函数的第一个参数是一个字符串，指定要操作的文件的路径（文件名加可选的目录名）。但是其中一些函数也支持一个以整数“文件描述符”作为第一个参数而不是路径的变体。这些变体的名称以字母“f”开头。例如，`fs.truncate()`截断由路径指定的文件，而`fs.ftruncate()`截断由文件描述符指定的文件。还有一个基于Promise的`fs.promises.truncate()`，它期望一个路径，还有另一个基于Promise的版本，它作为FileHandle对象的方法实现。（FileHandle类相当于Promise-based
+    API中的文件描述符。）最后，在“fs”模块中有一些函数的变体的名称以字母“l”开头。这些“l”变体类似于基本函数，但不会遵循文件系统中的符号链接，而是直接操作符号链接本身。
+- en: 16.7.1 Paths, File Descriptors, and FileHandles
+  id: totrans-160
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.7.1 路径、文件描述符和FileHandles
+- en: 'In order to use the “fs” module to work with files, you first need to be able
+    to name the file you want to work with. Files are most often specified by *path*,
+    which means the name of the file itself, plus the hierarchy of directories in
+    which the file appears. If a path is *absolute*, it means that directories all
+    the way up to the filesystem root are specified. Otherwise, the path is *relative*
+    and is only meaningful in relation to some other path, usually the *current working
+    directory*. Working with paths can be a little tricky because different operating
+    systems use different characters to separate directory names, it is easy to accidentally
+    double those separator characters when concatenating paths, and because `../`
+    parent directory path segments need special handling. Node’s “path” module and
+    a couple of other important Node features help:'
+  id: totrans-161
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要使用“fs”模块处理文件，首先需要能够命名要处理的文件。文件通常由*路径*指定，这意味着文件本身的名称，以及文件所在的目录层次结构。如果路径是*绝对*的，这意味着指定了一直到文件系统根目录的所有目录。否则，路径是*相对*的，只有与其他路径相关时才有意义，通常是*当前工作目录*。处理路径可能有点棘手，因为不同的操作系统使用不同的字符来分隔目录名称，当连接路径时很容易意外加倍这些分隔符字符，并且`../`父目录路径段需要特殊处理。Node的“path”模块和其他几个重要的Node功能有所帮助：
+- en: '[PRE26]'
+  id: totrans-162
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE26]'
+- en: 'Note that `path.normalize()` is simply a string manipulation function that
+    has no access to the actual filesystem. The `fs.realpath()` and `fs.realpathSync()`
+    functions perform filesystem-aware canonicalization: they resolve symbolic links
+    and interpret relative pathnames relative to the current working directory.'
+  id: totrans-163
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请注意，`path.normalize()`只是一个字符串操作函数，没有访问实际文件系统。`fs.realpath()`和`fs.realpathSync()`函数执行文件系统感知的规范化：它们解析符号链接并解释相对于当前工作目录的相对路径名。
+- en: In the previous examples, we assumed that the code is running on a Unix-based
+    OS and `path.sep` is “/.” If you want to work with Unix-style paths even when
+    on a Windows system, then use `path.posix` instead of `path`. And conversely,
+    if you want to work with Windows paths even when on a Unix system, `path.win32`.
+    `path.posix` and `path.win32` define the same properties and functions as `path`
+    itself.
+  id: totrans-164
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在前面的示例中，我们假设代码在基于Unix的操作系统上运行，`path.sep`是“/”。如果想在Windows系统上使用Unix风格的路径，可以使用`path.posix`而不是`path`。反之，如果想在Unix系统上使用Windows路径，可以使用`path.win32`。`path.posix`和`path.win32`定义了与`path`本身相同的属性和函数。
+- en: Some of the “fs” functions we’ll be covering in the next sections expect a *file
+    descriptor* instead of a file name. File descriptors are integers used as OS-level
+    references to “open” files. You obtain a descriptor for a given name by calling
+    the `fs.open()` (or `fs.openSync()`) function. Processes are only allowed to have
+    a limited number of files open at one time, so it is important that you call `fs.close()`
+    on your file descriptors when you are done with them. You need to open files if
+    you want to use the lowest-level `fs.read()` and `fs.write()` functions that allow
+    you to jump around within a file, reading and writing bits of it at different
+    times. There are other functions in the “fs” module that use file descriptors,
+    but they all have name-based versions, and it only really makes sense to use the
+    descriptor-based functions if you were going to open the file to read or write
+    anyway.
+  id: totrans-165
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们将在接下来的章节中介绍一些“fs”函数，它们期望一个*文件描述符*而不是文件名。文件描述符是作为操作系统级别引用“打开”文件的整数。通过调用`fs.open()`（或`fs.openSync()`）函数，你可以为给定的名称获取一个描述符。进程一次只能打开有限数量的文件，因此当你使用完文件描述符时，调用`fs.close()`是很重要的。如果你想要使用最底层的`fs.read()`和`fs.write()`函数，允许你在文件中跳转，不同时间读取和写入文件的位，你需要打开文件。在“fs”模块中有其他使用文件描述符的函数，但它们都有基于名称的版本，只有当你打算打开文件进行读取或写入时���才真正有意义使用基于描述符的函数。
+- en: Finally, in the Promise-based API defined by `fs.promises`, the equivalent of
+    `fs.open()` is `fs.promises.open()`, which returns a Promise that resolves to
+    a FileHandle object. This FileHandle object serves the same purpose as a file
+    descriptor. Again, however, unless you need to use the lowest-level `read()` and
+    `write()` methods of a FileHandle, there is really no reason to create one. And
+    if you do create a FileHandle, you should remember to call its `close()` method
+    once you are done with it.
+  id: totrans-166
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，在`fs.promises`定义的基于Promise的API中，`fs.open()`的等价物是`fs.promises.open()`，它返回一个解析为FileHandle对象的Promise。这个FileHandle对象用于与文件描述符具有相同的目的。然而，除非你需要使用FileHandle的最底层的`read()`和`write()`方法，否则真的没有理由创建一个。如果你确实创建了一个FileHandle，记得在使用完毕后调用它的`close()`方法。
+- en: 16.7.2 Reading Files
+  id: totrans-167
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.7.2 读取文件
+- en: Node allows you to read file content all at once, via a stream, or with the
+    low-level API.
+  id: totrans-168
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node允许你一次性读取文件内容，通过流，或使用低级别的API。
+- en: If your files are small, or if memory usage and performance are not the highest
+    priority, then it is often easiest to read the entire content of a file with a
+    single call. You can do this synchronously, with a callback, or with a Promise.
+    By default, you’ll get the bytes of the file as a buffer, but if you specify an
+    encoding, you’ll get a decoded string instead.
+  id: totrans-169
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你的文件很小，或者内存使用和性能不是最高优先级，那么通常最容易的方法是一次性读取整个文件的内容。你可以同步地、通过回调或Promise来做到这一点。默认情况下，你会得到文件的字节作为缓冲区，但如果指定了编码，你将得到一个解码后的字符串。
+- en: '[PRE27]'
+  id: totrans-170
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE27]'
+- en: 'If you are able to process the contents of a file sequentially and do not need
+    to have the entire content of the file in memory at the same time, then reading
+    a file via a stream may be the most efficient approach. We’ve covered streams
+    extensively: here is how you might use a stream and the `pipe()` method to write
+    the contents of a file to standard output:'
+  id: totrans-171
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你能够按顺序处理文件的内容，并且不需要同时将文件的整个内容保存在内存中，那么通过流来读取文件可能是最有效的方法。我们已经广泛讨论了流：这里是你如何使用流和`pipe()`方法将文件的内容写入标准输出的示例：
+- en: '[PRE28]'
+  id: totrans-172
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE28]'
+- en: 'Finally, if you need low-level control over exactly what bytes you read from
+    a file and when you read them, you can open a file to get a file descriptor and
+    then use `fs.read()`, `fs.readSync()`, or `fs.promises.read()` to read a specified
+    number of bytes from a specified source location of the file into a specified
+    buffer at the specified destination position:'
+  id: totrans-173
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，如果你需要对从文件中读取的字节以及何时读取它们进行低级别的控制，你可以打开一个文件以获取文件描述符，然后使用`fs.read()`、`fs.readSync()`或`fs.promises.read()`从文件的指定源位置读取指定数量的字节到指定的缓冲区的指定目标位置：
+- en: '[PRE29]'
+  id: totrans-174
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE29]'
+- en: 'The callback-based `read()` API is awkward to use if you need to read more
+    than one chunk of data from a file. If you can use the synchronous API (or the
+    Promise-based API with `await`), it becomes easy to read multiple chunks from
+    a file:'
+  id: totrans-175
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你需要从文件中读取多个数据块，基于回调的`read()`API使用起来很麻烦。如果你可以使用同步API（或基于Promise的API与`await`），那么从文件中读取多个数据块变得很容易：
+- en: '[PRE30]'
+  id: totrans-176
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE30]'
+- en: 16.7.3 Writing Files
+  id: totrans-177
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.7.3 写入文件
+- en: Writing files in Node is a lot like reading them, with a few extra details that
+    you need to know about. One of these details is that the way you create a new
+    file is simply by writing to a filename that does not already exist.
+  id: totrans-178
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在Node中写入文件与读取文件非常相似，但有一些额外的细节需要了解。其中一个细节是，创建一个新文件的方式就是简单地向一个尚不存在的文件名写入。
+- en: 'As with reading, there are three basic ways to write files in Node. If you
+    have the entire content of the file in a string or a buffer, you can write the
+    entire thing in one call with `fs.writeFile()` (callback-based), `fs.writeFileSync()`
+    (synchronous), or `fs.promises.writeFile()` (Promise-based):'
+  id: totrans-179
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与读取类似，Node中有三种基本的写入文件的方式。如果文件的整个内容是一个字符串或缓冲区，你可以使用`fs.writeFile()`（基于回调）、`fs.writeFileSync()`（同步）或`fs.promises.writeFile()`（基于Promise）一次性写入整个内容：
+- en: '[PRE31]'
+  id: totrans-180
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE31]'
+- en: If the data you are writing to the file is a string, and you want to use an
+    encoding other than “utf8,” pass the encoding as an optional third argument.
+  id: totrans-181
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果要写入文件的数据是字符串，并且想要使用除了“utf8”之外的编码，请将编码作为可选的第三个参数传递。
+- en: The related functions `fs.appendFile()`, `fs.appendFileSync()`, and `fs.promises.appendFile()`
+    are similar, but when the specified file already exists, they append their data
+    to the end rather than overwriting the existing file content.
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 相关的函数`fs.appendFile()`、`fs.appendFileSync()`和`fs.promises.appendFile()`类似，但当指定的文件已经存在时，它们会将数据追加到末尾而不是覆盖现有文件内容。
+- en: 'If the data you want to write to a file is not all in one chunk, or if it is
+    not all in memory at the same time, then using a Writable stream is a good approach,
+    assuming that you plan to write the data from beginning to end without skipping
+    around in the file:'
+  id: totrans-183
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果要写入文件的数据不是一个块，或者不是同时在内存中的所有数据，那么使用Writable流是一个不错的方法，假设您计划从头到尾写入数据而不跳过文件中的位置：
+- en: '[PRE32]'
+  id: totrans-184
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE32]'
+- en: Finally, if you want to write data to a file in multiple chunks, and you want
+    to be able to control the exact position within the file at which each chunk is
+    written, then you can open the file with `fs.open()`, `fs.openSync()`, or `fs.promises.open()`
+    and then use the resulting file descriptor with the `fs.write()` or `fs.writeSync()`
+    functions. These functions come in different forms for strings and buffers. The
+    string variant takes a file descriptor, a string, and the file position at which
+    to write that string (with an encoding as an optional fourth argument). The buffer
+    variant takes a file descriptor, a buffer, an offset, and a length that specify
+    a chunk of data within the buffer, and a file position at which to write the bytes
+    of that chunk. And if you have an array of Buffer objects that you want to write,
+    you can do this with a single `fs.writev()` or `fs.writevSync()`. Similar low-level
+    functions exist for writing buffers and strings using `fs.promises.open()` and
+    the FileHandle object it produces.
+  id: totrans-185
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，如果您想要将数据写入文件的多个块，并且希望能够控制写入每个块的确切位置，那么可以使用`fs.open()`、`fs.openSync()`或`fs.promises.open()`打开文件，然后使用结果文件描述符与`fs.write()`或`fs.writeSync()`函数。这些函数有不同形式的字符串和缓冲区。字符串变体接受文件描述符、字符串和要写入该字符串的文件位置（可选的第四个参数为编码）。缓冲区变体接受文件描述符、缓冲区、偏移量和长度，指定缓冲区内的数据块，并指定要写入该块的字节的文件位置。如果您有要写入的Buffer对象数组，可以使用单个`fs.writev()`或`fs.writevSync()`。使用`fs.promises.open()`和它生成的FileHandle对象写入缓冲区和字符串存在类似的低级函数。
+- en: 'You can chop off the end of a file with `fs.truncate()`, `fs.truncateSync()`,
+    or `fs.promises.truncate()`. These functions take a path as their first argument
+    and a length as their second, and modify the file so that it has the specified
+    length. If you omit the length, zero is used and the file becomes empty. Despite
+    the name of these functions, they can also be used to extend a file: if you specify
+    a length that is longer than the current file size, the file is extended with
+    zero bytes to the new size. If you have already opened the file you wish to modify,
+    you can use `ftruncate()` or `ftruncateSync()` with the file descriptor or FileHandle.'
+  id: totrans-186
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你可以使用`fs.truncate()`、`fs.truncateSync()`或`fs.promises.truncate()`来截断文件的末尾。这些函数以路径作为第一个参数，长度作为第二个参数，并修改文件使其具有指定的长度。如果省略长度，则使用零，并且文件变为空。尽管这些函数的名称是这样的，但它们也可以用于扩展文件：如果指定的长度比当前文件大小长，文件将扩展为零字节到新大小。如果您已经打开要修改的文件，可以使用带有文件描述符或FileHandle的`ftruncate()`或`ftruncateSync()`。
+- en: 'The various file-writing functions described here return or invoke their callback
+    or resolve their Promise when the data has been “written” in the sense that Node
+    has handed it off to the operating system. But this does not necessarily mean
+    that the data has actually been written to persistent storage yet: at least some
+    of your data may still be buffered somewhere in the operating system or in a device
+    driver waiting to be written to disk. If you call `fs.writeSync()` to synchronously
+    write some data to a file, and if there is a power outage immediately after the
+    function returns, you may still lose data. If you want to force your data out
+    to disk so you know for sure that it has been safely saved, use `fs.fsync()` or
+    `fs.fsyncSync()`. These functions only work with file descriptors: there is no
+    path-based version.'
+  id: totrans-187
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里描述的各种文件写入函数在数据“写入”后返回或调用其回调或解析其Promise，这意味着Node已将数据交给操作系统。但这并不一定意味着数据实际上已经写入到持久存储中：至少您的一些数据可能仍然在操作系统中的某个地方或设备驱动程序中缓冲，等待写入磁盘。如果调用`fs.writeSync()`同步将一些数据写入文件，并且在函数返回后立即发生停电，您可能仍会丢失数据。如果要强制将数据写入磁盘，以确保它已经安全保存，使用`fs.fsync()`或`fs.fsyncSync()`。这些函数仅适用于文件描述符：没有基于路径的版本。
+- en: 16.7.4 File Operations
+  id: totrans-188
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.7.4 文件操作
+- en: The preceding discussion of Node’s stream classes included two examples of `copyFile()`
+    functions. These are not practical utilities that you would actually use because
+    the “fs” module defines its own `fs.copyFile()` method (and also `fs.copyFileSync()`
+    and `fs.promises.copyFile()`, of course).
+  id: totrans-189
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node的流类的前面讨论包括两个`copyFile()`函数的示例。这些不是您实际使用的实用程序，因为“fs”模块定义了自己的`fs.copyFile()`方法（当然还有`fs.copyFileSync()`和`fs.promises.copyFile()`）。
+- en: 'These functions take the name of the original file and the name of the copy
+    as their first two arguments. These can be specified as strings or as URL or Buffer
+    objects. An optional third argument is an integer whose bits specify flags that
+    control details of the `copy` operation. And for the callback-based `fs.copyFile()`,
+    the final argument is a callback function that will be called with no arguments
+    when the copy is complete, or that will be called with an error argument if something
+    fails. Following are some examples:'
+  id: totrans-190
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些函数将原始文件的名称和副本的名称作为它们的前两个参数。这些可以指定为字符串或URL或缓冲区对象。可选的第三个参数是一个整数，其位指定控制`copy`操作细节的标志。对于基于回调的`fs.copyFile()`，最后一个参数是在复制完成时不带参数调用的回调函数，或者如果出现错误则带有错误参数调用。以下是一些示例：
+- en: '[PRE33]'
+  id: totrans-191
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE33]'
+- en: 'The `fs.rename()` function (along with the usual synchronous and Promise-based
+    variants) moves and/or renames a file. Call it with the current path to the file
+    and the desired new path to the file. There is no flags argument, but the callback-based
+    version takes a callback as the third argument:'
+  id: totrans-192
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`fs.rename()`函数（以及通常的同步和基于Promise的变体）移动和/或重命名文件。调用它时，传入当前文件的路径和所需的新文件路径。没有标志参数，但基于回调的版本将回调作为第三个参数：'
+- en: '[PRE34]'
+  id: totrans-193
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE34]'
+- en: Note that there is no flag to prevent renaming from overwriting an existing
+    file. Also keep in mind that files can only be renamed within a filesystem.
+  id: totrans-194
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请注意，没有标志可以防止重命名覆盖现有文件。同时请记住，文件只能在文件系统内重命名。
+- en: The functions `fs.link()` and `fs.symlink()` and their variants have the same
+    signatures as `fs.rename()` and behave something like `fs.copyFile()` except that
+    they create hard links and symbolic links, respectively, rather than creating
+    a copy.
+  id: totrans-195
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 函数`fs.link()`和`fs.symlink()`及其变体具有与`fs.rename()`相同的签名，并且类似于`fs.copyFile()`，只是它们分别创建硬链接和符号链接，而不是创建副本。
+- en: 'Finally, `fs.unlink()`, `fs.unlinkSync()`, and `fs.promises.unlink()` are Node’s
+    functions for deleting a file. (The unintuitive naming is inherited from Unix
+    where deleting a file is basically the opposite of creating a hard link to it.)
+    Call this function with the string, buffer, or URL path to the file to be deleted,
+    and pass a callback if you are using the callback-based version:'
+  id: totrans-196
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，`fs.unlink()`、`fs.unlinkSync()`和`fs.promises.unlink()`是Node用于删除文件的函数。（这种不直观的命名是从Unix继承而来，其中删除文件基本上是创建其硬链接的相反操作。）调用此函数并传递一个回调（如果使用基于回调的版本）来删除要删除的文件的字符串、缓冲区或URL路径：
+- en: '[PRE35]'
+  id: totrans-197
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE35]'
+- en: 16.7.5 File Metadata
+  id: totrans-198
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.7.5 文件元数据
+- en: 'The `fs.stat()`, `fs.statSync()`, and `fs.promises.stat()` functions allow
+    you to obtain metadata for a specified file or directory. For example:'
+  id: totrans-199
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`fs.stat()`、`fs.statSync()`和`fs.promises.stat()`函数允许您获取指定文件或目录的元数据。例如：'
+- en: '[PRE36]'
+  id: totrans-200
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE36]'
+- en: The returned Stats object contains other, more obscure properties and methods,
+    but this code demonstrates those that you are most likely to use.
+  id: totrans-201
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 返回的Stats对象包含其他更隐晦的属性和方法，但此代码演示了您最有可能使用的属性。
+- en: '`fs.lstat()` and its variants work just like `fs.stat()`, except that if the
+    specified file is a symbolic link, Node will return metadata for the link itself
+    rather than following the link.'
+  id: totrans-202
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`fs.lstat()`及其变体的工作方式与`fs.stat()`完全相同，只是如果指定的文件是符号链接，则Node将返回链接本身的元数据，而不是跟随链接。'
+- en: If you have opened a file to produce a file descriptor or a FileHandle object,
+    then you can use `fs.fstat()` or its variants to get metadata information for
+    the opened file without having to specify the filename again.
+  id: totrans-203
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您已打开文件以生成文件描述符或FileHandle对象，则可以使用`fs.fstat()`或其变体获取已打开文件的元数据信息，而无需再次指定文件名。
+- en: In addition to querying metadata with `fs.stat()` and all of its variants, there
+    are also functions for changing metadata.
+  id: totrans-204
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了使用`fs.stat()`及其所有变体查询元数据外，还有用于更改元数据的函数。
+- en: '`fs.chmod()`, `fs.lchmod()`, and `fs.fchmod()` (along with synchronous and
+    Promise-based versions) set the “mode” or permissions of a file or directory.
+    Mode values are integers in which each bit has a specific meaning and are easiest
+    to think about in octal notation. For example, to make a file read-only to its
+    owner and inaccessible to everyone else, use `0o400`:'
+  id: totrans-205
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`fs.chmod()`、`fs.lchmod()`和`fs.fchmod()`（以及同步和基于Promise的版本）设置文件或目录的“模式”或权限。模式值是整数，其中每个位具有特定含义，并且在八进制表示法中最容易理解。例如，要使文件对其所有者只读且对其他人不可访问，请使用`0o400`：'
+- en: '[PRE37]'
+  id: totrans-206
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE37]'
+- en: '`fs.chown()`, `fs.lchown()`, and `fs.fchown()` (along with synchronous and
+    Promise-based versions) set the owner and group (as IDs) for a file or directory.
+    (These matter because they interact with the file permissions set by `fs.chmod()`.)'
+  id: totrans-207
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`fs.chown()`、`fs.lchown()`和`fs.fchown()`（以及同步和基于Promise的版本）设置文件或目录的所有者和组（作为ID）。
+    （这很重要，因为它们与`fs.chmod()`设置的文件权限交互。）'
+- en: Finally, you can set the access time and modification time of a file or directory
+    with `fs.utimes()` and `fs.futimes()` and their variants.
+  id: totrans-208
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，您可以使用`fs.utimes()`和`fs.futimes()`及其变体设置文件或目录的访问时间和修改时间。
+- en: 16.7.6 Working with Directories
+  id: totrans-209
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.7.6 处理目录
+- en: 'To create a new directory in Node, use `fs.mkdir()`, `fs.mkdirSync()`, or `fs.promises.mkdir()`.
+    The first argument is the path of the directory to be created. The optional second
+    argument can be an integer that specifies the mode (permissions bits) for the
+    new directory. Or you can pass an object with optional `mode` and `recursive`
+    properties. If `recursive` is `true`, then this function will create any directories
+    in the path that do not already exist:'
+  id: totrans-210
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在Node中创建新目录，使用`fs.mkdir()`、`fs.mkdirSync()`或`fs.promises.mkdir()`。第一个参数是要创建的目录的路径。可选的第二个参数可以是指定新目录的模式（权限位）的整数。或者您可以传递一个带有可选`mode`和`recursive`属性的对象。如果`recursive`为`true`，则此函数将创建路径中尚不存在的任何目录：
+- en: '[PRE38]'
+  id: totrans-211
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE38]'
+- en: '`fs.mkdtemp()` and its variants take a path prefix you provide, append some
+    random characters to it (this is important for security), create a directory with
+    that name, and return (or pass to a callback) the directory path to you.'
+  id: totrans-212
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`fs.mkdtemp()`及其变体接受您提供的路径前缀，将一些随机字符附加到其后（这对安全性很重要），创建一个以该名称命名的目录，并将目录路径返回（或传递给回调）给您。'
+- en: 'To delete a directory, use `fs.rmdir()` or one of its variants. Note that directories
+    must be empty before they can be deleted:'
+  id: totrans-213
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要删除一个目录，使用`fs.rmdir()`或其变体之一。请注意，在删除之前目录必须为空：
+- en: '[PRE39]'
+  id: totrans-214
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE39]'
+- en: 'The “fs” module provides two distinct APIs for listing the contents of a directory.
+    First, `fs.readdir()`, `fs.readdirSync()`, and `fs.promises.readdir()` read the
+    entire directory all at once and give you an array of strings or an array of Dirent
+    objects that specify the names and types (file or directory) of each item. Filenames
+    returned by these functions are just the local name of the file, not the entire
+    path. Here are examples:'
+  id: totrans-215
+  prefs: []
+  type: TYPE_NORMAL
+  zh: “fs”模块为列出目录内容提供了两种不同的API。首先，`fs.readdir()`、`fs.readdirSync()`和`fs.promises.readdir()`一次性读取整个目录，并��您提供一个字符串数组或指定每个项目的名称和类型（文件或目录）的Dirent对象数组。这些函数返回的文件名只是文件的本地名称，而不是整个路径。以下是示例：
+- en: '[PRE40]'
+  id: totrans-216
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE40]'
+- en: If you anticipate needing to list directories that might have thousands of entries,
+    you might prefer the streaming approach of `fs.opendir()` and its variants. These
+    functions return a Dir object representing the specified directory. You can use
+    the `read()` or `readSync()` methods of the Dir object to read one Dirent at a
+    time. If you pass a callback function to `read()`, it will call the callback.
+    And if you omit the callback argument, it will return a Promise. When there are
+    no more directory entries, you’ll get `null` instead of a Dirent object.
+  id: totrans-217
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你预计需要列出可能有数千条条目的目录，你可能更喜欢 `fs.opendir()` 及其变体的流式处理方法。这些函数返回表示指定目录的 Dir 对象。你可以使用
+    Dir 对象的 `read()` 或 `readSync()` 方法逐个读取 Dirent。如果向 `read()` 传递一个回调函数，它将调用该回调。如果省略回调参数，它将返回一个
+    Promise。当没有更多目录条目时，你将得到 `null` 而不是 Dirent 对象。
+- en: 'The easiest way to use Dir objects is as async iterators with a `for/await`
+    loop. Here, for example, is a function that uses the streaming API to list directory
+    entries, calls `stat()` on each entry, and prints file and directory names and
+    sizes:'
+  id: totrans-218
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用 Dir 对象最简单的方法是作为异步迭代器与 `for/await` 循环一起使用。以下是一个使用流式 API 列出目录条目、对每个条目调用 `stat()`
+    并打印文件和目录名称及大小的函数示例：
+- en: '[PRE41]'
+  id: totrans-219
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE41]'
+- en: 16.8 HTTP Clients and Servers
+  id: totrans-220
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.8 HTTP 客户端和服务器
+- en: Node’s “http,” “https,” and “http2” modules are full-featured but relatively
+    low-level implementations of the HTTP protocols. They define comprehensive APIs
+    for implementing HTTP clients and servers. Because the APIs are relatively low-level,
+    there is not room in this chapter to cover all the features. But the examples
+    that follow demonstrate how to write basic clients and servers.
+  id: totrans-221
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 的 “http”，“https” 和 “http2” 模块是完整功能但相对低级的 HTTP 协议实现。它们定义了全面的 API 用于实现 HTTP
+    客户端和服务器。由于这些 API 相对较低级，本章节无法覆盖所有功能。但接下来的示例演示了如何编写基本的客户端和服务器。
+- en: The simplest way to make a basic HTTP GET request is with `http.get()` or `https.get()`.
+    The first argument to these functions is the URL to fetch. (If it is an `http://`
+    URL, you must use the “http” module, and if it is an `https://` URL you must use
+    the “https” module.) The second argument is a callback that will be invoked with
+    an IncomingMessage object when the server’s response has started to arrive. When
+    the callback is called, the HTTP status and headers are available, but the body
+    may not be ready yet. The IncomingMessage object is a Readable stream, and you
+    can use the techniques demonstrated earlier in this chapter to read the response
+    body from it.
+  id: totrans-222
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 发起基本的 HTTP GET 请求的最简单方法是使用 `http.get()` 或 `https.get()`。这些函数的第一个参数是要获取的 URL。（如果是一个
+    `http://` URL，你必须使用 “http” 模块，如果是一个 `https://` URL，你必须使用 “https” 模块。）第二个参数是一个回调函数，当服务器的响应开始到达时将调用该回调，并传入一个
+    IncomingMessage 对象。当回调被调用时，HTTP 状态和头部信息是可用的，但正文可能还没有准备好。IncomingMessage 对象是一个可读流，你可以使用本章前面演示的技术从中读取响应正文。
+- en: The `getJSON()` function at the end of [§13.2.6](ch13.xhtml#async-making-promises)
+    used the `http.get()` function as part of a demonstration of the `Promise()` constructor.
+    Now that you know about Node streams and the Node programming model more generally,
+    it is worth revisiting that example to see how `http.get()` is used.
+  id: totrans-223
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[§13.2.6](ch13.xhtml#async-making-promises) 结尾的 `getJSON()` 函数使用了 `http.get()`
+    函数作为 `Promise()` 构造函数演示的一部分。现在你已经了解了 Node 流和 Node 编程模型，值得重新访问该示例，看看如何使用 `http.get()`。'
+- en: '`http.get()` and `https.get()` are slightly simplified variants of the more
+    general `http.request()` and `https.request()` functions. The following `postJSON()`
+    function demonstrates how to use `https.request()` to make an HTTPS POST request
+    that includes a JSON request body. Like the `getJSON()` function of [Chapter 13](ch13.xhtml#async),
+    it expects a JSON response and returns a Promise that fulfills to the parsed version
+    of that response:'
+  id: totrans-224
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`http.get()` 和 `https.get()` 是稍微简化的 `http.request()` 和 `https.request()` 函数的变体。以下的
+    `postJSON()` 函数演示了如何使用 `https.request()` 发起包含 JSON 请求体的 HTTPS POST 请求。与 [第 13
+    章](ch13.xhtml#async) 的 `getJSON()` 函数一样，它期望一个 JSON 响应，并返回一个解析后的该响应的 Promise：'
+- en: '[PRE42]'
+  id: totrans-225
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE42]'
+- en: 'In addition to making HTTP and HTTPS requests, the “http” and “https” modules
+    also allow you to write servers that respond to those requests. The basic approach
+    is as follows:'
+  id: totrans-226
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了发起 HTTP 和 HTTPS 请求， “http” 和 “https” 模块还允许你编写响应这些请求的服务器。基本的方法如下：
+- en: Create a new Server object.
+  id: totrans-227
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 创建一个新的 Server 对象。
+- en: Call its `listen()` method to begin listening for requests on a specified port.
+  id: totrans-228
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 调用其 `listen()` 方法开始监听指定端口的请求。
+- en: Register an event handler for “request” events, use that handler to read the
+    client’s request (particularly the `request.url` property), and write your response.
+  id: totrans-229
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 为 “request” 事件注册一个事件处理程序，使用该处理程序来读取客户端的请求（特别是 `request.url` 属性），并编写你的响应。
+- en: The code that follows creates a simple HTTP server that serves static files
+    from the local filesystem and also implements a debugging endpoint that responds
+    to a client’s request by echoing that request.
+  id: totrans-230
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 接下来的代码创建了一个简单的 HTTP 服务器，从本地文件系统提供静态文件，并实现了一个调试端点，通过回显客户端的请求来响应。
+- en: '[PRE43]'
+  id: totrans-231
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE43]'
+- en: Node’s built-in modules are all you need to write simple HTTP and HTTPS servers.
+    Note, however, that production servers are not typically built directly on top
+    of these modules. Instead, most nontrivial servers are implemented using external
+    libraries—such as the Express framework—that provide “middleware” and other higher-level
+    utilities that backend web developers have come to expect.
+  id: totrans-232
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 的内置模块就足以编写简单的 HTTP 和 HTTPS 服务器。但请注意，生产服务器通常不直接构建在这些模块之上。相反，大多数复杂的服务器是使用外部库实现的——比如
+    Express 框架——提供了后端 web 开发人员所期望的 “中间件” 和其他更高级的实用工具。
+- en: 16.9 Non-HTTP Network Servers and Clients
+  id: totrans-233
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.9 非 HTTP 网络服务器和客户端
+- en: Web servers and clients have become so ubiquitous that it is easy to forget
+    that it is possible to write clients and servers that do not use HTTP. Even though
+    Node has a reputation as a good environment for writing web servers, Node also
+    has full support for writing other types of network servers and clients.
+  id: totrans-234
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Web服务器和客户端已经变得如此普遍，以至于很容易忘记可以编写不使用HTTP的客户端和服务器。 尽管Node以编写Web服务器的良好环境而闻名，但Node还完全支持编写其他类型的网络服务器和客户端。
+- en: If you are comfortable working with streams, then networking is relatively simple,
+    because network sockets are simply a kind of Duplex stream. The “net” module defines
+    Server and Socket classes. To create a server, call `net.createServer()`, then
+    call the `listen()` method of the resulting object to tell the server what port
+    to listen on for connections. The Server object will generate “connection” events
+    when a client connects on that port, and the value passed to the event listener
+    will be a Socket object. The Socket object is a Duplex stream, and you can use
+    it to read data from the client and write data to the client. Call `end()` on
+    the Socket to disconnect.
+  id: totrans-235
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您习惯使用流，那么网络相对简单，因为网络套接字只是一种双工流。 “net”模块定义了Server和Socket类。 要创建一个服务器，调用`net.createServer()`，然后调用生成的对象的`listen()`方法，告诉服务器在哪个端口上监听连接。
+    当客户端在该端口上连接时，Server对象将生成“connection”事件，并传递给事件侦听器的值将是一个Socket对象。 Socket对象是一个双工流，您可以使用它从客户端读取数据并向客户端写入数据。
+    在Socket上调用`end()`以断开连接。
+- en: 'Writing a client is even easier: pass a port number and hostname to `net.createConnection()`
+    to create a socket to communicate with whatever server is running on that host
+    and listening on that port. Then use that socket to read and write data from and
+    to the server.'
+  id: totrans-236
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 编写客户端甚至更容易：将端口号和主机名传递给`net.createConnection()`以创建一个套接字，用于与在该主机上运行并在该端口上监听的任何服务器通信。
+    然后使用该套接字从服务器读取和写入数据。
+- en: 'The following code demonstrates how to write a server with the “net” module.
+    When the client connects, the server tells a knock-knock joke:'
+  id: totrans-237
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 以下代码演示了如何使用“net”模块编写服务器。 当客户端连接时，服务器讲一个knock-knock笑话：
+- en: '[PRE44]'
+  id: totrans-238
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE44]'
+- en: 'Simple text-based servers like this do not typically need a custom client.
+    If the `nc` (“netcat”) utility is installed on your system, you can use it to
+    communicate with this server as follows:'
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这样的简单基于文本的服务器通常不需要一个定制的客户端。如果您的系统上安装了`nc`（“netcat”）实用程序，您可以使用它来与这个服务器通信，方法如下：
+- en: '[PRE45]'
+  id: totrans-240
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE45]'
+- en: 'On the other hand, writing a custom client for the joke server is easy in Node.
+    We just connect to the server, then pipe the server’s output to stdout and pipe
+    stdin to the server’s input:'
+  id: totrans-241
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一方面，在Node中编写一个定制的客户端对于笑话服务器来说很容易。 我们只需连接到服务器，然后将服务器的输出导向stdout，并将stdin导向服务器的输入：
+- en: '[PRE46]'
+  id: totrans-242
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE46]'
+- en: In addition to supporting TCP-based servers, Node’s “net” module also supports
+    interprocess communication over “Unix domain sockets” that are identified by a
+    filesystem path rather than by a port number. We are not going to cover that kind
+    of socket in this chapter, but the Node documentation has details. Other Node
+    features that we don’t have space to cover here include the “dgram” module for
+    UDP-based clients and servers and the “tls” module that is to “net” as “https”
+    is to “http.” The `tls.Server` and `tls.TLSSocket` classes allow the creation
+    of TCP servers (like the knock-knock joke server) that use SSL-encrypted connections
+    like HTTPS servers do.
+  id: totrans-243
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了支持基于TCP的服务器，Node的“net”模块还支持通过“Unix域套接字”进行进程间通信，这些套接字通过文件系统路径而不是端口号进行标识。 我们不打算在本章中涵盖这种类型的套接字，但Node文档中有详细信息。
+    我们在这里没有空间涵盖的其他Node功能包括“dgram”模块用于基于UDP的客户端和服务器，以及“tls”模块，它类似于“https”对“http”的关系。
+    `tls.Server`和`tls.TLSSocket`类允许创建使用SSL加密连接的TCP服务器（如knock-knock笑话服务器），就像HTTPS服务器一样。
+- en: 16.10 Working with Child Processes
+  id: totrans-244
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.10 使用子进程进行操作
+- en: In addition to writing highly concurrent servers, Node also works well for writing
+    scripts that execute other programs. In Node the “child_process” module defines
+    a number of functions for running other programs as child processes. This section
+    demonstrates some of those functions, starting with the simplest and moving to
+    the more complicated.
+  id: totrans-245
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了编写高度并发的服务器，Node还适用于编写执行其他程序的脚本。 在Node中，“child_process”模块定义了许多函数，用于作为子进程运行其他程序。
+    本节演示了其中一些函数，从最简单的开始，逐渐过渡到更复杂的函数。
+- en: 16.10.1 execSync() and execFileSync()
+  id: totrans-246
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.10.1 execSync()和execFileSync()
+- en: The easiest way to run another program is with `child_process.execSync()`. This
+    function takes the command to run as its first argument. It creates a child process,
+    runs a shell in that process, and uses the shell to execute the command you passed.
+    Then it blocks until the command (and the shell) exit. If the command exits with
+    an error, then `execSync()` throws an exception. Otherwise, `execSync()` returns
+    whatever output the command writes to its stdout stream. By default this return
+    value is a buffer, but you can specify an encoding in an optional second argument
+    to get a string instead. If the command writes any output to stderr, that output
+    just gets passed through to the parent process’s stderr stream.
+  id: totrans-247
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 运行另一个程序的最简单方法是使用`child_process.execSync()`。 此函数将要运行的命令作为其第一个参数。 它创建一个子进程，在该进程中运行一个shell，并使用shell执行您传递的命令。
+    然后它阻塞，直到命令（和shell）退出。 如果命令以错误退出，则`execSync()`会抛出异常。 否则，`execSync()`返回命令写入其stdout流的任何输出。
+    默认情况下，此返回值是一个缓冲区，但您可以在可选的第二个参数中指定编码以获得一个字符串。 如果命令将任何输出写入stderr，则该输出将直接传递到父进程的stderr流。
+- en: 'So, for example, if you are writing a script and performance is not a concern,
+    you might use `child_process.execSync()` to list a directory with a familiar Unix
+    shell command rather than using the `fs.readdirSync()` function:'
+  id: totrans-248
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 所以，例如，如果您正在编写一个脚本，性能不是一个问题，您可能会使用`child_process.execSync()`来列出一个目录，而不是使用`fs.readdirSync()`函数：
+- en: '[PRE47]'
+  id: totrans-249
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE47]'
+- en: The fact that `execSync()` invokes a full Unix shell means that the string you
+    pass to it can include multiple semicolon-separated commands, and can take advantage
+    of shell features such as filename wildcards, pipes, and output redirection. This
+    also means that you must be careful to never pass a command to `execSync()` if
+    any portion of that command is user input or comes from a similar untrusted source.
+    The complex syntax of shell commands can be easily subverted to allow an attacker
+    to run arbitrary code.
+  id: totrans-250
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`execSync()` 调用完整的 Unix shell 意味着您传递给它的字符串可以包含多个以分号分隔的命令，并且可以利用 shell 功能，如文件名通配符、管道和输出重定向。这也意味着您必须小心，永远不要将来自用户输入或类似不受信任来源的命令传递给
+    `execSync()`。shell 命令的复杂语法很容易被利用，以允许攻击者运行任意代码。'
+- en: 'If you don’t need the features of a shell, you can avoid the overhead of starting
+    a shell by using `child_process.execFileSync()`. This function executes a program
+    directly, without invoking a shell. But since no shell is involved, it can’t parse
+    a command line, and you must pass the executable as the first argument and an
+    array of command-line arguments as the second argument:'
+  id: totrans-251
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您不需要 shell 的功能，可以通过使用 `child_process.execFileSync()` 避免启动 shell 的开销。此函数直接执行程序，而不调用
+    shell。但由于不涉及 shell，它无法解析命令行，您必须将可执行文件作为第一个参数传递，并将命令行参数数组作为第二个参数传递：
+- en: '[PRE48]'
+  id: totrans-252
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE48]'
+- en: 16.10.2 exec() and execFile()
+  id: totrans-253
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.10.2 exec() 和 execFile()
+- en: 'The `execSync()` and `execFileSync()` functions are, as their names indicate,
+    synchronous: they block and do not return until the child process exits. Using
+    these functions is a lot like typing Unix commands in a terminal window: they
+    allow you to run a sequence of commands one at a time. But if you’re writing a
+    program that needs to accomplish a number of tasks, and those tasks don’t depend
+    on each other in any way, then you may want to parallelize them and run multiple
+    commands at the same time. You can do this with the asynchronous functions `child_process.exec()`
+    and `child_process.execFile()`.'
+  id: totrans-254
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`execSync()` 和 `execFileSync()` 函数是同步的：它们会阻塞并在子进程退出之前不返回。使用这些函数很像在终端窗口中输入 Unix
+    命令：它们允许您逐个运行一系列命令。但是，如果您正在编写一个需要完成多个任务且这些任务彼此不依赖的程序，那么您可能希望并行运行它们并同时运行多个命令。您可以使用异步函数
+    `child_process.exec()` 和 `child_process.execFile()` 来实现这一点。'
+- en: '`exec()` and `execFile()` are like their synchronous variants except that they
+    return immediately with a ChildProcess object that represents the running child
+    process, and they take an error-first callback as their final argument. The callback
+    is invoked when the child process exits, and it is actually called with three
+    arguments. The first is the error, if any; it will be `null` if the process terminated
+    normally. The second argument is the collected output that was sent to the child’s
+    standard output stream. And the third argument is any output that was sent to
+    the child’s standard error stream.'
+  id: totrans-255
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`exec()` 和 `execFile()` 与它们的同步变体类似，只是它们立即返回一个代表正在运行的子进程的 ChildProcess 对象，并且它们将错误优先的回调作为最后一个参数。当子进程退出时，将调用回调，并实际上会使用三个参数调用它。第一个是错误（如果有的话）；如果进程正常终止，则为
+    `null`。第二个参数是发送到子进程标准输出流的收集输出。第三个参数是发送到子进程标准错误流的任何输出。'
+- en: The ChildProcess object returned by `exec()` and `execFile()` allows you to
+    terminate the child process, and to write data to it (which it can then read from
+    its standard input). We’ll cover ChildProcess in more detail when we discuss the
+    `child_process.spawn()` function.
+  id: totrans-256
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`exec()` 和 `execFile()` 返回的 ChildProcess 对象允许您终止子进程，并向其写入数据（然后可以从其标准输入读取）。当我们讨论
+    `child_process.spawn()` 函数时，我们将更详细地介绍 ChildProcess。'
+- en: 'If you plan to execute multiple child processes at the same time, then it may
+    be easiest to use the “promisified” version of `exec()` which returns a Promise
+    object which, if the child process exits without error, resolves to an object
+    with `stdout` and `stderr` properties. Here, for example, is a function that takes
+    an array of shell commands as its input and returns a Promise that resolves to
+    the result of all of those commands:'
+  id: totrans-257
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您计划同时执行多个子进程，则最简单的方法可能是使用 `exec()` 的“promisified”版本，它返回一个 Promise 对象，如果子进程无错误退出，则解析为具有
+    `stdout` 和 `stderr` 属性的对象。例如，这是一个接受 shell 命令数组作为输入并返回一个 Promise 的函数，该 Promise
+    解析为所有这些命令的结果：
+- en: '[PRE49]'
+  id: totrans-258
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE49]'
+- en: 16.10.3 spawn()
+  id: totrans-259
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.10.3 spawn()
+- en: 'The various `exec` functions described so far—both synchronous and asynchronous—are
+    designed to be used with child processes that run quickly and do not produce a
+    lot of output. Even the asynchronous `exec()` and `execFile()` are nonstreaming:
+    they return the process output in a single batch, only after the process has exited.'
+  id: totrans-260
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 到目前为止描述的各种 `exec` 函数——同步和异步——都设计用于与快速运行且不产生大量输出的子进程一起使用。即使是异步的 `exec()` 和 `execFile()`
+    也不是流式的：它们在进程退出后才一次性返回进程输出。
+- en: 'The `child_process.spawn()` function allows you streaming access to the output
+    of the child process, while the process is still running. It also allows you to
+    write data to the child process (which will see that data as input on its standard
+    input stream): this means it is possible to dynamically interact with a child
+    process, sending it input based on the output it generates.'
+  id: totrans-261
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`child_process.spawn()` 函数允许您在子进程仍在运行时流式访问子进程的输出。它还允许您向子进程写入数据（子进程将把该数据视为其标准输入流上的输入）：这意味着可以动态与子进程交互，根据其生成的输出发送输入。'
+- en: '`spawn()` does not use a shell by default, so you must invoke it like `execFile()`
+    with the executable to be run and a separate array of command-line arguments to
+    pass to it. `spawn()` returns a ChildProcess object like `execFile()` does, but
+    it does not take a callback argument. Instead of using a callback function, you
+    listen to events on the ChildProcess object and on its streams.'
+  id: totrans-262
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`spawn()` 默认不使用 shell，因此您必须像使用 `execFile()` 一样调用它，提供要运行的可执行文件以及一个单独的命令行参数数组传递给它。`spawn()`
+    返回一个类似于 `execFile()` 的 ChildProcess 对象，但它不接受回调参数。您可以监听 ChildProcess 对象及其流上的事件，而不是使用回调函数。'
+- en: 'The ChildProcess object returned by `spawn()` is an event emitter. You can
+    listen for the “exit” event to be notified when the child process exits. A ChildProcess
+    object also has three stream properties. `stdout` and `stderr` are Readable streams:
+    when the child process writes to its stdout and its stderr streams, that output
+    becomes readable through the ChildProcess streams. Note the inversion of the names
+    here. In the child process, “stdout” is a Writable output stream, but in the parent
+    process, the `stdout` property of a ChildProcess object is a Readable input stream.'
+  id: totrans-263
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由`spawn()`返回的ChildProcess对象是一个事件发射器。你可以监听“exit”事件以在子进程退出时收到通知。ChildProcess对象还有三个流属性。`stdout`和`stderr`是可读流：当子进程写入其stdout和stderr流时，该输出通过ChildProcess流变得可读。请注意这里名称的倒置。在子进程中，“stdout”是一个可写���出流，但在父进程中，ChildProcess对象的`stdout`属性是一个可读输入流。
+- en: 'Similarly, the `stdin` property of the ChildProcess object is a Writeable stream:
+    anything you write to this stream becomes available to the child process on its
+    standard input.'
+  id: totrans-264
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 类似地，ChildProcess对象的`stdin`属性是一个可写流：你写入到这个流的任何内容都会在子进程的标准输入上可用。
+- en: The ChildProcess object also defines a `pid` property that specifies the process
+    id of the child. And it defines a `kill()` method that you can use to terminate
+    a child process.
+  id: totrans-265
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ChildProcess对象还定义了一个`pid`属性，指定子进程的进程ID。它还定义了一个`kill()`方法，用于终止子进程。
+- en: 16.10.4 fork()
+  id: totrans-266
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.10.4 fork()
+- en: '`child_process.fork()` is a specialized function for running a module of JavaScript
+    code in a child Node process. `fork()` expects the same arguments as `spawn()`,
+    but the first argument should specify the path to a file of JavaScript code instead
+    of an executable binary file.'
+  id: totrans-267
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`child_process.fork()`是一个专门用于在子Node进程中运行JavaScript代码模块的函数。`fork()`期望与`spawn()`相同的参数，但第一个参数应指定JavaScript代码文件的路径，而不是可执行二进制文件。'
+- en: A child process created with `fork()` can communicate with the parent process
+    via its standard input and standard output streams, as described in the previous
+    section for `spawn()`. But in addition, `fork()` enables another, much easier,
+    communication channel between the parent and child processes.
+  id: totrans-268
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用`fork()`创建的子进程可以通过其标准输入和标准输出流与父进程通信，就像在`spawn()`的前一节中描述的那样。但是，`fork()`还为父子进程之间提供了另一个更简单的通信渠道。
+- en: When you create a child process with `fork()`, you can use the `send()` method
+    of the returned ChildProcess object to send a copy of an object to the child process.
+    And you can listen for the “message” event on the ChildProcess to receive messages
+    from the child. The code running in the child process can use `process.send()`
+    to send a message to the parent and can listen for “message” events on `process`
+    to receive messages from the parent.
+  id: totrans-269
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当你使用`fork()`创建一个子进程时，你可以使用返回的ChildProcess对象的`send()`方法向子进程发送一个对象的副本。你可以监听ChildProcess上的“message”事件来接收子进程发送的消息。在子进程中运行的代码可以使用`process.send()`向父进程发送消息，并且可以监听`process`上的“message”事件来接收父进程发送的消息。
+- en: 'Here, for example, is some code that uses `fork()` to create a child process,
+    then sends that child a message and waits for a response:'
+  id: totrans-270
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里，例如，是一些使用`fork()`创建子进程的代码，然后向该子进程发送消息并等待响应的代码：
+- en: '[PRE50]'
+  id: totrans-271
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE50]'
+- en: 'And here is the code that runs in the child process:'
+  id: totrans-272
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里是在子进程中运行的代码：
+- en: '[PRE51]'
+  id: totrans-273
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE51]'
+- en: Starting child processes is an expensive operation, and the child process would
+    have to be doing orders of magnitude more computation before it would make sense
+    to use `fork()` and interprocess communication in this way. If you are writing
+    a program that needs to be very responsive to incoming events and also needs to
+    perform time-consuming computations, then you might consider using a separate
+    child process to perform the computations so that they don’t block the event loop
+    and reduce the responsiveness of the parent process. (Though a thread—see [§16.11](#node-worker-threads)—may
+    be a better choice than a child process in this scenario.)
+  id: totrans-274
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 启动子进程是一个昂贵的操作，子进程必须进行数量级更多的计算才能使用`fork()`和这种方式的进程间通信才有意义。如果你正在编写一个需要对传入事件非常敏感并且还需要执行耗时计算的程序，那么你可能会考虑使用一个单独的子进程来执行计算，以便它们不会阻塞事件循环并降低父进程的响应性。（尽管在这种情况下，线程—参见[§16.11](#node-worker-threads)—可能比子进程更好的选择。）
+- en: The first argument to `send()` will be serialized with `JSON.stringify()` and
+    deserialized in the child process with `JSON.parse()`, so you should only include
+    values that are supported by the JSON format. `send()` has a special second argument,
+    however, that allows you to transfer Socket and Server objects (from the “net”
+    module) to a child process. Network servers tend to be IO-bound rather than compute-bound,
+    but if you have written a server that needs to do more computation than a single
+    CPU can handle, and if you’re running that server on a machine with multiple CPUs,
+    then you could use `fork()` to create multiple child processes for handling requests.
+    In the parent process, you might listen for “connection” events on your Server
+    object, then get the Socket object from that “connection” event and `send()` it—using
+    the special second argument—to one of the child processes to be handled. (Note
+    that this is an unlikely solution to an uncommon scenario. Rather than writing
+    a server that forks child processes, it is probably simpler to keep your server
+    single-threaded and deploy multiple instances of it in production to handle the
+    load.)
+  id: totrans-275
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`send()`的第一个参数将使用`JSON.stringify()`进行序列化，并在子进程中使用`JSON.parse()`进行反序列化，因此你应该只包含JSON格式支持的值。然而，`send()`有一个特殊的第二个参数，允许你传输Socket和Server对象（来自“net”模块）到子进程。网络服务器往往是IO绑定的，而不是计算绑定的，但如果你编写了一个需要进行比单个CPU处理更多计算的服务器，并且在拥有多个CPU的机器上运行该服务器，那么你可以使用`fork()`创建多个子进程来处理请求。在父进程中，你可能会监听Server对象上的“connection”事件，然后从该“connection”事件中获取Socket对象，并使用特殊的第二个参数`send()`到一个子进程中处理。（请注意，这是一个不太常见的情况的不太可能的解决方案。与编写分叉子进程的服务器相比，保持服务器单线程并在生产环境中部署多个实例来处理负载可能更简单。）'
+- en: 16.11 Worker Threads
+  id: totrans-276
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.11 Worker Threads
+- en: As explained at the beginning of this chapter, Node’s concurrency model is single-threaded
+    and event-based. But in version 10 and later, Node does allow true multithreaded
+    programming, with an API that closely mirrors the Web Workers API defined by web
+    browsers ([§15.13](ch15.xhtml#webworkers)). Multithreaded programming has a well-deserved
+    reputation for being difficult. This is almost entirely because of the need to
+    carefully synchronize access by threads to shared memory. But JavaScript threads
+    (in both Node and browsers) do not share memory by default, so the dangers and
+    difficulties of using threads do not apply to these “workers” in JavaScript.
+  id: totrans-277
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如本章开头所解释的，Node 的并发模型是单线程和基于事件的。但在版本 10 及更高版本中，Node 确实允许真正的多线程编程，其 API 与由 Web
+    浏览器定义的 Web Workers API（[§15.13](ch15.xhtml#webworkers)）非常相似。多线程编程以难度大而著称。这几乎完全是因为需要仔细同步线程对共享内存的访问。但
+    JavaScript 线程（无论是在 Node 还是浏览器中）默认不共享内存，因此使用线程的危险和困难不适用于 JavaScript 中的这些“工作线程”。
+- en: Instead of using shared memory, JavaScript’s worker threads communicate by message
+    passing. The main thread can send a message to a worker thread by calling the
+    `postMessage()` method of the Worker object that represents that thread. The worker
+    thread can receive messages from its parent by listening for “message” events.
+    And workers can send messages to the main thread with their own version of `postMessage()`,
+    which the parent can receive with its own “message” event handler. The example
+    code will make it clear how this works.
+  id: totrans-278
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript 的工作线程通过消息传递进行通信，而不是使用共享内存。主线程可以通过调用表示该线程的 Worker 对象的`postMessage()`方法向工作线程发送消息。工作线程可以通过监听“message”事件来接收来自其父级的消息。工作线程可以通过自己的`postMessage()`方法向主线程发送消息，父级可以通过自己的“message”事件处理程序接收消息。示例代码将清楚地说明这是如何工作的。
+- en: 'There are three reasons why you might want to use worker threads in a Node
+    application:'
+  id: totrans-279
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有三个原因可能会让你想在 Node 应用程序中使用工作线程：
+- en: If your application actually needs to do more computation than one CPU core
+    can handle, then threads allow you to distribute work across the multiple cores,
+    which have become commonplace on computers today. If you’re doing scientific computing
+    or machine learning or graphics processing in Node, then you may want to use threads
+    simply to throw more computing power at your problem.
+  id: totrans-280
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果您的应用程序实际上需要进行比一个 CPU 核心处理更多的计算，那么线程可以让您在多个核心之间分配工作，这在今天的计算机上已经很普遍。如果您在 Node
+    中进行科学计算、机器学习或图形处理，那么您可能希望使用线程来为问题提供更多的计算能力。
+- en: Even if your application is not using the full power of one CPU, you may still
+    want to use threads to maintain the responsiveness of the main thread. Consider
+    a server that handles large but relatively infrequent requests. Suppose it gets
+    only one request a second, but needs to spend about half a second of (blocking
+    CPU-bound) computation to process each request. On average, it will be idle 50%
+    of the time. But when two requests arrive within a few milliseconds of each other,
+    the server will not even be able to begin a response to the second request until
+    the computation of the first response is complete. Instead, if the server uses
+    a worker thread to perform the computation, the server can begin the response
+    to both requests immediately and provide a better experience for the server’s
+    clients. Assuming the server has more than one CPU core, it can also compute the
+    body of both responses in parallel, but even if there is only a single core, using
+    workers still improves the responsiveness.
+  id: totrans-281
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 即使您的应用程序没有充分利用一个 CPU 的全部性能，您可能仍然希望使用线程来保持主线程的响应性。考虑一个处理大型但相对不频繁请求的服务器。假设它每秒只收到一个请求，但需要大约半秒钟的（阻塞
+    CPU 密集型）计算来处理每个请求。平均而言，它将有 50% 的空闲时间。但当两个请求在几毫秒内同时到达时，服务器甚至无法开始响应第二个请求，直到第一个响应的计算完成。相反，如果服务器使用工作线程执行计算，服务器可以立即开始响应两个请求，并为服务器的客户提供更好的体验。假设服务器有多个
+    CPU 核心，它还可以并行计算两个响应的主体，但即使只有一个核心，使用工作线程仍然可以提高响应性。
+- en: In general, workers allow us to turn blocking synchronous operations into nonblocking
+    asynchronous operations. If you are writing a program that depends on legacy code
+    that is unavoidably synchronous, you may be able to use workers to avoid blocking
+    when you need to call that legacy code.
+  id: totrans-282
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 一般来说，工作线程允许我们将阻塞的同步操作转换为非阻塞的异步操作。如果您正在编写一个依赖不可避免同步的传统代码的程序，您可以使用工作线程来避免在需要调用该传统代码时阻塞。
+- en: Worker threads are not nearly as heavyweight as child processes, but they are
+    not lightweight. It does not generally make sense to create a worker unless you
+    have significant work for it to do. And, generally speaking, if your program is
+    not CPU-bound and is not having responsiveness problems, then you probably do
+    not need worker threads.
+  id: totrans-283
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 工作线程并不像子进程那样沉重，但也不轻量级。通常情况下，除非有大量工作要做，否则创建工作线程是没有意义的。一��来说，如果您的程序既不受 CPU 限制，也没有响应问题，那么您可能不需要工作线程。
+- en: 16.11.1 Creating Workers and Passing Messages
+  id: totrans-284
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.11.1 创建工作线程并传递消息
+- en: 'The Node module that defines workers is known as “worker_threads.” In this
+    section we’ll refer to it with the identifier `threads`:'
+  id: totrans-285
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 定义工作线程的 Node 模块被称为“worker_threads”。在本节中，我们将使用标识符`threads`来引用它：
+- en: '[PRE52]'
+  id: totrans-286
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE52]'
+- en: This module defines a Worker class to represent a worker thread, and you can
+    create a new thread with the `threads.Worker()` constructor. The following code
+    demonstrates using this constructor to create a worker, and shows how to pass
+    messages from main thread to worker and from worker to main thread. It also demonstrates
+    a trick that allows you to put the main thread code and the worker thread code
+    in the same file.^([2](ch16.xhtml#idm46198483842088))
+  id: totrans-287
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 该模块定义了一个 Worker 类来表示一个工作线程，您可以使用`threads.Worker()`构造函数创建一个新线程。以下代码演示了如何使用此构造函数创建一个工作线程，并展示了如何从主线程向工作线程传递消息，以及从工作线程向主线程传递消息。它还演示了一个技巧，允许您将主线程代码和工作线程代码放在同一个文件中。^([2](ch16.xhtml#idm46198483842088))
+- en: '[PRE53]'
+  id: totrans-288
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE53]'
+- en: The first argument to the `Worker()` constructor is the path to a file of JavaScript
+    code that is to run in the thread. In the preceding code, we used the predefined
+    `__filename` identifier to create a worker that loads and runs the same file as
+    the main thread. In general, though, you will be passing a file path. Note that
+    if you specify a relative path, it is relative to `process.cwd()`, not relative
+    to the currently running module. If you want a path relative to the current module,
+    use something like `path.resolve(__dirname, 'workers/reticulator.js')`.
+  id: totrans-289
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Worker()` 构造函数的第一个参数是要在线程中运行的 JavaScript 代码文件的路径。在上面的代码中，我们使用预定义的 `__filename`
+    标识符创建一个加载和运行与主线程相同文件的工作线程。不过，一般来说，你会传递一个文件路径。请注意，如果指定相对路径，则相对于 `process.cwd()`，而不是相对于当前运行的模块。如果你想要一个相对于当前模块的路径，可以使用类似
+    `path.resolve(__dirname, ''workers/reticulator.js'')` 的方式。'
+- en: 'The `Worker()` constructor can also accept an object as its second argument,
+    and the properties of this object provide optional configuration for the worker.
+    We’ll cover a number of these options later, but for now note that if you pass
+    `{eval: true}` as the second argument, then the first argument to `Worker()` is
+    interpreted as a string of JavaScript code to be evaluated instead of a filename:'
+  id: totrans-290
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Worker()` 构造函数还可以接受一个对象作为其第二个参数，该对象的属性为工作线程提供可选配置。我们稍后会介绍其中一些选项，但现在请注意，如果将
+    `{eval: true}` 作为第二个参数传递，那么 `Worker()` 的第一个参数将被解释为要评估的 JavaScript 代码字符串，而不是文件名：'
+- en: '[PRE54]'
+  id: totrans-291
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE54]'
+- en: Node makes a copy of the object passed to `postMessage()` rather than sharing
+    it directly with the worker thread. This prevents the worker thread and the main
+    thread from sharing memory. You might expect that this copying would be done with
+    `JSON.stringify()` and `JSON.parse()` ([§11.6](ch11.xhtml#jsonapi)). But in fact,
+    Node borrows a more robust technique known as the structured clone algorithm from
+    web browsers.
+  id: totrans-292
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Node 在传递给 `postMessage()` 的对象上创建一个副本，而不是直接与工作线程共享。这样可以防止工作线程和主线程共享内存。你可能会期望这种复制是通过
+    `JSON.stringify()` 和 `JSON.parse()`（[§11.6](ch11.xhtml#jsonapi)）来完成的。但事实上，Node
+    借用了一种更强大的技术，即从 Web 浏览器中知名的结构化克隆算法。
+- en: 'The structured clone algorithm enables serialization of most JavaScript types,
+    including Map, Set, Date, and RegExp objects and typed arrays, but it cannot,
+    in general, copy types defined by the Node host environment, such as sockets and
+    streams. Note, however, that Buffer objects are partially supported: if you pass
+    a Buffer to `postMessage()` it will be received as a Uint8Array, and can be converted
+    back into a Buffer with `Buffer.from()`. Read more about the structured clone
+    algorithm in [“The Structured Clone Algorithm”](ch15.xhtml#structuredclone).'
+  id: totrans-293
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 结构化克隆算法可以序列化大多数 JavaScript 类型，包括 Map、Set、Date 和 RegExp 对象以及类型化数组，但通常无法复制由 Node
+    主机环境定义的类型，如套接字和流。然而，需要注意的是，Buffer 对象部分支持：如果你将一个 Buffer 传递给 `postMessage()`，它将被接收为
+    Uint8Array，并且可以使用 `Buffer.from()` 转换回 Buffer。在 [“结构化克隆算法”](ch15.xhtml#structuredclone)
+    中了解更多关于结构化克隆算法的信息。
+- en: 16.11.2 The Worker Execution Environment
+  id: totrans-294
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.11.2 工作线程执行环境
+- en: 'For the most part, JavaScript code in a Node worker thread runs just like it
+    would in Node’s main thread. There are a few differences that you should be aware
+    of, and some of these differences involve properties of the optional second argument
+    to the `Worker()` constructor:'
+  id: totrans-295
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在大多数情况下，Node 中的工作线程中的 JavaScript 代码运行方式与在 Node 的主线程中一样。有一些差异需要注意，其中一些差异涉及到 `Worker()`
+    构造函数的可选第二个参数的属性：
+- en: As we’ve seen, `threads.isMainThread` is `true` in the main thread but is always
+    `false` in any worker thread.
+  id: totrans-296
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 正如我们所见，`threads.isMainThread` 在主线程中为 `true`，但在任何工作线程中始终为 `false`。
+- en: In a worker thread, you can use `threads.parentPort.postMessage()` to send a
+    message to the parent thread and `threads.parentPort.on` to register event handlers
+    for messages from the parent thread. In the main thread, `threads.parentPort`
+    is always `null`.
+  id: totrans-297
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 在工作线程中，你可以使用 `threads.parentPort.postMessage()` 向父线程发送消息，使用 `threads.parentPort.on`
+    注册来自父线程的消息的事件处理程序。在主线程中，`threads.parentPort` 始终为 `null`。
+- en: In a worker thread, `threads.workerData` is set to a copy of the `workerData`
+    property of the second argument to the `Worker()` constructor. In the main thread,
+    this property is always `null`. You can use this `workerData` property to pass
+    an initial message to the worker that will be available as soon as it starts so
+    that the worker does not have to wait for a “message” event before it can start
+    doing work.
+  id: totrans-298
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 在工作线程中，`threads.workerData` 被设置为 `Worker()` 构造函数的第二个参数的 `workerData` 属性的副本。在主线程中，此属性始终为
+    `null`。你可以使用这个 `workerData` 属性向工作线程传递一个初始消息，该消息将在工作线程启动后立即可用，这样工作线程就不必等待“message”事件才能开始工作。
+- en: By default, `process.env` in a worker thread is a copy of `process.env` in the
+    parent thread. But the parent thread can specify a custom set of environment variables
+    by setting the `env` property of the second argument to the `Worker()` constructor.
+    As a special (and potentially dangerous) case, the parent thread can set the `env`
+    property to `threads.SHARE_ENV`, which will cause the two threads to share a single
+    set of environment variables so that a change in one thread is visible in the
+    other.
+  id: totrans-299
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 默认情况下，在工作线程中，`process.env` 是父线程中 `process.env` 的副本。但父线程可以通过设置 `Worker()` 构造函数的第二个参数的
+    `env` 属性来指定一组自定义的环境变量。作为一个特殊（可能危险）的情况，父线程可以将 `env` 属性设置为 `threads.SHARE_ENV`，这将导致两个线程共享一组环境变量，以便一个线程中的更改在另一个线程中可见。
+- en: 'By default, the `process.stdin` stream in a worker never has any readable data
+    on it. You can change this default by passing `stdin: true` in the second argument
+    to the `Worker()` constructor. If you do that, then the `stdin` property of the
+    Worker object is a Writable stream. Any data that the parent writes to `worker.stdin`
+    becomes readable on `process.stdin` in the worker.'
+  id: totrans-300
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '默认情况下，在工作线程中，`process.stdin` 流永远没有可读数据。你可以通过在 `Worker()` 构造函数的第二个参数中传递 `stdin:
+    true` 来更改此默认行为。如果这样做，那么 Worker 对象的 `stdin` 属性将是一个可写流。父进程写入 `worker.stdin` 的任何数据在工作线程中的
+    `process.stdin` 上变为可读。'
+- en: 'By default, the `process.stdout` and `process.stderr` streams in the worker
+    are simply piped to the corresponding streams in the parent thread. This means,
+    for example, that `console.log()` and `console.error()` produce output in exactly
+    the same way in a worker thread as they do in the main thread. You can override
+    this default by passing `stdout:true` or `stderr:true` in the second argument
+    to the `Worker()` constructor. If you do this, then any output the worker writes
+    to those streams becomes readable by the parent thread on the `worker.stdout`
+    and `worker.stderr` threads. (There is a potentially confusing inversion of stream
+    directions here, and we saw the same thing with with child processes earlier in
+    the chapter: the output streams of a worker thread are input streams for the parent
+    thread, and the input stream of a worker is an output stream for the parent.)'
+  id: totrans-301
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 默认情况下，工作线程中的`process.stdout`和`process.stderr`流会简单地传输到父线程中对应的流。这意味着，例如，`console.log()`和`console.error()`在工作线程中的输出方式与主线程中完全相同。你可以通过在`Worker()`构造函数的第二个参数中传递`stdout:true`或`stderr:true`来覆盖此默认行为。如果这样做，那么工作线程写入这些流的任何输出都可以在父线程的`worker.stdout`和`worker.stderr`流中读取到。（这里存在一个潜在的令人困惑的流方向倒置，我们在本章前面的子进程中也看到了相同的情况：工作线程的输出流是父线程的输入流，工作线程的输入流是父线程的输出流。）
+- en: If a worker thread calls `process.exit()`, only the thread exits, not the entire
+    process.
+  id: totrans-302
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果工作线程调用`process.exit()`，只有该线程退出，整个进程不会退出。
+- en: Worker threads are not allowed to change shared state of the process they are
+    part of. Functions like `process.chdir()` and `process.setuid()` will throw exceptions
+    when invoked from a worker.
+  id: totrans-303
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 工作线程不允许更改它们所属进程的共享状态。当从工作线程调用`process.chdir()`和`process.setuid()`等函数时，会抛出异常。
+- en: Operating system signals (like `SIGINT` and `SIGTERM`) are only delivered to
+    the main thread; they cannot be received or handled in worker threads.
+  id: totrans-304
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 操作系统信号（如`SIGINT`和`SIGTERM`）只会传递给主线程；它们无法在工作线程中接收或处理。
+- en: 16.11.3 Communication Channels and MessagePorts
+  id: totrans-305
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.11.3 通信通道和 MessagePorts
+- en: When a new worker thread is created, a communication channel is created along
+    with it that allows messages to be passed back and forth between the worker and
+    the parent thread. As we’ve seen, the worker thread uses `threads.parentPort`
+    to send and receive messages to and from the parent thread, and the parent thread
+    uses the Worker object to send and receive messages to and from the worker thread.
+  id: totrans-306
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 创建新的工作线程时，会同时创建一个通信通道，允许工作线程和父线程之间传递消息。正如我们所见，工作线程使用`threads.parentPort`与父线程发送和接收消息，父线程使用
+    Worker 对象与工作线程发送和接收消息。
+- en: The worker thread API also allows the creation of custom communication channels
+    using the MessageChannel API defined by web browsers and covered in [§15.13.5](ch15.xhtml#messagechannel).
+    If you have read that section, much of what follows will sound familiar to you.
+  id: totrans-307
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 工���线程 API 还允许使用由 Web 浏览器定义并在 [§15.13.5](ch15.xhtml#messagechannel) 中介绍的 MessageChannel
+    API 创建自定义通信通道。如果你已经阅读了该部分，接下来的内容会让你感到很熟悉。
+- en: Suppose a worker needs to handle two different kinds of messages sent by two
+    different modules in the main thread. These two different modules could both share
+    the default channel and send messages with `worker.postMessage()`, but it would
+    be cleaner if each module has its own private channel for sending messages to
+    the worker. Or consider the case where the main thread creates two independent
+    workers. A custom communication channel can allow the two workers to communicate
+    directly with each other instead of having to send all their messages via the
+    parent.
+  id: totrans-308
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 假设一个工作线程需要处理主线程中两个不同模块发送的两种不同消息。这两个不同模块可以共享默认通道，并使用`worker.postMessage()`发送消息，但如果每个模块都有自己的私有通道向工作线程发送消息会更清晰。或者考虑主线程创建两个独立工作线程的情况。自定义通信通道可以让这两个工作线程直接相互通信，而不必通过父线程发送所有消息。
+- en: 'Create a new message channel with the `MessageChannel()` constructor. A MessageChannel
+    object has two properties, named `port1` and `port2`. These properties refer to
+    a pair of MessagePort objects. Calling `postMessage()` on one of the ports will
+    cause a “message” event to be generated on the other with a structured clone of
+    the Message object:'
+  id: totrans-309
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用`MessageChannel()`构造函数创建一个新的消息通道。一个 MessageChannel 对象有两个属性，名为`port1`和`port2`。这些属性指向一对
+    MessagePort 对象。在其中一个端口上调用`postMessage()`将导致另一个端口生成“message”事件，并携带 Message 对象的结构化克隆：
+- en: '[PRE55]'
+  id: totrans-310
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE55]'
+- en: You can also call `close()` on either port to break the connection between the
+    two ports and to signal that no more messages will be exchanged. When `close()`
+    is called on either port, a “close” event is delivered to both ports.
+  id: totrans-311
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你也可以在任一端口上调用`close()`来断开两个端口之间的连接，并表示不会再交换更多消息。当任一端口上调用`close()`时，将向两个端口传递“close”事件。
+- en: Note that the code example above creates a pair of MessagePort objects and then
+    uses those objects to transmit a message within the main thread. In order to use
+    custom communication channels with workers, we must transfer one of the two ports
+    from the thread in which it is created to the thread in which it will be used.
+    The next section explains how to do this.
+  id: totrans-312
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意，上面的代码示例创建了一对 MessagePort 对象，然后使用这些对象在主线程内传输消息。为了在工作线程中使用自定义通信通道，我们必须将两个端口中的一个从创建它的线程传输到将要使用它的线程。下一节将解释如何做到这一点。
+- en: 16.11.4 Transferring MessagePorts and Typed Arrays
+  id: totrans-313
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.11.4 传输 MessagePorts 和 Typed Arrays
+- en: The `postMessage()` function uses the structured clone algorithm, and as we’ve
+    noted, it cannot copy objects like SSockets and Streams. It can handle MessagePort
+    objects, but only as a special case using a special technique. The `postMessage()`
+    method (of a Worker object, of `threads.parentPort`, or of any MessagePort object)
+    takes an optional second argument. This argument (called `transferList`) is an
+    array of objects that are to be transferred between threads rather than being
+    copied.
+  id: totrans-314
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`postMessage()` 函数使用结构化克隆算法，正如我们所指出的，它不能复制像 SSockets 和 Streams 这样的对象。它可以处理
+    MessagePort 对象，但只能使用一种特殊技术作为特例。`postMessage()` 方法（Worker 对象的方法，`threads.parentPort`
+    的方法，或任何 MessagePort 对象的方法）接受一个可选的第二个参数。这个参数（称为 `transferList`）是一个要在线程之间传输而不是复制的对象数组。'
+- en: A MessagePort object cannot be copied by the structured clone algorithm, but
+    it can be transferred. If the first argument to `postMessage()` has included one
+    or more MessagePorts (nested arbitrarily deeply within the Message object), then
+    those MessagePort objects must also appear as members of the array passed as the
+    second argument. Doing this tells Node that it does not need to make a copy of
+    the MessagePort, and can instead just give the existing object to the other thread.
+    The key thing to understand, however, about transferring values between threads
+    is that once a value is transferred, it can no longer be used in the thread that
+    called `postMessage()`.
+  id: totrans-315
+  prefs: []
+  type: TYPE_NORMAL
+  zh: MessagePort 对象不能被结构化克隆算法复制，但可以被传输。如果 `postMessage()` 的第一个参数包含了一个或多个 MessagePorts（在
+    Message 对象中任意深度嵌套），那么这些 MessagePort 对象也必须作为第二个参数传递的数组的成员出现。这样做告诉 Node 不需要复制 MessagePort，并且可以直接将现有对象交给另一个线程。然而，关于在线程之间传输值的关键是，一旦值被传输，它就不能再在调用
+    `postMessage()` 的线程中使用。
+- en: 'Here is how you might create a new MessageChannel and transfer one of its MessagePorts
+    to a worker:'
+  id: totrans-316
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下面是如何创建一个新的 MessageChannel 并将其中一个 MessagePort 传输给工作线程的方法：
+- en: '[PRE56]'
+  id: totrans-317
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE56]'
+- en: MessagePort objects are not the only ones that can be transferred. If you call
+    `postMessage()` with a typed array as the message (or with a message that contains
+    one or more typed arrays nested arbitrarily deep within the message), that typed
+    array (or those typed arrays) will simply be copied by the structured clone algorithm.
+    But typed arrays can be large; for example, if you are using a worker thread to
+    do image processing on millions of pixels. So for efficiency, `postMessage()`
+    also gives us the option to transfer typed arrays rather than copying them. (Threads
+    share memory by default. Worker threads in JavaScript generally avoid shared memory,
+    but when we allow this kind of controlled transfer, it can be done very efficiently.)
+    What makes this safe is that when a typed array is transferred to another thread,
+    it becomes unusable in the thread that transferred it. In the image-processing
+    scenario, the main thread could transfer the pixels of an image to the worker
+    thread, and then the worker thread could transfer the processed pixels back to
+    the main thread when it was done. The memory would not need to be copied, but
+    it would never be accessible by two threads at once.
+  id: totrans-318
+  prefs: []
+  type: TYPE_NORMAL
+  zh: MessagePort 对象并不是唯一可以传输的对象。如果你使用一个类型化数组作为消息调用 `postMessage()`（或者消息中包含一个或多个任意深度嵌套的类型化数组），那么这个类型化数组（或这些类型化数组）将会被结构化克隆算法简单地复制。但是类型化数组可能很大；例如，如果你正在使用一个工作线程对数百万像素进行图像处理。因此，为了效率起见，`postMessage()`
+    还给了我们传输类型化数组而不是复制它们的选项。（线程默认共享内存。JavaScript 中的工作线程通常避免共享内存，但当我们允许这种受控传输时，可以非常高效地完成。）这种安全性的保证在于，当一个类型化数组被传输到另一个线程时，它在传输它的线程中将变得无法使用。在图像处理场景中，主线程可以将图像的像素传输给工作线程，然后工作线程在完成后可以将处理后的像素传回主线程。内存不需要被复制，但永远不会被两个线程同时访问。
+- en: 'To transfer a typed array instead of copying it, include the ArrayBuffer that
+    backs the array in the second argument to `postMessage()`:'
+  id: totrans-319
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要传输一个类型化数组而不是复制它，将支持数组的 ArrayBuffer 包含在 `postMessage()` 的第二个参数中：
+- en: '[PRE57]'
+  id: totrans-320
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE57]'
+- en: As with transferred MessagePorts, a transferred typed array becomes unusable
+    once transferred. No exceptions are thrown if you attempt to use a MessagePort
+    or typed array that has been transferred; these objects simply stop doing anything
+    when you interact with them.
+  id: totrans-321
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与传输的 MessagePort 一样，一旦传输了一个类型化数组，它就变得无法使用。如果尝试使用已经传输的 MessagePort 或类型化数组，不会抛出异常；当与它们交互时，这些对象只是停止执行任何操作。
+- en: 16.11.5 Sharing Typed Arrays Between Threads
+  id: totrans-322
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 16.11.5 在线程之间共享类型化数组
+- en: In addition to transferring typed arrays between threads, it is actually possible
+    to share a typed array between threads. Simply create a SharedArrayBuffer of the
+    desired size and then use that buffer to create a typed array. When a typed array
+    that is backed by a SharedArrayBuffer is passed via `postMessage()`, the underlying
+    memory will be shared between the threads. You should not include the shared buffer
+    in the second argument to `postMessage()` in this case.
+  id: totrans-323
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了在线程之间传输类型化数组，实际上还可以在线程之间共享类型化数组。只需创建一个所需大小的 SharedArrayBuffer，然后使用该缓冲区创建一个类型化数组。当通过
+    `postMessage()` 传递由 SharedArrayBuffer 支持的类型化数组时，底层内存将在线程之间共享。在这种情况下，不应该将共享缓冲区包含在
+    `postMessage()` 的第二个参数中。
+- en: 'You really should not do this, however, because JavaScript was never designed
+    with thread safety in mind and multithreaded programming is very difficult to
+    get right. (And this is why SharedArrayBuffer was not covered in [§11.2](ch11.xhtml#typedarrays):
+    it is a niche feature that is difficult to get right.) Even the simple `++` operator
+    is not thread-safe because it needs to read a value, increment it, and write it
+    back. If two threads are incrementing a value at the same time, it will often
+    only be incremented once, as the following code demonstrates:'
+  id: totrans-324
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，你真的不应该这样做，因为 JavaScript 从未考虑过线程安全，并且多线程编程非常难以正确实现。（这也是为什么 SharedArrayBuffer
+    没有在 [§11.2](ch11.xhtml#typedarrays) 中涵盖的原因：它是一个难以正确实现的小众功能。）即使简单的 `++` 运算符也不是线程安全的，因为它需要读取一个值，递增它，然后写回。如果两个线程同时递增一个值，它通常只会被递增一次，如下面的代码所示：
+- en: '[PRE58]'
+  id: totrans-325
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE58]'
+- en: 'One scenario in which it might be reasonable to use a SharedArrayBuffer is
+    when the two threads operate on entirely separate sections of the shared memory.
+    You might enforce this by creating two typed arrays that serve as views of nonoverlapping
+    regions of the shared buffer, and then have your two threads use those two separate
+    typed arrays. A parallel merge sort could be done like this: one thread sorts
+    the bottom half of an array and the other thread sorts the top half, for example.
+    Or some kinds of image-processing algorithms are also suitable for this approach:
+    multiple threads working on disjoint regions of the image.'
+  id: totrans-326
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有一种情况下可能合理使用SharedArrayBuffer，即当两个线程在共享内存的完全不同部分上操作时。你可以通过创建两个作为非重叠区域视图的类型化数组来强制执行这一点，然后让你的两个线程使用这两个单独的类型化数组。例如，可以这样执行并行归并排序：一个线程对数组的下半部分进行排序，另一个线程对数组的上半部分进行排序。或者某些类型的图像处理算法也适合这种方法：多个线程在图像的不同区域上工作。
+- en: 'If you really must allow multiple threads to access the same region of a shared
+    array, you can take one step toward thread safety with the functions defined by
+    the Atomics object. Atomics was added to JavaScript when SharedArrayBuffer was
+    to define atomic operations on the elements of a shared array. For example, the
+    `Atomics.add()` function reads the specified element of a shared array, adds a
+    specified value to it, and writes the sum back into the array. It does this atomically
+    as if it was a single operation, and ensures that no other thread can read or
+    write the value while the operation is taking place. `Atomics.add()` allows us
+    to rewrite the parallel increment code we just looked at and get the correct result
+    of 20 million increments of a shared array element:'
+  id: totrans-327
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你确实需要允许多个线程访问共享数组的同一区域，你可以通过使用Atomics对象定义的函数向线程安全迈出一步。当SharedArrayBuffer添加到JavaScript时，Atomics也被添加以定义共享数组元素上的原子操作。例如，`Atomics.add()`函数读取共享数组的指定元素，将指定值添加到其中，并将总和写回数组。它以原子方式执行此操作，就好像它是一个单独的操作，并确保在操作进行时没有其他线程可以读取或写入该值。`Atomics.add()`允许我们重新编写我们刚刚查看的并获得正确结果的并行增量代码，即对共享数组元素进行2000万次增量：
+- en: '[PRE59]'
+  id: totrans-328
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE59]'
+- en: This new version of the code correctly prints the number 20,000,000\. But it
+    is about nine times slower than the incorrect code it replaces. It would be much
+    simpler and much faster to just do all 20 million increments in one thread. Also
+    note that atomic operations may be able to ensure thread safety for image-processing
+    algorithms for which each array element is a value entirely independent of all
+    other values. But in most real-world programs, multiple array elements are often
+    related to one another and some kind of higher-level thread synchronization is
+    required. The low-level `Atomics.wait()` and `Atomics.notify()` function can help
+    with this, but a discussion of their use is out of scope for this book.
+  id: totrans-329
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这个新版本的代码正确地打印出数字20,000,000。但它比它替换的不正确代码慢大约九倍。在一个线程中执行所有2000万次增量会更简单、更快。还要注意，原子操作可能能够确保图像处理算法的线程安全，其中每个数组元素都是完全独立于所有其他值的值。但在大多数实际程序中，多个数组元素通常彼此相关，并且需要某种高级别的线程同步。低级别的`Atomics.wait()`和`Atomics.notify()`函数可以帮助解决这个问题，但本书不涉及它们的使用讨论。
+- en: 16.12 Summary
+  id: totrans-330
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 16.12 总结
+- en: Although JavaScript was created to run in web browsers, Node has made JavaScript
+    into a general-purpose programming language. It is particularly popular for implementing
+    web servers, but its deep bindings to the operating system mean that it is also
+    a good alternative to shell scripts.
+  id: totrans-331
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管JavaScript是为在Web浏览器中运行而创建的，但Node已经将JavaScript变成了一种通用编程语言。它特别受欢迎用于实现Web服务器，但它与操作系统的深层绑定意味着它也是shell脚本的一个很好的替代品。
+- en: 'The most important topics covered in this long chapter include:'
+  id: totrans-332
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这一长章节涵盖的最重要主题包括：
+- en: Node’s asynchronous-by-default APIs and its single-threaded, callback, and event-based
+    style of concurrency.
+  id: totrans-333
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Node的默认异步API和其单线程、回调和基于事件的并发风格。
+- en: Node’s fundamental datatypes, buffers, and streams.
+  id: totrans-334
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Node的基本数据类型、缓冲区和流。
+- en: Node’s “fs” and “path” modules for working with the filesystem.
+  id: totrans-335
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Node的“fs”和“path”模块用于处理文件系统。
+- en: Node’s “http” and “https” modules for writing HTTP clients and servers.
+  id: totrans-336
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Node的“http”和“https”模块用于编写HTTP客户端和服务器。
+- en: Node’s “net” module for writing non-HTTP clients and servers.
+  id: totrans-337
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Node的“net”模块用于编写非HTTP客户端和服务器。
+- en: Node’s “child_process” module for creating and communicating with child processes.
+  id: totrans-338
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Node的“child_process”模块用于创建和与子进程通信。
+- en: Node’s “worker_threads” module for true multithreaded programming using message-passing
+    instead of shared memory.
+  id: totrans-339
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Node的“worker_threads”模块用于使用消息传递而不是共享内存进行真正的多线程编程。
+- en: ^([1](ch16.xhtml#idm46198489626936-marker)) Node defines a `fs.copyFile()` function
+    that you would actually use in practice.
+  id: totrans-340
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ^([1](ch16.xhtml#idm46198489626936-marker)) Node定义了一个`fs.copyFile()`函数，实际上你会在实践中使用它。
+- en: ^([2](ch16.xhtml#idm46198483842088-marker)) It is often cleaner and simpler
+    to define the worker code in a separate file. But this trick of having two threads
+    run different sections of the same file blew my mind when I first encountered
+    it for the Unix `fork()` system call. And I think it is worth demonstrating this
+    technique simply for its strange elegance.
+  id: totrans-341
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ^([2](ch16.xhtml#idm46198483842088-marker)) 将工作代码定义在一个单独的文件中通常更清晰、更简单。但当我第一次遇到Unix的`fork()`系统调用时，两个线程运行同一文件的不同部分的技巧让我大吃一惊。我认为值得演示这种技术，仅仅因为它的奇怪优雅。

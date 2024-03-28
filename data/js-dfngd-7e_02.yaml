@@ -1,0 +1,491 @@
+- en: Chapter 2\. Lexical Structure
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第2章 词法结构
+- en: 'The lexical structure of a programming language is the set of elementary rules
+    that specifies how you write programs in that language. It is the lowest-level
+    syntax of a language: it specifies what variable names look like, the delimiter
+    characters for comments, and how one program statement is separated from the next,
+    for example. This short chapter documents the lexical structure of JavaScript.
+    It covers:'
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 编程语言的词法结构是指定如何在该语言中编写程序的基本规则集。它是语言的最低级语法：它指定变量名的外观，注释的分隔符字符，以及如何将一个程序语句与下一个分隔开，例如。本短章记录了JavaScript的词法结构。它涵盖了：
+- en: Case sensitivity, spaces, and line breaks
+  id: totrans-2
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 区分大小写、空格和换行
+- en: Comments
+  id: totrans-3
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 注释
+- en: Literals
+  id: totrans-4
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 文字
+- en: Identifiers and reserved words
+  id: totrans-5
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 标识符和保留字
+- en: Unicode
+  id: totrans-6
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Unicode
+- en: Optional semicolons
+  id: totrans-7
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 可选分号
+- en: 2.1 The Text of a JavaScript Program
+  id: totrans-8
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 2.1 JavaScript程序的文本
+- en: JavaScript is a case-sensitive language. This means that language keywords,
+    variables, function names, and other *identifiers* must always be typed with a
+    consistent capitalization of letters. The `while` keyword, for example, must be
+    typed “while,” not “While” or “WHILE.” Similarly, `online`, `Online`, `OnLine`,
+    and `ONLINE` are four distinct variable names.
+  id: totrans-9
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript是区分大小写的语言。这意味着语言关键字、变量、函数名和其他*标识符*必须始终以一致的字母大小写输入。例如，`while`关键字必须输入为“while”，而不是“While”或“WHILE”。同样，`online`、`Online`、`OnLine`和`ONLINE`是四个不同的变量名。
+- en: JavaScript ignores spaces that appear between tokens in programs. For the most
+    part, JavaScript also ignores line breaks (but see [§2.6](#optionalsemicolons)
+    for an exception). Because you can use spaces and newlines freely in your programs,
+    you can format and indent your programs in a neat and consistent way that makes
+    the code easy to read and understand.
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript会忽略程序中标记之间出现的空格。在大多数情况下，JavaScript也会忽略换行（但请参见[§2.6](#optionalsemicolons)中的一个例外）。由于您可以在程序中自由使用空格和换行，因此可以以整洁一致的方式格式化和缩进程序，使代码易于阅读和理解。
+- en: In addition to the regular space character (`\u0020`), JavaScript also recognizes
+    tabs, assorted ASCII control characters, and various Unicode space characters
+    as whitespace. JavaScript recognizes newlines, carriage returns, and a carriage
+    return/line feed sequence as line terminators.
+  id: totrans-11
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了常规空格字符（`\u0020`）外，JavaScript还识别制表符、各种ASCII控制字符和各种Unicode空格字符作为空白。JavaScript将换行符、回车符和回车符/换行符序列识别为行终止符。
+- en: 2.2 Comments
+  id: totrans-12
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 2.2 注释
+- en: 'JavaScript supports two styles of comments. Any text between a `//` and the
+    end of a line is treated as a comment and is ignored by JavaScript. Any text between
+    the characters `/*` and `*/` is also treated as a comment; these comments may
+    span multiple lines but may not be nested. The following lines of code are all
+    legal JavaScript comments:'
+  id: totrans-13
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript支持两种注释风格。任何位于`//`和行尾之间的文本都被视为注释，JavaScript会忽略它。位于`/*`和`*/`之间的文本也被视为注释；这些注释可以跨越多行，但不能嵌套。以下代码行都是合法的JavaScript注释：
+- en: '[PRE0]'
+  id: totrans-14
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: 2.3 Literals
+  id: totrans-15
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 2.3 文字
+- en: 'A *literal* is a data value that appears directly in a program. The following
+    are all literals:'
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*文字* 是直接出现在程序中的数据值。以下都是文字：'
+- en: '[PRE1]'
+  id: totrans-17
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: Complete details on numeric and string literals appear in [Chapter 3](ch03.xhtml#datatypes).
+  id: totrans-18
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 数字和字符串文字的完整详细信息请参见[第3章](ch03.xhtml#datatypes)。
+- en: 2.4 Identifiers and Reserved Words
+  id: totrans-19
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 2.4 标识符和保留字
+- en: 'An *identifier* is simply a name. In JavaScript, identifiers are used to name
+    constants, variables, properties, functions, and classes and to provide labels
+    for certain loops in JavaScript code. A JavaScript identifier must begin with
+    a letter, an underscore (`_`), or a dollar sign (`$`). Subsequent characters can
+    be letters, digits, underscores, or dollar signs. (Digits are not allowed as the
+    first character so that JavaScript can easily distinguish identifiers from numbers.)
+    These are all legal identifiers:'
+  id: totrans-20
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*标识符* 就是一个名字。在JavaScript中，标识符用于命名常量、变量、属性、函数和类，并为JavaScript代码中某些循环提供标签。JavaScript标识符必须以字母、下划线（`_`）或美元符号（`$`）开头。后续字符可以是字母、数字、下划线或美元符号。（不允许数字作为第一个字符，以便JavaScript可以轻松区分标识符和数字。）以下都是合法的标识符：'
+- en: '[PRE2]'
+  id: totrans-21
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: Like any language, JavaScript reserves certain identifiers for use by the language
+    itself. These “reserved words” cannot be used as regular identifiers. They are
+    listed in the next section.
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与任何语言一样，JavaScript为语言本身保留了某些标识符。这些“保留字”不能用作常规标识符。它们在下一节中列出。
+- en: 2.4.1 Reserved Words
+  id: totrans-23
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 2.4.1 保留字
+- en: The following words are part of the JavaScript language. Many of these (such
+    as `if`, `while`, and `for`) are reserved keywords that must not be used as the
+    names of constants, variables, functions, or classes (though they can all be used
+    as the names of properties within an object). Others (such as `from`, `of`, `get`,
+    and `set`) are used in limited contexts with no syntactic ambiguity and are perfectly
+    legal as identifiers. Still other keywords (such as `let`) can’t be fully reserved
+    in order to retain backward compatibility with older programs, and so there are
+    complex rules that govern when they can be used as identifiers and when they cannot.
+    (`let` can be used as a variable name if declared with `var` outside of a class,
+    for example, but not if declared inside a class or with `const`.) The simplest
+    course is to avoid using any of these words as identifiers, except for `from`,
+    `set`, and `target`, which are safe to use and are already in common use.
+  id: totrans-24
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 以下单词是JavaScript语言的一部分。其中许多（如`if`、`while`和`for`）是必须避免用作常量、变量、函数或类名称的保留关键字（尽管它们都可以用作对象内的属性名称）。其他一些单��（如`from`、`of`、`get`和`set`）在有限的上下文中使用时没有语法歧义，作为标识符是完全合法的。还有其他关键字（如`let`）为了保持与旧程序的向后兼容性而不能完全保留，因此有复杂的规则规定何时可以将其用作标识符，何时不行。（例如，如果在类外部用`var`声明，`let`可以用作变量名，但如果在类内部或用`const`声明，则不行。）最简单的方法是避免将这些单词用作标识符，除了`from`、`set`和`target`，它们是安全的并且已经被广泛使用。
+- en: '[PRE3]'
+  id: totrans-25
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: 'JavaScript also reserves or restricts the use of certain keywords that are
+    not currently used by the language but that might be used in future versions:'
+  id: totrans-26
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript还保留或限制了某些关键字的使用，这些关键字目前尚未被语言使用，但可能在未来版本中使用：
+- en: '[PRE4]'
+  id: totrans-27
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: For historical reasons, `arguments` and `eval` are not allowed as identifiers
+    in certain circumstances and are best avoided entirely.
+  id: totrans-28
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于历史原因，在某些情况下不允许将`arguments`和`eval`用作标识符，并且最好完全避免使用它们。
+- en: 2.5 Unicode
+  id: totrans-29
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 2.5 Unicode
+- en: 'JavaScript programs are written using the Unicode character set, and you can
+    use any Unicode characters in strings and comments. For portability and ease of
+    editing, it is common to use only ASCII letters and digits in identifiers. But
+    this is a programming convention only, and the language allows Unicode letters,
+    digits, and ideographs (but not emojis) in identifiers. This means that programmers
+    can use mathematical symbols and words from non-English languages as constants
+    and variables:'
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript程序使用Unicode字符集编写，您可以在字符串和注释中使用任何Unicode字符。为了便于移植和编辑，通常在标识符中仅使用ASCII字母和数字。但这只是一种编程约定，语言允许在标识符中使用Unicode字母、数字和表意文字（但不允许使用表情符号）。这意味着程序员可以使用数学符号和非英语语言中的单词作为常量和变量：
+- en: '[PRE5]'
+  id: totrans-31
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: 2.5.1 Unicode Escape Sequences
+  id: totrans-32
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 2.5.1 Unicode转义序列
+- en: 'Some computer hardware and software cannot display, input, or correctly process
+    the full set of Unicode characters. To support programmers and systems using older
+    technology, JavaScript defines escape sequences that allow us to write Unicode
+    characters using only ASCII characters. These Unicode escapes begin with the characters
+    `\u` and are either followed by exactly four hexadecimal digits (using uppercase
+    or lowercase letters A–F) or by one to six hexadecimal digits enclosed within
+    curly braces. These Unicode escapes may appear in JavaScript string literals,
+    regular expression literals, and identifiers (but not in language keywords). The
+    Unicode escape for the character “é,” for example, is `\u00E9`; here are three
+    different ways to write a variable name that includes this character:'
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一些计算机硬件和软件无法显示、输入或正确处理完整的Unicode字符集。为了支持使用较旧技术的程序员和系统，JavaScript定义了转义序列，允许我们仅使用ASCII字符编写Unicode字符。这些Unicode转义以字符`\u`开头，后面要么跟着恰好四个十六进制数字（使用大写或小写字母A-F），要么是由一个到六个十六进制数字括在花括号内。这些Unicode转义可能出现在JavaScript字符串文字、正则表达式文字和标识符中（但不出现在语言关键字中）。例如，字符“é”的Unicode转义是`\u00E9`；以下是三种包含此字符的变量名的不同写法：
+- en: '[PRE6]'
+  id: totrans-34
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: 'Early versions of JavaScript only supported the four-digit escape sequence.
+    The version with curly braces was introduced in ES6 to better support Unicode
+    codepoints that require more than 16 bits, such as emoji:'
+  id: totrans-35
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 早期版本的JavaScript仅支持四位数转义序列。带有花括号的版本是在ES6中引入的，以更好地支持需要超过16位的Unicode代码点，例如表情符号：
+- en: '[PRE7]'
+  id: totrans-36
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: Unicode escapes may also appear in comments, but since comments are ignored,
+    they are simply treated as ASCII characters in that context and not interpreted
+    as Unicode.
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Unicode转义也可能出现在注释中，但由于注释被忽略，因此在该上下文中它们仅被视为ASCII字符，而不被解释为Unicode。
+- en: 2.5.2 Unicode Normalization
+  id: totrans-38
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 2.5.2 Unicode规范化
+- en: 'If you use non-ASCII characters in your JavaScript programs, you must be aware
+    that Unicode allows more than one way of encoding the same character. The string
+    “é,” for example, can be encoded as the single Unicode character `\u00E9` or as
+    a regular ASCII “e” followed by the acute accent combining mark `\u0301`. These
+    two encodings typically look exactly the same when displayed by a text editor,
+    but they have different binary encodings, meaning that they are considered different
+    by JavaScript, which can lead to very confusing programs:'
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您在JavaScript程序中使用非ASCII字符，您必须意识到Unicode允许以多种方式对相同字符进行编码。例如，字符串“é”可以编码为单个Unicode字符`\u00E9`，也可以编码为常规ASCII的“e”后跟重音符组合标记`\u0301`。这两种编码在文本编辑器中显示时通常看起来完全相同，但它们具有不同的二进制编码，这意味着JavaScript认为它们是不同的，这可能导致非常令人困惑的程序：
+- en: '[PRE8]'
+  id: totrans-40
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: The Unicode standard defines the preferred encoding for all characters and specifies
+    a normalization procedure to convert text to a canonical form suitable for comparisons.
+    JavaScript assumes that the source code it is interpreting has already been normalized
+    and does *not* do any normalization on its own. If you plan to use Unicode characters
+    in your JavaScript programs, you should ensure that your editor or some other
+    tool performs Unicode normalization of your source code to prevent you from ending
+    up with different but visually indistinguishable identifiers.
+  id: totrans-41
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Unicode标准定义了所有字符的首选编码，并指定了一种规范化过程，将文本转换为适合比较的规范形式。JavaScript假定它正在解释的源代码已经被规范化，并且*不*会自行进行任何规范化。如果您计划在JavaScript程序中使用Unicode字符，您应确保您的编辑器或其他工具对源代码执行Unicode规范化，以防止您最终得到不同但在视觉上无法区分的标识符。
+- en: 2.6 Optional Semicolons
+  id: totrans-42
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 2.6 可选分号
+- en: 'Like many programming languages, JavaScript uses the semicolon (`;`) to separate
+    statements (see [Chapter 5](ch05.xhtml#statements)) from one another. This is
+    important for making the meaning of your code clear: without a separator, the
+    end of one statement might appear to be the beginning of the next, or vice versa.
+    In JavaScript, you can usually omit the semicolon between two statements if those
+    statements are written on separate lines. (You can also omit a semicolon at the
+    end of a program or if the next token in the program is a closing curly brace:
+    `}`.) Many JavaScript programmers (and the code in this book) use semicolons to
+    explicitly mark the ends of statements, even where they are not required. Another
+    style is to omit semicolons whenever possible, using them only in the few situations
+    that require them. Whichever style you choose, there are a few details you should
+    understand about optional semicolons in JavaScript.'
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 像许多编程语言一样，JavaScript使用分号（`;`）来分隔语句（参见[第5章](ch05.xhtml#statements)）。这对于使代码的含义清晰很重要：没有分隔符，一个语句的结尾可能看起来是下一个语句的开头，反之亦然。在JavaScript中，如果两个语句写在不同行上，通常可以省略这两个语句之间的分号。（如果程序的下一个标记是闭合大括号`}`，也可以省略分号。）许多JavaScript程序员（以及本书中的代码）使用分号明确标记语句的结尾，即使不需要也是如此。另一种风格是尽可能省略分号，只在需要时使用。无论你选择哪种风格，都应该了解JavaScript中可选分号的一些细节。
+- en: 'Consider the following code. Since the two statements appear on separate lines,
+    the first semicolon could be omitted:'
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 考虑以下代码。由于两个语句出现在不同行上，第一个分号可以省略：
+- en: '[PRE9]'
+  id: totrans-45
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: 'Written as follows, however, the first semicolon is required:'
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，按照以下方式书写，第一个分号是必需的：
+- en: '[PRE10]'
+  id: totrans-47
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: 'Note that JavaScript does not treat every line break as a semicolon: it usually
+    treats line breaks as semicolons only if it can’t parse the code without adding
+    an implicit semicolon. More formally (and with three exceptions described a bit
+    later), JavaScript treats a line break as a semicolon if the next nonspace character
+    cannot be interpreted as a continuation of the current statement. Consider the
+    following code:'
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请注意，JavaScript并不会将每个换行符都视为分号：通常只有在无法解析代码而需要添加隐式分号时，才会将换行符视为分号。更正式地说（稍后描述的三个例外情况），如果下一个非空格字符无法被解释为当前语句的延续，JavaScript将换行符视为分号。考虑以下代码：
+- en: '[PRE11]'
+  id: totrans-49
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: 'JavaScript interprets this code like this:'
+  id: totrans-50
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript解释这段代码如下：
+- en: '[PRE12]'
+  id: totrans-51
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: JavaScript does treat the first line break as a semicolon because it cannot
+    parse the code `let a a` without a semicolon. The second `a` could stand alone
+    as the statement `a;`, but JavaScript does not treat the second line break as
+    a semicolon because it can continue parsing the longer statement `a = 3;`.
+  id: totrans-52
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript将第一个换行符视为分号，因为它无法解析不带分号的代码`let a a`。第二个`a`可以作为语句`a;`独立存在，但JavaScript不会将第二个换行符视为分号，因为它可以继续解析较长的语句`a
+    = 3;`。
+- en: 'These statement termination rules lead to some surprising cases. This code
+    looks like two separate statements separated with a newline:'
+  id: totrans-53
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些语句终止规则会导致一些令人惊讶的情况。这段代码看起来像是两个用换行符分隔的独立语句：
+- en: '[PRE13]'
+  id: totrans-54
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: 'But the parentheses on the second line of code can be interpreted as a function
+    invocation of `f` from the first line, and JavaScript interprets the code like
+    this:'
+  id: totrans-55
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 但是代码的第二行括号可以被解释为从第一行调用`f`的函数调用，JavaScript会这样解释代码：
+- en: '[PRE14]'
+  id: totrans-56
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: More likely than not, this is not the interpretation intended by the author
+    of the code. In order to work as two separate statements, an explicit semicolon
+    is required in this case.
+  id: totrans-57
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 很可能这并不是代码作者打算的解释。为了作为两个独立语句工作，这种情况下需要一个显式分号。
+- en: 'In general, if a statement begins with `(`, `[`, `/`, `+`, or `-`, there is
+    a chance that it could be interpreted as a continuation of the statement before.
+    Statements beginning with `/`, `+`, and `-` are quite rare in practice, but statements
+    beginning with `(` and `[` are not uncommon at all, at least in some styles of
+    JavaScript programming. Some programmers like to put a defensive semicolon at
+    the beginning of any such statement so that it will continue to work correctly
+    even if the statement before it is modified and a previously terminating semicolon
+    removed:'
+  id: totrans-58
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一般来说，如果语句以`(`、`[`、`/`、`+`或`-`开头，那么它可能被解释为前一个语句的延续。以`/`、`+`和`-`开头的语句在实践中相当罕见，但以`(`和`[`开头的语句在某些JavaScript编程风格中并不罕见。一些程序员喜欢在这类语句的开头放置一个防御性分号，以便即使修改了其前面的语句并删除了先前的分号，它仍将正确工作：
+- en: '[PRE15]'
+  id: totrans-59
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: 'There are three exceptions to the general rule that JavaScript interprets line
+    breaks as semicolons when it cannot parse the second line as a continuation of
+    the statement on the first line. The first exception involves the `return`, `throw`,
+    `yield`, `break`, and `continue` statements (see [Chapter 5](ch05.xhtml#statements)).
+    These statements often stand alone, but they are sometimes followed by an identifier
+    or expression. If a line break appears after any of these words (before any other
+    tokens), JavaScript will always interpret that line break as a semicolon. For
+    example, if you write:'
+  id: totrans-60
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有三个例外情况不符合JavaScript将换行符解释为分号的一般规则，即当它无法将第二行解析为第一行语句的延续时。第一个例外涉及`return`、`throw`、`yield`、`break`和`continue`语句（参见[第5章](ch05.xhtml#statements)）。这些语句通常是独立的，但有时会跟随标识符或表达式。如果这些单词之后（在任何其他标记之前）出现换行符，JavaScript将始终将该换行符解释为分号。例如，如果你写：
+- en: '[PRE16]'
+  id: totrans-61
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: 'JavaScript assumes you meant:'
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript假设你的意思是：
+- en: '[PRE17]'
+  id: totrans-63
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: 'However, you probably meant:'
+  id: totrans-64
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，你可能的意思是：
+- en: '[PRE18]'
+  id: totrans-65
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: This means that you must not insert a line break between `return`, `break`,
+    or `continue` and the expression that follows the keyword. If you do insert a
+    line break, your code is likely to fail in a nonobvious way that is difficult
+    to debug.
+  id: totrans-66
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这意味着你不能在`return`、`break`或`continue`与后面的表达式之间插入换行符。如果插入换行符，你的代码很可能会以难以调试的非明显方式失败。
+- en: 'The second exception involves the `++` and `−−` operators ([§4.8](ch04.xhtml#arithmeticoperators)).
+    These operators can be prefix operators that appear before an expression or postfix
+    operators that appear after an expression. If you want to use either of these
+    operators as postfix operators, they must appear on the same line as the expression
+    they apply to. The third exception involves functions defined using concise “arrow”
+    syntax: the `=>` arrow itself must appear on the same line as the parameter list.'
+  id: totrans-67
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第二个例外涉及`++`和`−−`运算符（[§4.8](ch04.xhtml#arithmeticoperators)）。这些运算符可以是前缀运算符，出现在表达式之前，也可以是后缀运算符，出现在表达式之后。如果要将这些运算符之一用作后缀运算符，它们必须出现在应用于的表达式的同一行上。第三个例外涉及使用简洁的“箭头”语法定义的函数：`=>`箭头本身必须出现在参数列表的同一行上。
+- en: 2.7 Summary
+  id: totrans-68
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 2.7 总结
+- en: This chapter has shown how JavaScript programs are written at the lowest level.
+    The next chapter takes us one step higher and introduces the primitive types and
+    values (numbers, strings, and so on) that serve as the basic units of computation
+    for JavaScript programs.
+  id: totrans-69
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本章展示了JavaScript程序是如何在最低级别编写的。下一章将带我们迈向更高一级，并介绍作为JavaScript程序计算的基本单位的原始类型和值（数字、字符串等）。

@@ -1,0 +1,316 @@
+- en: Preface
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 前言
+- en: This book covers the JavaScript language and the JavaScript APIs implemented
+    by web browsers and by Node. I wrote it for readers with some prior programming
+    experience who want to learn JavaScript and also for programmers who already use
+    JavaScript but want to take their understanding to a new level and really master
+    the language. My goal with this book is to document the JavaScript language comprehensively
+    and definitively and to provide an in-depth introduction to the most important
+    client-side and server-side APIs available to JavaScript programs. As a result,
+    this is a long and detailed book. My hope, however, is that it will reward careful
+    study and that the time you spend reading it will be easily recouped in the form
+    of higher programming productivity.
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本书涵盖了JavaScript语言以及Web浏览器和Node实现的JavaScript API。我为一些具有先前编程经验的读者编写了这本书，他们想要学习JavaScript，也为已经使用JavaScript的程序员编写了这本书，但希望将他们的理解提升到一个新的水平，并真正掌握这门语言。我写这本书的目标是全面和权威地记录JavaScript语言，并深入介绍JavaScript程序可用的最重要的客户端和服务器端API。因此，这是一本长篇详细的书。然而，我希望它会奖励仔细学习，并且您花在阅读上的时间将很容易以更高的编程生产力形式收回。
+- en: Previous editions of this book included a comprehensive reference section. I
+    no longer feel that it makes sense to include that material in printed form when
+    it is so quick and easy to find up-to-date reference material online. If you need
+    to look up anything related to core or client-side JavaScript, I recommend you
+    visit the [MDN website](https://developer.mozilla.org). And for server-side Node
+    APIs, I recommend you go directly to the source and consult the [Node.js reference
+    documentation](https://nodejs.org/api).
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本书的早期版本包括了一个全面的参考部分。我不再认为在印刷形式中包含这些材料是有意义的，因为在网上很容易找到最新的参考材料。如果您需要查找与核心或客户端JavaScript相关的任何内容，我建议您访问[MDN网站](https://developer.mozilla.org)。对于服务器端Node
+    API，我建议您直接访问源并查阅[Node.js参考文档](https://nodejs.org/api)。
+- en: Conventions Used in This Book
+  id: totrans-3
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 本书中使用的约定
+- en: 'I use the following typographical conventions in this book:'
+  id: totrans-4
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我在本书中使用以下排版约定：
+- en: '*Italic*'
+  id: totrans-5
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*斜体*'
+- en: Is used for emphasis and to indicate the first use of a term. *Italic* is also
+    used for email addresses, URLs, and file names.
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 用于强调和指示术语的首次使用。*斜体*也用于电子邮件地址，URL和文件名。
+- en: '`Constant width`'
+  id: totrans-7
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`固定宽度`'
+- en: Is used in all JavaScript code and CSS and HTML listings, and generally for
+    anything that you would type literally when programming.
+  id: totrans-8
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 用于所有JavaScript代码和CSS和HTML列表，通常用于编程时需要字面输入的任何内容。
+- en: '*`Constant width italic`*'
+  id: totrans-9
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*`固定宽度斜体`*'
+- en: Is occasionally used when explaining JavaScript syntax.
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有时用于解释JavaScript语法。
+- en: '**`Constant width bold`**'
+  id: totrans-11
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '**`固定宽度粗体`**'
+- en: Shows commands or other text that should be typed literally by the user
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 显示用户应该按照字面意义输入的命令或其他文本
+- en: Note
+  id: totrans-13
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: This element signifies a general note.
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此元素表示一般说明。
+- en: Important
+  id: totrans-15
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 重要
+- en: This element indicates a warning or caution.
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 此元素表示警告或注意事项。
+- en: Example Code
+  id: totrans-17
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 示例代码
+- en: 'Supplemental material (code examples, exercises, etc.) for this book is available
+    for download at:'
+  id: totrans-18
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本书的补充材料（代码示例，练习等）可在以下网址下载：
+- en: '[*https://oreil.ly/javascript_defgd7*](https://oreil.ly/javascript_defgd7)'
+  id: totrans-19
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[*https://oreil.ly/javascript_defgd7*](https://oreil.ly/javascript_defgd7)'
+- en: This book is here to help you get your job done. In general, if example code
+    is offered with this book, you may use it in your programs and documentation.
+    You do not need to contact us for permission unless you’re reproducing a significant
+    portion of the code. For example, writing a program that uses several chunks of
+    code from this book does not require permission. Selling or distributing examples
+    from O’Reilly books does require permission. Answering a question by citing this
+    book and quoting example code does not require permission. Incorporating a significant
+    amount of example code from this book into your product’s documentation does require
+    permission.
+  id: totrans-20
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本书旨在帮助您完成工作。一般情况下，如果本书提供示例代码，您可以在您的程序和文档中使用它。除非您复制了代码的大部分内容，否则无需联系我们请求许可。例如，编写一个使用本书多个代码块的程序不需要许可。销售或分发O'Reilly图书中的示例需要许可。引用本书并引用示例代码回答问题不需要许可。将本书中大量示例代码合并到产品文档中需要许可。
+- en: 'We appreciate, but generally do not require, attribution. An attribution usually
+    includes the title, author, publisher, and ISBN. For example: “*JavaScript: The
+    Definitive Guide*, Seventh Edition, by David Flanagan (O’Reilly). Copyright 2020
+    David Flanagan, 978-1-491-95202-3.”'
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '我们感谢，但通常不要求署名。署名通常包括标题，作者，出版商和ISBN。例如：“*JavaScript: The Definitive Guide*，第七版，作者David
+    Flanagan（O''Reilly）。版权所有2020年David Flanagan，978-1-491-95202-3。”'
+- en: If you feel your use of code examples falls outside fair use or the permission
+    given above, feel free to contact us at [*permissions@oreilly.com*](mailto:permissions@oreilly.com).
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您认为您使用的代码示例超出了合理使用范围或上述许可，请随时通过[*permissions@oreilly.com*](mailto:permissions@oreilly.com)与我们联系。
+- en: O’Reilly Online Learning
+  id: totrans-23
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: O'Reilly在线学习
+- en: Note
+  id: totrans-24
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: For more than 40 years, [*O’Reilly Media*](http://oreilly.com) has provided
+    technology and business training, knowledge, and insight to help companies succeed.
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 40多年来，[*O'Reilly Media*](http://oreilly.com)提供技术和商业培训，知识和见解，帮助公司取得成功。
+- en: Our unique network of experts and innovators share their knowledge and expertise
+    through books, articles, and our online learning platform. O’Reilly’s online learning
+    platform gives you on-demand access to live training courses, in-depth learning
+    paths, interactive coding environments, and a vast collection of text and video
+    from O’Reilly and 200+ other publishers. For more information, visit [*http://oreilly.com*](http://oreilly.com).
+  id: totrans-26
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们独特的专家和创新者网络通过书籍，文章和我们的在线学习平台分享他们的知识和专长。O'Reilly的在线学习平台为您提供按需访问实时培训课程，深入学习路径，交互式编码环境以及来自O'Reilly和其他200多家出版商的大量文本和视频。有关更多信息，请访问[*http://oreilly.com*](http://oreilly.com)。
+- en: How to Contact Us
+  id: totrans-27
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 如何联系我们
+- en: 'Please address comments and questions concerning this book to the publisher:'
+  id: totrans-28
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请将有关本书的评论和问题发送至出版商：
+- en: O’Reilly Media, Inc.
+  id: totrans-29
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: O’Reilly Media, Inc.
+- en: 1005 Gravenstein Highway North
+  id: totrans-30
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 1005 Gravenstein Highway North
+- en: Sebastopol, CA 95472
+  id: totrans-31
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Sebastopol, CA 95472
+- en: 800-998-9938 (in the United States or Canada)
+  id: totrans-32
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 800-998-9938（美国或加拿大）
+- en: 707-829-0515 (international or local)
+  id: totrans-33
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 707-829-0515（国际或本地）
+- en: 707-829-0104 (fax)
+  id: totrans-34
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 707-829-0104（传真）
+- en: We have a web page for this book, where we list errata, examples, and any additional
+    information. You can access this page at [*https://oreil.ly/javascript_defgd7*](https://oreil.ly/javascript_defgd7).
+  id: totrans-35
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们为本书创建了一个网页，列出勘误、示例和任何额外信息。您可以访问[*https://oreil.ly/javascript_defgd7*](https://oreil.ly/javascript_defgd7)查看此页面。
+- en: Email [*bookquestions@oreilly.com*](mailto:bookquestions@oreilly.com) to comment
+    or ask technical questions about this book.
+  id: totrans-36
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 发送电子邮件至[*bookquestions@oreilly.com*](mailto:bookquestions@oreilly.com)以评论或提出关于本书的技术问题。
+- en: For news and more information about our books and courses, see our website at
+    [*http://www.oreilly.com*](http://www.oreilly.com).
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 欲了解更多关于我们的图书和课程的新闻和信息，请访问我们的网站[*http://www.oreilly.com*](http://www.oreilly.com)。
+- en: 'Find us on Facebook: [*http://facebook.com/oreilly*](http://facebook.com/oreilly)'
+  id: totrans-38
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在Facebook上找到我们：[*http://facebook.com/oreilly*](http://facebook.com/oreilly)
+- en: 'Follow us on Twitter: [*http://twitter.com/oreillymedia*](http://twitter.com/oreillymedia)'
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在Twitter上关注我们：[*http://twitter.com/oreillymedia*](http://twitter.com/oreillymedia)
+- en: 'Watch us on YouTube: [*http://www.youtube.com/oreillymedia*](http://www.youtube.com/oreillymedia)'
+  id: totrans-40
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在YouTube上观看我们：[*http://www.youtube.com/oreillymedia*](http://www.youtube.com/oreillymedia)
+- en: Acknowledgments
+  id: totrans-41
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 致谢
+- en: 'Many people have helped with the creation of this book. I’d like to thank my
+    editor, Angela Rufino, for keeping me on track and for her patience with my missed
+    deadlines. Thanks also to my technical reviewers: Brian Sletten, Elisabeth Robson,
+    Ethan Flanagan, Maximiliano Firtman, Sarah Wachs, and Schalk Neethling. Their
+    comments and suggestions have made this a better book.'
+  id: totrans-42
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 许多人在创作本书时提供了帮助。我要感谢我的编辑Angela Rufino，她让我保持在正确的轨道上，对我错过的截止日期的耐心。也感谢我的技术审阅者：Brian
+    Sletten，Elisabeth Robson，Ethan Flanagan，Maximiliano Firtman，Sarah Wachs和Schalk
+    Neethling。他们的评论和建议使这本书变得更好。
+- en: 'The production team at O’Reilly has done their usual fine job: Kristen Brown
+    managed the production process, Deborah Baker was the production editor, Rebecca
+    Demarest drew the figures, and Judy McConville created the index.'
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: O’Reilly的制作团队一如既往地出色：Kristen Brown管理了制作过程，Deborah Baker担任制作编辑，Rebecca Demarest绘制了图表，Judy
+    McConville创建了索引。
+- en: 'Editors, reviewers, and contributors to previous editions of this book have
+    included: Andrew Schulman, Angelo Sirigos, Aristotle Pagaltzis, Brendan Eich,
+    Christian Heilmann, Dan Shafer, Dave C. Mitchell, Deb Cameron, Douglas Crockford,
+    Dr. Tankred Hirschmann, Dylan Schiemann, Frank Willison, Geoff Stearns, Herman
+    Venter, Jay Hodges, Jeff Yates, Joseph Kesselman, Ken Cooper, Larry Sullivan,
+    Lynn Rollins, Neil Berkman, Mike Loukides, Nick Thompson, Norris Boyd, Paula Ferguson,
+    Peter-Paul Koch, Philippe Le Hegaret, Raffaele Cecco, Richard Yaker, Sanders Kleinfeld,
+    Scott Furman, Scott Isaacs, Shon Katzenberger, Terry Allen, Todd Ditchendorf,
+    Vidur Apparao, Waldemar Horwat, and Zachary Kessin.'
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本书的编辑、审阅者和贡献者包括：Andrew Schulman，Angelo Sirigos，Aristotle Pagaltzis，Brendan Eich，Christian
+    Heilmann，Dan Shafer，Dave C. Mitchell，Deb Cameron，Douglas Crockford，Dr. Tankred
+    Hirschmann，Dylan Schiemann，Frank Willison，Geoff Stearns，Herman Venter，Jay Hodges，Jeff
+    Yates，Joseph Kesselman，Ken Cooper，Larry Sullivan，Lynn Rollins，Neil Berkman，Mike
+    Loukides，Nick Thompson，Norris Boyd，Paula Ferguson，Peter-Paul Koch，Philippe Le
+    Hegaret，Raffaele Cecco，Richard Yaker，Sanders Kleinfeld，Scott Furman，Scott Isaacs，Shon
+    Katzenberger，Terry Allen，Todd Ditchendorf，Vidur Apparao，Waldemar Horwat和Zachary
+    Kessin。
+- en: Writing this seventh edition kept me away from my family for many late nights.
+    My love to them and my thanks for putting up with my absences.
+  id: totrans-45
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 撰写第七版使我在许多深夜远离了家人。我爱他们，感谢他们忍受我的缺席。
+- en: David Flanagan, March 2020
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: David Flanagan，2020年3月

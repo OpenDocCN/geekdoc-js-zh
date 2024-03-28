@@ -1,0 +1,2469 @@
+- en: Chapter 14\. Metaprogramming
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第14章 元编程
+- en: This chapter covers a number of advanced JavaScript features that are not commonly
+    used in day-to-day programming but that may be valuable to programmers writing
+    reusable libraries and of interest to anyone who wants to tinker with the details
+    about how JavaScript objects behave.
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本章介绍了一些高级JavaScript功能，这些功能在日常编程中并不常用，但对于编写可重用库的程序员可能很有价值，并且对于任何想要深入了解JavaScript对象行为细节的人也很有趣。
+- en: 'Many of the features described here can loosely be described as “metaprogramming”:
+    if regular programming is writing code to manipulate data, then metaprogramming
+    is writing code to manipulate other code. In a dynamic language like JavaScript,
+    the lines between programming and metaprogramming are blurry—even the simple ability
+    to iterate over the properties of an object with a `for/in` loop might be considered
+    “meta” by programmers accustomed to more static languages.'
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里描述的许多功能可以宽泛地描述为“元编程”：如果常规编程是编写代码来操作数据，那么元编程就是编写代码来操作其他代码。在像JavaScript这样的动态语言中，编程和元编程之间的界限模糊——甚至简单地使用`for/in`循环迭代对象的属性的能力对��习惯于更静态语言的程序员来说可能被认为是“元编程”。
+- en: 'The metaprogramming topics covered in this chapter include:'
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本章涵盖的元编程主题包括：
+- en: '[§14.1](#propertydescriptors) Controlling the enumerability, deleteability,
+    and configurability of object properties'
+  id: totrans-4
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[§14.1](#propertydescriptors) 控制对象属性的可枚举性、可删除性和可配置性'
+- en: '[§14.2](#extensibleattr) Controlling the extensibility of objects, and creating
+    “sealed” and “frozen” objects'
+  id: totrans-5
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[§14.2](#extensibleattr) 控制对象的可扩展性，并创建“封闭”和“冻结”对象'
+- en: '[§14.3](#prototypeattr) Querying and setting the prototypes of objects'
+  id: totrans-6
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[§14.3](#prototypeattr) 查询和设置对象的原型'
+- en: '[§14.4](#wellknownsymbols) Fine-tuning the behavior of your types with well-known
+    Symbols'
+  id: totrans-7
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[§14.4](#wellknownsymbols) 使用众所周知的符号微调类型的行为'
+- en: '[§14.5](#templatetags) Creating DSLs (domain-specific languages) with template
+    tag functions'
+  id: totrans-8
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[§14.5](#templatetags) 使用模板标签函数创建DSL（领域特定语言）'
+- en: '[§14.6](#reflectapi) Probing objects with `reflect` methods'
+  id: totrans-9
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[§14.6](#reflectapi) 使用`reflect`方法探查对象'
+- en: '[§14.7](#proxy) Controlling object behavior with Proxy'
+  id: totrans-10
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[§14.7](#proxy) 使用代理控制对象行为'
+- en: 14.1 Property Attributes
+  id: totrans-11
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 14.1 属性特性
+- en: 'The properties of a JavaScript object have names and values, of course, but
+    each property also has three associated attributes that specify how that property
+    behaves and what you can do with it:'
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript对象的属性当然有名称和值，但每个属性还有三个关联属性，指定该属性的行为方式以及您可以对其执行的操作：
+- en: The *writable* attribute specifies whether or not the value of a property can
+    change.
+  id: totrans-13
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*可写* 属性指定属性的值是否可以更改。'
+- en: The *enumerable* attribute specifies whether the property is enumerated by the
+    `for/in` loop and the `Object.keys()` method.
+  id: totrans-14
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*可枚举* 属性指定属性是否由`for/in`循环和`Object.keys()`方法枚举。'
+- en: The *configurable* attribute specifies whether a property can be deleted and
+    also whether the property’s attributes can be changed.
+  id: totrans-15
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '*可配置* 属性指定属性是否可以被删除，以及属性的属性是否可以更改。'
+- en: Properties defined in object literals or by ordinary assignment to an object
+    are writable, enumerable, and configurable. But many of the properties defined
+    by the JavaScript standard library are not.
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在对象字面量中定义的属性或通过普通赋值给对象的属性是可写的、可枚举的和可配置的。但是，JavaScript标准库中定义的许多属性并非如此。
+- en: 'This section explains the API for querying and setting property attributes.
+    This API is particularly important to library authors because:'
+  id: totrans-17
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 本节解释了查询和设置属性特性的API。这个API对于库作者尤为重要，因为：
+- en: It allows them to add methods to prototype objects and make them non-enumerable,
+    like built-in methods.
+  id: totrans-18
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 它允许他们向原型对象添加方法并使它们不可枚举，就像内置方法一样。
+- en: It allows them to “lock down” their objects, defining properties that cannot
+    be changed or deleted.
+  id: totrans-19
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 它允许它们“锁定”它们的对象，定义不能被更改或删除的属性。
+- en: 'Recall from [§6.10.6](ch06.xhtml#gettersandsetters) that, while “data properties”
+    have a value, “accessor properties” have a getter and/or a setter method instead.
+    For the purposes of this section, we are going to consider the getter and setter
+    methods of an accessor property to be property attributes. Following this logic,
+    we’ll even say that the value of a data property is an attribute as well. Thus,
+    we can say that a property has a name and four attributes. The four attributes
+    of a data property are *value*, *writable*, *enumerable*, and *configurable*.
+    Accessor properties don’t have a *value* attribute or a *writable* attribute:
+    their writability is determined by the presence or absence of a setter. So the
+    four attributes of an accessor property are *get*, *set*, *enumerable*, and *configurable*.'
+  id: totrans-20
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请回顾[§6.10.6](ch06.xhtml#gettersandsetters)，在那里提到，“数据属性”具有值，“访问器属性”则具有getter和/或setter方法。对于本节的目的，我们将考虑访问器属性的getter和setter方法为属性特性。按照这种逻辑，我们甚至会说数据属性的值也是一个属性。因此，我们可以说属性有一个名称和四个属性。数据属性的四个属性是*值*、*可写*、*可枚举*和*可配置*。访问器属性没有*值*属性或*可写*属性：它们的可写性取决于是否存在setter。因此，访问器属性的四个属性是*获取*、*设置*、*可枚举*和*可配置*。
+- en: The JavaScript methods for querying and setting the attributes of a property
+    use an object called a *property descriptor* to represent the set of four attributes.
+    A property descriptor object has properties with the same names as the attributes
+    of the property it describes. Thus, the property descriptor object of a data property
+    has properties named `value`, `writable`, `enumerable`, and `configurable`. And
+    the descriptor for an accessor property has `get` and `set` properties instead
+    of `value` and `writable`. The `writable`, `enumerable`, and `configurable` properties
+    are boolean values, and the `get` and `set` properties are function values.
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: JavaScript用于查询和设置属性的方法使用一个称为*属性描述符*的对象来表示四个属性的集合。属性描述符对象具有与其描述的属性相同名称的属性。因此，数据属性的属性描述符对象具有名为`value`、`writable`、`enumerable`和`configurable`的属性。访问器属性的描述符具有`get`和`set`属性，而不是`value`和`writable`。`writable`、`enumerable`和`configurable`属性是布尔值，`get`和`set`属性是函数值。
+- en: 'To obtain the property descriptor for a named property of a specified object,
+    call `Object.getOwnPropertyDescriptor()`:'
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要获取指定对象的命名属性的属性描���符，请调用`Object.getOwnPropertyDescriptor()`：
+- en: '[PRE0]'
+  id: totrans-23
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: As its name implies, `Object.getOwnPropertyDescriptor()` works only for own
+    properties. To query the attributes of inherited properties, you must explicitly
+    traverse the prototype chain. (See `Object.getPrototypeOf()` in [§14.3](#prototypeattr));
+    see also the similar `Reflect.getOwnPropertyDescriptor()` function in [§14.6](#reflectapi).)
+  id: totrans-24
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如其名称所示，`Object.getOwnPropertyDescriptor()`仅适用于自有属性。要查询继承属性的属性，必须显式遍历原型链。（参见[§14.3](#prototypeattr)中的`Object.getPrototypeOf()`）；另请参阅[§14.6](#reflectapi)中的类似`Reflect.getOwnPropertyDescriptor()`函数。
+- en: 'To set the attributes of a property or to create a new property with the specified
+    attributes, call `Object.defineProperty()`, passing the object to be modified,
+    the name of the property to be created or altered, and the property descriptor
+    object:'
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要设置属性的属性或使用指定属性创建新属性，请调用`Object.defineProperty()`，传递要修改的对象、要创建或更改的属性的名称和属性描述符对象：
+- en: '[PRE1]'
+  id: totrans-26
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: The property descriptor you pass to `Object.defineProperty()` does not have
+    to include all four attributes. If you’re creating a new property, then omitted
+    attributes are taken to be `false` or `undefined`. If you’re modifying an existing
+    property, then the attributes you omit are simply left unchanged. Note that this
+    method alters an existing own property or creates a new own property, but it will
+    not alter an inherited property. See also the very similar function `Reflect.defineProperty()`
+    in [§14.6](#reflectapi).
+  id: totrans-27
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你传递给`Object.defineProperty()`的属性描述符不必包含所有四个属性。如果你正在创建一个新属性，那么被省略的属性被视为`false`或`undefined`。如果你正在修改一个现有属性，那么你省略的属性将保持不变。请注意，此方法会更改现有的自有属性或创建新的自有属性，但不会更改继承的属性。另请参阅[§14.6](#reflectapi)中的非常相似的`Reflect.defineProperty()`函数。
+- en: 'If you want to create or modify more than one property at a time, use `Object.defineProperties()`.
+    The first argument is the object that is to be modified. The second argument is
+    an object that maps the names of the properties to be created or modified to the
+    property descriptors for those properties. For example:'
+  id: totrans-28
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果要一次创建或修改多个属性，请使用`Object.defineProperties()`。第一个参数是要修改的对象。第二个参数是将要创建或修改的属性的名称映射到这些属性的属性描述符的对象。例如：
+- en: '[PRE2]'
+  id: totrans-29
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: This code starts with an empty object, then adds two data properties and one
+    read-only accessor property to it. It relies on the fact that `Object.defineProperties()`
+    returns the modified object (as does `Object.defineProperty()`).
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这段代码从一个空对象开始，然后向其添加两个数据属性和一个只读访问器属性。它依赖于`Object.defineProperties()`返回修改后的对象（`Object.defineProperty()`也是如此）。
+- en: The `Object.create()` method was introduced in [§6.2](ch06.xhtml#creatingobjects).
+    We learned there that the first argument to that method is the prototype object
+    for the newly created object. This method also accepts a second optional argument,
+    which is the same as the second argument to `Object.defineProperties()`. If you
+    pass a set of property descriptors to `Object.create()`, then they are used to
+    add properties to the newly created object.
+  id: totrans-31
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Object.create()` 方法是在[§6.2](ch06.xhtml#creatingobjects)中引入的。我们在那里学到，该方法的第一个参数是新创建对象的原型对象。该方法还接受第二个可选参数，与`Object.defineProperties()`的第二个参数相同。如果你向`Object.create()`传递一组属性描述符，那么它们将用于向新创建的对象添加属性。'
+- en: '`Object.defineProperty()` and `Object.defineProperties()` throw TypeError if
+    the attempt to create or modify a property is not allowed. This happens if you
+    attempt to add a new property to a non-extensible (see [§14.2](#extensibleattr))
+    object. The other reasons that these methods might throw TypeError have to do
+    with the attributes themselves. The *writable* attribute governs attempts to change
+    the *value* attribute. And the *configurable* attribute governs attempts to change
+    the other attributes (and also specifies whether a property can be deleted). The
+    rules are not completely straightforward, however. It is possible to change the
+    value of a nonwritable property if that property is configurable, for example.
+    Also, it is possible to change a property from writable to nonwritable even if
+    that property is nonconfigurable. Here are the complete rules. Calls to `Object.defineProperty()`
+    or `Object.defineProperties()` that attempt to violate them throw a TypeError:'
+  id: totrans-32
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果尝试创建或修改属性不被允许，`Object.defineProperty()`和`Object.defineProperties()`会抛出TypeError。如果你尝试向不可扩展的对象添加新属性，就会发生这种情况（参见[§14.2](#extensibleattr)）。这些方法可能抛出TypeError的其他原因与属性本身有关。*可写*属性控制对*值*属性的更改尝试。*可配置*属性控制对其他属性的更改尝试（并指定属性是否可以被删除）。然而，规则并不完全直观。例如，如果属性是可配置的，那么即使该属性是不可写的，也可以更改该属性的值。此外，即使属性是不可配置的，也可以将属性从可写更改为不可写。以下是完整的规则。调用`Object.defineProperty()`或`Object.defineProperties()`尝试违反这些规则会抛出TypeError：
+- en: If an object is not extensible, you can edit its existing own properties, but
+    you cannot add new properties to it.
+  id: totrans-33
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果一个对象不可扩展，你可以编辑其现有的自有属性，但不能向其添加新属性。
+- en: If a property is not configurable, you cannot change its configurable or enumerable
+    attributes.
+  id: totrans-34
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果一个属性不可配置，你就无法改变它的可配置或可枚举属性。
+- en: If an accessor property is not configurable, you cannot change its getter or
+    setter method, and you cannot change it to a data property.
+  id: totrans-35
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果一个访问器属性不可配置，你就无法更改其 getter 或 setter 方法，也无法将其更改为数据属性。
+- en: If a data property is not configurable, you cannot change it to an accessor
+    property.
+  id: totrans-36
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果一个数据属性不可配置，你就无法将其更改为访问器属性。
+- en: If a data property is not configurable, you cannot change its *writable* attribute
+    from `false` to `true`, but you can change it from `true` to `false`.
+  id: totrans-37
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果一个数据属性不可配置，你就无法将其*可写*属性从`false`更改为`true`，但你可以将其从`true`更改为`false`。
+- en: If a data property is not configurable and not writable, you cannot change its
+    value. You can change the value of a property that is configurable but nonwritable,
+    however (because that would be the same as making it writable, then changing the
+    value, then converting it back to nonwritable).
+  id: totrans-38
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果一个数据属性不可配置且不可写，你就无法改变它的值。但是，如果一个属性是可配置但不可写的，你可以改变它的值（因为这与使其可写，然后改变值，然后将其转换回不可写是一样的）。
+- en: '[§6.7](ch06.xhtml#extending-objects) described the `Object.assign()` function
+    that copies property values from one or more source objects into a target object.
+    `Object.assign()` only copies enumerable properties, and property values, not
+    property attributes. This is normally what we want, but it does mean, for example,
+    that if one of the source objects has an accessor property, it is the value returned
+    by the getter function that is copied to the target object, not the getter function
+    itself. [Example 14-1](#assignDescriptors.js) demonstrates how we can use `Object.getOwnPropertyDescriptor()`
+    and `Object.defineProperty()` to create a variant of `Object.assign()` that copies
+    entire property descriptors rather than just copying property values.'
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[§6.7](ch06.xhtml#extending-objects) 描述了`Object.assign()`函数，它将一个或多个源对象的属性值复制到目标对象中。`Object.assign()`只复制可枚举属性和属性值，而不是属性属性。这通常是我们想要的，但这意味着，例如，如果一个源对象具有一个访问器属性，那么复制到目标对象的是
+    getter 函数返回的值，而不是 getter 函数本身。[示例 14-1](#assignDescriptors.js)演示了如何使用`Object.getOwnPropertyDescriptor()`和`Object.defineProperty()`创建`Object.assign()`的变体，该变体复制整个属性描述符而不仅仅是复制属性值。'
+- en: Example 14-1\. Copying properties and their attributes from one object to another
+  id: totrans-40
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 14-1\. 从一个对象复制属性及其属性到另一个对象
+- en: '[PRE3]'
+  id: totrans-41
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: 14.2 Object Extensibility
+  id: totrans-42
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 14.2 对象的可扩展性
+- en: The *extensible* attribute of an object specifies whether new properties can
+    be added to the object or not. Ordinary JavaScript objects are extensible by default,
+    but you can change that with the functions described in this section.
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对象的*可扩展*属性指定了是否可以向对象添加新属性。普通的 JavaScript 对象默认是可扩展的，但你可以通过本节描述的函数来改变这一点。
+- en: To determine whether an object is extensible, pass it to `Object.isExtensible()`.
+    To make an object non-extensible, pass it to `Object.preventExtensions()`. Once
+    you have done this, any attempt to add a new property to the object will throw
+    a TypeError in strict mode and simply fail silently without an error in non-strict
+    mode. In addition, attempting to change the prototype (see [§14.3](#prototypeattr))
+    of a non-extensible object will always throw a TypeError.
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要确定一个对象���否可扩展，请将其传递给`Object.isExtensible()`。要使对象不可扩展，请将其传递给`Object.preventExtensions()`。一旦这样做，任何尝试向对象添加新属性的操作在严格模式下都会抛出
+    TypeError，在非严格模式下会静默失败而不会报错。此外，尝试更改不可扩展对象的原型（参见[§14.3](#prototypeattr)）将始终抛出 TypeError。
+- en: Note that there is no way to make an object extensible again once you have made
+    it non-extensible. Also note that calling `Object.preventExtensions()` only affects
+    the extensibility of the object itself. If new properties are added to the prototype
+    of a non-extensible object, the non-extensible object will inherit those new properties.
+  id: totrans-45
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请注意，一旦将对象设置为不可扩展，就没有办法再使其可扩展。另外，请注意，调用`Object.preventExtensions()`只影响对象本身的可扩展性。如果向不可扩展对象的原型添加新属性，那么不可扩展对象将继承这些新属性。
+- en: Two similar functions, `Reflect.isExtensible()` and `Reflect.preventExtensions()`,
+    are described in [§14.6](#reflectapi).
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有两个类似的函数，`Reflect.isExtensible()`和`Reflect.preventExtensions()`，在[§14.6](#reflectapi)中描述。
+- en: 'The purpose of the *extensible* attribute is to be able to “lock down” objects
+    into a known state and prevent outside tampering. The *extensible* attribute of
+    objects is often used in conjunction with the *configurable* and *writable* attributes
+    of properties, and JavaScript defines functions that make it easy to set these
+    attributes together:'
+  id: totrans-47
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*可扩展*属性的目的是能够将对象“锁定”到已知状态，并防止外部篡改。对象的*可扩展*属性通常与属性的*可配置*和*可写*属性一起使用，JavaScript
+    定义了使设置这些属性变得容易的函数：'
+- en: '`Object.seal()` works like `Object.preventExtensions()`, but in addition to
+    making the object non-extensible, it also makes all of the own properties of that
+    object nonconfigurable. This means that new properties cannot be added to the
+    object, and existing properties cannot be deleted or configured. Existing properties
+    that are writable can still be set, however. There is no way to unseal a sealed
+    object. You can use `Object.isSealed()` to determine whether an object is sealed.'
+  id: totrans-48
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`Object.seal()`的作用类似于`Object.preventExtensions()`，但除了使对象不可扩展外，它还使该对象的所有自有属性不可配置。这意味着无法向对象添加新属性，也无法删除或配置现有属性。但是，可写的现有属性仍然可以设置。无法取消密封的对象。你可以使用`Object.isSealed()`来确定对象是否被密封。'
+- en: '`Object.freeze()` locks objects down even more tightly. In addition to making
+    the object non-extensible and its properties nonconfigurable, it also makes all
+    of the object’s own data properties read-only. (If the object has accessor properties
+    with setter methods, these are not affected and can still be invoked by assignment
+    to the property.) Use `Object.isFrozen()` to determine if an object is frozen.'
+  id: totrans-49
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`Object.freeze()` 更加严格地锁定对象。除了使对象不可扩展和其属性不可配置外，它还使对象的所有自有数据属性变为只读。（如果对象具有具有
+    setter 方法的访问器属性，则这些属性不受影响，仍然可以通过对属性赋值来调用。）使用 `Object.isFrozen()` 来确定对象是否被冻结。'
+- en: 'It is important to understand that `Object.seal()` and `Object.freeze()` affect
+    only the object they are passed: they have no effect on the prototype of that
+    object. If you want to thoroughly lock down an object, you probably need to seal
+    or freeze the objects in the prototype chain as well.'
+  id: totrans-50
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 需要理解的是 `Object.seal()` 和 `Object.freeze()` 只会影响它们所传递的对象：它们不会影响该对象的原型。如果你想完全锁定一个对象，可能需要同时封闭或冻结原型链中的对象。
+- en: '`Object.preventExtensions()`, `Object.seal()`, and `Object.freeze()` all return
+    the object that they are passed, which means that you can use them in nested function
+    invocations:'
+  id: totrans-51
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Object.preventExtensions()`, `Object.seal()`, 和 `Object.freeze()` 都会返回它们所传递的对象，这意味着你可以在嵌套函数调用中使用它们：'
+- en: '[PRE4]'
+  id: totrans-52
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: 'If you are writing a JavaScript library that passes objects to callback functions
+    written by the users of your library, you might use `Object.freeze()` on those
+    objects to prevent the user’s code from modifying them. This is easy and convenient
+    to do, but there are trade-offs: frozen objects can interfere with common JavaScript
+    testing strategies, for example.'
+  id: totrans-53
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你正在编写一个 JavaScript 库，将对象传递给库用户编写的回调函数，你可能会在这些对象上使用 `Object.freeze()` 来防止用户的代码修改它们。这样做很容易和方便，但也存在一些权衡：冻结的对象可能会干扰常见的
+    JavaScript 测试策略，例如。
+- en: 14.3 The prototype Attribute
+  id: totrans-54
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 14.3 原型属性
+- en: 'An object’s `prototype` attribute specifies the object from which it inherits
+    properties. (Review [§6.2.3](ch06.xhtml#prototypes) and [§6.3.2](ch06.xhtml#inheritance)
+    for more on prototypes and property inheritance.) This is such an important attribute
+    that we usually simply say “the prototype of `o`" rather than “the `prototype`
+    attribute of `o`.” Remember also that when `prototype` appears in code font, it
+    refers to an ordinary object property, not to the `prototype` attribute: [Chapter 9](ch09.xhtml#classes)
+    explained that the `prototype` property of a constructor function specifies the
+    `prototype` attribute of the objects created with that constructor.'
+  id: totrans-55
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个对象的 `prototype` 属性指定了它继承属性的对象。（查看 [§6.2.3](ch06.xhtml#prototypes) 和 [§6.3.2](ch06.xhtml#inheritance)
+    了解更多关于原型和属性继承的内容。）这是一个非常重要的属性，我们通常简单地说“`o` 的原型”而不是“`o` 的 `prototype` 属性”。还要记住，当
+    `prototype` 出现在代码字体中时，它指的是一个普通对象属性，而不是 `prototype` 属性：[第9章](ch09.xhtml#classes)
+    解释了构造函数的 `prototype` 属性指定了使用该构造函数创建的对象的 `prototype` 属性。
+- en: The `prototype` attribute is set when an object is created. Objects created
+    from object literals use `Object.prototype` as their prototype. Objects created
+    with `new` use the value of the `prototype` property of their constructor function
+    as their prototype. And objects created with `Object.create()` use the first argument
+    to that function (which may be `null`) as their prototype.
+  id: totrans-56
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`prototype` 属性在对象创建时设置。通过对象字面量创建的对象使用 `Object.prototype` 作为它们的原型。通过 `new` 创建的对象使用它们构造函数的
+    `prototype` 属性的值作为它们的原型。通过 `Object.create()` 创建的对象使用该函数的第一个参数（可能为 `null`）作为它们的原型。'
+- en: 'You can query the prototype of any object by passing that object to `Object.getPrototypeOf()`:'
+  id: totrans-57
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你可以通过将对象传递给 `Object.getPrototypeOf()` 来查询任何对象的原型：
+- en: '[PRE5]'
+  id: totrans-58
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: A very similar function, `Reflect.getPrototypeOf()`, is described in [§14.6](#reflectapi).
+  id: totrans-59
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个非常相似的函数 `Reflect.getPrototypeOf()` 在 [§14.6](#reflectapi) 中描述。
+- en: 'To determine whether one object is the prototype of (or is part of the prototype
+    chain of) another object, use the `isPrototypeOf()` method:'
+  id: totrans-60
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要确定一个对象是否是另一个对象的原型（或是原型链的一部分），使用 `isPrototypeOf()` 方法：
+- en: '[PRE6]'
+  id: totrans-61
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: Note that `isPrototypeOf()` performs a function similar to the `instanceof`
+    operator (see [§4.9.4](ch04.xhtml#instanceof)).
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 注意，`isPrototypeOf()` 执行类似于 `instanceof` 运算符的功能（参见 [§4.9.4](ch04.xhtml#instanceof)）。
+- en: 'The `prototype` attribute of an object is set when the object is created and
+    normally remains fixed. You can, however, change the prototype of an object with
+    `Object.setPrototypeOf()`:'
+  id: totrans-63
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 对象的 `prototype` 属性在对象创建时设置并通常保持不变。但是，你可以使用 `Object.setPrototypeOf()` 改变对象的原型：
+- en: '[PRE7]'
+  id: totrans-64
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: There is generally no need to ever use `Object.setPrototypeOf()`. JavaScript
+    implementations may make aggressive optimizations based on the assumption that
+    the prototype of an object is fixed and unchanging. This means that if you ever
+    call `Object.setPrototypeOf()`, any code that uses the altered objects may run
+    much slower than it would normally.
+  id: totrans-65
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通常不需要使用 `Object.setPrototypeOf()`。JavaScript 实现可能会基于对象原型是固定且不变的假设进行激进的优化。这意味着如果你调用
+    `Object.setPrototypeOf()`，使用修改后的对象的任何代码可能比通常运行得慢得多。
+- en: A similar function, `Reflect.setPrototypeOf()`, is described in [§14.6](#reflectapi).
+  id: totrans-66
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个类似的函数 `Reflect.setPrototypeOf()` 在 [§14.6](#reflectapi) 中描述。
+- en: 'Some early browser implementations of JavaScript exposed the `prototype` attribute
+    of an object through the `__proto__` property (written with two underscores at
+    the start and end). This has long since been deprecated, but enough existing code
+    on the web depends on `__proto__` that the ECMAScript standard mandates it for
+    all JavaScript implementations that run in web browsers. (Node supports it, too,
+    though the standard does not require it for Node.) In modern JavaScript, `__proto__`
+    is readable and writeable, and you can (though you shouldn’t) use it as an alternative
+    to `Object.getPrototypeOf()` and `Object.setPrototypeOf()`. One interesting use
+    of `__proto__`, however, is to define the prototype of an object literal:'
+  id: totrans-67
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一些早期的浏览器实现暴露了对象的`prototype`属性，通过`__proto__`属性（以两个下划线开头和结尾）。尽管这种做法早已被弃用，但网络上存在大量依赖`__proto__`的现有代码，因此ECMAScript标准要求所有在Web浏览器中运行的JavaScript实现都必须支持它（Node也支持，尽管标准不要求Node支持）。在现代JavaScript中，`__proto__`是可读写的，你可以（尽管不应该）将其用作`Object.getPrototypeOf()`和`Object.setPrototypeOf()`的替代方法。然而，`__proto__`的一个有趣用途是定义对象字面量的原型：
+- en: '[PRE8]'
+  id: totrans-68
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: 14.4 Well-Known Symbols
+  id: totrans-69
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 14.4 众所周知的符号
+- en: The Symbol type was added to JavaScript in ES6, and one of the primary reasons
+    for doing so was to safely add extensions to the language without breaking compatibility
+    with code already deployed on the web. We saw an example of this in [Chapter 12](ch12.xhtml#itergene),
+    where we learned that you can make a class iterable by implementing a method whose
+    “name” is the Symbol `Symbol.iterator`.
+  id: totrans-70
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Symbol类型是在ES6中添加到JavaScript中的，这样做的一个主要原因是可以安全地向语言添加扩展，而不会破坏已部署在Web上的代码的兼容性。我们在[第12章](ch12.xhtml#itergene)中看到了一个例子，我们学到可以通过实现一个方法，其“名称”是符号`Symbol.iterator`，使一个类可迭代。
+- en: '`Symbol.iterator` is the best-known example of the “well-known Symbols.” These
+    are a set of Symbol values stored as properties of the `Symbol()` factory function
+    that are used to allow JavaScript code to control certain low-level behaviors
+    of objects and classes. The subsections that follow describe each of these well-known
+    Symbols and explain how they can be used.'
+  id: totrans-71
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Symbol.iterator`是“众所周知的符号”中最为人熟知的例子。这些是一组作为`Symbol()`工厂函数属性存储的符号值，用于允许JavaScript代码控制对象和类的某些低级行为。接下来的小节描述了每个这些众所周知的符号，并解释了它们的用途。'
+- en: 14.4.1 Symbol.iterator and Symbol.asyncIterator
+  id: totrans-72
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.1 Symbol.iterator 和 Symbol.asyncIterator
+- en: The `Symbol.iterator` and `Symbol.asyncIterator` Symbols allow objects or classes
+    to make themselves iterable or asynchronously iterable. They were covered in detail
+    in [Chapter 12](ch12.xhtml#itergene) and [§13.4.2](ch13.xhtml#async-async-iterators),
+    respectively, and are mentioned again here only for completeness.
+  id: totrans-73
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Symbol.iterator` 和 `Symbol.asyncIterator` 符号允许对象或类使自己可迭代或异步可迭代。它们在[第12章](ch12.xhtml#itergene)和[§13.4.2](ch13.xhtml#async-async-iterators)中有详细介绍，这里仅为完整性而提及。'
+- en: 14.4.2 Symbol.hasInstance
+  id: totrans-74
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.2 Symbol.hasInstance
+- en: When the `instanceof` operator was described in [§4.9.4](ch04.xhtml#instanceof),
+    we said that the righthand side must be a constructor function and that the expression
+    `o instanceof f` was evaluated by looking for the value `f.prototype` within the
+    prototype chain of `o`. That is still true, but in ES6 and beyond, `Symbol.hasInstance`
+    provides an alternative. In ES6, if the righthand side of `instanceof` is any
+    object with a `[Symbol.hasInstance]` method, then that method is invoked with
+    the lefthand side value as its argument, and the return value of the method, converted
+    to a boolean, becomes the value of the `instanceof` operator. And, of course,
+    if the value on the righthand side does not have a `[Symbol.hasInstance]` method
+    but is a function, then the `instanceof` operator behaves in its ordinary way.
+  id: totrans-75
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当描述`instanceof`运算符时，在[§4.9.4](ch04.xhtml#instanceof)中我们说右侧必须是一个构造函数，并且表达式`o
+    instanceof f`通过查找`o`的原型链中的值`f.prototype`来进行评估。这仍然是正确的，但在ES6及更高版本中，`Symbol.hasInstance`提供了一种替代方法。在ES6中，如果`instanceof`的右侧是具有`[Symbol.hasInstance]`方法的任何对象，则该方法将以其参数作为左侧值调用，并且方法的返回值，转换为布尔值，成为`instanceof`运算符的值。当然，如果右侧的值没有`[Symbol.hasInstance]`方法但是一个函数，则`instanceof`运算符会按照其普通方式行为。
+- en: '`Symbol.hasInstance` means that we can use the `instanceof` operator to do
+    generic type checking with suitably defined pseudotype objects. For example:'
+  id: totrans-76
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '`Symbol.hasInstance`意味着我们可以使用`instanceof`运算符来进行通用类型检查，只需定义适当的伪类型对象即可。例如：'
+- en: '[PRE9]'
+  id: totrans-77
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: Note that this example is clever but confusing because it uses a nonclass object
+    where a class would normally be expected. It would be just as easy—and clearer
+    to readers of your code—to write a `isUint8()` function instead of relying on
+    this `Symbol.hasInstance` behavior.
+  id: totrans-78
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请注意，这个例子很巧妙但令人困惑，因为它使用了一个非类对象，而通常期望的是一个类。对于你的代码读者来说，编写一个`isUint8()`函数而不依赖于`Symbol.hasInstance`行为会更容易理解。
+- en: 14.4.3 Symbol.toStringTag
+  id: totrans-79
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.3 Symbol.toStringTag
+- en: 'If you invoke the `toString()` method of a basic JavaScript object, you get
+    the string “[object Object]”:'
+  id: totrans-80
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果调用基本JavaScript对象的`toString()`方法，你会得到字符串“[object Object]”：
+- en: '[PRE10]'
+  id: totrans-81
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: 'If you invoke this same `Object.prototype.toString()` function as a method
+    of instances of built-in types, you get some interesting results:'
+  id: totrans-82
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果将相同的`Object.prototype.toString()`函数作为内置类型的实例方法调用，你会得到一些有趣的结果：
+- en: '[PRE11]'
+  id: totrans-83
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: 'It turns out that you can use this `Object.prototype.toString().call()` technique
+    with any JavaScript value to obtain the “class attribute” of an object that contains
+    type information that is not otherwise available. The following `classof()` function
+    is arguably more useful than the `typeof` operator, which makes no distinction
+    between types of objects:'
+  id: totrans-84
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用`Object.prototype.toString().call()`技术可以获取任何JavaScript值的“类属性”，其中包含了否则无法获取的类型信息。下面的`classof()`函数可能比`typeof`运算符更有用，因为它可以区分不同类型的对象：
+- en: '[PRE12]'
+  id: totrans-85
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: 'Prior to ES6, this special behavior of the `Object.prototype.toString()` method
+    was available only to instances of built-in types, and if you called this `classof()`
+    function on an instance of a class you had defined yourself, it would simply return
+    “Object”. In ES6, however, `Object.prototype.toString()` looks for a property
+    with the symbolic name `Symbol.toStringTag` on its argument, and if such a property
+    exists, it uses the property value in its output. This means that if you define
+    a class of your own, you can easily make it work with functions like `classof()`:'
+  id: totrans-86
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在ES6之前，`Object.prototype.toString()`方法的这种特殊行为仅适用于内置类型的实例，如果你在自己定义的类的实例上调用`classof()`函数，它将简单地返回“Object”。然而，在ES6中，`Object.prototype.toString()`会在其参数上查找一个名为`Symbol.toStringTag`的符号名称属性，如果存在这样的属性，它将在输出中使用属性值。这意味着如果你定义了自己的类，你可以轻松地使其与`classof()`等函数一起工作：
+- en: '[PRE13]'
+  id: totrans-87
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: 14.4.4 Symbol.species
+  id: totrans-88
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.4 Symbol.species
+- en: 'Prior to ES6, JavaScript did not provide any real way to create robust subclasses
+    of built-in classes like Array. In ES6, however, you can extend any built-in class
+    simply by using the `class` and `extends` keywords. [§9.5.2](ch09.xhtml#extendsandsuper)
+    demonstrated that with this simple subclass of Array:'
+  id: totrans-89
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在ES6之前，JavaScript没有提供任何真正的方法来创建Array等内置类的强大子类。然而，在ES6中，你可以简单地使用`class`和`extends`关键字来扩展任何内置类。[§9.5.2](ch09.xhtml#extendsandsuper)演示了这个简单的Array子类：
+- en: '[PRE14]'
+  id: totrans-90
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: Array defines methods `concat()`, `filter()`, `map()`, `slice()`, and `splice()`,
+    which return arrays. When we create an array subclass like EZArray that inherits
+    these methods, should the inherited method return instances of Array or instances
+    of EZArray? Good arguments can be made for either choice, but the ES6 specification
+    says that (by default) the five array-returning methods will return instances
+    of the subclass.
+  id: totrans-91
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Array定义了`concat()`、`filter()`、`map()`、`slice()`和`splice()`等方法，它们返回数组。当我们创建一个像EZArray这样继承这些方法的数组子类时，继承的方法应该返回Array的实例还是EZArray的实例？对于任一选择都有充分的理由，但ES6规范表示（默认情况下）这五个返回数组的方法将返回子类的实例。
+- en: 'Here’s how it works:'
+  id: totrans-92
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 它是如何工作的：
+- en: In ES6 and later, the `Array()` constructor has a property with the symbolic
+    name `Symbol.species`. (Note that this Symbol is used as the name of a property
+    of the constructor function. Most of the other well-known Symbols described here
+    are used as the name of methods of a prototype object.)
+  id: totrans-93
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 在ES6及以后的版本中，`Array()`构造函数有一个名为`Symbol.species`的符号属性。（请注意，此Symbol用作构造函数的属性名称。这里描述的大多数其他知名Symbols用作原型对象的方法名称。）
+- en: When we create a subclass with `extends`, the resulting subclass constructor
+    inherits properties from the superclass constructor. (This is in addition to the
+    normal kind of inheritance, where instances of the subclass inherit methods of
+    the superclass.) This means that the constructor for every subclass of Array also
+    has an inherited property with name `Symbol.species`. (Or a subclass can define
+    its own property with this name, if it wants.)
+  id: totrans-94
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 当我们使用`extends`创建一个子类时，结果子类构造函数会继承自超类构造函数的属性。（这是正常继承的一种，其中子类的实例继承自超类的方法。）这意味着每个Array的子类构造函数也会继承一个名为`Symbol.species`的继承属性。（或者子类可以定义自己的具有此名称的属性，如果需要的话。）
+- en: Methods like `map()` and `slice()` that create and return new arrays are tweaked
+    slightly in ES6 and later. Instead of just creating a regular Array, they (in
+    effect) invoke `new this.constructor[Symbol.species]()` to create the new array.
+  id: totrans-95
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 在ES6及以后的版本中，像`map()`和`slice()`这样创建并返回新数组的方法稍作调整。它们（实际上）调用`new this.constructor[Symbol.species]()`来创建新数组。
+- en: 'Now here’s the interesting part. Suppose that `Array[Symbol.species]` was just
+    a regular data property, defined like this:'
+  id: totrans-96
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现在这里有趣的部分。假设`Array[Symbol.species]`只是一个常规的数据属性，像这样定义：
+- en: '[PRE15]'
+  id: totrans-97
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: In that case, then subclass constructors would inherit the `Array()` constructor
+    as their “species,” and invoking `map()` on an array subclass would return an
+    instance of the superclass rather than an instance of the subclass. That is not
+    how ES6 actually behaves, however. The reason is that `Array[Symbol.species]`
+    is a read-only accessor property whose getter function simply returns `this`.
+    Subclass constructors inherit this getter function, which means that by default,
+    every subclass constructor is its own “species.”
+  id: totrans-98
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在这种情况下，子类构造函数将以`Array()`构造函数作为其“species”继承，并在数组子类上调用`map()`将返回超类的实例而不是子类的实例。然而，ES6实际上并不是这样行为的。原因是`Array[Symbol.species]`是一个只读的访问器属性，其getter函数简单地返回`this`。子类构造函数继承了这个getter函数，这意味着默认情况下，每个子类构造函数都是其自己的“species”。
+- en: 'Sometimes this default behavior is not what you want, however. If you wanted
+    the array-returning methods of EZArray to return regular Array objects, you just
+    need to set `EZArray[Symbol.species]` to `Array`. But since the inherited property
+    is a read-only accessor, you can’t just set it with an assignment operator. You
+    can use `defineProperty()`, however:'
+  id: totrans-99
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，有时这种默认行为并不是你想要的。如果你希望EZArray的返回数组方法返回常规的Array对象，你只需要将`EZArray[Symbol.species]`设置为`Array`。但由于继承的属性是只读访问器，你不能简单地使用赋值运算符来设置它。不过，你可以使用`defineProperty()`：
+- en: '[PRE16]'
+  id: totrans-100
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: 'The simplest option is probably to explicitly define your own `Symbol.species`
+    getter when creating the subclass in the first place:'
+  id: totrans-101
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最简单的选择可能是在创建子类时明确定义自己的`Symbol.species`getter：
+- en: '[PRE17]'
+  id: totrans-102
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: Creating useful subclasses of Array was the primary use case that motivated
+    the introduction of `Symbol.species`, but it is not the only place that this well-known
+    Symbol is used. Typed array classes use the Symbol in the same way that the Array
+    class does. Similarly, the `slice()` method of ArrayBuffer looks at the `Symbol.species`
+    property of `this.constructor` instead of simply creating a new ArrayBuffer. And
+    Promise methods like `then()` that return new Promise objects create those objects
+    via this species protocol as well. Finally, if you find yourself subclassing Map
+    (for example) and defining methods that return new Map objects, you might want
+    to use `Symbol.species` yourself for the benefit of subclasses of your subclass.
+  id: totrans-103
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 创建有用的 Array 子类是引入`Symbol.species`的主要用例，但这并不是这个众所周知的 Symbol 被使用的唯一场合。Typed array
+    类使用 Symbol 的方式与 Array 类相同。类似地，ArrayBuffer 的`slice()`方法查看`this.constructor`的`Symbol.species`属性，而不是简单地创建一个新的
+    ArrayBuffer。而像`then()`这样返回新 Promise 对象的 Promise 方法也通过这种 species 协议创建这些对象。最后，如果您发现自己正在对
+    Map（例如）进行子类化并定义返回新 Map 对象的方法，您可能希望为了您的子类的好处自己使用`Symbol.species`。
+- en: 14.4.5 Symbol.isConcatSpreadable
+  id: totrans-104
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.5 `Symbol.isConcatSpreadable`
+- en: 'The Array method `concat()` is one of the methods described in the previous
+    section that uses `Symbol.species` to determine what constructor to use for the
+    returned array. But `concat()` also uses `Symbol.isConcatSpreadable`. Recall from
+    [§7.8.3](ch07.xhtml#arrayconcat) that the `concat()` method of an array treats
+    its `this` value and its array arguments differently than its nonarray arguments:
+    nonarray arguments are simply appended to the new array, but the `this` array
+    and any array arguments are flattened or “spread” so that the elements of the
+    array are concatenated rather than the array argument itself.'
+  id: totrans-105
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Array 方法`concat()`是前一节描述的使用`Symbol.species`确定返回的数组要使用的构造函数之一。但`concat()`还使用`Symbol.isConcatSpreadable`。回顾[§7.8.3](ch07.xhtml#arrayconcat)，数组的`concat()`方法将其`this`值和其数组参数与非数组参数区别对待：非数组参数简单地附加到新数组，但`this`数组和任何数组参数被展平或“展开”，以便将数组的元素连接起来而不是数组参数��身。
+- en: 'Before ES6, `concat()` just used `Array.isArray()` to determine whether to
+    treat a value as an array or not. In ES6, the algorithm is changed slightly: if
+    the argument (or the `this` value) to `concat()` is an object and has a property
+    with the symbolic name `Symbol.isConcatSpreadable`, then the boolean value of
+    that property is used to determine whether the argument should be “spread.” If
+    no such property exists, then `Array.isArray()` is used as in previous versions
+    of the language.'
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 ES6 之前，`concat()`只是使用`Array.isArray()`来确定是否将一个值视为数组。在 ES6 中，算法略有改变：如果传递给`concat()`的参数（或`this`值）是一个对象，并且具有符号名称`Symbol.isConcatSpreadable`的属性，则该属性的布尔值用于确定是否应“展开”参数。如果不存在这样的属性，则像语言的早期版本一样使用`Array.isArray()`。
+- en: 'There are two cases when you might want to use this Symbol:'
+  id: totrans-107
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有两种情况下您可能想使用这个 Symbol：
+- en: 'If you create an Array-like (see [§7.9](ch07.xhtml#arraylike)) object and want
+    it to behave like a real array when passed to `concat()`, you can simply add the
+    symbolic property to your object:'
+  id: totrans-108
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果您创建一个类似数组的对象（参见[§7.9](ch07.xhtml#arraylike)），并希望在传递给`concat()`时表现得像真正的数组，您可以简单地向您的对象添加这个符号属性：
+- en: '[PRE18]'
+  id: totrans-109
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: 'Array subclasses are spreadable by default, so if you are defining an array
+    subclass that you do not want to act like an array when used with `concat()`,
+    then you can^([1](ch14.xhtml#idm46198513295640)) add a getter like this to your
+    subclass:'
+  id: totrans-110
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 默认情况下，数组子类是可展开的，因此，如果您正在定义一个数组子类，而不希望在使用`concat()`时表现得像数组，那么您可以在子类中添加一个类似这样的getter：
+- en: '[PRE19]'
+  id: totrans-111
+  prefs:
+  - PREF_IND
+  type: TYPE_PRE
+  zh: '[PRE19]'
+- en: 14.4.6 Pattern-Matching Symbols
+  id: totrans-112
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.6 模式匹配符号
+- en: '[§11.3.2](ch11.xhtml#regexps-string-methods) documented the String methods
+    that perform pattern-matching operations using a RegExp argument. In ES6 and later,
+    these methods have been generalized to work with RegExp objects or any object
+    that defines pattern-matching behavior via properties with symbolic names. For
+    each of the string methods `match()`, `matchAll()`, `search()`, `replace()`, and
+    `split()`, there is a corresponding well-known Symbol: `Symbol.match`, `Symbol.search`,
+    and so on.'
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[§11.3.2](ch11.xhtml#regexps-string-methods) 记载了使用 RegExp 参数执行模式匹配操作的 String
+    方法。在 ES6 及更高版本中，这些方法已被泛化，可以与 RegExp 对象或任何定义了通过具有符号名称的属性进行模式匹配行为的对象一起使用。对于每个字符串方法`match()`、`matchAll()`、`search()`、`replace()`和`split()`，都有一个对应的众所周知的
+    Symbol：`Symbol.match`、`Symbol.search`等等。'
+- en: RegExps are a general and very powerful way to describe textual patterns, but
+    they can be complicated and not well suited to fuzzy matching. With the generalized
+    string methods, you can define your own pattern classes using the well-known Symbol
+    methods to provide custom matching. For example, you could perform string comparisons
+    using Intl.Collator (see [§11.7.3](ch11.xhtml#collator)) to ignore accents when
+    matching. Or you could define a pattern class based on the *Soundex* algorithm
+    to match words based on their approximate sounds or to loosely match strings up
+    to a given Levenshtein distance.
+  id: totrans-114
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正则表达式是描述文本模式的一种通用且非常强大的方式，但它们可能会很复杂，不太适合模糊匹配。通过泛化的字符串方法，您可以使用众所周知的 Symbol 方法定义自己的模式类，以提供自定义匹配。例如，您可以使用
+    Intl.Collator（参见[§11.7.3](ch11.xhtml#collator)）执行字符串比较，以在匹配时忽略重音。或者您可以基于 *Soundex*
+    算法定义一个模式类，根据其近似音调匹配单词或宽松匹配给定的 Levenshtein 距离内的字符串。
+- en: 'In general, when you invoke one of these five String methods on a pattern object
+    like this:'
+  id: totrans-115
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通常，当您在模式对象上调用这五个 String 方法之一时：
+- en: '[PRE20]'
+  id: totrans-116
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE20]'
+- en: 'that invocation turns into an invocation of a symbolically named method on
+    your pattern object:'
+  id: totrans-117
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 那个调用会变成在您的模式对象上调用一个以符号命名的方法：
+- en: '[PRE21]'
+  id: totrans-118
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE21]'
+- en: 'As an example, consider the pattern-matching class in the next example, which
+    implements pattern matching using the simple `*` and `?` wildcards that you are
+    probably familar with from filesystems. This style of pattern matching dates back
+    to the very early days of the Unix operating system, and the patterns are often
+    called *globs*:'
+  id: totrans-119
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 举个例子，考虑下一个示例中的模式匹配类，它使用简单的`*`和`?`通配符实现模式匹配，你可能从文件系统中熟悉这些通配符。这种模式匹配风格可以追溯到 Unix
+    操作系统的早期，这些模式通常被称为*globs*：
+- en: '[PRE22]'
+  id: totrans-120
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE22]'
+- en: 14.4.7 Symbol.toPrimitive
+  id: totrans-121
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.7 Symbol.toPrimitive
+- en: '[§3.9.3](ch03.xhtml#objtoprim) explained that JavaScript has three slightly
+    different algorithms for converting objects to primitive values. Loosely speaking,
+    for conversions where a string value is expected or preferred, JavaScript invokes
+    an object’s `toString()` method first and falls back on the `valueOf()` method
+    if `toString()` is not defined or does not return a primitive value. For conversions
+    where a numeric value is preferred, JavaScript tries the `valueOf()` method first
+    and falls back on `toString()` if `valueOf()` is not defined or if it does not
+    return a primitive value. And finally, in cases where there is no preference,
+    it lets the class decide how to do the conversion. Date objects convert using
+    `toString()` first, and all other types try `valueOf()` first.'
+  id: totrans-122
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[§3.9.3](ch03.xhtml#objtoprim) 解释了 JavaScript 有三种稍有不同的算法来将对象转换为原始值。粗略地说，对于期望或偏好字符串值的转换，JavaScript
+    首先调用对象的`toString()`方法，如果未定义或未返回原始值，则回退到`valueOf()`方法。对于偏好数值的转换，JavaScript 首先尝试`valueOf()`方法，如果未定义或未返回原始值，则回退到`toString()`。最后，在没有偏好的情况下，它让类决定如何进行转换。日期对象首先使用`toString()`进行转换，而所有其他类型首先尝试`valueOf()`。'
+- en: 'In ES6, the well-known Symbol `Symbol.toPrimitive` allows you to override this
+    default object-to-primitive behavior and gives you complete control over how instances
+    of your own classes will be converted to primitive values. To do this, define
+    a method with this symbolic name. The method must return a primitive value that
+    somehow represents the object. The method you define will be invoked with a single
+    string argument that tells you what kind of conversion JavaScript is trying to
+    do on your object:'
+  id: totrans-123
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 ES6 中，著名的 Symbol `Symbol.toPrimitive` 允许你重写默认的对象到原始值的行为，并完全控制你自己类的实例将如何转换为原始值。为此，请定义一个具有这个符号名称的方法。该方法必须返回某种代表对象的原始值。你定义的方法将被调用一个字符串参数，告诉你
+    JavaScript 正在尝试对你的对象进行什么样的转换：
+- en: If the argument is `"string"`, it means that JavaScript is doing the conversion
+    in a context where it would expect or prefer (but not require) a string. This
+    happens when you interpolate the object into a template literal, for example.
+  id: totrans-124
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果参数是`"string"`，这意味着 JavaScript 在一个期望或偏好（但不是必须）字符串的上下文中进行转换。例如，当你将对象插入模板文字中时会发生这种情况。
+- en: If the argument is `"number"`, it means that JavaScript is doing the conversion
+    in a context where it would expect or prefer (but not require) a numeric value.
+    This happens when you use the object with a `<` or `>` operator or with arithmetic
+    operators like `-` and `*`.
+  id: totrans-125
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果参数是`"number"`，这意味着 JavaScript 在一个期望或偏好（但不是必须）数字值的上下文中进行转换。当你使用对象与`<`或`>`运算符或使用`-`和`*`等算术运算符时会发生这种情况。
+- en: If the argument is `"default"`, it means that JavaScript is converting your
+    object in a context where either a numeric or string value could work. This happens
+    with the `+`, `==`, and `!=` operators.
+  id: totrans-126
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 如果参数是`"default"`，这意味着 JavaScript 在一个数字或字符串值都可以使用的上下文中转换你的对象。这发生在`+`、`==`和`!=`运算符中。
+- en: Many classes can ignore the argument and simply return the same primitive value
+    in all cases. If you want instances of your class to be comparable and sortable
+    with `<` and `>`, then that is a good reason to define a `[Symbol.toPrimitive]`
+    method.
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 许多类可以忽略参数，并在所有情况下简单地返回相同的原始值。如果你希望你的类的实例可以使用`<`和`>`进行比较和排序，那么这是定义`[Symbol.toPrimitive]`方法的一个很好的理由。
+- en: 14.4.8 Symbol.unscopables
+  id: totrans-128
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 14.4.8 Symbol.unscopables
+- en: 'The final well-known Symbol that we’ll cover here is an obscure one that was
+    introduced as a workaround for compatibility issues caused by the deprecated `with`
+    statement. Recall that the `with` statement takes an object and executes its statement
+    body as if it were in a scope where the properties of that object were variables.
+    This caused compatibility problems when new methods were added to the Array class,
+    and it broke some existing code. `Symbol.unscopables` is the result. In ES6 and
+    later, the `with` statement has been slightly modified. When used with an object
+    `o`, a `with` statement computes `Object.keys(o[Symbol.unscopables]||{})` and
+    ignores properties whose names are in the resulting array when creating the simulated
+    scope in which to execute its body. ES6 uses this to add new methods to `Array.prototype`
+    without breaking existing code on the web. This means that you can find a list
+    of the newest Array methods by evaluating:'
+  id: totrans-129
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们将在这里介绍的最后一个著名 Symbol 是一个晦涩的 Symbol，它是为了解决由于已弃用的`with`语句引起的兼容性问题而引入的。回想一下，`with`语句接受一个对象，并执行其语句体，就好像它在对象的属性是变量的作用域中执行一样。当向
+    Array 类添加新方法时，这导致了兼容性问题，并且破坏了一些现有代码。`Symbol.unscopables` 就是解决方案。在 ES6 及更高版本中，`with`语句已经稍作修改。当与对象`o`一起使用时，`with`语句计算`Object.keys(o[Symbol.unscopables]||{})`，并在创建模拟作用域以执行其语句体时忽略其名称在生成的数组中的属性。ES6
+    使用这个方法向`Array.prototype`添加新方法，而不会破坏网络上的现有代码。这意味着你可以通过评估来找到最新的 Array 方法列表：
+- en: '[PRE23]'
+  id: totrans-130
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE23]'
+- en: 14.5 Template Tags
+  id: totrans-131
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 14.5 模板标签
+- en: Strings within backticks are known as “template literals” and were covered in
+    [§3.3.4](ch03.xhtml#templateliterals). When an expression whose value is a function
+    is followed by a template literal, it turns into a function invocation, and we
+    call it a “tagged template literal.” Defining a new tag function for use with
+    tagged template literals can be thought of as metaprogramming, because tagged
+    templates are often used to define DSLs—domain-specific languages—and defining
+    a new tag function is like adding new syntax to JavaScript. Tagged template literals
+    have been adopted by a number of frontend JavaScript packages. The GraphQL query
+    language uses a `gql[PRE24] tag function to enable CSS styles to be embedded in
+    JavaScript. This section demonstrates how to write your own tag functions like
+    these.
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 反引号内的字符串称为“模板字面量”，在 [§3.3.4](ch03.xhtml#templateliterals) 中有介绍。当一个值为函数的表达式后面跟着一个模板字面量时，它变成了一个函数调用，并且我们称之为“标记模板字面量”。为标记模板字面量定义一个新的标记函数可以被视为元编程，因为标记模板经常用于定义
+    DSL—领域特定语言—并且定义一个新的标记函数就像向 JavaScript 添加新的语法。标记模板字面量已经被许多前端 JavaScript 包采用。GraphQL
+    查询语言使用 `gql[PRE24]` 标记函数来使 CSS 样式嵌入到 JavaScript 中。本节演示了如何编写自己的类似这样的标记函数。
+- en: 'There is nothing special about tag functions: they are ordinary JavaScript
+    functions, and no special syntax is required to define them. When a function expression
+    is followed by a template literal, the function is invoked. The first argument
+    is an array of strings, and this is followed by zero or more additional arguments,
+    which can have values of any type.'
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 标记函数没有什么特别之处：它们是普通的 JavaScript 函数，不需要特殊的语法来定义它们。当一个函数表达式后面跟着一个模板字面量时，该函数被调用。第一个参数是一个字符串数组，然后是零个或多个额外参数，这些参数可以是任何类型的值。
+- en: 'The number of arguments depends on the number of values that are interpolated
+    into the template literal. If the template literal is simply a constant string
+    with no interpolations, then the tag function will be called with an array of
+    that one string and no additional arguments. If the template literal includes
+    one interpolated value, then the tag function is called with two arguments. The
+    first is an array of two strings, and the second is the interpolated value. The
+    strings in that initial array are the string to the left of the interpolated value
+    and the string to its right, and either one of them may be the empty string. If
+    the template literal includes two interpolated values, then the tag function is
+    invoked with three arguments: an array of three strings and the two interpolated
+    values. The three strings (any or all of which may be empty) are the text to the
+    left of the first value, the text between the two values, and the text to the
+    right of the second value. In the general case, if the template literal has `n`
+    interpolated values, then the tag function will be invoked with `n+1` arguments.
+    The first argument will be an array of `n+1` strings, and the remaining arguments
+    are the `n` interpolated values, in the order that they appear in the template
+    literal.'
+  id: totrans-134
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 参数的数量取决于插入到模板字面量中的值的数量。如果模板字面量只是一个没有插值的常量字符串，那么标记函数将被调用一个包含那个字符串的数组和没有额外参数的数组。如果模板字面量包含一个插入值，那么标记函数将被调用两个参数。第一个是包含两个字符串的数组，第二个是插入的值。初始数组中的字符串是插入值左侧的字符串和右侧的字符串，其中任何一个都可能是空字符串。如果模板字面量包含两个插入值，那么标记函数将被调用三个参数：一个包含三个字符串和两个插入值的数组。这三个字符串（任何一个或全部可能为空）是第一个值左侧的文本、两个值之间的文本和第二个值右侧的文本。在一般情况下，如果模板字面量有
+    `n` 个插入值，那么标记函数将被调用 `n+1` 个参数。第一个参数将是一个包含 `n+1` 个字符串的数组，其余参数是 `n` 个插入值，按照它们在模板字面量中出现的顺序。
+- en: The value of a template literal is always a string. But the value of a tagged
+    template literal is whatever value the tag function returns. This may be a string,
+    but when the tag function is used to implement a DSL, the return value is typically
+    a non-string data structure that is a parsed representation of the string.
+  id: totrans-135
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 模板字面量的值始终是一个字符串。但是标记模板字面量的值是标记函数返回的任何值。这可能是一个字符串，但是当标记函数用于实现 DSL 时，返回值通常是一个非字符串数据结构，它是字符串的解析表示。
+- en: As an example of a template tag function that returns a string, consider the
+    following `html[PRE25]
+  id: totrans-136
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为一个返回字符串的模板标签函数的示例，考虑以下 `html[PRE25]
+- en: function html(strings, ...values) {
+  id: totrans-137
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function html(strings, ...values) {
+- en: // Convert each value to a string and escape special HTML characters
+  id: totrans-138
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 将每个值转换为字符串并转义特殊的 HTML 字符
+- en: let escaped = values.map(v => String(v)
+  id: totrans-139
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: let escaped = values.map(v => String(v)
+- en: .replace("&", "&amp;")
+  id: totrans-140
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: .replace("&", "&amp;")
+- en: .replace("<", "&lt;")
+  id: totrans-141
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: .replace("<", "&lt;")
+- en: .replace(">", "&gt;")
+  id: totrans-142
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: .replace(">", "&gt;");
+- en: .replace('"', "&quot;")
+  id: totrans-143
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: .replace('"', "&quot;")
+- en: .replace("'", "&#39;"));
+  id: totrans-144
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: .replace("'", "&#39;"));
+- en: // Return the concatenated strings and escaped values
+  id: totrans-145
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 返回连接的字符串和转义的值
+- en: let result = strings[0];
+  id: totrans-146
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: let result = strings[0];
+- en: for(let i = 0; i < escaped.length; i++) {
+  id: totrans-147
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: for(let i = 0; i < escaped.length; i++) {
+- en: result += escaped[i] + strings[i+1];
+  id: totrans-148
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: result += escaped[i] + strings[i+1];
+- en: '}'
+  id: totrans-149
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '}'
+- en: return result;
+  id: totrans-150
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 返回结果;
+- en: '}'
+  id: totrans-151
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: let operator = "<";
+  id: totrans-152
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let operator = "<";
+- en: html`<b>x ${operator} y</b>`             // => "<b>x &lt; y</b>"
+  id: totrans-153
+  prefs: []
+  type: TYPE_NORMAL
+  zh: html`<b>x ${operator} y</b>`             // => "<b>x &lt; y</b>"
+- en: let kind = "game", name = "D&D";
+  id: totrans-154
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let kind = "game", name = "D&D";
+- en: html`<div class="${kind}">${name}</div>` // =>'<div class="game">D&amp;D</div>'
+  id: totrans-155
+  prefs: []
+  type: TYPE_NORMAL
+  zh: html`<div class="${kind}">${name}</div>` // =>'<div class="game">D&amp;D</div>'
+- en: '[PRE26]'
+  id: totrans-156
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE26]'
+- en: function glob(strings, ...values) {
+  id: totrans-157
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function glob(strings, ...values) {
+- en: // Assemble the strings and values into a single string
+  id: totrans-158
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 将字符串和值组装成一个字符串
+- en: let s = strings[0];
+  id: totrans-159
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: let s = strings[0];
+- en: for(let i = 0; i < values.length; i++) {
+  id: totrans-160
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: for(let i = 0; i < values.length; i++) {
+- en: s += values[i] + strings[i+1];
+  id: totrans-161
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: s += values[i] + strings[i+1];
+- en: '}'
+  id: totrans-162
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '}'
+- en: // Return a parsed representation of that string
+  id: totrans-163
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 返回该字符串的解析表示
+- en: return new Glob(s);
+  id: totrans-164
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return new Glob(s);
+- en: '}'
+  id: totrans-165
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: let root = "/tmp";
+  id: totrans-166
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let root = "/tmp";
+- en: let filePattern = glob`${root}/*.html`;  // A RegExp alternative
+  id: totrans-167
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let filePattern = glob`${root}/*.html`;  // 一个 RegExp 替代方案
+- en: '"/tmp/test.html".match(filePattern)[1]   // => "test"'
+  id: totrans-168
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '"/tmp/test.html".match(filePattern)[1]   // => "test"'
+- en: '[PRE27] tag function that returns a string in its “raw” form without interpreting
+    any of the backslash escape sequences. This is implemented using a feature of
+    tag function invocation that we have not discussed yet. When a tag function is
+    invoked, we’ve seen that its first argument is an array of strings. But this array
+    also has a property named `raw`, and the value of that property is another array
+    of strings, with the same number of elements. The argument array includes strings
+    that have had escape sequences interpreted as usual. And the raw array includes
+    strings in which escape sequences are not interpreted. This obscure feature is
+    important if you want to define a DSL with a grammar that uses backslashes. For
+    example, if we wanted our `glob[PRE28]'
+  id: totrans-169
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[PRE27] 标签函数，以其“原始”形式返回一��字符串，而不解释任何反斜杠转义序列。这是使用我们尚未讨论过的标签函数调用的一个特性实现的。当调用标签函数时，我们已经看到它的第一个参数是一个字符串数组。但是这个数组还有一个名为
+    `raw` 的属性，该属性的值是另一个具有相同数量元素的字符串数组。参数数组包含已解释转义序列的字符串。原始数组包含未解释转义序列的字符串。如果要定义使用反斜杠的语法的语法的
+    DSL，这个晦涩的特性是重要的。例如，如果我们想要我们的 `glob[PRE28]'
+- en: let proxy = new Proxy(target, handlers);
+  id: totrans-170
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let proxy = new Proxy(target, handlers);
+- en: '[PRE29]'
+  id: totrans-171
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE29]'
+- en: 'let t = { x: 1, y: 2 };'
+  id: totrans-172
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let t = { x: 1, y: 2 };'
+- en: let p = new Proxy(t, {});
+  id: totrans-173
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let p = new Proxy(t, {});
+- en: p.x          // => 1
+  id: totrans-174
+  prefs: []
+  type: TYPE_NORMAL
+  zh: p.x          // => 1
+- en: 'delete p.y   // => true: delete property y of the proxy'
+  id: totrans-175
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'delete p.y   // => true: 删除代理的属性 y'
+- en: 't.y          // => undefined: this deletes it in the target, too'
+  id: totrans-176
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 't.y          // => undefined: 这也会在目标中删除它'
+- en: p.z = 3;     // Defining a new property on the proxy
+  id: totrans-177
+  prefs: []
+  type: TYPE_NORMAL
+  zh: p.z = 3;     // 在代理上定义一个新属性
+- en: 't.z          // => 3: defines the property on the target'
+  id: totrans-178
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 't.z          // => 3: 在目标上定义属性'
+- en: '[PRE30]'
+  id: totrans-179
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE30]'
+- en: function accessTheDatabase() { /* implementation omitted */ return 42; }
+  id: totrans-180
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function accessTheDatabase() { /* 实现省略 */ return 42; }
+- en: let {proxy, revoke} = Proxy.revocable(accessTheDatabase, {});
+  id: totrans-181
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let {proxy, revoke} = Proxy.revocable(accessTheDatabase, {});
+- en: 'proxy()   // => 42: The proxy gives access to the underlying target function'
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'proxy()   // => 42: 代理提供对基础目标函数的访问'
+- en: revoke(); // But that access can be turned off whenever we want
+  id: totrans-183
+  prefs: []
+  type: TYPE_NORMAL
+  zh: revoke(); // 但是访问可以随时关闭
+- en: 'proxy();  // !TypeError: we can no longer call this function'
+  id: totrans-184
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'proxy();  // !TypeError: 我们不能再调用这个函数'
+- en: '[PRE31]'
+  id: totrans-185
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE31]'
+- en: // We use a Proxy to create an object that appears to have every
+  id: totrans-186
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 我们使用代理创建一个对象，看起来拥有每个
+- en: // possible property, with the value of each property equal to its name
+  id: totrans-187
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 可能的属性，每个属性的值都等于其名称
+- en: let identity = new Proxy({}, {
+  id: totrans-188
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let identity = new Proxy({}, {
+- en: // Every property has its own name as its value
+  id: totrans-189
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 每个属性都以其名称作为其值
+- en: get(o, name, target) { return name; },
+  id: totrans-190
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: get(o, name, target) { return name; },
+- en: // Every property name is defined
+  id: totrans-191
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 每个属性名称都已定义
+- en: has(o, name) { return true; },
+  id: totrans-192
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: has(o, name) { return true; },
+- en: // There are too many properties to enumerate, so we just throw
+  id: totrans-193
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 有太多属性要枚举，所以我们只是抛出
+- en: ownKeys(o) { throw new RangeError("Infinite number of properties"); },
+  id: totrans-194
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: ownKeys(o) { throw new RangeError("属性数量无限"); },
+- en: // All properties exist and are not writable, configurable or enumerable.
+  id: totrans-195
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 所有属性都存在且不可写，不可配置或可枚举。
+- en: getOwnPropertyDescriptor(o, name) {
+  id: totrans-196
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: getOwnPropertyDescriptor(o, name) {
+- en: return {
+  id: totrans-197
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return {
+- en: 'value: name,'
+  id: totrans-198
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'value: name,'
+- en: 'enumerable: false,'
+  id: totrans-199
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'enumerable: false,'
+- en: 'writable: false,'
+  id: totrans-200
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'writable: false,'
+- en: 'configurable: false'
+  id: totrans-201
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'configurable: false'
+- en: '};'
+  id: totrans-202
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '};'
+- en: '},'
+  id: totrans-203
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '},'
+- en: // All properties are read-only so they can't be set
+  id: totrans-204
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 所有属性都是只读的，因此无法设置
+- en: set(o, name, value, target) { return false; },
+  id: totrans-205
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: set(o, name, value, target) { return false; },
+- en: // All properties are non-configurable, so they can't be deleted
+  id: totrans-206
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 所有属性都是不可配置的，因此它们无法被删除
+- en: deleteProperty(o, name) { return false; },
+  id: totrans-207
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: deleteProperty(o, name) { return false; },
+- en: // All properties exist and are non-configurable so we can't define more
+  id: totrans-208
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 所有属性都存在且不可配置，因此我们无法定义更多
+- en: defineProperty(o, name, desc) { return false; },
+  id: totrans-209
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: defineProperty(o, name, desc) { return false; },
+- en: // In effect, this means that the object is not extensible
+  id: totrans-210
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 实际上，这意味着对象不可扩展
+- en: isExtensible(o) { return false; },
+  id: totrans-211
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: isExtensible(o) { return false; },
+- en: // All properties are already defined on this object, so it couldn't
+  id: totrans-212
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 所有属性已在此对象上定义，因此无法
+- en: // inherit anything even if it did have a prototype object.
+  id: totrans-213
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 即使它有原型对象，也不会继承任何东西。
+- en: getPrototypeOf(o) { return null; },
+  id: totrans-214
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: getPrototypeOf(o) { return null; },
+- en: // The object is not extensible, so we can't change the prototype
+  id: totrans-215
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 对象不可扩展，因此我们无法更改原型
+- en: setPrototypeOf(o, proto) { return false; },
+  id: totrans-216
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: setPrototypeOf(o, proto) { return false; },
+- en: '});'
+  id: totrans-217
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '});'
+- en: identity.x                // => "x"
+  id: totrans-218
+  prefs: []
+  type: TYPE_NORMAL
+  zh: identity.x                // => "x"
+- en: identity.toString         // => "toString"
+  id: totrans-219
+  prefs: []
+  type: TYPE_NORMAL
+  zh: identity.toString         // => "toString"
+- en: identity[0]               // => "0"
+  id: totrans-220
+  prefs: []
+  type: TYPE_NORMAL
+  zh: identity[0]               // => "0"
+- en: identity.x = 1;           // Setting properties has no effect
+  id: totrans-221
+  prefs: []
+  type: TYPE_NORMAL
+  zh: identity.x = 1;           // 设置属性没有效果
+- en: identity.x                // => "x"
+  id: totrans-222
+  prefs: []
+  type: TYPE_NORMAL
+  zh: identity.x                // => "x"
+- en: 'delete identity.x         // => false: can''t delete properties either'
+  id: totrans-223
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'delete identity.x         // => false: 也无法删除属性'
+- en: identity.x                // => "x"
+  id: totrans-224
+  prefs: []
+  type: TYPE_NORMAL
+  zh: identity.x                // => "x"
+- en: 'Object.keys(identity);    // !RangeError: can''t list all the keys'
+  id: totrans-225
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'Object.keys(identity);    // !RangeError: 无法列出所有键'
+- en: for(let p of identity) ;  // !RangeError
+  id: totrans-226
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(let p of identity) ;  // !RangeError
+- en: '[PRE32]'
+  id: totrans-227
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE32]'
+- en: function readOnlyProxy(o) {
+  id: totrans-228
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function readOnlyProxy(o) {
+- en: function readonly() { throw new TypeError("Readonly"); }
+  id: totrans-229
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: function readonly() { throw new TypeError("只读"); }
+- en: return new Proxy(o, {
+  id: totrans-230
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return new Proxy(o, {
+- en: 'set: readonly,'
+  id: totrans-231
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'set: readonly,'
+- en: 'defineProperty: readonly,'
+  id: totrans-232
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'defineProperty: readonly,'
+- en: 'deleteProperty: readonly,'
+  id: totrans-233
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'deleteProperty: readonly,'
+- en: 'setPrototypeOf: readonly,'
+  id: totrans-234
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 'setPrototypeOf: readonly,'
+- en: '});'
+  id: totrans-235
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '});'
+- en: '}'
+  id: totrans-236
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: 'let o = { x: 1, y: 2 };    // Normal writable object'
+  id: totrans-237
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let o = { x: 1, y: 2 };    // 普通可写对象'
+- en: let p = readOnlyProxy(o);  // Readonly version of it
+  id: totrans-238
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let p = readOnlyProxy(o);  // 它的只读版本
+- en: 'p.x                        // => 1: reading properties works'
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'p.x                        // => 1: 读取属性有效'
+- en: 'p.x = 2;                   // !TypeError: can''t change properties'
+  id: totrans-240
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'p.x = 2;                   // !TypeError: 无法更改属性'
+- en: 'delete p.y;                // !TypeError: can''t delete properties'
+  id: totrans-241
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'delete p.y;                // !TypeError: 无法删除属性'
+- en: 'p.z = 3;                   // !TypeError: can''t add properties'
+  id: totrans-242
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'p.z = 3;                   // !TypeError: 无法添加属性'
+- en: 'p.__proto__ = {};          // !TypeError: can''t change the prototype'
+  id: totrans-243
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'p.__proto__ = {};          // !TypeError: 无法更改原型'
+- en: '[PRE33]'
+  id: totrans-244
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE33]'
+- en: /*
+  id: totrans-245
+  prefs: []
+  type: TYPE_NORMAL
+  zh: /*
+- en: '* Return a Proxy object that wraps o, delegating all operations to'
+  id: totrans-246
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '* 返回一个代理对象，包装 o，将所有操作委托给'
+- en: '* that object after logging each operation. objname is a string that'
+  id: totrans-247
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '* 在记录每个操作后，该对象的名称是一个字符串'
+- en: '* will appear in the log messages to identify the object. If o has own'
+  id: totrans-248
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '* 将出现在日志消息中以标识对象。如果o具有自有'
+- en: '* properties whose values are objects or functions, then if you query'
+  id: totrans-249
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '* 其值为对象或函数，则如果您查询'
+- en: '* the value of those properties, you''ll get a loggingProxy back, so that'
+  id: totrans-250
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '* 这些属性的值是对象或函数，则返回代理而不是'
+- en: '* logging behavior of this proxy is "contagious".'
+  id: totrans-251
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '* 此代理的记录行为是“传染性的”。'
+- en: '*/'
+  id: totrans-252
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*/'
+- en: function loggingProxy(o, objname) {
+  id: totrans-253
+  prefs: []
+  type: TYPE_NORMAL
+  zh: function loggingProxy（o，objname）{
+- en: // Define handlers for our logging Proxy object.
+  id: totrans-254
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 为我们的记录代理对象定义处理程序。
+- en: // Each handler logs a message and then delegates to the target object.
+  id: totrans-255
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 每个处理程序记录一条消息，然后委托给目标对象。
+- en: const handlers = {
+  id: totrans-256
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: const handlers = {
+- en: // This handler is a special case because for own properties
+  id: totrans-257
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 这个处理程序是一个特例，因为对于自有属性
+- en: // whose value is an object or function, it returns a proxy rather
+  id: totrans-258
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 其值为对象或函数，则返回代理而不是值本身。
+- en: // than returning the value itself.
+  id: totrans-259
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 返回值本身。
+- en: get(target, property, receiver) {
+  id: totrans-260
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: get（target，property，receiver）{
+- en: // Log the get operation
+  id: totrans-261
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 记录获取操作
+- en: console.log(`Handler get(${objname},${property.toString()})`);
+  id: totrans-262
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: console.log(`处理程序获取（${objname}，${property.toString()}）`);
+- en: // Use the Reflect API to get the property value
+  id: totrans-263
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 使用Reflect API获取属性值
+- en: let value = Reflect.get(target, property, receiver);
+  id: totrans-264
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: let value = Reflect.get（target，property，receiver）;
+- en: // If the property is an own property of the target and
+  id: totrans-265
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 如果属性是目标的自有属性且
+- en: // the value is an object or function then return a Proxy for it.
+  id: totrans-266
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 值是对象或函数，则返回其代理。
+- en: if (Reflect.ownKeys(target).includes(property) &&
+  id: totrans-267
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: if（Reflect.ownKeys（target）.includes（property）&&
+- en: (typeof value === "object" || typeof value === "function")) {
+  id: totrans-268
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: （typeof value === "object" || typeof value === "function"））{
+- en: return loggingProxy(value, `${objname}.${property.toString()}`);
+  id: totrans-269
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return loggingProxy（value，`${objname}.${property.toString()}`）;
+- en: '}'
+  id: totrans-270
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '}'
+- en: // Otherwise return the value unmodified.
+  id: totrans-271
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 否则返回未修改的值。
+- en: return value;
+  id: totrans-272
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 返回值;
+- en: '},'
+  id: totrans-273
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '},'
+- en: '// There is nothing special about the following three methods:'
+  id: totrans-274
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 以下三种方法没有特殊之处：
+- en: // they log the operation and delegate to the target object.
+  id: totrans-275
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 它们记录操作并委托给目标对象。
+- en: // They are a special case simply so we can avoid logging the
+  id: totrans-276
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 它们是一个特例，只是为了避免记录
+- en: // receiver object which can cause infinite recursion.
+  id: totrans-277
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 可能导致无限递归的接收器对象。
+- en: set(target, prop, value, receiver) {
+  id: totrans-278
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: set（target，prop，value，receiver）{
+- en: console.log(`Handler set(${objname},${prop.toString()},${value})`);
+  id: totrans-279
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: console.log(`处理程序设置（${objname}，${prop.toString()}，${value}）`);
+- en: return Reflect.set(target, prop, value, receiver);
+  id: totrans-280
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return Reflect.set（target，prop，value，receiver）;
+- en: '},'
+  id: totrans-281
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '},'
+- en: apply(target, receiver, args) {
+  id: totrans-282
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: apply（target，receiver，args）{
+- en: console.log(`Handler ${objname}(${args})`);
+  id: totrans-283
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: console.log(`处理程序${objname}（${args}）`);
+- en: return Reflect.apply(target, receiver, args);
+  id: totrans-284
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return Reflect.apply（target，receiver，args）;
+- en: '},'
+  id: totrans-285
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '},'
+- en: construct(target, args, receiver) {
+  id: totrans-286
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: 构造（target，args，receiver）{
+- en: console.log(`Handler ${objname}(${args})`);
+  id: totrans-287
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: console.log(`处理程序${objname}（${args}）`);
+- en: return Reflect.construct(target, args, receiver);
+  id: totrans-288
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return Reflect.construct（target，args，receiver）;
+- en: '}'
+  id: totrans-289
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '}'
+- en: '};'
+  id: totrans-290
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '};'
+- en: // We can automatically generate the rest of the handlers.
+  id: totrans-291
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 我们可以自动生成其余的处理程序。
+- en: // Metaprogramming FTW!
+  id: totrans-292
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 元编程 FTW！
+- en: Reflect.ownKeys(Reflect).forEach(handlerName => {
+  id: totrans-293
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: Reflect.ownKeys（Reflect）.forEach（handlerName => {
+- en: if (!(handlerName in handlers)) {
+  id: totrans-294
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: if（！（handlerName在处理程序中））{
+- en: handlers[handlerName] = function(target, ...args) {
+  id: totrans-295
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: handlers[handlerName] = function（target，...args）{
+- en: // Log the operation
+  id: totrans-296
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 记录操作
+- en: console.log(`Handler ${handlerName}(${objname},${args})`);
+  id: totrans-297
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: console.log(`处理程序${handlerName}（${objname}，${args}）`);
+- en: // Delegate the operation
+  id: totrans-298
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 委托操作
+- en: return Reflect[handlerName](target, ...args);
+  id: totrans-299
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return Reflect[handlerName]（target，...args）;
+- en: '};'
+  id: totrans-300
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '};'
+- en: '}'
+  id: totrans-301
+  prefs:
+  - PREF_IND
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '}'
+- en: '});'
+  id: totrans-302
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: '});'
+- en: // Return a proxy for the object using these logging handlers
+  id: totrans-303
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: // 返回一个对象的代理，使用这些记录处理程序
+- en: return new Proxy(o, handlers);
+  id: totrans-304
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+  zh: return new Proxy（o，handlers）;
+- en: '}'
+  id: totrans-305
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '}'
+- en: '[PRE34]'
+  id: totrans-306
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE34]'
+- en: // Define an array of data and an object with a function property
+  id: totrans-307
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 定义一个数据数组和一个具有函数属性的对象
+- en: let data = [10,20];
+  id: totrans-308
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let data = [10,20];
+- en: 'let methods = { square: x => x*x };'
+  id: totrans-309
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let methods = { square: x => x*x };'
+- en: // Create logging proxies for the array and the object
+  id: totrans-310
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 为数组和具有函数属性的对象创建记录代理
+- en: let proxyData = loggingProxy(data, "data");
+  id: totrans-311
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let proxyData = loggingProxy（data，"data"）;
+- en: let proxyMethods = loggingProxy(methods, "methods");
+  id: totrans-312
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let proxyMethods = loggingProxy（methods，"methods"）;
+- en: // Suppose we want to understand how the Array.map() method works
+  id: totrans-313
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 假设我们想要了解Array.map()方法的工作原理
+- en: data.map(methods.square)        // => [100, 400]
+  id: totrans-314
+  prefs: []
+  type: TYPE_NORMAL
+  zh: data.map(methods.square)        // => [100, 400]
+- en: // First, let's try it with a logging Proxy array
+  id: totrans-315
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 首先，让我们尝试使用一个记录代理数组
+- en: proxyData.map(methods.square)   // => [100, 400]
+  id: totrans-316
+  prefs: []
+  type: TYPE_NORMAL
+  zh: proxyData.map(methods.square)   // => [100, 400]
+- en: '// It produces this output:'
+  id: totrans-317
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 它产生以下输出：
+- en: // Handler get(data,map)
+  id: totrans-318
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，map）
+- en: // Handler get(data,length)
+  id: totrans-319
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，长度）
+- en: // Handler get(data,constructor)
+  id: totrans-320
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，构造函数）
+- en: // Handler has(data,0)
+  id: totrans-321
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序有（数据，0）
+- en: // Handler get(data,0)
+  id: totrans-322
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，0）
+- en: // Handler has(data,1)
+  id: totrans-323
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序有（数据，1）
+- en: // Handler get(data,1)
+  id: totrans-324
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，1）
+- en: // Now lets try with a proxy methods object
+  id: totrans-325
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 现在让我们尝试使用一个代理方法对象
+- en: data.map(proxyMethods.square)   // => [100, 400]
+  id: totrans-326
+  prefs: []
+  type: TYPE_NORMAL
+  zh: data.map(proxyMethods.square)   // => [100, 400]
+- en: '// Log output:'
+  id: totrans-327
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 记录输出：
+- en: // Handler get(methods,square)
+  id: totrans-328
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取���方法，平方）
+- en: // Handler methods.square(10,0,10,20)
+  id: totrans-329
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序methods.square（10，0，10，20）
+- en: // Handler methods.square(20,1,10,20)
+  id: totrans-330
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序methods.square（20，1，10，20）
+- en: // Finally, let's use a logging proxy to learn about the iteration protocol
+  id: totrans-331
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 最后，让我们使用一个记录代理来了解迭代协议
+- en: for(let x of proxyData) console.log("Datum", x);
+  id: totrans-332
+  prefs: []
+  type: TYPE_NORMAL
+  zh: for(let x of proxyData) console.log("数据", x);
+- en: '// Log output:'
+  id: totrans-333
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 记录输出：
+- en: // Handler get(data,Symbol(Symbol.iterator))
+  id: totrans-334
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，Symbol（Symbol.iterator））
+- en: // Handler get(data,length)
+  id: totrans-335
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，长度）
+- en: // Handler get(data,0)
+  id: totrans-336
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，0）
+- en: // Datum 10
+  id: totrans-337
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 数据 10
+- en: // Handler get(data,length)
+  id: totrans-338
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，长度）
+- en: // Handler get(data,1)
+  id: totrans-339
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，1）
+- en: // Datum 20
+  id: totrans-340
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 数据 20
+- en: // Handler get(data,length)
+  id: totrans-341
+  prefs: []
+  type: TYPE_NORMAL
+  zh: // 处理程序获取（数据，长度）
+- en: '[PRE35]'
+  id: totrans-342
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE35]'
+- en: let target = Object.preventExtensions({});
+  id: totrans-343
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let target = Object.preventExtensions（{}）;
+- en: let proxy = new Proxy(target, { isExtensible() { return true; }});
+  id: totrans-344
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let proxy = new Proxy（target，{ isExtensible（）{ return true; }）;
+- en: 'Reflect.isExtensible(proxy);  // !TypeError: invariant violation'
+  id: totrans-345
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Reflect.isExtensible（proxy）;  // !TypeError：不变违规
+- en: '[PRE36]'
+  id: totrans-346
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE36]'
+- en: 'let target = Object.freeze({x: 1});'
+  id: totrans-347
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'let target = Object.freeze（{x: 1}）;'
+- en: let proxy = new Proxy(target, { get() { return 99; }});
+  id: totrans-348
+  prefs: []
+  type: TYPE_NORMAL
+  zh: let proxy = new Proxy（target，{ get（）{ return 99; }）;
+- en: 'proxy.x;         // !TypeError: value returned by get() doesn''t match target'
+  id: totrans-349
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 代理.x;         // !TypeError：get()返回的值与目标不匹配
+- en: '```'
+  id: totrans-350
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '```'
+- en: Proxy enforces a number of additional invariants, almost all of them having
+    to do with non-extensible target objects and nonconfigurable properties on the
+    target object.
+  id: totrans-351
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 代理强制执行许多附加不变性，几乎所有这些不变性都与不可扩展的目标对象和目标对象上的不可配置属性有关。
+- en: 14.8 Summary
+  id: totrans-352
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 14.8 总结
+- en: 'In this chapter, you have learned:'
+  id: totrans-353
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在本章中，您已经学到了：
+- en: JavaScript objects have an *extensible* attribute and object properties have
+    *writable*, *enumerable*, and *configurable* attributes, as well as a value and
+    a getter and/or setter attribute. You can use these attributes to “lock down”
+    your objects in various ways, including creating “sealed” and “frozen” objects.
+  id: totrans-354
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: JavaScript对象具有*可扩展*属性，对象属性具有*可写*、*可枚举*和*可配置*属性，以及值和getter和/或setter属性。您可以使用这些属性以各种方式“锁定”您的对象，包括创建“密封”和“冻结”对象。
+- en: JavaScript defines functions that allow you to traverse the prototype chain
+    of an object and even to change the prototype of an object (though doing this
+    can make your code slower).
+  id: totrans-355
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: JavaScript定义了一些函数，允许您遍历对象的原型链，甚至更改对象的原型（尽管这样做可能会使您的代码变慢）。
+- en: The properties of the `Symbol` object have values that are “well-known Symbols,”
+    which you can use as property or method names for the objects and classes that
+    you define. Doing so allows you to control how your object interacts with JavaScript
+    language features and with the core library. For example, well-known Symbols allow
+    you to make your classes iterable and control the string that is displayed when
+    an instance is passed to `Object.prototype.toString()`. Prior to ES6, this kind
+    of customization was available only to the native classes that were built in to
+    an implementation.
+  id: totrans-356
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '`Symbol`对象的属性具有“众所周知的符号”值，您可以将其用作您定义的对象和类的属性或方法名称。这样做可以让您控制对象与JavaScript语言特性和核心库的交互方式。例如，众所周知的符号允许您使您的类可迭代，并控制将实例传递给`Object.prototype.toString()`时显示的字符串。在ES6之前，这种定制仅适用于内置到实现中的本机类。'
+- en: Tagged template literals are a function invocation syntax, and defining a new
+    tag function is kind of like adding a new literal syntax to the language. Defining
+    a tag function that parses its template string argument allows you to embed DSLs
+    within JavaScript code. Tag functions also provide access to a raw, unescaped
+    form of string literals where backslashes have no special meaning.
+  id: totrans-357
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 标记模板字面量是一种函数调用语法，定义一个新的标签函数有点像向语言添加新的文字语法。定义一个解析其模板字符串参数的标签函数允许您在JavaScript代码中嵌入DSL。标签函数还提供对原始、未转义的字符串文字的访问，其中反斜杠没有特殊含义。
+- en: The Proxy class and the related Reflect API allow low-level control over the
+    fundamental behaviors of JavaScript objects. Proxy objects can be used as optionally
+    revocable wrappers to improve code encapsulation, and they can also be used to
+    implement nonstandard object behaviors (like some of the special case APIs defined
+    by early web browsers).
+  id: totrans-358
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 代理类和相关的Reflect API允许对JavaScript对象的基本行为进行低级控制。代理对象可以用作可选撤销包装器，以改善代码封装，并且还可以用于实现非标准对象行为（例如早期Web浏览器定义的一些特殊情况API）。
+- en: ^([1](ch14.xhtml#idm46198513295640-marker)) A bug in the V8 JavaScript engine
+    means that this code does not work correctly in Node 13.
+  id: totrans-359
+  prefs: []
+  type: TYPE_NORMAL
+  zh: ^([1](ch14.xhtml#idm46198513295640-marker)) V8 JavaScript引擎中的一个错误意味着这段代码在Node
+    13中无法正常工作。
