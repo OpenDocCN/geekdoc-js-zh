@@ -1,4 +1,4 @@
-# `JavaScript`编程精解（`Eloquent`）第四版
+# JavaScript 编程精解（Eloquent）第四版
 
 > 原书：[Eloquent JavaScript 4th edition](http://eloquentjavascript.net/)
 > 
