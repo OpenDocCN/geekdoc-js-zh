@@ -1,57 +1,77 @@
 - en: '11'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '11'
 - en: ASYNCHRONOUS PROGRAMMING
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 异步编程
 - en: The central part of a computer, the part that carries out the individual steps
     that make up our programs, is called the *processor*. The programs we have seen
     so far will keep the processor busy until they have finished their work. The speed
     at which something like a loop that manipulates numbers can be executed depends
     pretty much entirely on the speed of the computer’s processor and memory.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算机的核心部分，即执行构成我们程序的各个步骤的部分，被称为*处理器*。到目前为止我们看到的程序将在它们完成工作之前一直占用处理器。像处理数字的循环那样的操作执行速度几乎完全依赖于计算机的处理器和内存的速度。
 - en: But many programs interact with things outside of the processor. For example,
     they may communicate over a computer network or request data from the hard disk—which
     is a lot slower than getting it from memory.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 但许多程序与处理器外部的事物进行交互。例如，它们可能通过计算机网络进行通信，或请求硬盘上的数据——这比从内存获取数据要慢得多。
 - en: When such a thing is happening, it would be a shame to let the processor sit
     idle—there might be some other work it could do in the meantime. In part, this
     is handled by your operating system, which will switch the processor between multiple
     running programs. But that doesn’t help when we want a *single* program to be
     able to make progress while it is waiting for a network request.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 当这种情况发生时，让处理器闲置将是一个遗憾——在此期间可能还有其他工作可以完成。这部分由你的操作系统处理，它会在多个运行中的程序之间切换处理器。但当我们希望一个*单一*程序在等待网络请求时仍能进展时，这并没有帮助。
 - en: Asynchronicity
+  id: totrans-5
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 异步性
 - en: In a *synchronous* programming model, things happen one at a time. When you
     call a function that performs a long-running action, it returns only when the
     action has finished and it can return the result. This stops your program for
     the time the action takes.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在*同步*编程模型中，事情是一个接一个发生的。当你调用一个执行长时间运行的操作的函数时，它只有在操作完成并能返回结果时才会返回。这会在操作所需时间内停止你的程序。
 - en: An *asynchronous* model allows multiple things to happen at the same time. When
     you start an action, your program continues to run. When the action finishes,
     the program is informed and gets access to the result (for example, the data read
     from disk).
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '*异步*模型允许多个事情同时发生。当你启动一个操作时，你的程序会继续运行。当操作完成时，程序会收到通知并访问结果（例如，从磁盘读取的数据）。'
 - en: 'We can compare synchronous and asynchronous programming using a small example:
     a program that makes two requests over the network and then combines the results.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以通过一个小例子来比较同步和异步编程：一个程序在网络上发出两个请求，然后合并结果。
 - en: In a synchronous environment, where the request function returns only after
     it has done its work, the easiest way to perform this task is to make the requests
     one after the other. This has the drawback that the second request will be started
     only when the first has finished. The total time taken will be at least the sum
     of the two response times.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 在同步环境中，请求函数在完成工作之前不会返回，因此执行此任务的最简单方法是一个接一个地发出请求。这有一个缺点，即第二个请求只有在第一个请求完成后才会启动。总耗时至少是两个响应时间的总和。
 - en: The solution to this problem, in a synchronous system, is to start additional
     threads of control. A *thread* is another running program whose execution may
     be interleaved with other programs by the operating system— since most modern
@@ -59,43 +79,54 @@
     time, on different processors. A second thread could start the second request,
     and then both threads wait for their results to come back, after which they resynchronize
     to combine their results.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 在同步系统中，解决这个问题的方法是启动额外的控制线程。一个*线程*是另一个正在运行的程序，它的执行可能与操作系统中的其他程序交错进行——由于大多数现代计算机包含多个处理器，因此多个线程甚至可以在不同的处理器上同时运行。第二个线程可以启动第二个请求，然后两个线程等待结果返回，之后它们重新同步以合并结果。
 - en: In the following diagram, the thick lines represent time the program spends
     running normally, and the thin lines represent time spent waiting for the network.
     In the synchronous model, the time taken by the network is *part* of the timeline
     for a given thread of control. In the asynchronous model, starting a network action
     allows the program to continue running while the network communication happens
     alongside it, notifying the program when it is finished.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: synchronous, single thread of control
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
 - en: '![Image](../images/f0176-01.jpg)'
+  id: totrans-13
   prefs: []
   type: TYPE_IMG
 - en: synchronous, two threads of control
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: '![Image](../images/f0176-02.jpg)'
+  id: totrans-15
   prefs: []
   type: TYPE_IMG
 - en: asynchronous
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: '![Image](../images/f0176-03.jpg)'
+  id: totrans-17
   prefs: []
   type: TYPE_IMG
 - en: Another way to describe the difference is that waiting for actions to finish
     is *implicit* in the synchronous model, while it is *explicit*—under our control—in
     the asynchronous one.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
 - en: Asynchronicity cuts both ways. It makes expressing programs that do not fit
     the straight-line model of control easier, but it can also make expressing programs
     that do follow a straight line more awkward. We’ll see some ways to reduce this
     awkwardness later in the chapter.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
 - en: Both prominent JavaScript programming platforms—browsers and Node.js—make operations
@@ -103,9 +134,11 @@
     with threads is notoriously hard (understanding what a program does is much more
     difficult when it’s doing multiple things at once), this is generally considered
     a good thing.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: Callbacks
+  id: totrans-21
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -113,64 +146,84 @@
     for something take an extra argument, a *callback function*. The asynchronous
     function starts a process, sets things up so that the callback function is called
     when the process finishes, and then returns.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
 - en: As an example, the setTimeout function, available both in Node.js and in browsers,
     waits a given number of milliseconds and then calls a function.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Waiting is not generally important work, but it can be very useful when you
     need to arrange for something to happen at a certain time or check whether some
     action is taking longer than expected.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
 - en: Another example of a common asynchronous operation is reading a file from a
     device’s storage. Imagine you have a function readTextFile that reads a file’s
     content as a string and passes it to a callback function.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: The readTextFile function is not part of standard JavaScript. We will see how
     to read files in the browser and in Node.js in later chapters.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: 'Performing multiple asynchronous actions in a row using callbacks means that
     you have to keep passing new functions to handle the continuation of the computation
     after the actions. An asynchronous function that compares two files and produces
     a Boolean indicating whether their content is the same might look like this:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: This style of programming is workable, but the indentation level increases with
     each asynchronous action because you end up in another function. Doing more complicated
     things, such as wrapping asynchronous actions in a loop, can get awkward.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种编程风格是可行的，但每进行一次异步操作，缩进级别就会增加，因为你进入了另一个函数。进行更复杂的操作，比如将异步操作包装在循环中，可能会变得很尴尬。
 - en: In a way, asynchronicity is *contagious*. Any function that calls a function
     that works asynchronously must itself be asynchronous, using a callback or similar
     mechanism to deliver its result. Calling a callback is somewhat more involved
     and error prone than simply returning a value, so needing to structure large parts
     of your program that way is not great.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 从某种意义上说，异步性是*具有传染性的*。任何调用异步函数的函数本身必须是异步的，使用回调或类似机制来传递结果。调用回调比简单返回值更复杂且容易出错，因此需要以这种方式结构化程序的较大部分并不好。
 - en: Promises
+  id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 承诺
 - en: A slightly different way to build an asynchronous program is to have asynchronous
     functions return an object that represents its (future) result instead of passing
     around callback functions. This way, such functions actually return something
     meaningful, and the shape of the program more closely resembles that of synchronous
     programs.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建异步程序的另一种稍微不同的方法是让异步函数返回一个表示其（未来）结果的对象，而不是传递回调函数。这样，这些函数实际上返回一些有意义的东西，程序的结构与同步程序更为相似。
 - en: This is what the standard class Promise is for. A *promise* is a receipt representing
     a value that may not be available yet. It provides a then method that allows you
     to register a function that should be called when the action for which it is waiting
@@ -178,60 +231,82 @@
     such functions (there can be multiple) are called with the result value. It is
     possible to call then on a promise that has already resolved— your function will
     still be called.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是标准类`Promise`的用途。*承诺*是表示可能尚不可用的值的收据。它提供了一个`then`方法，允许你注册一个在它等待的操作完成时应被调用的函数。当承诺被*解析*时，即其值变得可用，这些函数（可能有多个）会被调用并传入结果值。可以在已经解析的承诺上调用`then`——你的函数仍然会被调用。
 - en: The easiest way to create a promise is by calling Promise.resolve. This function
     ensures that the value you give it is wrapped in a promise. If it’s already a
     promise, it is simply returned. Otherwise, you get a new promise that immediately
     resolves with your value as its result.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建承诺的最简单方法是调用`Promise.resolve`。这个函数确保你提供的值被包装在一个承诺中。如果它已经是一个承诺，则直接返回。否则，你将得到一个新的承诺，它立即以你的值作为结果解析。
 - en: '[PRE3]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'To create a promise that does not immediately resolve, you can use Promise
     as a constructor. It has a somewhat odd interface: the constructor expects a function
     as its argument, which it immediately calls, passing it a function that it can
     use to resolve the promise.'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 要创建一个不会立即解析的承诺，可以使用`Promise`作为构造函数。它的接口有些奇怪：构造函数期望一个函数作为参数，并立即调用它，传递一个可以用来解析承诺的函数。
 - en: 'For example, this is how you could create a promise-based interface for the
     readTextFile function:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，这就是如何为`readTextFile`函数创建一个基于承诺的接口：
 - en: '[PRE4]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Note how, in contrast to callback-style functions, this asynchronous function
     returns a meaningful value—a promise to give you the contents of the file at some
     point in the future.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，与回调风格的函数相比，这个异步函数返回了一个有意义的值——一个承诺，承诺在未来某个时刻提供文件的内容。
 - en: A useful thing about the then method is that it itself returns another promise.
     This one resolves to the value returned by the callback function or, if that returned
     value is a promise, to the value that promise resolves to. Thus, you can “chain”
     multiple calls to then together to set up a sequence of asynchronous actions.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '`then`方法的一个有用之处在于，它本身返回另一个承诺。这个承诺解析为回调函数返回的值，或者如果该返回值是一个承诺，则解析为该承诺所解析的值。因此，你可以将多个对`then`的调用“链式”连接在一起，以建立一系列异步操作。'
 - en: 'This function, which reads a file full of filenames and returns the content
     of a random file in that list, shows this kind of asynchronous promise pipeline:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个函数读取一个包含文件名的文件，并返回该列表中随机文件的内容，展示了这种异步承诺管道：
 - en: '[PRE5]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The function returns the result of this chain of then calls. The initial promise
     fetches the list of files as a string. The first then call transforms that string
     into an array of lines, producing a new promise. The second then call picks a
     random line from that, producing a third promise that yields a single filename.
     The final then call reads this file, so the result of the function as a whole
     is a promise that returns the content of a random file.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: In this code, the functions used in the first two then calls return a regular
     value that will immediately be passed into the promise returned by then when the
     function returns. The last then call returns a promise (textFile (filename)),
     making it an actual asynchronous step.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: It would also have been possible to perform all these steps inside a single
@@ -239,20 +314,25 @@
     of then wrappers that only do some synchronous data transformation are often useful,
     such as when you want to return a promise that produces a processed version of
     some asynchronous result.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE6]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: Generally, it is useful to think of a promise as a device that lets code ignore
     the question of when a value is going to arrive. A normal value has to actually
     exist before we can reference it. A promised value is a value that *might* already
     be there or might appear at some point in the future. Computations defined in
     terms of promises, by wiring them together with then calls, are executed asynchronously
     as their inputs become available.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: Failure
+  id: totrans-50
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -260,24 +340,30 @@
     computations often need something like that. A network request may fail, a file
     may not exist, or some code that is part of the asynchronous computation may throw
     an exception.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: One of the most pressing problems with the callback style of asynchronous programming
     is that it makes it extremely difficult to ensure failures are properly reported
     to the callbacks.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: A common convention is to use the first argument to the callback to indicate
     that the action failed, and the second to pass the value produced by the action
     when it was successful.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE7]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: Such callback functions must always check whether they received an exception
     and make sure that any problems they cause, including exceptions thrown by functions
     they call, are caught and given to the right function.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: Promises make this easier. They can be either resolved (the action finished
@@ -287,6 +373,7 @@
     causes the promise produced by its then call to be rejected. If any element in
     a chain of asynchronous actions fails, the outcome of the whole chain is marked
     as rejected, and no success handlers are called beyond the point where it failed.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: Much like resolving a promise provides a value, rejecting one also provides
@@ -295,6 +382,7 @@
     Similarly, when a handler returns a promise that is rejected, that rejection flows
     into the next promise. There’s a Promise.reject function that creates a new, immediately
     rejected promise.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
 - en: To explicitly handle such rejections, promises have a catch method that registers
@@ -303,25 +391,31 @@
     promise, which resolves to the original promise’s value when that resolves normally
     and to the result of the catch handler otherwise. If a catch handler throws an
     error, the new promise is also rejected.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: 'As a shorthand, then also accepts a rejection handler as a second argument,
     so you can install both types of handlers in a single method call: .then(acceptHandler,
     rejectHandler).'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: A function passed to the Promise constructor receives a second argument, alongside
     the resolve function, which it can use to reject the new promise.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: When our readTextFile function encounters a problem, it passes the error to
     its callback function as a second argument. Our textFile wrapper should actually
     check that argument so that a failure causes the promise it returns to be rejected.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE8]'
+  id: totrans-62
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: The chains of promise values created by calls to then and catch thus form a
     pipeline through which asynchronous values or failures move. Since such chains
     are created by registering handlers, each link has a success handler or a rejection
@@ -330,21 +424,27 @@
     outcome determines what kind of value comes next— success when they return a non-promise
     value, rejection when they throw an exception, and the outcome of the promise
     when they return a promise.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE9]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: The first then handler function isn’t called because at that point of the pipeline
     the promise holds a rejection. The catch handler handles that rejection and returns
     a value, which is given to the second then handler function.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: Much like an uncaught exception is handled by the environment, Java-Script environments
     can detect when a promise rejection isn’t handled and will report this as an error.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: Carla
+  id: totrans-67
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -352,6 +452,7 @@
     teeming with cyclists and inline skaters. In the grass near a garbage container,
     a flock of crows noisily mills about, trying to convince a group of tourists to
     part with their sandwiches.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
 - en: One of the crows stands out—a large scruffy female with a few white feathers
@@ -359,12 +460,14 @@
     she’s been doing this for a long time. When an elderly man is distracted by the
     antics of another crow, she casually swoops in, snatches his half-eaten bun from
     his hand, and sails away.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: Contrary to the rest of the group, who look like they are happy to spend the
     day goofing around here, the large crow looks purposeful. Carrying her loot, she
     flies straight toward the roof of the hangar building, disappearing into an air
     vent.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
 - en: Inside the building, you can hear an odd tapping sound—soft, but persistent.
@@ -373,10 +476,12 @@
     of which are turned on), and a mess of cables. She rapidly taps the screen of
     one of the phones with her beak. Words are appearing on it. If you didn’t know
     better, you’d think she was typing.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: This crow is known to her peers as “cāāw-krö.” But since those sounds are poorly
     suited for human vocal chords, we’ll refer to her as Carla.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
 - en: Carla is a somewhat peculiar crow. In her youth, she was fascinated by human
@@ -385,15 +490,18 @@
     stealing phones to study them. Her current project is learning to program. The
     text she is typing in her hidden lab is, in fact, a piece of asynchronous JavaScript
     code.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
 - en: Breaking In
+  id: totrans-74
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: Carla loves the internet. Annoyingly, the phone she is working on is about to
     run out of prepaid data. The building has a wireless network, but it requires
     a code to access.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
 - en: Fortunately, the wireless routers in the building are 20 years old and poorly
@@ -405,12 +513,14 @@
     on whether those digits are the correct start of the code or not. Sending incorrect
     numbers immediately returns a failure message. When sending the correct ones,
     the access point waits for more digits.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
 - en: This makes it possible to greatly speed up the guessing of the number. Carla
     can find the first digit by trying each number in turn, until she finds one that
     doesn’t immediately return failure. Having one digit, she can find the second
     digit in the same way, and so on, until she knows the entire passcode.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: Assume Carla has a joinWifi function. Given the network name and the passcode
@@ -419,16 +529,20 @@
     she needs is a way to wrap a promise so that it automatically rejects after it
     takes too much time, to allow the program to quickly move on if the access point
     doesn’t respond.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE10]'
+  id: totrans-79
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: This makes use of the fact that a promise can be resolved or rejected only once.
     If the promise given as its argument resolves or rejects first, that result will
     be the result of the promise returned by withTimeout. If, on the other hand, the
     setTimeout fires first, rejecting the promise, any further resolve or reject calls
     are ignored.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
 - en: To find the whole passcode, the program needs to repeatedly look for the next
@@ -436,6 +550,7 @@
     what we are looking for. If it immediately fails, we know that digit was wrong
     and must try the next digit. If the request times out, we have found another correct
     digit and must continue by adding another digit.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
 - en: Because you cannot wait for a promise inside a for loop, Carla uses a recursive
@@ -443,122 +558,154 @@
     know it so far, as well as the next digit to try. Depending on what happens, it
     may return a finished code or call through to itself, to either start cracking
     the next position in the code or to try again with another digit.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE11]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: The access point tends to respond to bad authentication requests in about 20
     milliseconds, so to be safe, this function waits for 50 milliseconds before timing
     out a request.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE12]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Carla tilts her head and sighs. This would have been more satisfying if the
     code had been a bit harder to guess.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: async Functions
+  id: totrans-87
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: Even with promises, this kind of asynchronous code is annoying to write. Promises
     often need to be tied together in verbose, arbitrary-looking ways. To create an
     asynchronous loop, Carla was forced to introduce a recursive function.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: The thing the cracking function actually does is completely linear—it always
     waits for the previous action to complete before starting the next one. This would
     be straightforward to express in a synchronous programming model.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: The good news is that JavaScript allows you to write pseudosynchronous code
     to describe asynchronous computation. An async function implicitly returns a promise
     and can, in its body, await other promises in a way that *looks* synchronous.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: 'We can rewrite crackPasscode like this:'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE13]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: This version more clearly shows the double loop structure of the function (the
     inner loop tries digit 0 to 9 and the outer loop adds digits to the passcode).
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: An async function is marked by the word async before the function keyword. Methods
     can also be made async by writing async before their name. When such a function
     or method is called, it returns a promise. As soon as the function returns something,
     that promise is resolved. If the body throws an exception, the promise is rejected.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: Inside an async function, the word await can be put in front of an expression
     to wait for a promise to resolve and only then continue the execution of the function.
     If the promise rejects, an exception is raised at the point of the await.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: Such a function no longer runs from start to completion in one go like a regular
     JavaScript function. Instead, it can be *frozen* at any point that has an await
     and can be resumed at a later time.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
 - en: For most asynchronous code, this notation is more convenient than directly using
     promises. You do still need an understanding of promises, since in many cases
     you’ll still interact with them directly. But when wiring them together, async
     functions are generally more pleasant to write than chains of then calls.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: Generators
+  id: totrans-98
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: This ability of functions to be paused and then resumed again is not exclusive
     to async functions. JavaScript also has a feature called *generator* functions.
     These are similar, but without the promises.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: When you define a function with function* (placing an asterisk after the word
     function), it becomes a generator. When you call a generator, it returns an iterator,
     which we already saw in [Chapter 6](ch06.xhtml#ch06).
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE14]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Initially, when you call powers, the function is frozen at its start. Every
     time you call next on the iterator, the function runs until it hits a yield expression,
     which pauses it and causes the yielded value to become the next value produced
     by the iterator. When the function returns (the one in the example never does),
     the iterator is done.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: 'Writing iterators is often much easier when you use generator functions. The
     iterator for the Group class (from the exercise in [Chapter 6](ch06.xhtml#ch06))
     can be written with this generator:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE15]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: There’s no longer a need to create an object to hold the iteration state— generators
     automatically save their local state every time they yield.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: Such yield expressions may occur only directly in the generator function itself
     and not in an inner function you define inside of it. The state a generator saves,
     when yielding, is only its *local* environment and the position where it yielded.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: An async function is a special type of generator. It produces a promise when
     called, which is resolved when it returns (finishes) and rejected when it throws
     an exception. Whenever it yields (awaits) a promise, the result of that promise
     (value or thrown exception) is the result of the await expression.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
 - en: A Corvid Art Project
+  id: totrans-108
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -566,11 +713,13 @@
     hangar. Hopping onto the edge of the roof, she sees the humans are setting up
     for something. There’s a lot of electric cabling, a stage, and some kind of big
     black wall being built up.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: Being a curious crow, Carla takes a closer look at the wall. It appears to consist
     of a number of large glass-fronted devices wired up to cables. On the back, the
     devices say “LedTec SIG-5030.”
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
 - en: A quick internet search turns up a user manual for these devices. They appear
@@ -578,6 +727,7 @@
     of the humans is probably to display some kind of information on them during their
     event. Interestingly, the screens can be programmed over a wireless network. Could
     it be they are connected to the building’s local network?
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: Each device on a network gets an *IP address*, which other devices can use to
@@ -585,6 +735,7 @@
     notices that her own phones all get addresses like 10.0.0.20 or 10.0.0.33. It
     might be worth trying to send messages to all such addresses and see if any one
     of them responds to the interface described in the manual for the signs.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: '[Chapter 18](ch18.xhtml#ch18) shows how to make real requests on real networks.
@@ -593,6 +744,7 @@
     which may be anything that can be sent as JSON—and returns a promise that either
     resolves to a response from the machine at the given address, or rejects it if
     there was a problem.'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: 'According to the manual, you can change what is displayed on a SIG-5030 sign
@@ -600,21 +752,26 @@
     3, ...]}, where data holds one number per LED dot, providing its brightness—0
     means off, 3 means maximum brightness. Each sign is 50 lights wide and 30 lights
     high, so an update command should send 1,500 numbers.'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: This code sends a display update message to all addresses on the local network,
     to see what sticks. Each of the numbers in an IP address can go from 0 to 255\.
     In the data it sends, it activates a number of lights corresponding to the network
     address’s last number.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE16]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Since most of these addresses won’t exist or will not accept such messages,
     the catch call makes sure network errors don’t crash the program. The requests
     are all sent out immediately, without waiting for other requests to finish, in
     order to not waste time when some of the machines don’t answer.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
 - en: 'Having fired off her network scan, Carla heads back outside to see the result.
@@ -622,15 +779,19 @@
     upper-left corners. They *are* on the local network, and they *do* accept commands.
     She quickly notes the numbers shown on each screen. There are nine screens, arranged
     three high and three wide. They have the following network addresses:'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE17]'
+  id: totrans-119
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: Now this opens up possibilities for all kinds of shenanigans. She could show
     “crows rule, humans drool” on the wall in giant letters. But that feels a bit
     crude. Instead, she plans to show a video of a flying crow covering all of the
     screens at night.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: Carla finds a fitting video clip in which a second and a half of footage can
@@ -640,17 +801,20 @@
     nine rectangles and processed so that the dark spots on the video (where the crow
     is) show a bright light, and the light spots (no crow) are left dark, which should
     create the effect of an amber crow flying against a black background.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: She has set up the clipImages variable to hold an array of frames, where each
     frame is represented with an array of nine sets of pixels—one for each screen—in
     the format that the signs expect.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: To display a single frame of the video, Carla needs to send a request to all
     the screens at once. But she also needs to wait for the result of these requests,
     both in order to not start sending the next frame before the current one has been
     properly sent and in order to notice when requests are failing.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: Promise has a static method all that can be used to convert an array of promises
@@ -658,36 +822,48 @@
     way to have some asynchronous actions happen alongside each other, wait for them
     all to finish, and then do something with their results (or at least wait for
     them to make sure they don’t fail).
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE18]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: This maps over the images in frame (which is an array of display data arrays)
     to create an array of request promises. It then returns a promise that combines
     all of those.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: In order to be able to stop a playing video, the process is wrapped in a class.
     This class has an asynchronous play method that returns a promise that resolves
     only when the playback is stopped again via the stop method.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE19]'
+  id: totrans-128
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: The wait function wraps setTimeout in a promise that resolves after the given
     number of milliseconds. This is useful for controlling the speed of the playback.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE20]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: For the entire week that the screen wall stands, every evening, when it is dark,
     a huge glowing orange bird mysteriously appears on it.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: The Event Loop
+  id: totrans-132
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -695,23 +871,28 @@
     set up callbacks to be called later. That main script, as well as the callbacks,
     run to completion in one piece, uninterrupted. But between them, the program may
     sit idle, waiting for something to happen.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: So callbacks are not directly called by the code that scheduled them. If I call
     setTimeout from within a function, that function will have returned by the time
     the callback function is called. And when the callback returns, control does not
     go back to the function that scheduled it.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: Asynchronous behavior happens on its own empty function call stack. This is
     one of the reasons that, without promises, managing exceptions across asynchronous
     code is so hard. Since each callback starts with a mostly empty stack, your catch
     handlers won’t be on the stack when they throw an exception.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE21]'
+  id: totrans-136
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: No matter how closely together events—such as timeouts or incoming requests—happen,
     a JavaScript environment will run only one program at a time. You can think of
     this as it running a big loop *around* your program, called the *event loop*.
@@ -719,28 +900,37 @@
     are added to a queue, and their code is executed one after the other. Because
     no two things run at the same time, slow-running code can delay the handling of
     other events.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
 - en: This example sets a timeout but then dallies until after the timeout’s intended
     point of time, causing the timeout to be late.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE22]'
+  id: totrans-139
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: Promises always resolve or reject as a new event. Even if a promise is already
     resolved, waiting for it will cause your callback to run after the current script
     finishes, rather than right away.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE23]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: In later chapters we’ll see various other types of events that run on the event
     loop.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: Asynchronous Bugs
+  id: totrans-143
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -748,35 +938,44 @@
     happening except those that the program itself makes. For asynchronous programs
     this is different—they may have *gaps* in their execution during which other code
     can run.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s look at an example. This is a function that tries to report the size of
     each file in an array of files, making sure to read them all at the same time
     rather than in sequence.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE24]'
+  id: totrans-146
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: The async fileName => part shows how arrow functions can also be made async
     by putting the word async in front of them.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: The code doesn’t immediately look suspicious . . . it maps the async arrow function
     over the array of names, creating an array of promises, and then uses Promise.all
     to wait for all of these before returning the list they build up.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: But this program is entirely broken. It’ll always return only a single line
     of output, listing the file that took the longest to read.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: Can you work out why?
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: The problem lies in the += operator, which takes the *current* value of list
     at the time the statement starts executing and then, when the await finishes,
     sets the list binding to be that value plus the added string.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: But between the time the statement starts executing and the time it finishes,
@@ -784,24 +983,30 @@
     added to the list, so each of the += operators starts from an empty string and
     ends up, when its storage retrieval finishes, setting list to the result of adding
     its line to the empty string.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: This could have easily been avoided by returning the lines from the mapped promises
     and calling join on the result of Promise.all, instead of building up the list
     by changing a binding. As usual, computing new values is less error prone than
     changing existing values.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE25]'
+  id: totrans-154
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: Mistakes like this are easy to make, especially when using await, and you should
     be aware of where the gaps in your code occur. An advantage of JavaScript’s *explicit*
     asynchronicity (whether through callbacks, promises, or await) is that spotting
     these gaps is relatively easy.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-156
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -810,18 +1015,22 @@
     implement this style of programming using callbacks, functions that are called
     when the actions complete. An event loop schedules such callbacks to be called
     when appropriate, one after the other, so that their execution does not overlap.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: Programming asynchronously is made easier by promises, objects that represent
     actions that might complete in the future, and async functions, which allow you
     to write an asynchronous program as if it were synchronous.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: Exercises
+  id: totrans-159
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: '*Quiet Times*'
+  id: totrans-160
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
@@ -830,81 +1039,108 @@
     active. Because she’d rather not be discovered, Carla has set up a system that
     notices this kind of wireless network traffic and turns on a light in her lair
     whenever there is activity outside, so she knows when to keep quiet.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: She’s also been logging the times at which the camera is tripped for a while
     and wants to use this information to visualize which times, in an average week,
     tend to be quiet and which tend to be busy. The log is stored in files holding
     one time stamp number (as returned by Date.now()) per line.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE26]'
+  id: totrans-163
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: The “camera_logs.txt” file holds a list of logfiles. Write an asynchronous function
     activityTable(day) that for a given day of the week returns an array of 24 numbers,
     one for each hour of the day, that hold the number of camera network traffic observations
     seen in that hour of the day. Days are identified by number using the system used
     by Date.getDay, where Sunday is 0 and Saturday is 6.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: The activityGraph function, provided by the sandbox, summarizes such a table
     into a string.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: To read the files, use the textFile function defined earlier—given a filename,
     it returns a promise that resolves to the file’s content. Remember that new Date(*timestamp*)
     creates a Date object for that time, which has getDay and getHours methods returning
     the day of the week and the hour of the day.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: Both types of files—the list of logfiles and the logfiles themselves—have each
     piece of data on its own line, separated by newline (”\n”) characters.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: '*Real Promises*'
+  id: totrans-168
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
 - en: Rewrite the function from the previous exercise without async/await, using plain
     Promise methods.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: In this style, using Promise.all will be more convenient than trying to model
     a loop over the logfiles. In the async function, just using await in a loop is
     simpler. If reading a file takes some time, which of these two approaches will
     take the least time to run?
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: If one of the files listed in the file list has a typo, and reading it fails,
     how does that failure end up in the Promise object that your function returns?
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果文件列表中的某个文件有拼写错误，导致读取失败，这个失败是如何反映到你的函数返回的 Promise 对象中的？
 - en: '*Building Promise.all*'
+  id: totrans-172
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*构建 Promise.all*'
 - en: As we saw, given an array of promises, Promise.all returns a promise that waits
     for all of the promises in the array to finish. It then succeeds, yielding an
     array of result values. If a promise in the array fails, the promise returned
     by all fails too, passing on the failure reason from the failing promise.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们所看到的，给定一个承诺数组，Promise.all返回一个承诺，等待数组中所有承诺完成。它然后成功，返回一个结果值数组。如果数组中的一个承诺失败，所有的承诺返回的承诺也会失败，并传递失败承诺的失败原因。
 - en: Implement something like this yourself as a regular function called Promise_all.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 自己实现类似的功能，作为一个名为 Promise_all 的常规函数。
 - en: Remember that after a promise has succeeded or failed, it can’t succeed or fail
     again, and further calls to the functions that resolve it are ignored. This can
     simplify the way you handle a failure of your promise.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 请记住，在一个承诺成功或失败后，它无法再次成功或失败，对其解析的函数的进一步调用将被忽略。这可以简化你处理承诺失败的方式。
 - en: '*The evaluator, which determines the meaning of expressions in a programming
     language, is just another program.*'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: '*评估器，用于确定编程语言中表达式的含义，仅仅是另一个程序。*'
 - en: —Hal Abelson and Gerald Sussman, *Structure and Interpretation of Computer Programs*
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: —哈尔·阿贝尔森和杰拉尔德·萨斯曼，《计算机程序的结构与解释》
 - en: '![Image](../images/f0194-01.jpg)'
+  id: totrans-178
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0194-01.jpg)'
