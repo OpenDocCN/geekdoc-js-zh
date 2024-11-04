@@ -18,17 +18,7 @@ JavaScript 会对一些事情进行抱怨。编写一个不符合语言语法的
 
 JavaScript 可以通过启用*严格模式*变得*稍微*严格。这可以通过在文件或函数体的顶部放置字符串“use strict”来实现。以下是一个示例：
 
-```js
-function canYouSpotTheProblem() {
-  "use strict";
-  for (counter = 0; counter < 10; counter++) {
-    console.log("Happy happy");
-  }
-}
-
-canYouSpotTheProblem();
-// → ReferenceError: counter is not defined
-```
+[PRE0]
 
 类和模块中的代码（我们将在第十章中讨论）是自动严格的。旧的非严格行为仍然存在，只是因为某些旧代码可能依赖于此，语言设计者努力避免破坏任何现有程序。
 
@@ -38,21 +28,11 @@ canYouSpotTheProblem();
 
 例如，考虑以下代码，它在没有 new 关键字的情况下调用构造函数，因此它的 this 将*不*引用新构造的对象：
 
-```js
-function Person(name) { this.name = name; }
-let ferdinand = Person("Ferdinand"); // Oops
-console.log(name);
-// → Ferdinand
-```
+[PRE1]
 
 对 Person 的虚假调用成功了，但返回了未定义的值，并创建了全局绑定名称。在严格模式下，结果是不同的。
 
-```js
-"use strict";
-function Person(name) { this.name = name; }
-let ferdinand = Person("Ferdinand"); // Forgot new
-// → TypeError: Cannot set property 'name' of undefined
-```
+[PRE2]
 
 我们会立即被告知某些地方出了问题。这很有帮助。幸运的是，使用 class 语法创建的构造函数如果没有 new 被调用时总会抱怨，即使在非严格模式下，这也减少了问题的发生。
 
@@ -68,12 +48,7 @@ let ferdinand = Person("Ferdinand"); // Forgot new
 
 你可以在上一章的 findRoute 函数之前添加如下注释，以描述它的类型：
 
-```js
-// (graph: Object, from: string, to: string) => string[]
-function findRoute(graph, from, to) {
-  // ...
-}
-```
+[PRE3]
 
 有多种不同的约定用于用类型注解 JavaScript 程序。
 
@@ -93,21 +68,7 @@ function findRoute(graph, from, to) {
 
 测试通常以小型标记程序的形式出现，用于验证代码的某些方面。例如，针对（标准的，可能已经被其他人测试过的）toUpperCase 方法的一组测试可能如下所示：
 
-```js
-function test(label, body) {
-  if (!body()) console.log(`Failed: ${label}`);
-}
-
-test("convert Latin text to uppercase", () => {
-  return "hello".toUpperCase() == "HELLO";
-});
-test("convert Greek text to uppercase", () => {
-  return "Χαίρετε".toUpperCase() == "ΧΑΙΡΕΤΕ";
-});
-test("don't convert case-less characters", () => {
-  return "مرحبا".toUpperCase() == "مرحبا";
-});
-```
+[PRE4]
 
 像这样编写测试往往会产生相当重复和笨拙的代码。幸运的是，有一些软件可以帮助你构建和运行测试集合（*测试套件*），通过提供一种适合表达测试的语言（以函数和方法的形式）以及在测试失败时输出有用信息。这些通常被称为*测试运行器*。
 
@@ -123,22 +84,7 @@ test("don't convert case-less characters", () => {
 
 以下示例程序试图将一个整数转换为给定基数（十进制、二进制等）的字符串，通过反复提取最后一位数字，然后除以该数字以去掉这位数字。但它目前产生的奇怪输出表明它存在缺陷。
 
-```js
-function numberToString(n, base = 10) {
-  let result = "", sign = "";
-  if (n < 0) {
-    sign = "-";
-    n = -n;
-  }
-  do {
-    result = String(n % base) + result;
-    n /= base;
-  } while (n > 0);
-  return sign + result;
-}
-console.log(numberToString(13, 10));
-// → 1.5e-3231.3e-3221.3e-3211.3e-3201.3e-3191.3e-3181.3...
-```
+[PRE5]
 
 即使你已经看到问题，暂时假装你没有。我们知道我们的程序出现了故障，我们想找出原因。
 
@@ -146,14 +92,7 @@ console.log(numberToString(13, 10));
 
 在程序中放置一些战略性的 console.log 调用是获取程序正在做的事情的额外信息的好方法。在这种情况下，我们希望 n 依次取值 13、1，然后 0。让我们在循环开始时写出它的值。
 
-```js
-13
-1.3
-0.13
-0.013
-...
-1.5e-323
-```
+[PRE6]
 
 *对的*。将 13 除以 10 不会产生一个整数。我们实际上想要的是 n = Math.floor(n / base)，而不是 n /= base，这样数字才能正确“向右移动”。
 
@@ -171,29 +110,13 @@ console.log(numberToString(13, 10));
 
 一种选择是让它返回一个特殊值。常见的选择包括 null、undefined 或 -1。
 
-```js
-function promptNumber(question) {
-  let result = Number(prompt(question));
-  if (Number.isNaN(result)) return null;
-  else return result;
-}
-
-console.log(promptNumber("How many trees do you see?"));
-```
+[PRE7]
 
 现在，任何调用 promptNumber 的代码都必须检查是否读取到了实际的数字，如果没有，则必须以某种方式进行恢复——也许是再次询问，或者填入一个默认值。或者它可以再次返回一个特殊值给 *它* 的调用者，以指示它未能完成请求的操作。
 
 在许多情况下，尤其是在错误常见且调用者应明确考虑这些错误时，返回一个特殊值是指示错误的好方法。然而，这也有其缺点。首先，如果函数已经可以返回每种可能的值怎么办？在这样的函数中，你需要做一些像将结果包装在对象中，以便能够区分成功和失败的事情，正如迭代器接口的下一个方法所做的那样。
 
-```js
-function lastElement(array) {
-  if (array.length == 0) {
-    return {failed: true};
-  } else {
-    return {value: array[array.length - 1]};
-  }
-}
-```
+[PRE8]
 
 返回特殊值的第二个问题是，它可能导致尴尬的代码。如果一段代码调用 promptNumber 10 次，它必须检查 10 次是否返回了 null。如果它发现 null 的反应只是简单地返回 null 本身，那么调用这个函数的代码也将必须进行检查，依此类推。
 
@@ -207,28 +130,7 @@ function lastElement(array) {
 
 这里有一个例子：
 
-```js
-function promptDirection(question) {
-  let result = prompt(question);
-  if (result.toLowerCase() == "left") return "L";
-  if (result.toLowerCase() == "right") return "R";
-  throw new Error("Invalid direction: " + result);
-}
-
-function look() {
-  if (promptDirection("Which way?") == "L") {
-    return "a house";
-  } else {
-    return "two angry bears";
-  }
-}
-
-try {
-  console.log("You see", look());
-} catch (error) {
-  console.log("Something went wrong: " + error);
-}
-```
+[PRE9]
 
 throw 关键字用于引发异常。捕获异常是通过将一段代码包装在 try 块中，然后跟上关键字 catch 来实现的。当 try 块中的代码引发异常时，catch 块将被评估，括号中的名称绑定到异常值上。在 catch 块完成后——或者如果 try 块没有问题地完成——程序将在整个 try/catch 语句下继续执行。
 
@@ -246,27 +148,7 @@ throw 关键字用于引发异常。捕获异常是通过将一段代码包装�
 
 这里有一些非常糟糕的银行代码：
 
-```js
-const accounts = {
-  a: 100,
- b: 0,
-  c: 20
-};
-
-function getAccount() {
-  let accountName = prompt("Enter an account name");
-  if (!Object.hasOwn(accounts, accountName)) {
-    throw new Error(`No such account: ${accountName}`);
-  }
-  return accountName;
-}
-
-function transfer(from, amount) {
-  if (accounts[from] < amount) return;
-  accounts[from] -= amount;
-  accounts[getAccount()] += amount;
-}
-```
+[PRE10]
 
 转账函数将一笔资金从一个指定账户转移到另一个账户，并在此过程中询问另一个账户的名称。如果给出无效的账户名称，getAccount 将抛出异常。
 
@@ -278,22 +160,7 @@ function transfer(from, amount) {
 
 由于这并不总是实际可行，try 语句还有另一个特性：它们可以被 finally 块跟随，作为 catch 块的替代或补充。finally 块表示“无论发生*什么*，在尝试运行 try 块中的代码后运行这段代码。”
 
-```js
-function transfer(from, amount) {
-  if (accounts[from] < amount) return;
-  let progress = 0;
-  try {
-    accounts[from] -= amount;
-    progress = 1;
-    accounts[getAccount()] += amount;
-    progress = 2;
-  } finally {
-    if (progress == 1) {
- accounts[from] += amount;
-    }
-  }
-}
-```
+[PRE11]
 
 这个版本的函数跟踪其进度，如果在离开时发现它在创建不一致的程序状态时被中止，它会修复所造成的损害。
 
@@ -317,17 +184,7 @@ JavaScript（在一个相当明显的遗漏中）并未提供选择性捕获异�
 
 但这可能并非如此。某些其他假设可能被违反，或者你可能引入了导致异常的错误。以下是一个*尝试*持续调用`promptDirection`直到得到有效答案的示例：
 
-```js
-for (;;) {
-  try {
-    let dir = promtDirection("Where?"); // ← Typo!
-    console.log("You chose ", dir);
-    break;
-  } catch (e) {
-    console.log("Not a valid direction. Try again.");
-  }
-}
-```
+[PRE12]
 
 `for (;;)`结构是一种故意创建不会自行终止的循环的方法。我们仅在给出有效方向时才会跳出循环。不幸的是，我们拼写错误了`promptDirection`，这将导致“未定义变量”错误。由于`catch`块完全忽略了其异常值（e），假设它知道问题出在哪里，因此错误地将绑定错误视为输入不正确。这不仅导致了无限循环，还“埋没”了关于拼写错误绑定的有用错误信息。
 
@@ -339,36 +196,13 @@ for (;;) {
 
 相反，让我们定义一个新的错误类型，并使用 instanceof 来识别它。
 
-```js
-class InputError extends Error {}
-
-function promptDirection(question) {
-  let result = prompt(question);
-  if (result.toLowerCase() == "left") return "L";
-  if (result.toLowerCase() == "right") return "R";
-  throw new InputError("Invalid direction: " + result);
-}
-```
+[PRE13]
 
 新的错误类扩展了 Error。它没有定义自己的构造函数，这意味着它继承了 Error 的构造函数，该构造函数期望一个字符串消息作为参数。实际上，它什么都没有定义——这个类是空的。InputError 对象的行为类似于 Error 对象，除了它们有一个不同的类，我们可以通过这个类来识别它们。
 
 现在循环可以更仔细地捕捉这些错误。
 
-```js
-for (;;) {
-  try {
-    let dir = promptDirection("Where?");
-    console.log("You chose ", dir);
-    break;
-  } catch (e) {
-    if (e instanceof InputError) {
-      console.log("Not a valid direction. Try again.");
-    } else {
-      throw e;
-    }
-  }
-}
-```
+[PRE14]
 
 这将仅捕获 InputError 的实例，并让不相关的异常通过。如果你重新引入拼写错误，将正确报告未定义绑定错误。
 
@@ -378,14 +212,7 @@ for (;;) {
 
 例如，如果 firstElement 被描述为一个不应在空数组上调用的函数，我们可能会这样写：
 
-```js
-function firstElement(array) {
-  if (array.length == 0) {
-    throw new Error("firstElement called with []");
-  }
-  return array[0];
-}
-```
+[PRE15]
 
 现在，当你错误使用它时，这将使你的程序立刻崩溃，而不是静默地返回 undefined（当读取一个不存在的数组属性时得到的结果）。这降低了此类错误被忽视的可能性，并使得发生时更容易找到它们的原因。
 
@@ -411,19 +238,7 @@ function firstElement(array) {
 
 考虑以下（相当人为的）对象：
 
-```js
-const box = new class {
-  locked = true;
-  #content = [];
-
-  unlock() { this.locked = false; }
-  lock() { this.locked = true; }
-  get content() {
-    if (this.locked) throw new Error("Locked!");
-    return this.#content;
-  }
-};
-```
+[PRE16]
 
 这是一个带锁的盒子。盒子里有一个数组，但只有在盒子解锁时才能访问。
 

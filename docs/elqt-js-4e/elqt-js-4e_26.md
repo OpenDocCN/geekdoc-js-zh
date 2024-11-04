@@ -76,9 +76,7 @@
 
 要遍历一个列表（在 listToArray 和 nth 中），可以使用这样的 for 循环规范：
 
-```js
-for (let node = list; node; node = node.rest) {}
-```
+[PRE0]
 
 您能看出这是如何工作的？在循环的每次迭代中，node 指向当前子列表，主体可以读取其值属性以获取当前元素。在一次迭代结束时，node 移动到下一个子列表。当它为 null 时，我们已到达列表末尾，循环结束。
 
@@ -236,30 +234,11 @@ goalOrientedRobot 的主要限制是它一次只考虑一个包裹。它经常�
 
 我们现在有一个返回日志文件数组的承诺。我们可以再次在其上调用 `then`，并将时间戳计数逻辑放在其中。类似这样的：
 
-```js
-function activityTable(day) {
-  return textFile("camera_logs.txt").then(files => {
-    return Promise.all(files.split("\n").map(textFile));
-  }).then(logs => {
-    // Analyze...
-  });
-}
-```
+[PRE1]
 
 或者，为了更好的工作调度，可以将每个文件的分析放入 `Promise.all` 中，以便可以在第一个从磁盘返回的文件上启动该工作，即使在其他文件返回之前。
 
-```js
-function activityTable(day) {
-  let table = []; // Init...
-  return textFile("camera_logs.txt").then(files => {
-    return Promise.all(files.split("\n").map(name => {
-      return textFile(name).then(log => {
-        // Analyze...
-      });
-    }));
-  }).then(() => table);
-}
-```
+[PRE2]
 
 这表明你结构化承诺的方式确实会对工作的调度方式产生影响。一个简单的循环加上 `await` 将使过程完全线性——它在继续之前等待每个文件加载。`Promise.all` 使得多个任务在概念上可以同时处理，允许它们在文件仍在加载时取得进展。这可能更快，但也使得事情发生的顺序变得不那么可预测。在这种情况下，我们只是要在表中递增数字，这样做并不困难。对于其他类型的问题，这可能会更加复杂。
 
@@ -393,11 +372,7 @@ Math.cos 和 Math.sin 以弧度测量角度，其中完整的圆为 2*π*。对�
 
 这条线的角度是`currentAngle + 0.5 * sliceAngle`。以下代码找到从中心起 120 像素的该线上的位置：
 
-```js
-let middleAngle = currentAngle + 0.5 * sliceAngle;
-let textX = Math.cos(middleAngle) * 120 + centerX;
-let textY = Math.sin(middleAngle) * 120 + centerY;
-```
+[PRE3]
 
 对于`textBaseline`，在使用这种方法时，值“middle”可能是合适的。`textAlign`的使用取决于我们位于圆的哪一侧。在左侧时，它应该是“right”，在右侧时，它应该是“left”，以便文本远离饼图。
 
@@ -485,9 +460,7 @@ let textY = Math.sin(middleAngle) * 120 + centerY;
 
 一旦你知道将要沿哪个轴进行循环，就可以检查起点在该轴上的坐标是否高于终点，如果有必要可以交换它们。使用解构赋值在 JavaScript 中交换两个绑定的值可以用简洁的方式实现：
 
-```js
-[start, end] = [end, start];
-```
+[PRE4]
 
 然后你可以计算这条线的斜率，它决定了你在主轴上每走一步，另一个轴上的坐标变化量。有了这个，你可以沿主轴运行一个循环，同时跟踪另一个轴上对应的位置，并在每次迭代时绘制像素。确保你对非主轴坐标进行四舍五入，因为它们可能是小数，而绘制方法对小数坐标反应不佳。
 
@@ -539,13 +512,7 @@ let textY = Math.sin(middleAngle) * 120 + centerY;
 
 你可以通过使用 function* 声明定义一个生成器，在循环中使用 yield 来生成数字。你会想继续检查越来越大的数字，跳过那些可以被较小数字整除的数字，返回那些不能被整除的数字。
 
-```js
-function primes*() {
-  for (let n = 1;; n++) {
-    // ...
-  }
-}
-```
+[PRE5]
 
 测试一个数字是否可以被另一个数字整除可以使用余数运算符：n % i == 0 仅在 n 能被 i 整除时为真。
 

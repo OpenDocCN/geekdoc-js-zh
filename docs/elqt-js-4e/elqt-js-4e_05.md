@@ -28,15 +28,7 @@
 
 幸运的是，JavaScript 提供了一种特定的数据类型，用于存储值的序列。它被称为 *数组*，并以方括号中的值列表表示，值之间用逗号分隔。
 
-```js
-let listOfNumbers = [2, 3, 5, 7, 11];
-console.log(listOfNumbers[2]);
-// → 5
-console.log(listOfNumbers[0]);
-// → 2
-console.log(listOfNumbers[2 - 1]);
-// → 3
-```
+[PRE0]
 
 获取数组内部元素的表示法也使用方括号。紧随表达式之后的一对方括号，内部包含另一个表达式，将查找左侧表达式中与方括号中给出的 *索引* 对应的元素。
 
@@ -48,10 +40,7 @@ console.log(listOfNumbers[2 - 1]);
 
 几乎所有 JavaScript 值都有属性。例外的是 null 和 undefined。如果你试图访问这些非值之一的属性，你会得到一个错误。
 
-```js
-null.length;
-// → TypeError: null has no properties
-```
+[PRE1]
 
 在 JavaScript 中访问属性的两种主要方式是使用点和方括号。value.x 和 value[x] 都访问 value 上的一个属性——但不一定是同一个属性。两者的区别在于 x 的解释。当使用点时，点后的单词是属性的字面名称。当使用方括号时，括号内的表达式会被 *评估* 以获取属性名称。value.x 获取名为“x”的 value 属性，而 value[x] 则获取名为 x 的变量的值，并将其转换为字符串作为属性名称。
 
@@ -65,13 +54,7 @@ null.length;
 
 字符串和数组值除了 length 属性外，还包含多个保存函数值的属性。
 
-```js
-let doh = "Doh";
-console.log(typeof doh.toUpperCase);
-// → function
-console.log(doh.toUpperCase());
-// → DOH
-```
+[PRE2]
 
 每个字符串都有一个 toUpperCase 属性。当调用时，它将返回一个副本，其中所有字母都被转换为大写。还有一个 toLowerCase，反向操作。
 
@@ -81,17 +64,7 @@ console.log(doh.toUpperCase());
 
 这个示例演示了两种可以用来操作数组的方法。
 
-```js
-let sequence = [1, 2, 3];
-sequence.push(4);
-sequence.push(5);
-console.log(sequence);
-// → [1, 2, 3, 4, 5]
-console.log(sequence.pop());
-// → 5
-console.log(sequence);
-// → [1, 2, 3, 4]
-```
+[PRE3]
 
 push 方法将值添加到数组的末尾。pop 方法则相反，移除数组中的最后一个值并返回它。
 
@@ -103,28 +76,11 @@ push 方法将值添加到数组的末尾。pop 方法则相反，移除数组�
 
 类型为 *object* 的值是任意属性的集合。创建对象的一种方法是将花括号作为表达式使用。
 
-```js
-let day1 = {
-  squirrel: false,
-  events: ["work", "touched tree", "pizza", "running"]
-};
-console.log(day1.squirrel);
-// → false
-console.log(day1.wolf);
-// → undefined
-day1.wolf = false;
-console.log(day1.wolf);
-// → false
-```
+[PRE4]
 
 在花括号内，你写一个用逗号分隔的属性列表。每个属性都有一个名称，后面跟着一个冒号和一个值。当一个对象分多行书写时，像这个示例中那样缩进有助于可读性。名称不是有效绑定名称或有效数字的属性必须加上引号。
 
-```js
-let descriptions = {
-  work: "Went to work",
-  "touched tree": "Touched a tree"
-};
-```
+[PRE5]
 
 这意味着花括号在 JavaScript 中有 *两* 种含义。在语句的开始，它们开始一个语句块。在其他位置，它们描述一个对象。幸运的是，几乎没有必要在语句开头使用花括号中的对象，因此这两者之间的歧义并不是问题。唯一的例外是，当你想从简写箭头函数中返回一个对象时——你不能写 n => {prop: n}，因为花括号会被解释为函数体。相反，你必须在对象周围加一组括号，以明确它是一个表达式。
 
@@ -136,55 +92,23 @@ let descriptions = {
 
 delete 运算符就像切断章鱼的触手。它是一个一元运算符，当应用于对象属性时，会从对象中移除指定属性。这并不是常见的操作，但它是可能的。
 
-```js
-let anObject = {left: 1, right: 2};
-console.log(anObject.left);
-// → 1
-delete anObject.left;
-console.log(anObject.left);
-// → undefined
-console.log("left" in anObject);
-// → false
-console.log("right" in anObject);
-// → true
-```
+[PRE6]
 
 二元的 in 运算符，当应用于字符串和对象时，会告诉你该对象是否具有该名称的属性。将属性设置为 undefined 和实际删除它之间的区别在于，在第一种情况下，对象仍然*拥有*该属性（它只是不具有非常有趣的值），而在第二种情况下，该属性不再存在，因此返回 false。
 
 要找出一个对象有哪些属性，可以使用 Object.keys 函数。给这个函数一个对象，它将返回一个字符串数组——对象的属性名称。
 
-```js
-console.log(Object.keys({x: 0, y: 0, z: 2}));
-// → ["x", "y", "z"]
-```
+[PRE7]
 
 有一个 Object.assign 函数，可以将一个对象的所有属性复制到另一个对象中。
 
-```js
-let objectA = {a: 1, b: 2};
-Object.assign(objectA, {b: 3, c: 4});
-console.log(objectA);
-// → {a: 1, b: 3, c: 4}
-```
+[PRE8]
 
 数组本质上是一种专门用于存储事物序列的对象。如果你评估 typeof []，它会返回“object”。你可以将数组视为长长的、扁平的章鱼，所有的触手整齐排列，标记上数字。
 
 雅克将他保持的日记表示为对象数组。
 
-```js
-let journal = [
-  {events: ["work", "touched tree", "pizza",
-            "running", "television"],
-   squirrel: false},
-  {events: ["work", "ice cream", "cauliflower",
-            "lasagna", "touched tree", "brushed teeth"],
-   squirrel: false},
-  {events: ["weekend", "cycling", "break", "peanuts",
-            "beer"],
-   squirrel: true},
-  /* And so on... */
-];
-```
+[PRE9]
 
 ### 可变性
 
@@ -196,34 +120,13 @@ let journal = [
 
 当我们有两个数字，120 和 120 时，我们可以将它们视为完全相同的数字，无论它们是否引用相同的物理位。对于对象来说，拥有对同一对象的两个引用与拥有两个不同的对象（它们包含相同的属性）之间是有区别的。考虑以下代码：
 
-```js
-let object1 = {value: 10};
-let object2 = object1;
-let object3 = {value: 10};
-
-console.log(object1 == object2);
-// → true
-console.log(object1 == object3);
-// → false
-
-object1.value = 15;
-console.log(object2.value);
-// → 15
-console.log(object3.value);
-// → 10
-```
+[PRE10]
 
 object1 和 object2 绑定指向 *同一个* 对象，这就是为什么更改 object1 也会更改 object2 的值。它们被称为具有相同的 *身份*。绑定 object3 指向一个不同的对象，最初包含与 object1 相同的属性，但过着独立的生活。
 
 绑定可以是可变的或常量的，但这与它们的值的行为是分开的。尽管数字值不会改变，你可以使用 let 绑定来跟踪一个通过改变绑定指向的值而变化的数字。同样，尽管 const 绑定的对象本身无法更改并将继续指向同一对象，但该对象的 *内容* 可能会发生变化。
 
-```js
-const score = {visitors: 0, home: 0};
-// This is OK
-score.visitors = 1;
-// This isn't allowed
-score = {visitors: 1, home: 1};
-```
+[PRE11]
 
 当你使用 JavaScript 的 == 运算符比较对象时，它按身份进行比较：只有当两个对象的值完全相同时，它才会返回 true。比较不同的对象将返回 false，即使它们具有相同的属性。JavaScript 中没有内置的“深度”比较操作，可以按内容比较对象，但你可以自己编写这个操作（这也是本章末尾的一个练习）。
 
@@ -231,26 +134,13 @@ score = {visitors: 1, home: 1};
 
 雅克启动了他的 JavaScript 解释器，并设置了他记录日记所需的环境。
 
-```js
-let journal = [];
-
-function addEntry(events, squirrel) {
-  journal.push({events, squirrel});
-}
-```
+[PRE12]
 
 注意，添加到日记中的对象看起来有点奇怪。它不是像 events: events 这样声明属性，而只是给出了一个属性名称：events。这是一种简写方式，意思是相同的——如果大括号表示法中的属性名称后面没有值，则它的值来自同名的绑定。
 
 每天晚上 10 点——有时是第二天早晨，从书架的顶层下来的时候——雅克会记录当天的事情。
 
-```js
-addEntry(["work", "touched tree", "pizza", "running",
-          "television"], false);
-addEntry(["work", "ice cream", "cauliflower", "lasagna",
-          "touched tree", "brushed teeth"], false);
-addEntry(["weekend", "cycling", "break", "peanuts",
-          "beer"], true);
-```
+[PRE13]
 
 一旦他收集到足够的数据点，他打算利用统计学找出哪些事件可能与松鼠化相关。
 
@@ -280,18 +170,7 @@ addEntry(["weekend", "cycling", "break", "peanuts",
 
 这是一个计算此类数组中 *φ* 系数的函数：
 
-```js
-function phi(table) {
-  return (table[3] * table[0] - table[2] * table[1]) /
-    Math.sqrt((table[2] + table[3]) *
-              (table[0] + table[1]) *
-              (table[1] + table[3]) *
-              (table[0] + table[2]));
-}
-
-console.log(phi([76, 9, 4, 1]));
-// → 0.068599434
-```
+[PRE14]
 
 这是 *φ* 公式直接转化为 JavaScript 的形式。Math.sqrt 是平方根函数，由标准 JavaScript 环境中的 Math 对象提供。我们必须从表中添加两个字段以获取 *n*[1*•*] 这样的字段，因为行或列的总和并没有直接存储在我们的数据结构中。
 
@@ -299,21 +178,7 @@ Jacques 记录他的日记三个月。生成的数据集可以在本章的编码
 
 要从日志中提取特定事件的二维表格，我们必须遍历所有条目，并统计该事件与松鼠变身相关的出现次数。
 
-```js
-function tableFor(event, journal) {
-  let table = [0, 0, 0, 0];
-  for (let i = 0; i < journal.length; i++) {
-    let entry = journal[i], index = 0;
-    if (entry.events.includes(event)) index += 1;
-    if (entry.squirrel) index += 2;
-    table[index] += 1;
-  }
-  return table;
-}
-
-console.log(tableFor("pizza", JOURNAL));
-// → [76, 9, 4, 1]
-```
+[PRE15]
 
 数组有一个 includes 方法，可以检查给定值是否存在于数组中。该函数利用这个方法来判断它感兴趣的事件名称是否属于某一天的事件列表。
 
@@ -325,22 +190,13 @@ tableFor 循环的主体通过检查每个日志条目是否包含感兴趣的�
 
 在 tableFor 函数中，有一个这样的循环：
 
-```js
-for (let i = 0; i < JOURNAL.length; i++) {
-  let entry = JOURNAL[i];
-  // Do something with entry
-}
-```
+[PRE16]
 
 这种循环在经典 JavaScript 中很常见——逐个遍历数组元素是一种常见操作，为此，你需要在数组的长度上运行一个计数器，并依次挑选出每个元素。
 
 在现代 JavaScript 中，有一种更简单的方法来编写这样的循环。
 
-```js
-for (let entry of JOURNAL) {
-  console.log(`${entry.events.length} events.`);
-}
-```
+[PRE17]
 
 当 for 循环在变量定义后使用 of 这个词时，它将遍历在 of 后面给出的值中的元素。这不仅适用于数组，也适用于字符串和其他一些数据结构。我们将在第六章中讨论*它是如何工作的*。
 
@@ -348,71 +204,23 @@ for (let entry of JOURNAL) {
 
 我们需要为数据集中发生的每种事件类型计算相关性。为此，我们首先需要*找到*每种事件类型。
 
-```js
-function journalEvents(journal) {
-  let events = [];
-  for (let entry of journal) {
-    for (let event of entry.events) {
-      if (!events.includes(event)) {
-        events.push(event);
-      }
-    }
-  }
-  return events;
-}
-
-console.log(journalEvents(JOURNAL));
-// → ["carrot", "exercise", "weekend", "bread", ...]
-```
+[PRE18]
 
 通过将任何不在其中的事件名称添加到事件数组中，该函数收集每种类型的事件。
 
 使用那个函数，我们可以看到所有的相关性。
 
-```js
-for (let event of journalEvents(JOURNAL)) {
-  console.log(event + ":", phi(tableFor(event, JOURNAL)));
-}
-// → carrot:   0.0140970969
-// → exercise: 0.0685994341
-// → weekend:  0.1371988681
-// → bread:   -0.0757554019
-// → pudding: -0.0648203724
-// And so on...
-```
+[PRE19]
 
 大多数相关性似乎接近零。吃胡萝卜、面包或布丁显然不会引发松鼠变身。变身*似乎*在周末更常发生。让我们过滤结果，只显示相关性大于 0.1 或小于 -0.1 的情况。
 
-```js
-for (let event of journalEvents(JOURNAL)) {
-  let correlation = phi(tableFor(event, JOURNAL));
-  if (correlation > 0.1 || correlation < -0.1) {
-    console.log(event + ":", correlation);
-  }
-}
-// → weekend:        0.1371988681
-// → brushed teeth: -0.3805211953
-// → candy:          0.1296407447
-// → work:          -0.1371988681
-// → spaghetti:      0.2425356250
-// → reading:        0.1106828054
-// → peanuts:        0.5902679812
-```
+[PRE20]
 
 啊哈！有两个因素的相关性明显强于其他因素。吃花生对变成松鼠的几率有很强的正面影响，而刷牙则有显著的负面影响。
 
 有趣。让我们试试：
 
-```js
-for (let entry of JOURNAL) {
-  if (entry.events.includes("peanuts") &&
-     !entry.events.includes("brushed teeth")) {
-    entry.events.push("peanut teeth");
-  }
-}
-console.log(phi(tableFor("peanut teeth", JOURNAL)));
-// → 1
-```
+[PRE21]
 
 这是一个强烈的结果。这种现象恰恰发生在雅克吃花生而没刷牙的时候。如果他在牙齿卫生方面不是如此邋遢，他甚至可能不会注意到自己的病症。
 
@@ -426,40 +234,19 @@ console.log(phi(tableFor("peanut teeth", JOURNAL)));
 
 我们在本章早些时候看到了`push`和`pop`，它们分别在数组的末尾添加和移除元素。对应于在数组开头添加和移除元素的方法称为`unshift`和`shift`。
 
-```js
-let todoList = [];
-function remember(task) {
-  todoList.push(task);
-}
-function getTask() {
-  return todoList.shift();
-}
-function rememberUrgently(task) {
-  todoList.unshift(task);
-}
-```
+[PRE22]
 
 这个程序管理一个任务队列。你通过调用`remember("groceries")`将任务添加到队列的末尾，当你准备好执行某个任务时，你可以调用`getTask()`从队列中获取（并移除）最前面的项目。`rememberUrgently`函数也添加一个任务，但它将任务添加到队列的前面，而不是后面。
 
 要搜索特定值，数组提供了`indexOf`方法。该方法从数组的开始到结束进行搜索，并返回请求值找到时的索引——如果未找到则返回-1。要从末尾而不是从开头进行搜索，还有一个类似的方法叫做`lastIndexOf`。
 
-```js
-console.log([1, 2, 3, 2, 1].indexOf(2));
-// → 1
-console.log([1, 2, 3, 2, 1].lastIndexOf(2));
-// → 3
-```
+[PRE23]
 
 `indexOf`和`lastIndexOf`都接受一个可选的第二个参数，用于指示从哪里开始搜索。
 
 另一个基本的数组方法是`slice`，它接受起始和结束索引，并返回一个只包含它们之间元素的数组。起始索引是包含的，结束索引是不包含的。
 
-```js
-console.log([0, 1, 2, 3, 4].slice(2, 4));
-// → [2, 3]
-console.log([0, 1, 2, 3, 4].slice(2));
-// → [2, 3, 4]
-```
+[PRE24]
 
 当没有提供结束索引时，切片将获取起始索引之后的所有元素。你也可以省略起始索引，以复制整个数组。
 
@@ -467,14 +254,7 @@ console.log([0, 1, 2, 3, 4].slice(2));
 
 以下示例展示了`concat`和`slice`的实际应用。它接受一个数组和一个索引，并返回一个新的数组，该数组是原始数组的副本，给定索引处的元素被移除。
 
-```js
-function remove(array, index) {
-  return array.slice(0, index)
-    .concat(array.slice(index + 1));
-}
-console.log(remove(["a", "b", "c", "d", "e"], 2));
-// → ["a", "b", "d", "e"]
-```
+[PRE25]
 
 如果你向`concat`传递一个不是数组的参数，该值将被当作一个单元素数组添加到新数组中。
 
@@ -482,116 +262,59 @@ console.log(remove(["a", "b", "c", "d", "e"], 2));
 
 我们可以从字符串值中读取像`length`和`toUpperCase`这样的属性。但是如果我们尝试添加一个新属性，它不会生效。
 
-```js
-let kim = "Kim";
-kim.age = 88;
-console.log(kim.age);
-// → undefined
-```
+[PRE26]
 
 字符串、数字和布尔值的值不是对象，尽管语言不会抱怨你尝试在它们上设置新属性，但实际上并不会存储这些属性。如前所述，这些值是不可变的，无法更改。
 
 但这些类型确实有内置属性。每个字符串值都有许多方法。一些非常有用的方法是`slice`和`indexOf`，它们与数组的同名方法类似。
 
-```js
-console.log("coconuts".slice(4, 7));
-// → nut
-console.log("coconut".indexOf("u"));
-// → 5
-```
+[PRE27]
 
 一个不同之处在于字符串的 indexOf 可以搜索包含多个字符的字符串，而对应的数组方法仅查找单个元素。
 
-```js
-console.log("one two three".indexOf("ee"));
-// → 11
-```
+[PRE28]
 
 trim 方法从字符串的开始和结束移除空白字符（空格、换行符、制表符及类似字符）。
 
-```js
-console.log("  okay \n ".trim());
-// → okay
-```
+[PRE29]
 
 上一章中的 zeroPad 函数也作为一个方法存在。它被称为 padStart，并接受所需的长度和填充字符作为参数。
 
-```js
-console.log(String(6).padStart(3, "0"));
-// → 006
-```
+[PRE30]
 
 你可以通过`split`在每个出现的另一个字符串上拆分一个字符串，然后用`join`再次连接它。
 
-```js
-let sentence = "Secretarybirds specialize in stomping";
-let words = sentence.split(" ");
-console.log(words);
-// → ["Secretarybirds", "specialize", "in", "stomping"]
-console.log(words.join(". "));
-// → Secretarybirds. specialize. in. stomping
-```
+[PRE31]
 
 字符串可以通过 repeat 方法重复，它创建一个包含多个原始字符串副本的新字符串，将它们粘合在一起。
 
-```js
-console.log("LA".repeat(3));
-// → LALALA
-```
+[PRE32]
 
 我们已经看到字符串类型的长度属性。访问字符串中的单个字符看起来就像访问数组元素（有一个复杂性，我们将在第五章中讨论）。
 
-```js
-let string = "abc";
-console.log(string.length);
-// → 3
-console.log(string[1]);
-// → b
-```
+[PRE33]
 
 ### 剩余参数
 
 对于一个函数接受任意数量的参数是非常有用的。例如，Math.max 计算它所给的*所有*参数中的最大值。要编写这样的函数，你在函数最后一个参数前加上三个点，如下所示：
 
-```js
-function max(...numbers) {
-  let result = -Infinity;
-  for (let number of numbers) {
-    if (number > result) result = number;
-  }
-  return result;
-}
-console.log(max(4, 1, 9, -2));
-// → 9
-```
+[PRE34]
 
 当调用这样的函数时，*剩余参数*被绑定到一个包含所有后续参数的数组。如果它之前有其他参数，它们的值不属于那个数组。当它像 max 一样是唯一的参数时，它将包含所有参数。
 
 你可以使用类似的三个点符号来*调用*一个带有参数数组的函数。
 
-```js
-let numbers = [5, 1, 7];
-console.log(max(...numbers));
-// → 7
-```
+[PRE35]
 
 这会将数组“展开”到函数调用中，将其元素作为单独的参数传递。可以将这样的数组与其他参数一起包含，例如 max(9, ...numbers, 2)。
 
 方括号数组符号同样允许三点操作符将另一个数组展开到新数组中。
 
-```js
-let words = ["never", "fully"];
-console.log(["will", ...words, "understand"]);
-// → ["will", "never", "fully", "understand"]
-```
+[PRE36]
 
 这在花括号对象中也有效，它将另一个对象的所有属性添加进来。如果一个属性被多次添加，最后添加的值将胜出。
 
-```js
-let coordinates = {x: 10, y: 0};
-console.log({...coordinates, y: 5, z: 1});
-// → {x: 10, y: 5, z: 1}
-```
+[PRE37]
 
 ### Math 对象
 
@@ -605,37 +328,19 @@ Math 对象被用作一个容器，以分组一堆相关的功能。只有一个
 
 回到 Math 对象。如果你需要进行三角函数运算，Math 可以提供帮助。它包含 cos（余弦）、sin（正弦）和 tan（正切），以及它们的反函数 acos、asin 和 atan。数字 *π*（圆周率）—或者至少是适合 JavaScript 数字的最接近的近似值—可以通过 Math.PI 获取。旧有的编程传统是将常量的名称全部用大写字母书写。
 
-```js
-function randomPointOnCircle(radius) {
-  let angle = Math.random() * 2 * Math.PI;
-  return {x: radius * Math.cos(angle),
-          y: radius * Math.sin(angle)};
-}
-console.log(randomPointOnCircle(2));
-// → {x: 0.3667, y: 1.966}
-```
+[PRE38]
 
 如果你对正弦和余弦不熟悉，别担心。我会在第十四章中解释它们的用法。
 
 上一个例子使用了 Math.random。这是一个每次调用都会返回一个在 0（包含）和 1（不包含）之间的新伪随机数的函数。
 
-```js
-console.log(Math.random());
-// → 0.36993729369714856
-console.log(Math.random());
-// → 0.727367032552138
-console.log(Math.random());
-// → 0.40180766698904335
-```
+[PRE39]
 
 尽管计算机是确定性的机器——如果给定相同的输入，它们总是以相同的方式反应——但它们可以生成看似随机的数字。为此，计算机保持一些隐藏值，每当你请求一个新的随机数时，它会对这个隐藏值进行复杂的计算以生成新值。它存储一个新值并返回从中派生出的某个数字。这样，它就可以以*看似*随机的方式生成不断新的、难以预测的数字。
 
 如果我们想要一个整数随机数而不是小数，我们可以对 Math.random 的结果使用 Math.floor（向下舍入到最接近的整数）。
 
-```js
-console.log(Math.floor(Math.random() * 10));
-// → 2
-```
+[PRE40]
 
 将随机数乘以 10 会得到一个大于或等于 0 并且小于 10 的数字。由于 Math.floor 向下舍入，这个表达式将以相等的概率生成 0 到 9 之间的任何数字。
 
@@ -645,35 +350,17 @@ console.log(Math.floor(Math.random() * 10));
 
 让我们暂时回到 phi 函数。
 
-```js
-function phi(table) {
-  return (table[3] * table[0] - table[2] * table[1]) /
-    Math.sqrt((table[2] + table[3]) *
-              (table[0] + table[1]) *
-              (table[1] + table[3]) *
-              (table[0] + table[2]));
-}
-```
+[PRE41]
 
 这个函数难以阅读的一个原因是我们有一个指向数组的绑定，但我们更希望有指向数组*元素*的绑定——也就是说， let n00 = table[0] 等等。幸运的是，JavaScript 中有一种简洁的方法可以做到这一点。
 
-```js
-function phi([n00, n01, n10, n11]) {
-  return (n11 * n00 - n10 * n01) /
-    Math.sqrt((n10 + n11) * (n00 + n01) *
-              (n01 + n11) * (n00 + n10));
-}
-```
+[PRE42]
 
 这对于使用 let、var 或 const 创建的绑定同样有效。如果你知道你正在绑定的值是一个数组，你可以使用方括号“查看”该值的内部，绑定其内容。
 
 对于对象，可以使用花括号而不是方括号进行类似的操作。
 
-```js
-let {name} = {name: "Faraji", age: 23};
-console.log(name);
-// → Faraji
-```
+[PRE43]
 
 请注意，如果你尝试解构 null 或 undefined，你会得到一个错误，就像你直接尝试访问这些值的属性时一样。
 
@@ -681,26 +368,13 @@ console.log(name);
 
 当你不确定某个值是否会生成对象，但仍然希望在它确实生成对象时读取其属性时，可以使用一种点表示法的变体：object?.property。
 
-```js
-function city(object) {
-  return object.address?.city;
-}
-console.log(city({address: {city: "Toronto"}}));
-// → Toronto
-console.log(city({name: "Vera"}));
-// → undefined
-```
+[PRE44]
 
 表达式 a?.b 与 a.b 的意思相同，前提是 a 不为 null 或 undefined。当它为 null 或 undefined 时，则评估为 undefined。这在像示例中不确定某个属性是否存在或某个变量可能持有 undefined 值时是非常方便的。
 
 类似的表示法可以与方括号访问结合使用，甚至可以通过在括号或方括号前放置?.来使用函数调用。
 
-```js
-console.log("string".notAMethod?.());
-// → undefined
-console.log({}.arrayProp?.[0]);
-// → undefined
-```
+[PRE45]
 
 ### JSON
 
@@ -714,23 +388,11 @@ JSON 的书写方式与 JavaScript 的数组和对象相似，但有一些限制
 
 日志条目在作为 JSON 数据表示时可能看起来像这样：
 
-```js
-{
-  "squirrel": false,
-  "events": ["work", "touched tree", "pizza", "running"]
-}
-```
+[PRE46]
 
 JavaScript 提供了 JSON.stringify 和 JSON.parse 函数，用于在这种格式之间转换数据。第一个函数接受一个 JavaScript 值并返回一个 JSON 编码的字符串。第二个函数接受这样的字符串并将其转换为它编码的值。
 
-```js
-let string = JSON.stringify({squirrel: false,
-                             events: ["weekend"]});
-console.log(string);
-// → {"squirrel":false,"events":["weekend"]}
-console.log(JSON.parse(string).events);
-// → ["weekend"]
-```
+[PRE47]
 
 ### 摘要
 
@@ -748,9 +410,7 @@ console.log(JSON.parse(string).events);
 
 本书的引言提到以下内容作为计算一系列数字总和的好方法：
 
-```js
-console.log(sum(range(1, 10)));
-```
+[PRE48]
 
 编写一个范围函数，该函数接受两个参数，start 和 end，并返回一个包含从 start 到包括 end 的所有数字的数组。
 
@@ -768,18 +428,7 @@ console.log(sum(range(1, 10)));
 
 作为通用的值块，对象可以用来构建各种数据结构。一种常见的数据结构是*列表*（不要与数组混淆）。列表是一个嵌套的对象集合，第一个对象持有对第二个对象的引用，第二个对象持有对第三个对象的引用，依此类推。
 
-```js
-let list = {
-  value: 1,
-  rest: {
-    value: 2,
-    rest: {
-      value: 3,
-      rest: null
-    }
- }
-};
-```
+[PRE49]
 
 结果对象形成一条链，如下图所示：
 

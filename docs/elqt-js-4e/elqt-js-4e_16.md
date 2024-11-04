@@ -8,20 +8,7 @@
 
 你可以将 HTML 文档想象成一组嵌套的框。像 <body> 和 </body> 这样的标签包围其他标签，这些标签又包含其他标签或文本。以下是上一章的示例文档：
 
-```js
-<!doctype html>
-<html>
-  <head>
-    <title>My home page</title>
-  </head>
-  <body>
- <h1>My home page</h1>
-    <p>Hello, I am Marijn and this is my home page.</p>
-    <p>I also wrote a book! Read it
-      <a href="http://eloquentjavascript.net">here</a>.</p>
-  </body>
-</html>
-```
+[PRE0]
 
 本页面具有以下结构：
 
@@ -77,23 +64,7 @@ DOM 节点包含大量链接到其他邻近节点的信息。以下图表对此�
 
 当处理像这样的嵌套数据结构时，递归函数通常很有用。以下函数扫描文档以查找包含给定字符串的文本节点，并在找到时返回 true：
 
-```js
-function talksAbout(node, string) {
-  if (node.nodeType == Node.ELEMENT_NODE) {
-    for (let child of node.childNodes) {
-      if (talksAbout(child, string)) {
-        return true;
-      }
-    }
-    return false;
-  } else if (node.nodeType == Node.TEXT_NODE) {
-    return node.nodeValue.indexOf(string) > -1;
-  }
-}
-
-console.log(talksAbout(document.body, "book"));
-// → true
-```
+[PRE1]
 
 文本节点的 nodeValue 属性保存它所表示的文本字符串。
 
@@ -103,24 +74,13 @@ console.log(talksAbout(document.body, "book"));
 
 如果我们想要获取文档中链接的 href 属性，我们不希望说像“获取文档主体的第六个子节点的第二个子节点”。最好的方式是说“获取文档中的第一个链接”。我们可以这样做。
 
-```js
-let link = document.body.getElementsByTagName("a")[0];
-console.log(link.href);
-```
+[PRE2]
 
 所有元素节点都有一个 getElementsByTagName 方法，该方法收集该节点的所有后代（直接或间接子节点）中具有给定标签名的元素，并将它们作为类似数组的对象返回。
 
 要找到一个特定的*单个*节点，可以给它一个 id 属性，然后使用 document.getElementById。
 
-```js
-<p>My ostrich Gertrude:</p>
-<p><img id="gertrude" src="img/ostrich.png"></p>
-
-<script>
-  let ostrich = document.getElementById("gertrude");
-  console.log(ostrich.src);
-</script>
-```
+[PRE3]
 
 第三个类似的方法是 getElementsByClassName，它类似于 getElementsByTagName，通过元素节点的内容搜索，并检索其类属性中包含给定字符串的所有元素。
 
@@ -128,16 +88,7 @@ console.log(link.href);
 
 几乎可以更改 DOM 数据结构的所有内容。可以通过更改父子关系来修改文档树的形状。节点具有 remove 方法可以从当前父节点中删除它们。要将子节点添加到元素节点中，可以使用 appendChild 将其放在子节点列表的末尾，或者使用 insertBefore 将给定的第一个参数节点插入到给定的第二个参数节点之前。
 
-```js
-<p>One</p>
-<p>Two</p>
-<p>Three</p>
-
-<script>
-  let paragraphs = document.body.getElementsByTagName("p");
-  document.body.insertBefore(paragraphs[2], paragraphs[0]);
-</script>
-```
+[PRE4]
 
 一个节点只能在文档中存在一个位置。因此，在段落 *One* 前插入段落 *Three* 将首先从文档末尾移除它，然后插入到前面，结果将是 *Three*/*One*/*Two*。所有将节点插入某处的操作都会作为副作用使其从当前位置移除（如果它有位置的话）。
 
@@ -147,25 +98,7 @@ replaceChild 方法用于用另一个节点替换子节点。它接受两个节�
 
 假设我们想编写一个脚本，将文档中的所有图像（<img> 标签）替换为它们 alt 属性中包含的文本，alt 属性指定图像的替代文本表示。这不仅涉及移除图像，还需要添加一个新的文本节点来替代它们。
 
-```js
-<p>The <img src="img/cat.png" alt="Cat"> in the
-  <img src="img/hat.png" alt="Hat">.</p>
-
-<p><button onclick="replaceImages()">Replace</button></p>
-
-<script>
-  function replaceImages() {
-    let images = document.body.getElementsByTagName("img");
-    for (let i = images.length - 1; i >= 0; i--) {
-      let image = images[i];
-      if (image.alt) {
-        let text = document.createTextNode(image.alt);
-        image.parentNode.replaceChild(text, image);
-      }
-    }
-  }
-</script>
-```
+[PRE5]
 
 给定一个字符串，createTextNode 会给我们一个文本节点，我们可以将其插入到文档中以使其在屏幕上显示。
 
@@ -173,42 +106,13 @@ replaceChild 方法用于用另一个节点替换子节点。它接受两个节�
 
 如果你想要一个 *固态* 的节点集合，而不是一个实时的集合，你可以通过调用 Array.from 将集合转换为一个真正的数组。
 
-```js
-let arrayish = {0: "one", 1: "two", length: 2};
-let array = Array.from(arrayish);
-console.log(array.map(s => s.toUpperCase()));
-// → ["ONE", "TWO"]
-```
+[PRE6]
 
 要创建元素节点，可以使用 document.createElement 方法。该方法接受一个标签名并返回一个给定类型的新空节点。
 
 以下示例定义了一个工具函数 elt，该函数创建一个元素节点并将其余参数视为该节点的子节点。然后使用这个函数为引文添加归属。
 
-```js
-<blockquote id="quote">
-  No book can ever be finished. While working on it we learn
-  just enough to find it immature the moment we turn away
-  from it.
-</blockquote>
-
-<script>
-  function elt(type, ...children) {
-    let node = document.createElement(type);
-    for (let child of children) {
-      if (typeof child != "string") node.appendChild(child);
-      else node.appendChild(document.createTextNode(child));
-    }
-    return node;
-  }
-
-  document.getElementById("quote").appendChild(
-    elt("footer", "--",
-        elt("strong", "Karl Popper"),
-        ", preface to the second edition of ",
-        elt("em", "The Open Society and Its Enemies"),
-        ", 1950"));
-</script>
-```
+[PRE7]
 
 这就是生成的文档的样子：
 
@@ -220,19 +124,7 @@ console.log(array.map(s => s.toUpperCase()));
 
 HTML 允许你在节点上设置任何你想要的属性。这很有用，因为它允许你在文档中存储额外的信息。要读取或更改自定义属性（这些属性在常规对象属性中不可用），你必须使用 getAttribute 和 setAttribute 方法。
 
-```js
-<p data-classified="secret">The launch code is 00000000.</p>
-<p data-classified="unclassified">I have two feet.</p>
-
-<script>
-  let paras = document.body.getElementsByTagName("p");
- for (let para of Array.from(paras)) {
-    if (para.getAttribute("data-classified") == "secret") {
-      para.remove();
-    }
-  }
-</script>
-```
+[PRE8]
 
 建议将这些虚构属性的名称以 data- 为前缀，以确保它们不会与其他属性冲突。
 
@@ -248,19 +140,7 @@ HTML 允许你在节点上设置任何你想要的属性。这很有用，因为
 
 类似地，`clientWidth` 和 `clientHeight` 给你提供 *内部* 空间的大小，忽略边框宽度。
 
-```js
-<p style="border: 3px solid red">
-  I'm boxed in
-</p>
-
-<script>
-  let para = document.body.getElementsByTagName("p")[0];
-  console.log("clientHeight:", para.clientHeight);
-  // → 19
-  console.log("offsetHeight:", para.offsetHeight);
-  // → 25
-</script>
-```
+[PRE9]
 
 给段落添加边框会在其周围绘制一个矩形。
 
@@ -272,34 +152,7 @@ HTML 允许你在节点上设置任何你想要的属性。这很有用，因为
 
 一个不断在读取 DOM 布局信息和更改 DOM 之间交替进行的程序会迫使进行大量布局计算，因此运行会非常缓慢。以下代码就是一个例子。它包含两个不同的程序，构建一行 2,000 像素宽的 *X* 字符，并测量每个程序所需的时间。
 
-```js
-<p><span id="one"></span></p>
-<p><span id="two"></span></p>
-
-<script>
-  function time(name, action) {
-    let start = Date.now(); // Current time in milliseconds
-    action();
-    console.log(name, "took", Date.now() - start, "ms");
-  }
-
-  time("naive", () => {
-    let target = document.getElementById("one");
-    while (target.offsetWidth < 2000) {
-      target.appendChild(document.createTextNode("X"));
-    }
-  });
-  // → naive took 32 ms
-
-  time("clever", function() {
-    let target = document.getElementById("two");
-    target.appendChild(document.createTextNode("XXXXX"));
-    let total = Math.ceil(2000 / (target.offsetWidth / 5));
-    target.firstChild.nodeValue = "X".repeat(total);
- });
-  // → clever took 1 ms
-</script>
-```
+[PRE10]
 
 ### 样式
 
@@ -307,10 +160,7 @@ HTML 允许你在节点上设置任何你想要的属性。这很有用，因为
 
 <img> 标签如何显示图像或 <a> 标签如何在点击时跟随链接，与元素类型密切相关。但我们可以更改与元素关联的样式，例如文本颜色或下划线。这里是一个使用样式属性的示例：
 
-```js
-<p><a href=".">Normal link</a></p>
-<p><a href="." style="color: green">Green link</a></p>
-```
+[PRE11]
 
 第二个链接将显示为绿色，而不是默认链接颜色。
 
@@ -320,11 +170,7 @@ HTML 允许你在节点上设置任何你想要的属性。这很有用，因为
 
 文档的许多方面都可以受到样式的影响。例如，display 属性控制一个元素是作为块级元素还是内联元素显示。
 
-```js
-This text is displayed <strong>inline</strong>,
-<strong style="display: block">as a block</strong>, and
-<strong style="display: none">not at all</strong>.
-```
+[PRE12]
 
 块标签最终会单独占据一行，因为块级元素不会与周围文本内联显示。最后一个标签根本不显示——display: none 阻止元素在屏幕上显示。这是一种隐藏元素的方法。通常，这种方式比将它们完全从文档中删除更可取，因为这使得以后再次显示它们变得简单。
 
@@ -332,17 +178,7 @@ This text is displayed <strong>inline</strong>,
 
 JavaScript 代码可以通过元素的样式属性直接操作元素的样式。此属性保存一个对象，该对象具有所有可能样式属性的属性。这些属性的值是字符串，我们可以通过写入它们来更改元素样式的特定方面。
 
-```js
-<p id="para" style="color: purple">
-  Nice text
-</p>
-
-<script>
-  let para = document.getElementById("para");
-  console.log(para.style.color);
-  para.style.color = "magenta";
-</script>
-```
+[PRE13]
 
 一些样式属性名称包含连字符，例如 font-family。由于这样的属性名称在 JavaScript 中处理起来很麻烦（你必须这样写 style[“font-family”]），因此此类属性在样式对象中的名称去掉了连字符，并将其后面的字母大写（style.fontFamily）。
 
@@ -350,15 +186,7 @@ JavaScript 代码可以通过元素的样式属性直接操作元素的样式。
 
 HTML 的样式系统称为 *CSS*，即 *层叠样式表*。*样式表* 是一组关于如何为文档中的元素添加样式的规则。它可以放在 <style> 标签内。
 
-```js
-<style>
-  strong {
-    font-style: italic;
-    color: gray;
-  }
-</style>
-<p>Now <strong>strong text</strong> is italic and gray.</p>
-```
+[PRE14]
 
 名称中的 *层叠* 指的是多个此类规则结合以产生元素的最终样式。在这个例子中，<strong> 标签的默认样式（使其 font-weight: bold）被 <style> 标签中的规则覆盖，后者添加了 font-style 和 color。
 
@@ -366,20 +194,7 @@ HTML 的样式系统称为 *CSS*，即 *层叠样式表*。*样式表* 是一组
 
 在 CSS 规则中，可以针对除标签名以外的其他东西。规则 .abc 应用于所有类属性中包含“abc”的元素。规则 #xyz 应用于具有 id 属性“xyz”的元素（在文档中应该是唯一的）。
 
-```js
-.subtle {
-  color: gray;
- font-size: 80%;
-}
-#header {
-  background: blue;
-  color: white;
-}
-/* p elements with id main and with classes a and b */
-p#main.a.b {
-  margin-bottom: 20px;
-}
-```
+[PRE15]
 
 优先级规则偏向于最近定义的规则，仅在规则具有相同的 *特异性* 时适用。规则的特异性是衡量其描述匹配元素的精确程度，取决于它所要求的元素方面的数量和种类（标签、类或 ID）。例如，针对 p.a 的规则比针对 p 或仅 .a 的规则更具特异性，因此将优先于它们。
 
@@ -391,28 +206,7 @@ p#main.a.b {
 
 querySelectorAll 方法在文档对象和元素节点上都被定义，它接受一个选择器字符串并返回一个包含所有匹配元素的 NodeList。
 
-```js
-<p>And if you go chasing
-  <span class="animal">rabbits</span></p>
-<p>And you know you're going to fall</p>
-<p>Tell 'em a <span class="character">hookah smoking
-  <span class="animal">caterpillar</span></span></p>
-<p>Has given you the call</p>
-
-<script>
-  function count(selector) {
-    return document.querySelectorAll(selector).length;
-  }
-  console.log(count("p"));           // All <p> elements
-  // → 4
-  console.log(count(".animal"));     // Class animal
-  // → 2
- console.log(count("p .animal"));   // Animal inside of <p>
-  // → 2
-  console.log(count("p > .animal")); // Direct child of <p>
-  // → 1
-</script>
-```
+[PRE16]
 
 与 getElementsByTagName 等方法不同，querySelectorAll 返回的对象是 *非活跃* 的。它在文档更改时不会变化。不过，它仍然不是一个真正的数组，因此如果你想将其视为数组，需要调用 Array.from。
 
@@ -424,24 +218,7 @@ position 样式属性以强大的方式影响布局。其默认值为 static，�
 
 我们可以用这个来创建动画。以下文档显示了一只在椭圆形轨道上移动的猫的图像：
 
-```js
-<p style="text-align: center">
-  <img src="img/cat.png" style="position: relative">
-</p>
-<script>
-  let cat = document.querySelector("img");
-  let angle = Math.PI / 2;
-  function animate(time, lastTime) {
-    if (lastTime != null) {
-      angle += (time - lastTime) * 0.001;
-    }
-    cat.style.top = (Math.sin(angle) * 20) + "px";
-    cat.style.left = (Math.cos(angle) * 200) + "px";
-    requestAnimationFrame(newTime => animate(newTime, time));
-  }
-  requestAnimationFrame(animate);
-</script>
-```
+[PRE17]
 
 灰色箭头显示了图像移动的路径。
 
@@ -481,20 +258,7 @@ DOM 的组织结构像一棵树，元素根据文档的结构以层级方式排�
 
 HTML 表格是通过以下标签结构构建的：
 
-```js
-<table>
-  <tr>
- <th>name</th>
-    <th>height</th>
-    <th>place</th>
-  </tr>
-  <tr>
-    <td>Kilimanjaro</td>
-    <td>5895</td>
-    <td>Tanzania</td>
-  </tr>
-</table>
-```
+[PRE18]
 
 对于每个 *行*，<table> 标签包含一个 <tr> 标签。在这些 <tr> 标签内部，我们可以放置单元格元素：可以是表头单元格（<th>）或常规单元格（<td>）。
 

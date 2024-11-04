@@ -12,14 +12,7 @@
 
 更好的机制是让系统在事件发生时主动通知代码。浏览器通过允许我们注册函数作为特定事件的 *处理程序* 来做到这一点。
 
-```js
-<p>Click this document to activate the handler.</p>
-<script>
-  window.addEventListener("click", () => {
-    console.log("You knocked?");
-  });
-</script>
-```
+[PRE0]
 
 窗口绑定是浏览器提供的一个内置对象。它代表包含文档的浏览器窗口。调用它的 addEventListener 方法会注册第二个参数，以便在第一个参数描述的事件发生时被调用。
 
@@ -27,16 +20,7 @@
 
 每个浏览器事件处理程序在一个上下文中注册。在前面的例子中，我们在窗口对象上调用 addEventListener 来注册整个窗口的处理程序。这样的一个方法也可以在 DOM 元素和其他类型的对象上找到。事件监听器仅在事件发生在其注册对象的上下文中时被调用。
 
-```js
-<button>Click me</button>
-<p>No handler here.</p>
-<script>
-  let button = document.querySelector("button");
-  button.addEventListener("click", () => {
-    console.log("Button clicked.");
-  });
-</script>
-```
+[PRE1]
 
 该示例将一个处理程序附加到按钮节点上。点击按钮会导致该处理程序运行，但点击文档的其他部分则不会。
 
@@ -46,17 +30,7 @@
 
 removeEventListener 方法与 addEventListener 的参数类似，用于移除一个处理程序。
 
-```js
-<button>Act-once button</button>
-<script>
-  let button = document.querySelector("button");
-  function once() {
- console.log("Done.");
-    button.removeEventListener("click", once);
-  }
-  button.addEventListener("click", once);
-</script>
-```
+[PRE2]
 
 传递给 removeEventListener 的函数必须是传递给 addEventListener 的同一个函数值。当你需要注销一个处理程序时，你会想给处理程序函数一个名称（在示例中只需一次），以便能够将相同的函数值传递给这两个方法。
 
@@ -64,21 +38,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 尽管我们到目前为止忽略了这一点，事件处理函数会接收一个参数：*事件对象*。这个对象包含关于事件的附加信息。例如，如果我们想知道*哪个*鼠标按钮被按下，我们可以查看事件对象的 button 属性。
 
-```js
-<button>Click me any way you want</button>
-<script>
-  let button = document.querySelector("button");
-  button.addEventListener("mousedown", event => {
-    if (event.button == 0) {
-      console.log("Left button");
-    } else if (event.button == 1) {
-      console.log("Middle button");
-    } else if (event.button == 2) {
-      console.log("Right button");
-    }
-  });
-</script>
-```
+[PRE3]
 
 存储在事件对象中的信息因事件类型而异。（我们将在本章后面讨论不同的类型。）对象的 type 属性始终保存一个字符串，用于标识事件（例如“click”或“mousedown”）。
 
@@ -92,37 +52,13 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 以下示例在按钮和周围的段落上注册“mousedown”处理程序。当用右键点击时，按钮的处理程序调用 stopPropagation，这将防止段落上的处理程序运行。当用其他鼠标按钮点击按钮时，两个处理程序都会运行。
 
-```js
-<p>A paragraph with a <button>button</button>.</p>
-<script>
-  let para = document.querySelector("p");
-  let button = document.querySelector("button");
-  para.addEventListener("mousedown", () => {
-    console.log("Handler for paragraph.");
-  });
-  button.addEventListener("mousedown", event => {
-    console.log("Handler for button.");
-    if (event.button == 2) event.stopPropagation();
-  });
-</script>
-```
+[PRE4]
 
 大多数事件对象都有一个指向其来源节点的 target 属性。你可以使用这个属性确保你不会意外处理来自不想处理的节点的传播事件。
 
 也可以使用 target 属性对特定类型的事件进行广泛捕获。例如，如果你有一个包含长列表按钮的节点，注册一个点击处理程序在外部节点上可能更方便，并使用 target 属性来判断是否点击了某个按钮，而不是在所有按钮上注册单独的处理程序。
 
-```js
-<button>A</button>
-<button>B</button>
-<button>C</button>
-<script>
-  document.body.addEventListener("click", event => {
-    if (event.target.nodeName == "BUTTON") {
-      console.log("Clicked", event.target.textContent);
-    }
-  });
-</script>
-```
+[PRE5]
 
 ### 默认行为
 
@@ -132,16 +68,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 这可以用来实现你自己的键盘快捷键或上下文菜单。它也可以用来干扰用户期望的行为。例如，这里有一个无法被点击的链接：
 
-```js
-<a href="https://developer.mozilla.org/">MDN</a>
-<script>
-  let link = document.querySelector("a");
-  link.addEventListener("click", event => {
-    console.log("Nope.");
-    event.preventDefault();
-  });
-</script>
-```
+[PRE6]
 
 尽量不要在没有充分理由的情况下这样做。当预期的行为被打破时，这会让使用你页面的人感到不愉快。
 
@@ -151,21 +78,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 当键盘上的一个键被按下时，你的浏览器会触发一个“keydown”事件。当它被释放时，你会得到一个“keyup”事件。
 
-```js
-<p>This page turns violet when you hold the V key.</p>
-<script>
-  window.addEventListener("keydown", event => {
-    if (event.key == "v") {
-      document.body.style.background = "violet";
-    }
-  });
-  window.addEventListener("keyup", event => {
-    if (event.key == "v") {
-      document.body.style.background = "";
-    }
-  });
-</script>
-```
+[PRE7]
 
 尽管名称如此，“keydown”不仅在键被物理按下时触发。当一个键被按下并保持时，该事件会在每次键*重复*时再次触发。有时你需要对此格外小心。例如，如果你在按下键时向 DOM 添加一个按钮，并在释放键时将其移除，可能在按住键的过程中意外添加数百个按钮。
 
@@ -173,16 +86,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 修饰键，如 SHIFT、CTRL、ALT 和 META（在 Mac 上为 COMMAND），生成的键事件与普通键一样。当查找键组合时，你也可以通过查看键盘和鼠标事件的 shiftKey、ctrlKey、altKey 和 metaKey 属性来了解这些键是否被按下。
 
-```js
-<p>Press Control-Space to continue.</p>
-<script>
-  window.addEventListener("keydown", event => {
-    if (event.key == " " && event.ctrlKey) {
-      console.log("Continuing!");
-    }
-  });
-</script>
-```
+[PRE8]
 
 键事件来源的 DOM 节点取决于按下键时哪个元素具有焦点。大多数节点无法获得焦点，除非你给它们一个 tabindex 属性，但像链接、按钮和表单字段这样的元素可以获得焦点。我们将在第十八章中再次讨论表单字段。当没有特别的元素获得焦点时，document.body 会作为键事件的目标节点。
 
@@ -206,29 +110,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 以下程序实现了一个原始的绘图应用程序。每次你点击文档时，它会在你的鼠标指针下添加一个点。
 
-```js
-<style>
-  body {
-    height: 200px;
-    background: beige;
-  }
-  .dot {
-    height: 8px; width: 8px;
-    border-radius: 4px; /* Rounds corners */
-    background: teal;
-    position: absolute;
-  }
-</style>
-<script>
-  window.addEventListener("click", event => {
-    let dot = document.createElement("div");
-    dot.className = "dot";
-    dot.style.left = (event.pageX - 4) + "px";
-    dot.style.top = (event.pageY - 4) + "px";
-    document.body.appendChild(dot);
-  });
-</script>
-```
+[PRE9]
 
 我们将在第十九章中创建一个不那么原始的绘图应用程序。
 
@@ -238,33 +120,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 作为一个示例，以下程序显示了一个条，并设置了事件处理程序，以便在该条上向左或向右拖动时使其变窄或变宽：
 
-```js
-<p>Drag the bar to change its width:</p>
-<div style="background: orange; width: 60px; height: 20px">
-</div>
-<script>
-  let lastX; // Tracks the last observed mouse X position
-  let bar = document.querySelector("div");
-  bar.addEventListener("mousedown", event => {
-    if (event.button == 0) {
-      lastX = event.clientX;
-      window.addEventListener("mousemove", moved);
-      event.preventDefault(); // Prevent selection
-    }
-  });
-
-  function moved(event) {
-    if (event.buttons == 0) {
-      window.removeEventListener("mousemove", moved);
-    } else {
-      let dist = event.clientX - lastX;
-      let newWidth = Math.max(10, bar.offsetWidth + dist);
-      bar.style.width = newWidth + "px";
-      lastX = event.clientX;
-    }
-  }
-</script>
-```
+[PRE10]
 
 最终页面看起来是这样的：
 
@@ -290,31 +146,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 你可以做这样的事情，在每个触摸的手指周围显示红色圆圈：
 
-```js
-<style>
-  dot { position: absolute; display: block;
-        border: 2px solid red; border-radius: 50px;
-        height: 100px; width: 100px; }
-</style>
-<p>Touch this page</p>
-<script>
-  function update(event) {
-    for (let dot; dot = document.querySelector("dot");) {
-      dot.remove();
-    }
-    for (let i = 0; i < event.touches.length; i++) {
-      let {pageX, pageY} = event.touches[i];
-      let dot = document.createElement("dot");
- dot.style.left = (pageX - 50) + "px";
-      dot.style.top = (pageY - 50) + "px";
-      document.body.appendChild(dot);
-    }
-  }
-  window.addEventListener("touchstart", update);
-  window.addEventListener("touchmove", update);
-  window.addEventListener("touchend", update);
-</script>
-```
+[PRE11]
 
 你通常会希望在触摸事件处理程序中调用 preventDefault，以覆盖浏览器的默认行为（可能包括在滑动时滚动页面），并防止触发鼠标事件，对于这些事件你也可能有一个处理程序。
 
@@ -324,28 +156,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 以下示例在文档上方绘制一个进度条，并在你向下滚动时更新它以填满：
 
-```js
-<style>
-  #progress {
-    border-bottom: 2px solid blue;
-    width: 0;
-    position: fixed;
-    top: 0; left: 0;
-  }
-</style>
-<div id="progress"></div>
-<script>
-  // Create some content
-  document.body.appendChild(document.createTextNode(
-    "supercalifragilisticexpialidocious ".repeat(1000)));
-
-  let bar = document.querySelector("#progress");
-  window.addEventListener("scroll", () => {
-    let max = document.body.scrollHeight - innerHeight;
-    bar.style.width = `${(pageYOffset / max) * 100}%`;
-  });
-</script>
-```
+[PRE12]
 
 将一个元素的定位设置为固定的位置与绝对位置的效果类似，但也防止其与文档的其他部分一起滚动。其效果是使我们的进度条停留在顶部。其宽度会根据当前进度进行调整。我们在设置宽度时使用 % 而不是 px 作为单位，这样元素的大小相对于页面宽度。
 
@@ -361,25 +172,7 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 以下示例为当前具有焦点的文本字段显示帮助文本：
 
-```js
-<p>Name: <input type="text" data-help="Your full name"></p>
-<p>Age: <input type="text" data-help="Your age in years"></p>
-<p id="help"></p>
-
-<script>
-  let help = document.querySelector("#help");
-  let fields = document.querySelectorAll("input");
-  for (let field of Array.from(fields)) {
-    field.addEventListener("focus", event => {
-      let text = event.target.getAttribute("data-help");
-      help.textContent = text;
-    });
-    field.addEventListener("blur", event => {
-      help.textContent = "";
-    });
-  }
-</script>
-```
+[PRE13]
 
 该截图显示了年龄字段的帮助文本：
 
@@ -405,24 +198,13 @@ removeEventListener 方法与 addEventListener 的参数类似，用于移除一
 
 想象一下，平方一个数字是一个耗时的长时间计算，我们希望在单独的线程中执行。我们可以编写一个名为 *code/squareworker.js* 的文件，它通过计算平方并发送消息返回来响应消息。
 
-```js
-addEventListener("message", event => {
-  postMessage(event.data * event.data);
-});
-```
+[PRE14]
 
 为了避免多个线程同时访问相同数据的问题，工作线程不与主脚本的环境共享它们的全局作用域或其他任何数据。相反，你必须通过发送消息来进行通信。
 
 这段代码生成一个运行该脚本的工作者，发送几个消息，并输出响应。
 
-```js
-let squareWorker = new Worker("code/squareworker.js");
-squareWorker.addEventListener("message", event => {
-  console.log("The worker responded:", event.data);
-});
-squareWorker.postMessage(10);
-squareWorker.postMessage(24);
-```
+[PRE15]
 
 postMessage 函数发送消息，这将导致接收方触发一个“message”事件。创建工作者的脚本通过 Worker 对象发送和接收消息，而工作者则通过直接在其全局作用域上发送和监听，与创建它的脚本进行通信。只有可以表示为 JSON 的值才能作为消息发送——另一方将接收到它们的*副本*，而不是值本身。
 
@@ -430,31 +212,13 @@ postMessage 函数发送消息，这将导致接收方触发一个“message”�
 
 我们在第十一章中看到的 setTimeout 函数会在给定的毫秒数后调度另一个函数被调用。有时你需要取消已经调度的函数。你可以通过存储 setTimeout 返回的值，并在其上调用 clearTimeout 来实现。
 
-```js
-let bombTimer = setTimeout(() => {
-  console.log("BOOM!");
-}, 500);
-
-if (Math.random() < 0.5) { // 50% chance
-  console.log("Defused.");
-  clearTimeout(bombTimer);
-}
-```
+[PRE16]
 
 cancelAnimationFrame 函数的工作方式与 clearTimeout 相同。对 requestAnimationFrame 返回的值调用它将取消该帧（假设它尚未被调用）。
 
 一组类似的函数 setInterval 和 clearInterval 用于设置每*X*毫秒重复的计时器。
 
-```js
-let ticks = 0;
-let clock = setInterval(() => {
-  console.log("tick", ticks++);
-  if (ticks == 10) {
-    clearInterval(clock);
-    console.log("stop.");
- }
-}, 200);
-```
+[PRE17]
 
 ### 防抖
 
@@ -464,37 +228,13 @@ let clock = setInterval(() => {
 
 例如，假设我们想在用户输入时做出反应，但不想在每次输入事件中立即执行。用户快速输入时，我们只想等到出现暂停再处理。我们在事件处理程序中设置一个超时，而不是立即执行某个操作。我们还会清除之前的超时（如果有的话），这样当事件发生得很接近（比我们的超时延迟更近）时，前一个事件的超时将被取消。
 
-```js
-<textarea>Type something here...</textarea>
-<script>
-  let textarea = document.querySelector("textarea");
-  let timeout;
-  textarea.addEventListener("input", () => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => console.log("Typed!"), 500);
-  });
-</script>
-```
+[PRE18]
 
 将未定义的值传递给 clearTimeout 或在已经触发的超时上调用它不会产生任何效果。因此，我们不需要小心何时调用它，我们可以简单地对每个事件都调用它。
 
 如果我们希望响应之间的间隔至少有一定时间，但又想在一系列事件*发生期间*触发响应，我们可以使用稍微不同的模式。例如，我们可能希望通过显示当前鼠标坐标来响应“mousemove”事件，但每 250 毫秒才响应一次。
 
-```js
-<script>
-  let scheduled = null;
-  window.addEventListener("mousemove", event => {
-    if (!scheduled) {
-      setTimeout(() => {
-        document.body.textContent =
-          `Mouse at ${scheduled.pageX}, ${scheduled.pageY}`;
-        scheduled = null;
-      }, 250);
- }
-    scheduled = event;
-  });
-</script>
-```
+[PRE19]
 
 ### 总结
 

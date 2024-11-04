@@ -10,10 +10,7 @@
 
 正则表达式是一种对象。它可以通过 RegExp 构造函数构造，或通过用正斜杠（/）字符括起模式来作为文字值书写。
 
-```js
-let re1 = new RegExp("abc");
-let re2 = /abc/;
-```
+[PRE0]
 
 这两个正则表达式对象表示相同的模式：一个*a*字符后跟一个*b*，再后跟一个*c*。
 
@@ -21,20 +18,13 @@ let re2 = /abc/;
 
 第二种记法中，模式出现在斜杠字符之间，对反斜杠的处理方式有所不同。首先，由于正斜杠结束了模式，我们需要在任何希望成为*模式一部分*的正斜杠前加上反斜杠。此外，反斜杠如果不是特殊字符代码的一部分（如\n），将会被*保留*，而不是像在字符串中那样被忽略，并且会改变模式的含义。一些字符，比如问号和加号，在正则表达式中具有特殊含义，如果它们表示的是字符本身，必须在前面加上反斜杠。
 
-```js
-let aPlus = /A\+/;
-```
+[PRE1]
 
 ### 匹配测试
 
 正则表达式对象有许多方法。最简单的方法是 test。如果你传递给它一个字符串，它将返回一个布尔值，告诉你该字符串是否包含模式的匹配。
 
-```js
-console.log(/abc/.test("abcde"));
-// → true
-console.log(/abc/.test("abxde"));
-// → false
-```
+[PRE2]
 
 仅由非特殊字符组成的正则表达式简单地表示该字符序列。如果*abc*出现在我们测试的字符串中的任何位置（不仅仅是在开始处），测试将返回 true。
 
@@ -46,12 +36,7 @@ console.log(/abc/.test("abxde"));
 
 以下两个表达式匹配所有包含数字的字符串：
 
-```js
-console.log(/[0123456789]/.test("in 1992"));
-// → true
-console.log(/[0-9]/.test("in 1992"));
-// → true
-```
+[PRE3]
 
 在方括号内，两个字符之间的连字符（-）可以用来表示字符范围，其顺序由字符的 Unicode 编号决定。字符 0 到 9 在这个排序中彼此相邻（编码 48 到 57），因此 [0-9] 包含了所有数字，并且匹配任何数字。
 
@@ -68,13 +53,7 @@ console.log(/[0-9]/.test("in 1992"));
 
 你可以用以下表达式匹配日期和时间格式，如 01-30-2003 15:20：
 
-```js
-let dateTime = /\d\d-\d\d-\d\d\d\d \d\d:\d\d/;
-console.log(dateTime.test("01-30-2003 15:20"));
-// → true
-console.log(dateTime.test("30-jan-2003 15:20"));
-// → false
-```
+[PRE4]
 
 那个正则表达式看起来完全糟糕，不是吗？其中一半是反斜杠，产生的背景噪声使得实际表达的模式很难被识别。稍后我们会看到这个表达式的稍微改进版本。
 
@@ -82,13 +61,7 @@ console.log(dateTime.test("30-jan-2003 15:20"));
 
 要*反转*一组字符——即表达你想匹配任何*除了*该组中的字符外的字符——可以在开括号后写一个插入符号（^）。
 
-```js
-let nonBinary = /[⁰¹]/;
-console.log(nonBinary.test("1100100010100110"));
-// → false
-console.log(nonBinary.test("0111010112101001"));
-// → true
-```
+[PRE5]
 
 ### 国际字符
 
@@ -107,16 +80,7 @@ console.log(nonBinary.test("0111010112101001"));
 
 使用 \w 进行文本处理，可能需要处理非英语文本（甚至包含借用词如 *cliché* 的英语文本）是一种风险，因为它不会将像 *é* 这样的字符视为字母。尽管它们通常更冗长，但 \p 属性组更加稳健。
 
-```js
-console.log(/\p{L}/u.test("α"));
-// → true
-console.log(/\p{L}/u.test("!"));
-// → false
-console.log(/\p{Script=Greek}/u.test("α"));
-// → true
-console.log(/\p{Script=Arabic}/u.test("α"));
-// → false
-```
+[PRE6]
 
 另一方面，如果你是为了对数字执行某些操作而匹配数字，通常确实需要 \d 来匹配数字，因为将任意数字字符转换为 JavaScript 数字并不是像 Number 这样的函数能为你做到的。
 
@@ -126,38 +90,19 @@ console.log(/\p{Script=Arabic}/u.test("α"));
 
 当你在正则表达式中在某个内容后加上加号 (+) 时，表示该元素可以重复多次。因此，/\d+/ 匹配一个或多个数字字符。
 
-```js
-console.log(/'\d+'/.test("'123'"));
-// → true
-console.log(/'\d+'/.test("''"));
-// → false
-console.log(/'\d*'/.test("'123'"));
-// → true
-console.log(/'\d*'/.test("''"));
-// → true
-```
+[PRE7]
 
 星号 (*) 的含义类似，但也允许模式零次匹配。后面带有星号的内容不会阻止模式匹配——如果找不到任何合适的文本匹配，它只会匹配零个实例。
 
 问号 (?) 使模式的部分 *可选*，意味着它可以出现零次或一次。在下面的示例中，*u* 字符可以出现，但当它缺失时，模式仍然匹配：
 
-```js
-let neighbor = /neighbou?r/;
-console.log(neighbor.test("neighbour"));
-// → true
-console.log(neighbor.test("neighbor"));
-// → true
-```
+[PRE8]
 
 要表示模式应该出现的精确次数，可以使用大括号。在元素后面加上 {4}，例如，要求它恰好出现四次。也可以通过这种方式指定范围：{2,4} 意味着元素必须至少出现两次，最多四次。
 
 这是日期和时间模式的另一个版本，允许单个和双个数字的天、月和小时。它也略微更易于解读。
 
-```js
-let dateTime = /\d{1,2}-\d{1,2}-\d{4} \d{1,2}:\d{2}/;
-console.log(dateTime.test("1-30-2003 8:45"));
-// → true
-```
+[PRE9]
 
 使用大括号时，可以通过省略逗号后的数字来指定开放范围。例如，{5,} 意味着五次或更多次。
 
@@ -165,11 +110,7 @@ console.log(dateTime.test("1-30-2003 8:45"));
 
 要在多个元素上同时使用 * 或 + 这样的运算符，必须使用括号。被括号包围的正则表达式的一部分在后续运算符的考虑下算作一个单一元素。
 
-```js
-let cartoonCrying = /boo+(hoo+)+/i;
-console.log(cartoonCrying.test("Boohoooohoohooo"));
-// → true
-```
+[PRE10]
 
 第一个和第二个 + 字符仅适用于 boo 和 hoo 中的第二个 o。第三个 + 适用于整个组 (hoo+)，匹配一个或多个这样的序列。
 
@@ -179,46 +120,25 @@ console.log(cartoonCrying.test("Boohoooohoohooo"));
 
 测试方法是匹配正则表达式的最简单方式。它只告诉你是否匹配，而没有其他信息。正则表达式还有一个 exec（执行）方法，如果未找到匹配项，则返回 null，否则返回一个包含匹配信息的对象。
 
-```js
-let match = /\d+/.exec("one two 100");
-console.log(match);
-// → ["100"]
-console.log(match.index);
-// → 8
-```
+[PRE11]
 
 从 exec 返回的对象有一个 index 属性，告诉我们*匹配*在字符串中开始的位置。除此之外，该对象看起来（实际上也是）是一个字符串数组，其中第一个元素是匹配的字符串。在前面的例子中，这就是我们要寻找的数字序列。
 
 字符串值有一个 match 方法，其行为类似。
 
-```js
-console.log("one two 100".match(/\d+/));
-// → ["100"]
-```
+[PRE12]
 
 当正则表达式包含用括号分组的子表达式时，匹配这些组的文本也会出现在数组中。整个匹配总是第一个元素。下一个元素是第一个组（即开括号在表达式中最先出现的那个）的匹配部分，然后是第二组，以此类推。
 
-```js
-let quotedText = /'([^']*)'/;
-console.log(quotedText.exec("she said 'hello'"));
-// → ["'hello'", "hello"]
-```
+[PRE13]
 
 当一个组根本没有被匹配时（例如，后面跟着问号），其在输出数组中的位置将是 undefined。当一个组被多次匹配时（例如，后面跟着+），只有最后一次匹配会出现在数组中。
 
-```js
-console.log(/bad(ly)?/.exec("bad"));
-// → ["bad", undefined]
-console.log(/(\d)+/.exec("123"));
-// → ["123", "3"]
-```
+[PRE14]
 
 如果你想单纯将括号用于分组，而不希望它们出现在匹配的数组中，可以在开括号后加上?:。
 
-```js
-console.log(/(?:na)+/.exec("banana"));
-// → ["nana"]
-```
+[PRE15]
 
 组对于提取字符串的一部分是很有用的。如果我们不仅想验证一个字符串是否包含日期，还想提取它并构建一个表示它的对象，我们可以在数字模式周围加上括号，并直接从 exec 的结果中提取日期。
 
@@ -228,19 +148,11 @@ console.log(/(?:na)+/.exec("banana"));
 
 JavaScript 有一个标准的日期类用于表示日期，或者更准确地说，表示时间点。如果你仅仅使用 new 创建一个日期对象，你将获得当前的日期和时间。
 
-```js
-console.log(new Date());
-// → Fri Feb 02 2024 18:03:06 GMT+0100 (CET)
-```
+[PRE16]
 
 你也可以为特定时间创建一个对象。
 
-```js
-console.log(new Date(2009, 11, 9));
-// → Wed Dec 09 2009 00:00:00 GMT+0100 (CET)
-console.log(new Date(2009, 11, 9, 12, 59, 59, 999));
-// → Wed Dec 09 2009 12:59:59 GMT+0100 (CET)
-```
+[PRE17]
 
 JavaScript 使用一种约定，即月份编号从零开始（所以 12 月是 11），而日期编号从一开始。这让人感到困惑和愚蠢。请小心。
 
@@ -248,12 +160,7 @@ JavaScript 使用一种约定，即月份编号从零开始（所以 12 月是 1
 
 时间戳以自 1970 年开始的毫秒数存储，使用 UTC 时区。这遵循了“Unix 时间”设定的约定，该约定大约在那个时候被发明。对于 1970 年之前的时间，可以使用负数。日期对象上的 getTime 方法返回这个数字。它的数值很大，可以想象。
 
-```js
-console.log(new Date(2013, 11, 19).getTime());
-// → 1387407600000
-console.log(new Date(1387407600000));
-// → Thu Dec 19 2013 00:00:00 GMT+0100 (CET)
-```
+[PRE18]
 
 如果你给 Date 构造函数一个单一的参数，那么该参数会被视为这样的毫秒计数。你可以通过创建一个新的 Date 对象并调用 getTime 来获取当前的毫秒计数，或者通过调用 Date.now 函数。
 
@@ -261,15 +168,7 @@ console.log(new Date(1387407600000));
 
 将感兴趣的表达式部分用括号括起来后，我们现在可以从字符串创建日期对象。
 
-```js
-function getDate(string) {
-  let [_, month, day, year] =
-    /(\d{1,2})-(\d{1,2})-(\d{4})/.exec(string);
-  return new Date(year, month - 1, day);
-}
-console.log(getDate("1-30-2003"));
-// → Thu Jan 30 2003 00:00:00 GMT+0100 (CET)
-```
+[PRE19]
 
 下划线(_)绑定被忽略，仅用于跳过 exec 返回的数组中的完整匹配元素。
 
@@ -285,12 +184,7 @@ console.log(getDate("1-30-2003"));
 
 *前瞻*测试做了类似的事情。它们提供一个模式，如果输入不匹配该模式，则使匹配失败，但实际上并不向前移动匹配位置。它们是在(?=和)之间编写的。
 
-```js
-console.log(/a(?=e)/.exec("braeburn"));
-// → ["a"]
-console.log(/a(?! )/.exec("a b"));
-// → null
-```
+[PRE20]
 
 第一个示例中的 e 是匹配所必需的，但不是匹配字符串的一部分。(?! )符号表示*负向*前瞻。只有在括号内的模式*不*匹配时，它才会匹配，从而导致第二个示例只匹配后面没有空格的字符。
 
@@ -300,13 +194,7 @@ console.log(/a(?! )/.exec("a b"));
 
 我们可以编写三个正则表达式并依次测试，但有一种更好的方法。管道字符（|）表示其左侧模式和右侧模式之间的选择。我们可以在这样的表达式中使用它：
 
-```js
-let animalCount = /\d+ (pig|cow|chicken)s?/;
-console.log(animalCount.test("15 pigs"));
-// → true
-console.log(animalCount.test("15 pugs"));
-// → false
-```
+[PRE21]
 
 可以使用括号来限制管道操作符适用的模式部分，你可以将多个这样的操作符并排放置，以表达两种以上选项之间的选择。
 
@@ -344,30 +232,15 @@ console.log(animalCount.test("15 pugs"));
 
 字符串值具有一个可以用来将字符串的一部分替换为另一个字符串的 replace 方法。
 
-```js
-console.log("papa".replace("p", "m"));
-// → mapa
-```
+[PRE22]
 
 第一个参数也可以是一个正则表达式，在这种情况下，正则表达式的第一次匹配将被替换。当在正则表达式后添加 g 选项（表示*全局*）时，字符串中的*所有*匹配项都会被替换，而不仅仅是第一个。
 
-```js
-console.log("Borobudur".replace(/[ou]/, "a"));
-// → Barobudur
-console.log("Borobudur".replace(/[ou]/g, "a"));
-// → Barabadar
-```
+[PRE23]
 
 使用正则表达式与 replace 结合的真正强大之处在于我们可以在替换字符串中引用匹配的组。例如，假设我们有一个包含人名的大字符串，每行一个名字，格式为 Lastname, Firstname。如果我们想交换这些名字并移除逗号以获得 Firstname Lastname 格式，我们可以使用以下代码：
 
-```js
-console.log(
-  "Liskov, Barbara\nMcCarthy, John\nMilner, Robin"
-    .replace(/(\p{L}+), (\p{L}+)/gu, "$2 $1"));
-// → Barbara Liskov
-//    John McCarthy
-//    Robin Milner
-```
+[PRE24]
 
 替换字符串中的 $1 和 $2 引用模式中的括号组。$1 被替换为与第一个组匹配的文本，$2 被替换为第二个，依此类推，直到 $9。整个匹配可以通过 $& 引用。
 
@@ -375,20 +248,7 @@ console.log(
 
 这是一个例子：
 
-```js
-let stock = "1 lemon, 2 cabbages, and 101 eggs";
-function minusOne(match, amount, unit) {
-  amount = Number(amount) - 1;
-  if (amount == 1) { // Only one left, remove the 's'
-    unit = unit.slice(0, unit.length - 1);
-  } else if (amount == 0) {
-    amount = "no";
-  }
-  return amount + " " + unit;
-}
-console.log(stock.replace(/(\d+) (\p{L}+)/gu, minusOne));
-// → no lemon, 1 cabbage, and 100 eggs
-```
+[PRE25]
 
 这段代码获取一个字符串，查找所有后跟一个字母数字单词的数字出现次数，并返回一个每个数量少一个的字符串。
 
@@ -398,17 +258,7 @@ console.log(stock.replace(/(\d+) (\p{L}+)/gu, minusOne));
 
 我们可以使用 replace 来编写一个函数，从一段 JavaScript 代码中移除所有注释。这是第一次尝试：
 
-```js
-function stripComments(code) {
-  return code.replace(/\/\/.*|\/\*[^]*\*\//g, "");
-}
-console.log(stripComments("1 + /* 2 */3"));
-// → 1 + 3
-console.log(stripComments("x = 10;// ten!"));
-// → x = 10;
-console.log(stripComments("1 /* a */+/* b */ 1"));
-// → 1  1
-```
+[PRE26]
 
 | 操作符前面的部分匹配两个斜杠字符后跟任意数量的非换行字符。多行注释的部分更复杂。我们使用 [^]（不在空字符集中的任何字符）作为匹配任意字符的方式。我们不能在这里简单地使用一个句点，因为块注释可能会在新行上继续，而句点字符无法匹配换行字符。
 
@@ -420,13 +270,7 @@ console.log(stripComments("1 /* a */+/* b */ 1"));
 
 而这正是我们在这种情况下想要的。通过让星号匹配最小的字符范围，使我们到达一个 */，我们消耗了一个块注释，而没有更多。
 
-```js
-function stripComments(code) {
-  return code.replace(/\/\/.*|\/\*[^]*?\*\//g, "");
-}
-console.log(stripComments("1 /* a */+/* b */ 1"));
-// → 1 + 1
-```
+[PRE27]
 
 正则表达式程序中的许多错误可以追溯到无意中使用了贪婪运算符，而非贪婪运算符会更好。当使用重复运算符时，优先选择非贪婪变体。
 
@@ -434,12 +278,7 @@ console.log(stripComments("1 /* a */+/* b */ 1"));
 
 在某些情况下，当你编写代码时，可能不知道需要匹配的确切模式。比如说，你想在一段文本中测试用户的名字。你可以构建一个字符串，并在此基础上使用 RegExp 构造函数。
 
-```js
-let name = "harry";
-let regexp = new RegExp("(^|\\s)" + name + "($|\\s)", "gi");
-console.log(regexp.test("Harry is a dodgy character."));
-// → true
-```
+[PRE28]
 
 在创建字符串的 \s 部分时，我们必须使用两个反斜杠，因为我们是在正常字符串中编写它们，而不是在斜杠封闭的正则表达式中。RegExp 构造函数的第二个参数包含正则表达式的选项——在这种情况下，“gi”表示全局匹配和不区分大小写。
 
@@ -447,25 +286,13 @@ console.log(regexp.test("Harry is a dodgy character."));
 
 为了解决这个问题，我们可以在任何具有特殊含义的字符前添加反斜杠。
 
-```js
-let name = "dea+hl[]rd";
-let escaped = name.replace(/[\\[.+*?(){|^$]/g, "\\$&");
-let regexp = new RegExp("(^|\\s)" + escaped + "($|\\s)", "gi");
-let text = "This dea+hl[]rd guy is super annoying.";
-console.log(regexp.test(text));
-// → true
-```
+[PRE29]
 
 ### search 方法
 
 虽然字符串的 indexOf 方法不能用正则表达式调用，但还有另一种方法 search，它确实需要一个正则表达式。像 indexOf 一样，它返回表达式找到的第一个索引，或者在未找到时返回 -1。
 
-```js
-console.log("  word".search(/\S/));
-// → 2
-console.log("    ".search(/\S/));
-// → -1
-```
+[PRE30]
 
 不幸的是，没有办法指示匹配应从给定偏移量开始（就像我们可以用 indexOf 的第二个参数一样），这在很多情况下会非常有用。
 
@@ -477,60 +304,27 @@ exec 方法同样没有提供从给定位置开始搜索的方便方式。但它
 
 这些有限情况是正则表达式必须启用全局(g)或粘性(y)选项，并且匹配必须通过 exec 方法发生。再说一次，较少混淆的解决方案是允许将额外参数传递给 exec，但混淆是 JavaScript 正则表达式接口的一个基本特征。
 
-```js
-let pattern = /y/g;
-pattern.lastIndex = 3;
-let match = pattern.exec("xyzzy");
-console.log(match.index);
-// → 4
-console.log(pattern.lastIndex);
-// → 5
-```
+[PRE31]
 
 如果匹配成功，对 exec 的调用会自动更新 lastIndex 属性，使其指向匹配之后的位置。如果没有找到匹配，lastIndex 会被重置为 0，这也是新构建的正则表达式对象的初始值。
 
 全局选项和粘性选项之间的区别在于，当启用粘性时，匹配只会在 lastIndex 直接开始时成功，而全局匹配则会向前搜索可以开始匹配的位置。
 
-```js
-let global = /abc/g;
-console.log(global.exec("xyz abc"));
-// → ["abc"]
-let sticky = /abc/y;
-console.log(sticky.exec("xyz abc"));
-// → null
-```
+[PRE32]
 
 在对多个 exec 调用使用共享的正则表达式值时，这些对 lastIndex 属性的自动更新可能会引发问题。你的正则表达式可能会意外地从上一次调用留下的索引开始。
 
-```js
-let digit = /\d/g;
-console.log(digit.exec("here it is: 1"));
-// → ["1"]
-console.log(digit.exec("and now: 1"));
-// → null
-```
+[PRE33]
 
 全局选项的另一个有趣效果是它改变了字符串上 match 方法的工作方式。当使用全局表达式调用时，match 不会返回与 exec 返回的数组类似的结果，而是会找到字符串中模式的*所有*匹配，并返回一个包含匹配字符串的数组。
 
-```js
-console.log("Banana".match(/an/g));
-// → ["an", "an"]
-```
+[PRE34]
 
 因此，请谨慎使用全局正则表达式。它们必要的情况——调用 replace 和希望显式使用 lastIndex 的地方——通常是你想使用它们的唯一情况。
 
 常见的做法是查找字符串中正则表达式的所有匹配。我们可以通过使用 matchAll 方法来实现。
 
-```js
-let input = "A string with 3 numbers in it... 42 and 88.";
-let matches = input.matchAll(/\d+/g);
-for (let match of matches) {
-  console.log("Found", match[0], "at", match.index);
-}
-// → Found 3 at 14
-//    Found 42 at 33
-//    Found 88 at 40
-```
+[PRE35]
 
 该方法返回一个匹配数组的数组。传递给 matchAll 的正则表达式*必须*启用 g 选项。
 
@@ -538,21 +332,7 @@ for (let match of matches) {
 
 为了结束这一章，我们将看一个需要正则表达式的问题。假设我们正在编写一个程序，以自动从互联网上收集有关我们敌人的信息。（我们在这里不会实际编写那个程序，只是读取配置文件的部分。抱歉。）配置文件看起来像这样：
 
-```js
-searchengine=https://duckduckgo.com/?q=$1
-spitefulness=9.7
-; Comments are preceded by a semicolon...
-; Each section concerns an individual enemy
-[larry]
-fullname=Larry Doe
-type=kindergarten bully
-website=http://www.geocities.com/CapeCanaveral/11451
-
-[davaeorn]
-fullname=Davaeorn
-type=evil wizard
-outputdir=/home/marijn/enemies/davaeorn
-```
+[PRE36]
 
 这种格式的确切规则——它是一种广泛使用的文件格式，通常称为*INI*文件——如下所示：
 
@@ -568,30 +348,7 @@ outputdir=/home/marijn/enemies/davaeorn
 
 由于格式必须逐行处理，将文件拆分成单独的行是一个良好的开始。我们在第四章中看到了 split 方法。然而，一些操作系统不仅使用换行符来分隔行，还使用回车符后跟换行符（“\r\n”）。考虑到 split 方法也允许使用正则表达式作为参数，我们可以使用像 `/\r?\n/` 这样的正则表达式，以便在行之间支持“\n”和“\r\n”。
 
-```js
-function parseINI(string) {
-  // Start with an object to hold the top-level fields
-  let result = {};
-  let section = result;
-  for (let line of string.split(/\r?\n/)) {
-    let match;
-    if (match = line.match(/^(\w+)=(.*)$/)) {
-      section[match[1]] = match[2];
-    } else if (match = line.match(/^\[(.*)\]$/)) {
-      section = result[match[1]] = {};
-    } else if (!/^\s*(;|$)/.test(line)) {
-      throw new Error("Line '" + line + "' is not valid.");
-    }
-  };
-  return result;
-}
-
-console.log(parseINI(`
-name=Vasilis
-[address]
-city=Tessaloniki`));
-// → {name: "Vasilis", address: {city: "Tessaloniki"}}
-```
+[PRE37]
 
 代码遍历文件的行并构建一个对象。顶部的属性直接存储到该对象中，而在节中找到的属性则存储在单独的节对象中。节绑定指向当前节的对象。
 
@@ -607,23 +364,13 @@ city=Tessaloniki`));
 
 在 JavaScript 正则表达式中，一个被标准化的设计错误是，默认情况下，像 . 或 ? 这样的运算符是作用于代码单元（如第五章所讨论），而不是实际字符。这意味着由两个代码单元组成的字符表现得很奇怪。
 
-```js
-console.log(/{3}/.test(""));
-// → false
-console.log(/<.>/.test("<>"));
-// → false
-console.log(/<.>/u.test("<>"));
-// → true
-```
+[PRE38]
 
 问题是，第一行中的 ![Image](img/apple.jpg) 被视为两个代码单元，而 {3} 仅应用于第二个单元。类似地，点只匹配单个代码单元，而不是组成玫瑰表情的两个代码单元。
 
 你必须在正则表达式中添加 u（Unicode）选项，以使其正确处理此类字符。
 
-```js
-console.log(/{3}/u.test(""));
-// → true
-```
+[PRE39]
 
 ### 摘要
 

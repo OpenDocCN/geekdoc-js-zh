@@ -42,61 +42,17 @@
 
 我们可以使用类似这样的类来表示图。每个节点都有一个编号，从 0 开始，并存储一组连接的节点。
 
-```js
-class Graph {
-  #nodes = [];
-
-  get size() {
-    return this.#nodes.length;
-  }
-
-  addNode() {
-    let id = this.#nodes.length;
-    this.#nodes.push(new Set());
-    return id;
-  }
-
-  addEdge(nodeA, nodeB) {
-    this.#nodes[nodeA].add(nodeB);
-    this.#nodes[nodeB].add(nodeA);
-  }
-
-  neighbors(node) {
-    return this.#nodes[node];
-  }
-}
-```
+[PRE0]
 
 在构建图时，你调用 addNode 来定义一个新节点，调用 addEdge 将两个节点连接在一起。与图一起工作的代码可以使用 neighbors，返回一组连接的节点 ID，以读取有关边的信息。
 
 为了表示图的布局，我们将使用之前章节中的熟悉的 Vec 类。图的布局是一个长度为 graph.size 的向量数组，为每个节点保存一个位置。
 
-```js
-function randomLayout(graph) {
-  let layout = [];
-  for (let i = 0; i < graph.size; i++) {
-    layout.push(new Vec(Math.random() * 1000,
-                        Math.random() * 1000));
-  }
-  return layout;
-}
-```
+[PRE1]
 
 gridGraph 函数构建一个只是节点的方形网格的图，这是图布局程序的一个有用测试用例。它创建 size * size 个节点，并将每个节点与其上方或左侧的节点连接（如果存在这样的节点）。
 
-```js
-function gridGraph(size) {
-  let grid = new Graph();
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      let id = grid.addNode();
-      if (x > 0) grid.addEdge(id, id - 1);
-      if (y > 0) grid.addEdge(id, id - size);
-    }
-  }
-  return grid;
-}
-```
+[PRE2]
 
 这就是一个网格布局的样子：
 
@@ -116,73 +72,23 @@ function gridGraph(size) {
 
 这个函数计算作用于节点的力的强度，因为在给定距离下存在另一个节点。它始终包括排斥力，并在节点连接时将其与弹簧的力相结合。
 
-```js
-const springLength = 20;
-const springStrength = 0.1;
-const repulsionStrength = 1500;
-
-function forceSize(distance, connected) {
-  let repulse = -repulsionStrength / (distance * distance);
-  let spring = 0;
-  if (connected) {
-    spring = (distance - springLength) * springStrength;
-  }
-  return spring + repulse;
-}
-```
+[PRE3]
 
 节点移动的方式是通过结合所有其他节点施加在它上的力来决定的。对于每对节点，我们的函数需要知道它们之间的距离。我们可以通过减去节点的位置并计算结果向量的长度来计算这个距离。当距离小于一时，我们将其设为一，以防止除以零或非常小的数，因为这样会产生 NaN 值或产生巨大的力，将节点抛入太空。
 
 使用这个距离以及节点之间连接边的存在与否，我们可以计算作用于它们之间的力的大小。要从这个大小得到力向量，我们可以将大小乘以一个标准化的分离向量。*标准化*一个向量意味着创建一个方向相同但长度为一的向量。我们可以通过将向量除以其自身的长度来实现。将这个值添加到节点的位置会使其朝着力的方向移动。
 
-```js
-function forceDirected_simple(layout, graph) {
-  for (let a = 0; a < graph.size; a++) {
-    for (let b = 0; b < graph.size; b++) {
-      if (a == b) continue;
-      let apart = layout[b].minus(layout[a]);
-      let distance = Math.max(1, apart.length);
- let connected = graph.neighbors(a).has(b);
-      let size = forceSize(distance, connected);
-      let force = apart.times(1 / distance).times(size);
-      layout[a] = layout[a].plus(force);
-    }
-  }
-}
-```
+[PRE4]
 
 我们将使用以下函数来测试我们图形布局系统的给定实现。它从随机布局开始，并运行模型三秒钟。完成后，它记录每秒处理的迭代次数。为了让我们在代码运行时有所观察，它在每 100 次迭代后绘制当前图形的布局。
 
-```js
-function pause() {
-  return new Promise(done => setTimeout(done, 0))
-}
-
-async function runLayout(implementation, graph) {
-  let time = 0, iterations = 0;
-  let layout = randomLayout(graph);
-  while (time < 3000) {
-    let start = Date.now();
-    for (let i = 0; i < 100; i++) {
-      implementation(layout, graph);
-      iterations++;
-    }
-    time += Date.now() - start;
-    drawGraph(graph, layout);
-    await pause();
-  }
-  let perSecond = Math.round(iterations / (time / 1000));
-  console.log(`${perSecond} iterations per second`);
-}
-```
+[PRE5]
 
 为了让浏览器有机会实际显示图形，该函数在每次绘制图形时将控制权短暂地返回给事件循环。该函数是异步的，以便能够等待超时。
 
 我们可以运行这个第一个实现，看看需要多少时间。
 
-```js
-runLayout(forceDirected_simple, gridGraph(12));
-```
+[PRE6]
 
 在我的机器上，这个版本每秒处理约 1,600 次迭代。这已经相当多了。但让我们看看是否可以做得更好。
 
@@ -194,21 +100,7 @@ runLayout(forceDirected_simple, gridGraph(12));
 
 函数的下一个版本将内部循环更改为只遍历当前节点之后的节点，以便每对节点仅被查看一次。在计算一对节点之间的力之后，函数更新两个节点的位置。
 
-```js
-function forceDirected_noRepeat(layout, graph) {
-  for (let a = 0; a < graph.size; a++) {
-    for (let b = a + 1; b < graph.size; b++) {
-      let apart = layout[b].minus(layout[a]);
-      let distance = Math.max(1, apart.length);
-      let connected = graph.neighbors(a).has(b);
-      let size = forceSize(distance, connected);
-      let force = apart.times(1 / distance).times(size);
-      layout[a] = layout[a].plus(force);
-      layout[b] = layout[b].minus(force);
-    }
-  }
-}
-```
+[PRE7]
 
 除了循环结构以及调整两个节点的事实外，这个版本与之前的版本完全相同。测量这段代码显示出显著的速度提升——在 Chrome 上快约 45％，在 Firefox 上快约 55％。
 
@@ -218,24 +110,7 @@ function forceDirected_noRepeat(layout, graph) {
 
 下一个版本定义了一个距离，超过该距离的（未连接）节点将不再计算和应用力。设置该距离为 175 时，忽略低于 0.05 的力。
 
-```js
-const skipDistance = 175;
-
-function forceDirected_skip(layout, graph) {
-  for (let a = 0; a < graph.size; a++) {
-    for (let b = a + 1; b < graph.size; b++) {
-      let apart = layout[b].minus(layout[a]);
-      let distance = Math.max(1, apart.length);
-      let connected = graph.neighbors(a).has(b);
-      if (distance > skipDistance && !connected) continue;
-      let size = forceSize(distance, connected);
-      let force = apart.times(1 / distance).times(size);
-      layout[a] = layout[a].plus(force);
-      layout[b] = layout[b].minus(force);
-    }
-  }
-}
-```
+[PRE8]
 
 这使得速度又提高了 75%，而布局没有明显的退化。我们省了一些麻烦，结果也不错。
 
@@ -249,14 +124,7 @@ function forceDirected_skip(layout, graph) {
 
 如果你的浏览器有性能分析器，它将在开发者工具界面中可用，可能在一个名为“性能”的标签上。当我让 Chrome 记录 3,000 次 forceDirected_skip 的迭代时，性能分析器输出以下表格：
 
-```js
-Activity             Self Time        Total Time
-forceDirected_skip   74.0ms  82.4%    769.5ms  94.1%
-Minor GC             48.2ms   5.9%     48.2ms   5.9%
-Vec                  44.8ms   5.5%     46.9ms   5.7%
-plus                  4.6ms   0.6%      5.5ms   0.7%
-Optimize Code         0.1ms   0.0%      0.1ms   0.0%
-```
+[PRE9]
 
 这列出了耗时较长的函数（或其他任务）。对于每个函数，它报告执行该函数所花费的时间，包括毫秒和总时间的百分比。第一列只显示控制实际上在函数中的时间，而第二列包括在该函数调用的函数中花费的时间。
 
@@ -270,29 +138,7 @@ Optimize Code         0.1ms   0.0%      0.1ms   0.0%
 
 但尽管效率如此，它仍然是必须进行的工作。让我们尝试一个不创建新向量的代码版本。
 
-```js
-function forceDirected_noVector(layout, graph) {
-  for (let a = 0; a < graph.size; a++) {
-    let posA = layout[a];
-    for (let b = a + 1; b < graph.size; b++) {
-      let posB = layout[b];
-      let apartX = posB.x - posA.x
-      let apartY = posB.y - posA.y;
-      let distance = Math.sqrt(apartX * apartX +
-                               apartY * apartY);
-      let connected = graph.neighbors(a).has(b);
-      if (distance > skipDistance && !connected) continue;
-      let size = forceSize(distance, connected);
-      let forceX = (apartX / distance) * size;
-      let forceY = (apartY / distance) * size;
-      posA.x += forceX;
-      posA.y += forceY;
-      posB.x -= forceX;
-      posB.y -= forceY;
- }
-  }
-}
-```
+[PRE10]
 
 新代码更加冗长和重复，但如果我进行测量，这种改进足够大，值得在对性能敏感的代码中考虑进行这种手动对象扁平化。在 Firefox 和 Chrome 上，新版本的速度比之前的版本快了大约 50%。
 
@@ -308,9 +154,7 @@ function forceDirected_noVector(layout, graph) {
 
 例如，JavaScript 引擎可以完全避免在我们的代码中创建一些向量对象。在像下面这样的表达式中，如果我们可以透视这些方法，很明显，结果向量的坐标是将 force 的坐标与 normalized 和 forceSize 绑定的乘积相加的结果。因此，没有必要创建由 times 方法生成的中间对象。
 
-```js
-pos.plus(normalized.times(forceSize))
-```
+[PRE11]
 
 但是 JavaScript 允许我们通过操纵原型对象在任何时候替换方法。编译器如何确定这个 times 方法实际上是哪一个函数呢？如果之后有人更改了 Vec.prototype.times 中存储的值会怎样？下次运行已内联该函数的代码时，它可能会继续使用旧的定义，从而违反程序员对程序行为的假设。
 
@@ -332,20 +176,7 @@ pos.plus(normalized.times(forceSize))
 
 你可以通过故意破坏输入对象的一致性来观察因无法预测对象类型而导致的性能下降。例如，我们可以用一个版本替换 randomLayout，该版本为每个向量添加一个随机名称的属性。
 
-```js
-function randomLayout(graph) {
-  let layout = [];
-  for (let i = 0; i < graph.size; i++) {
-    let vector = new Vec(Math.random() * 1000,
-                         Math.random() * 1000);
-    vector[`p${Math.floor(Math.random() * 999)}`] = true;
-    layout.push(vector);
-  }
-  return layout;
-}
-
-runLayout(forceDirected_noVector, gridGraph(12));
-```
+[PRE12]
 
 如果我们在结果图上运行我们的快速模拟代码，它在 Firefox 上会变得慢大约三倍，而在 Chrome 上则变慢五倍。现在对象类型不再一致，与向量交互的代码必须在没有事先了解对象形状的情况下查找属性，这样做的成本要高得多。
 

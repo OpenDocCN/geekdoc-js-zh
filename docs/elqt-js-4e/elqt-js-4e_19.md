@@ -14,14 +14,7 @@
 
 这是一个包含简单 SVG 图像的 HTML 文档：
 
-```js
-<p>Normal HTML here.</p>
-<svg >
-  <circle r="50" cx="50" cy="50" fill="red"/>
-  <rect x="120" y="5" width="90" height="90"
-        stroke="blue" fill="none"/>
-</svg>
-```
+[PRE0]
 
 xmlns 属性将元素（及其子元素）更改为不同的*XML 命名空间*。这个由 URL 标识的命名空间指定了我们当前所使用的方言。<circle>和<rect>标签在 HTML 中不存在，但在 SVG 中具有意义——它们使用其属性指定的样式和位置绘制形状。
 
@@ -31,10 +24,7 @@ xmlns 属性将元素（及其子元素）更改为不同的*XML 命名空间*�
 
 这些标签创建了 DOM 元素，就像 HTML 标签一样，脚本可以与之互动。例如，这将<circle>元素的颜色改为青色：
 
-```js
-let circle = document.querySelector("circle");
-circle.setAttribute("fill", "cyan");
-```
+[PRE1]
 
 ### 画布元素
 
@@ -48,17 +38,7 @@ circle.setAttribute("fill", "cyan");
 
 你可以通过在`<canvas>` DOM 元素上使用 getContext 方法创建一个上下文。
 
-```js
-<p>Before canvas.</p>
-<canvas width="120" height="60"></canvas>
-<p>After canvas.</p>
-<script>
-  let canvas = document.querySelector("canvas");
-  let context = canvas.getContext("2d");
-  context.fillStyle = "red";
-  context.fillRect(10, 10, 100, 50);
-</script>
-```
+[PRE2]
 
 创建上下文对象后，示例绘制了一个宽 100 像素、高 50 像素的红色矩形，其左上角的坐标为(10, 10)。
 
@@ -78,16 +58,7 @@ fillStyle 属性控制形状的填充方式。它可以设置为指定颜色的�
 
 strokeStyle 属性类似地工作，但确定用于描边线的颜色。该线的宽度由 lineWidth 属性确定，lineWidth 属性可以包含任何正数。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.strokeStyle = "blue";
-  cx.strokeRect(5, 5, 50, 50);
-  cx.lineWidth = 5;
-  cx.strokeRect(135, 5, 50, 50);
-</script>
-```
+[PRE3]
 
 这段代码绘制了两个蓝色的正方形，第二个正方形使用了更粗的线条。
 
@@ -99,18 +70,7 @@ strokeStyle 属性类似地工作，但确定用于描边线的颜色。该线�
 
 路径是一系列线条。2D 画布接口以一种特殊的方式描述这样的路径。它完全通过副作用来完成。路径不是可以存储和传递的值。相反，如果你想对路径执行某个操作，你需要通过一系列方法调用来描述它的形状。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.beginPath();
-  for (let y = 10; y < 100; y += 10) {
-    cx.moveTo(10, y);
-    cx.lineTo(90, y);
-  }
-  cx.stroke();
-</script>
-```
+[PRE4]
 
 该示例创建了一条包含多个水平线段的路径，然后使用 stroke 方法对其进行描边。每个使用 lineTo 创建的线段都从路径的 *当前位置* 开始。该位置通常是最后一个线段的末端，除非调用了 moveTo。在这种情况下，下一条线段将从传递给 moveTo 的位置开始。
 
@@ -120,17 +80,7 @@ strokeStyle 属性类似地工作，但确定用于描边线的颜色。该线�
 
 填充路径时（使用 fill 方法），每个形状都是单独填充的。一个路径可以包含多个形状——每个 moveTo 动作都开始一个新的形状。但路径在被填充之前需要是 *闭合* 的（意味着起点和终点在同一位置）。如果路径尚未闭合，将从其末尾添加一条线到起点，填充由完成路径围成的形状。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.beginPath();
-  cx.moveTo(50, 10);
-  cx.lineTo(10, 70);
-  cx.lineTo(90, 70);
-  cx.fill();
-</script>
-```
+[PRE5]
 
 该示例绘制一个填充三角形。请注意，三角形的两条边是显式绘制的。第三条边，从右下角返回到顶部，是隐含的，如果你描边路径，它将不会存在。
 
@@ -144,19 +94,7 @@ strokeStyle 属性类似地工作，但确定用于描边线的颜色。该线�
 
 quadraticCurveTo 方法绘制一条到给定点的曲线。为了确定线的曲率，此方法需要一个控制点和一个目标点。想象这个控制点如同 *吸引* 线条，给予它曲线。线不会经过控制点，但起点和终点的方向会使得一条直线在该方向上指向控制点。以下示例说明了这一点：
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.beginPath();
-  cx.moveTo(10, 90);
-  // control=(60,10) goal=(90,90)
-  cx.quadraticCurveTo(60, 10, 90, 90);
-  cx.lineTo(60, 10);
-  cx.closePath();
-  cx.stroke();
-</script>
-```
+[PRE6]
 
 结果产生的路径看起来像这样：
 
@@ -166,20 +104,7 @@ quadraticCurveTo 方法绘制一条到给定点的曲线。为了确定线的曲
 
 bezierCurveTo 方法绘制类似的曲线。与单一控制点不同，此方法有两个——分别对应于线段的两个端点。这里有一个类似的草图来说明这种曲线的行为：
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.beginPath();
-  cx.moveTo(10, 90);
-  // control1=(10,10) control2=(90,10) goal=(50,90)
-  cx.bezierCurveTo(10, 10, 90, 10, 50, 90);
-  cx.lineTo(90, 10);
-  cx.lineTo(10, 10);
-  cx.closePath();
-  cx.stroke();
-</script>
-```
+[PRE7]
 
 两个控制点指定了曲线两端的方向。它们距离各自的点越远，曲线在那个方向的“膨胀”就越明显。
 
@@ -191,18 +116,7 @@ bezierCurveTo 方法绘制类似的曲线。与单一控制点不同，此方法
 
 这两个最后的参数使得只绘制圆的一部分成为可能。角度以弧度为单位，而不是度数。这意味着完整圆的角度为 2*π* 或 2 * Math.PI，大约为 6.28。角度从圆心右侧的点开始计数，然后顺时针方向进行。你可以使用 0 作为起始角度，并用大于 2*π* 的结束角度（例如，7）来绘制一个完整的圆。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.beginPath();
-  // center=(50,50) radius=40 angle=0 to 7
-  cx.arc(50, 50, 40, 0, 7);
-  // center=(150,50) radius=40 angle=0 to 1/2 pi
-  cx.arc(150, 50, 40, 0, 0.5 * Math.PI);
-  cx.stroke();
-</script>
-```
+[PRE8]
 
 生成的图像从完整圆的右侧（第一次调用弧）到四分之一圆的右侧（第二次调用）。
 
@@ -216,38 +130,11 @@ bezierCurveTo 方法绘制类似的曲线。与单一控制点不同，此方法
 
 结果绑定包含一个对象数组，代表调查响应。
 
-```js
-const results = [
-  {name: "Satisfied", count: 1043, color: "lightblue"},
-  {name: "Neutral", count: 563, color: "lightgreen"},
-  {name: "Unsatisfied", count: 510, color: "pink"},
-  {name: "No comment", count: 175, color: "silver"}
-];
-```
+[PRE9]
 
 要绘制饼图，我们绘制多个饼切片，每个切片由一个弧和一对线段连接到该弧的中心。我们可以通过将完整圆（2*π*）除以总响应数来计算每个弧占用的角度，然后将这个数字（每个响应的角度）乘以选择特定选项的人数。
 
-```js
-<canvas width="200" height="200"></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  let total = results.reduce((sum, {count}) => sum + count, 0);
-  // Start at the top
-  let currentAngle = -0.5 * Math.PI;
-  for (let result of results) {
-    let sliceAngle = (result.count / total) * 2 * Math.PI;
-    cx.beginPath();
-    // center=100,100, radius=100
-    // From current angle, clockwise by slice's angle
-    cx.arc(100, 100, 100,
-           currentAngle, currentAngle + sliceAngle);
-    currentAngle += sliceAngle;
-    cx.lineTo(100, 100);
-    cx.fillStyle = result.color;
-    cx.fill();
-  }
-</script>
-```
+[PRE10]
 
 这将绘制以下图表：
 
@@ -259,15 +146,7 @@ const results = [
 
 2D 画布绘图上下文提供了 fillText 和 strokeText 方法。后者对于描边字母很有用，但通常你需要的是 fillText。它将使用当前 fillStyle 填充给定文本的轮廓。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.font = "28px Georgia";
-  cx.fillStyle = "fuchsia";
-  cx.fillText("I can draw text, too!", 10, 50);
-</script>
-```
+[PRE11]
 
 你可以通过 font 属性指定文本的大小、样式和字体。这个例子仅给出了字体大小和家族名称。也可以在字符串开头添加斜体或粗体以选择样式。
 
@@ -281,19 +160,7 @@ fillText 和 strokeText 的最后两个参数提供了绘制字体的位置。�
 
 drawImage 方法允许我们将像素数据绘制到画布上。这些像素数据可以来自<img>元素或另一个画布。以下示例创建一个分离的<img>元素并将图像文件加载到其中。但此方法不能立即开始从该图片绘制，因为浏览器可能尚未加载它。为了解决这个问题，我们注册一个“load”事件处理程序，并在图像加载后进行绘制。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  let img = document.createElement("img");
-  img.src = "img/hat.png";
- img.addEventListener("load", () => {
-    for (let x = 10; x < 200; x += 30) {
-      cx.drawImage(img, x, 10);
-    }
-  });
-</script>
-```
+[PRE12]
 
 默认情况下，drawImage 会以其原始大小绘制图像。你还可以给它两个额外的参数，以指定绘制图像的宽度和高度，当它们与原始图像不同时。
 
@@ -309,27 +176,7 @@ drawImage 方法允许我们将像素数据绘制到画布上。这些像素数�
 
 我们知道每个*精灵*、每个子图像的宽度为 24 像素，高度为 30 像素。以下代码加载图像，然后设置一个间隔（重复计时器）来绘制下一个帧：
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  let img = document.createElement("img");
-  img.src = "img/player.png";
-  let spriteW = 24, spriteH = 30;
-  img.addEventListener("load", () => {
-    let cycle = 0;
-    setInterval(() => {
-      cx.clearRect(0, 0, spriteW, spriteH);
-      cx.drawImage(img,
-                   // Source rectangle
-                   cycle * spriteW, 0, spriteW, spriteH,
-                   // Destination rectangle
-                   0,               0, spriteW, spriteH);
-      cycle = (cycle + 1) % 8;
-    }, 120);
- });
-</script>
-```
+[PRE13]
 
 循环绑定跟踪我们在动画中的位置。对于每一帧，它会递增，然后通过使用余数运算符限制在 0 到 7 的范围内。此绑定用于计算当前姿势的精灵在图像中的 x 坐标。
 
@@ -339,17 +186,7 @@ drawImage 方法允许我们将像素数据绘制到画布上。这些像素数�
 
 调用 scale 方法会使之后绘制的任何内容都进行缩放。此方法接受两个参数，一个设置水平缩放，另一个设置垂直缩放。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  cx.scale(3, .5);
-  cx.beginPath();
-  cx.arc(50, 50, 40, 0, 7);
-  cx.lineWidth = 3;
-  cx.stroke();
-</script>
-```
+[PRE14]
 
 由于调用了 scale，圆形的宽度绘制为三倍，高度为一半。
 
@@ -369,13 +206,7 @@ drawImage 方法允许我们将像素数据绘制到画布上。这些像素数�
 
 要围绕给定*x*位置的垂直线翻转图片，我们可以做以下操作：
 
-```js
-function flipHorizontally(context, around) {
-  context.translate(around, 0);
-  context.scale(-1, 1);
-  context.translate(-around, 0);
-}
-```
+[PRE15]
 
 我们将 y 轴移动到希望镜像的位置，应用镜像，最后将 y 轴移回在镜像宇宙中的正确位置。下图解释了为什么这样有效：
 
@@ -385,20 +216,7 @@ function flipHorizontally(context, around) {
 
 我们现在可以通过围绕字符的垂直中心翻转世界，在位置(100, 0)绘制一个镜像字符。
 
-```js
-<canvas></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  let img = document.createElement("img");
-  img.src = "img/player.png";
-  let spriteW = 24, spriteH = 30;
-  img.addEventListener("load", () => {
-    flipHorizontally(cx, 100 + spriteW / 2);
-    cx.drawImage(img, 0, 0, spriteW, spriteH,
-                 100, 0, spriteW, spriteH);
-  });
-</script>
-```
+[PRE16]
 
 ### 存储和清除变换
 
@@ -412,25 +230,7 @@ function flipHorizontally(context, around) {
 
 这个函数通过绘制一条线、将坐标系统的中心移动到线的末端，并调用自身两次来绘制一个树状形状——第一次向左旋转，然后向右旋转。每次调用都会减少绘制的分支长度，当长度降到 8 以下时递归停止。
 
-```js
-<canvas width="600" height="300"></canvas>
-<script>
-  let cx = document.querySelector("canvas").getContext("2d");
-  function branch(length, angle, scale) {
-    cx.fillRect(0, 0, 1, length);
-    if (length < 8) return;
-    cx.save();
-    cx.translate(0, length);
-    cx.rotate(-angle);
-    branch(length * scale, angle, scale);
-    cx.rotate(2 * angle);
-    branch(length * scale, angle, scale);
-    cx.restore();
-  }
-  cx.translate(300, 0);
-  branch(60, 0.5, 0.8);
-</script>
-```
+[PRE17]
 
 结果是一个简单的分形。
 
@@ -446,111 +246,27 @@ function flipHorizontally(context, around) {
 
 这个对象比 DOMDisplay 保持了更多的信息。它并不使用其 DOM 元素的滚动位置，而是跟踪自己的视口，这告诉我们当前正在查看关卡的哪一部分。最后，它保留了一个 flipPlayer 属性，以便即使玩家静止不动，它也会面朝上次移动的方向。
 
-```js
-class CanvasDisplay {
-  constructor(parent, level) {
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = Math.min(600, level.width * scale);
-    this.canvas.height = Math.min(450, level.height * scale);
-    parent.appendChild(this.canvas);
-    this.cx = this.canvas.getContext("2d");
-
-    this.flipPlayer = false;
-
-    this.viewport = {
-      left: 0,
-      top: 0,
-      width: this.canvas.width / scale,
-      height: this.canvas.height / scale
-    };
-  }
-
-  clear() {
-    this.canvas.remove();
-  }
-}
-```
+[PRE18]
 
 syncState 方法首先计算一个新的视口，然后在适当的位置绘制游戏场景。
 
-```js
-CanvasDisplay.prototype.syncState = function(state) {
-  this.updateViewport(state);
-  this.clearDisplay(state.status);
-  this.drawBackground(state.level);
-  this.drawActors(state.actors);
-};
-```
+[PRE19]
 
 与 `DOMDisplay` 相反，这种显示样式*确实*需要在每次更新时重绘背景。由于画布上的形状仅仅是像素，绘制后没有好的方法来移动它们（或删除它们）。更新画布显示的唯一方法是清除它并重新绘制场景。我们可能还会滚动，这要求背景处于不同的位置。
 
 `updateViewport` 方法类似于 `DOMDisplay` 的 `scrollPlayerIntoView` 方法。它检查玩家是否太靠近屏幕边缘，并在这种情况下移动视口。
 
-```js
-CanvasDisplay.prototype.updateViewport = function(state) {
-  let view = this.viewport, margin = view.width / 3;
-  let player = state.player;
-  let center = player.pos.plus(player.size.times(0.5));
-
-  if (center.x < view.left + margin) {
-    view.left = Math.max(center.x - margin, 0);
-  } else if (center.x > view.left + view.width - margin) {
-    view.left = Math.min(center.x + margin - view.width,
-                         state.level.width - view.width);
-  }
-  if (center.y < view.top + margin) {
-    view.top = Math.max(center.y - margin, 0);
-  } else if (center.y > view.top + view.height - margin) {
-    view.top = Math.min(center.y + margin - view.height,
-                        state.level.height - view.height);
-  }
-};
-```
+[PRE20]
 
 对 `Math.max` 和 `Math.min` 的调用确保视口不会显示关卡之外的区域。 `Math.max(*x*, 0)` 确保结果数字不小于零。 `Math.min` 同样保证值保持在给定的界限之内。
 
 清除显示时，我们将根据游戏是胜利（更亮）还是失败（更暗）使用略微不同的颜色。
 
-```js
-CanvasDisplay.prototype.clearDisplay = function(status) {
-  if (status == "won") {
-    this.cx.fillStyle = "rgb(68, 191, 255)";
-  } else if (status == "lost") {
-    this.cx.fillStyle = "rgb(44, 136, 214)";
-  } else {
-    this.cx.fillStyle = "rgb(52, 166, 251)";
-  }
-  this.cx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-};
-```
+[PRE21]
 
 为了绘制背景，我们遍历当前视口中可见的瓦片，使用与上一章的 `touches` 方法相同的技巧。
 
-```js
-let otherSprites = document.createElement("img");
-otherSprites.src = "img/sprites.png";
-
-CanvasDisplay.prototype.drawBackground = function(level) {
-  let {left, top, width, height} = this.viewport;
-  let xStart = Math.floor(left);
-  let xEnd = Math.ceil(left + width);
- let yStart = Math.floor(top);
-  let yEnd = Math.ceil(top + height);
-
-  for (let y = yStart; y < yEnd; y++) {
-    for (let x = xStart; x < xEnd; x++) {
-      let tile = level.rows[y][x];
-      if (tile == "empty") continue;
-      let screenX = (x - left) * scale;
-      let screenY = (y - top) * scale;
-      let tileX = tile == "lava" ? scale : 0;
-      this.cx.drawImage(otherSprites,
-                        tileX,         0, scale, scale,
-                        screenX, screenY, scale, scale);
-    }
-  }
-};
-```
+[PRE22]
 
 非空的瓦片通过 `drawImage` 绘制。 `otherSprites` 图像包含用于除玩家之外的元素的图片。它从左到右包含墙壁瓦片、岩浆瓦片和硬币的精灵。
 
@@ -564,56 +280,11 @@ CanvasDisplay.prototype.drawBackground = function(level) {
 
 因为精灵比玩家对象稍宽——24 像素而不是 16 像素，以便为脚和手臂留出一些空间——该方法必须按给定的量（`playerXOverlap`）调整 x 坐标和宽度。
 
-```js
-let playerSprites = document.createElement("img");
-playerSprites.src = "img/player.png";
-const playerXOverlap = 4;
-
-CanvasDisplay.prototype.drawPlayer = function(player, x, y, width, height) {
-  width += playerXOverlap * 2;
-  x -= playerXOverlap;
-  if (player.speed.x != 0) {
-    this.flipPlayer = player.speed.x < 0;
-  }
-
-  let tile = 8;
-  if (player.speed.y != 0) {
-    tile = 9;
-  } else if (player.speed.x != 0) {
-    tile = Math.floor(Date.now() / 60) % 8;
-  }
-
-  this.cx.save();
-  if (this.flipPlayer) {
-    flipHorizontally(this.cx, x + width / 2);
-  }
-  let tileX = tile * width;
-  this.cx.drawImage(playerSprites, tileX, 0, width, height,
-                                   x,     y, width, height);
-  this.cx.restore();
-};
-```
+[PRE23]
 
 `drawPlayer` 方法由 `drawActors` 调用，负责绘制游戏中的所有角色。
 
-```js
-CanvasDisplay.prototype.drawActors = function(actors) {
-  for (let actor of actors) {
-    let width = actor.size.x * scale;
-    let height = actor.size.y * scale;
-    let x = (actor.pos.x - this.viewport.left) * scale;
-    let y = (actor.pos.y - this.viewport.top) * scale;
-    if (actor.type == "player") {
-      this.drawPlayer(actor, x, y, width, height);
-    } else {
-      let tileX = (actor.type == "coin" ? 2 : 1) * scale;
-      this.cx.drawImage(otherSprites,
-                        tileX, 0, width, height,
-                        x,     y, width, height);
-    }
-  }
-};
-```
+[PRE24]
 
 在绘制非玩家对象时，我们查看其类型以找到正确精灵的偏移量。岩浆砖块位于偏移量 20 处，硬币精灵位于 40 处（两倍缩放）。
 

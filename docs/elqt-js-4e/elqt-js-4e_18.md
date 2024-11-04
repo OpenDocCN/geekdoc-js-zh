@@ -36,18 +36,7 @@
 
 小级别的计划可能看起来是这样的：
 
-```js
-let simpleLevelPlan = `
-......................
-..#................#..
-..#..............=.#..
-..#.........o.o....#..
-..#.@......#####...#..
-..#####............#..
-......#++++++++++++#..
-......##############..
-......................`;
-```
+[PRE0]
 
 句号表示空白，井号 (#) 字符表示墙，加号表示熔岩。玩家的起始位置是 @ 符号。每个 O 字符是一个金币，而顶部的等号 (=) 是一个水平往返移动的熔岩块。
 
@@ -59,28 +48,7 @@ let simpleLevelPlan = `
 
 以下类存储一个级别对象。它的参数应该是定义级别的字符串。
 
-```js
-class Level {
-  constructor(plan) {
-    let rows = plan.trim().split("\n").map(l => [...l]);
-    this.height = rows.length;
-    this.width = rows[0].length;
-    this.startActors = [];
-
- this.rows = rows.map((row, y) => {
-      return row.map((ch, x) => {
-        let type = levelChars[ch];
-        if (typeof type != "string") {
-          let pos = new Vec(x, y);
-          this.startActors.push(type.create(pos, ch));
-          type = "empty";
-        }
-        return type;
-      });
-    });
-  }
-}
-```
+[PRE1]
 
 trim 方法用于去除计划字符串开头和结尾的空白。这允许我们的示例计划以换行符开头，以便所有行直接相互对齐。剩余的字符串在换行符上进行分割，每一行被展开成一个数组，从而生成字符数组。
 
@@ -94,22 +62,7 @@ trim 方法用于去除计划字符串开头和结尾的空白。这允许我们
 
 随着游戏的进行，演员将最终出现在不同的位置，甚至完全消失（如硬币被收集时）。我们将使用一个 State 类来跟踪正在运行的游戏的状态。
 
-```js
-class State {
-  constructor(level, actors, status) {
-    this.level = level;
-    this.actors = actors;
-    this.status = status;
-  }
- static start(level) {
-    return new State(level, level.startActors, "playing");
-  }
-
-  get player() {
-    return this.actors.find(a => a.type == "player");
-  }
-}
-```
+[PRE2]
 
 当游戏结束时，status 属性将切换为“lost”或“won”。
 
@@ -127,19 +80,7 @@ type 属性包含一个字符串，用于识别演员的类型——“player”
 
 这是我们将用于二维值的 Vec 类，例如演员的位置和大小。
 
-```js
-class Vec {
-  constructor(x, y) {
-    this.x = x; this.y = y;
-  }
-  plus(other) {
-    return new Vec(this.x + other.x, this.y + other.y);
-  }
-  times(factor) {
-    return new Vec(this.x * factor, this.y * factor);
-  }
-}
-```
+[PRE3]
 
 times 方法通过给定的数字缩放向量。当我们需要将速度向量乘以时间间隔以获得在该时间内行驶的距离时，它将非常有用。
 
@@ -147,23 +88,7 @@ times 方法通过给定的数字缩放向量。当我们需要将速度向量�
 
 玩家类具有一个 speed 属性，用于存储其当前速度，以模拟动量和重力。
 
-```js
-class Player {
-  constructor(pos, speed) {
-    this.pos = pos;
-    this.speed = speed;
-  }
-
-  get type() { return "player"; }
-
-  static create(pos) {
-    return new Player(pos.plus(new Vec(0, -0.5)),
-                      new Vec(0, 0));
-  }
-}
-
-Player.prototype.size = new Vec(0.8, 1.5);
-```
+[PRE4]
 
 由于玩家的高度为一个半方块，因此其初始位置设置为在 @ 字符出现的位置上方半个方块。这样，它的底部与出现的方块底部对齐。
 
@@ -173,51 +98,11 @@ Player.prototype.size = new Vec(0.8, 1.5);
 
 `create` 方法检查 `Level` 构造函数传递的字符，并创建相应的熔岩角色。
 
-```js
-class Lava {
-  constructor(pos, speed, reset) {
-    this.pos = pos;
-    this.speed = speed;
-    this.reset = reset;
-  }
-
- get type() { return "lava"; }
-
-  static create(pos, ch) {
-    if (ch == "=") {
-      return new Lava(pos, new Vec(2, 0));
-    } else if (ch == "|") {
-      return new Lava(pos, new Vec(0, 2));
-    } else if (ch == "v") {
-      return new Lava(pos, new Vec(0, 3), pos);
-    }
-  }
-}
-
-Lava.prototype.size = new Vec(1, 1);
-```
+[PRE5]
 
 硬币角色相对简单。它们大多数时间只是呆在原地。但为了稍微活跃一下游戏，它们被赋予了“摇晃”，即轻微的垂直来回运动。为了跟踪这一点，硬币对象存储了一个基础位置以及一个追踪弹跳运动相位的 `wobble` 属性。这些属性共同决定了硬币的实际位置（存储在 `pos` 属性中）。
 
-```js
-class Coin {
-  constructor(pos, basePos, wobble) {
-    this.pos = pos;
-    this.basePos = basePos;
-    this.wobble = wobble;
-  }
-
-  get type() { return "coin"; }
-
-  static create(pos) {
-    let basePos = pos.plus(new Vec(0.2, 0.1));
-    return new Coin(basePos, basePos,
-                    Math.random() * Math.PI * 2);
-  }
-}
-
-Coin.prototype.size = new Vec(0.6, 0.6);
-```
+[PRE6]
 
 在第十四章中，我们看到 `Math.sin` 给出了圆上点的 `y` 坐标。随着我们沿着圆移动，该坐标在一个平滑的波形中来回移动，这使得正弦函数在建模波动运动时非常有用。
 
@@ -225,21 +110,11 @@ Coin.prototype.size = new Vec(0.6, 0.6);
 
 我们现在可以定义 `levelChars` 对象，将平面字符映射到背景网格类型或角色类别。
 
-```js
-const levelChars = {
-  ".": "empty", "#": "wall", "+": "lava",
-  "@": Player, "o": Coin,
-  "=": Lava, "|": Lava, "v": Lava
-};
-```
+[PRE7]
 
 这给了我们创建 `Level` 实例所需的所有部分。
 
-```js
-let simpleLevel = new Level(simpleLevelPlan);
-console.log(`${simpleLevel.width} by ${simpleLevel.height}`);
-// → 22 by 9
-```
+[PRE8]
 
 接下来的任务是在屏幕上显示这些关卡，并在其中模拟时间和运动。
 
@@ -253,63 +128,23 @@ console.log(`${simpleLevel.width} by ${simpleLevel.height}`);
 
 下面的辅助函数提供了一种简洁的方法来创建一个元素，并为其添加一些属性和子节点：
 
-```js
-function elt(name, attrs, ...children) {
-  let dom = document.createElement(name);
-  for (let attr of Object.keys(attrs)) {
-    dom.setAttribute(attr, attrs[attr]);
-  }
-  for (let child of children) {
-    dom.appendChild(child);
-  }
-  return dom;
-}
-```
+[PRE9]
 
 显示元素是通过给它一个父元素来创建的，应该将其附加到该父元素上，并传入一个级别对象。
 
-```js
-class DOMDisplay {
-  constructor(parent, level) {
-    this.dom = elt("div", {class: "game"}, drawGrid(level));
-    this.actorLayer = null;
-    parent.appendChild(this.dom);
-  }
-
-  clear() { this.dom.remove(); }
-}
-```
+[PRE10]
 
 级别的背景网格是一次绘制的，并且不会改变。演员在每次更新显示时都会被重新绘制，更新时会给定状态。actorLayer 属性将用于跟踪持有演员的元素，以便能够轻松地移除和替换它们。
 
 我们的坐标和大小以网格单位进行追踪，其中 1 的大小或距离表示一个网格块。在设置像素大小时，我们必须将这些坐标放大——在每个方块只有一个像素的情况下，游戏中的一切都会显得极其微小。比例常数表示一个单位在屏幕上占用的像素数。
 
-```js
-const scale = 20;
-
-function drawGrid(level) {
-  return elt("table", {
-    class: "background",
-    style: `width: ${level.width * scale}px`
-  }, ...level.rows.map(row =>
-    elt("tr", {style: `height: ${scale}px`},
-        ...row.map(type => elt("td", {class: type})))
-  ));
-}
-```
+[PRE11]
 
 <table>元素的形式与级别的行属性结构相对应——网格的每一行都被转化为表格行（<tr>元素）。网格中的字符串用作表格单元格（<td>元素）的类名。代码使用扩展（三个点）操作符将子节点数组作为单独的参数传递给 elt。
 
 以下 CSS 使表格看起来像我们想要的背景：
 
-```js
-.background    { background: rgb(52, 166, 251);
-                 table-layout: fixed;
-                 border-spacing: 0;              }
-.background td { padding: 0;                     }
-.lava          { background: rgb(255, 100, 100); }
-.wall          { background: white;              }
-```
+[PRE12]
 
 其中一些（table-layout、border-spacing 和 padding）用于抑制不必要的默认行为。我们不希望表格的布局依赖于单元格的内容，也不希望单元格之间或内部有空间。
 
@@ -317,90 +152,29 @@ function drawGrid(level) {
 
 我们通过为每个演员创建一个 DOM 元素，并根据演员的属性设置该元素的位置和大小来绘制每个演员。数值必须乘以比例，以从游戏单位转换为像素。
 
-```js
-function drawActors(actors) {
-  return elt("div", {}, ...actors.map(actor => {
-    let rect = elt("div", {class: `actor ${actor.type}`});
-    rect.style.width = `${actor.size.x * scale}px`;
-    rect.style.height = `${actor.size.y * scale}px`;
-    rect.style.left = `${actor.pos.x * scale}px`;
-    rect.style.top = `${actor.pos.y * scale}px`;
-    return rect;
-  }));
-}
-```
+[PRE13]
 
 要给一个元素添加多个类名，我们用空格分隔类名。在以下 CSS 代码中，actor 类为演员提供了绝对位置。它们的类型名称作为额外的类来给它们上色。我们不需要重新定义 lava 类，因为我们在之前定义的 lava 网格方块中重用了该类。
 
-```js
-.actor  { position: absolute;            }
-.coin   { background: rgb(241, 229, 89); }
-.player { background: rgb(64, 64, 64);   }
-```
+[PRE14]
 
 syncState 方法用于使显示显示给定状态。它首先移除旧的演员图形（如果有的话），然后在新位置重新绘制演员。尽管尝试重用演员的 DOM 元素可能很诱人，但为了使其工作，我们需要大量额外的管理，以将演员与 DOM 元素关联，并确保在演员消失时移除元素。由于游戏中通常只有少数演员，重新绘制它们并不昂贵。
 
-```js
-DOMDisplay.prototype.syncState = function(state) {
-  if (this.actorLayer) this.actorLayer.remove();
-  this.actorLayer = drawActors(state.actors);
-  this.dom.appendChild(this.actorLayer);
-  this.dom.className = `game ${state.status}`;
-  this.scrollPlayerIntoView(state);
-};
-```
+[PRE15]
 
 通过将当前级别的状态作为类名添加到包装器中，当游戏获胜或失败时，我们可以稍微不同地为玩家角色设置样式，添加一个仅在玩家具有特定类的祖先元素时生效的 CSS 规则。
 
-```js
-.lost .player {
-  background: rgb(160, 64, 64);
-}
-.won .player {
-  box-shadow: -4px -7px 8px white, 4px -7px 8px white;
-}
-```
+[PRE16]
 
 在接触熔岩后，玩家变成深红色，暗示着灼烧。当最后一枚硬币被收集后，我们添加两个模糊的白色阴影——一个在左上方，一个在右上方——以创建白色光环效果。
 
 我们不能假设级别总是适合*视口*，即我们绘制游戏的元素。这就是我们需要 scrollPlayerIntoView 调用的原因：它确保如果级别超出视口，我们会滚动视口，以确保玩家位于其中心附近。以下 CSS 为游戏的包装 DOM 元素设置了最大大小，并确保任何超出元素框的部分不可见。我们还为其设置了相对位置，以便其中的角色相对于级别的左上角进行定位。
 
-```js
-.game {
-  overflow: hidden;
-  max-width: 600px;
-  max-height: 450px;
-  position: relative;
-}
-```
+[PRE17]
 
 在 scrollPlayerIntoView 方法中，我们找到播放器的位置并更新包装元素的滚动位置。当播放器太靠近边缘时，我们通过操作该元素的 scrollLeft 和 scrollTop 属性来改变滚动位置。
 
-```js
-DOMDisplay.prototype.scrollPlayerIntoView = function(state) {
-  let width = this.dom.clientWidth;
-  let height = this.dom.clientHeight;
-  let margin = width / 3;
-
-  // The viewport
-  let left = this.dom.scrollLeft, right = left + width;
-  let top = this.dom.scrollTop, bottom = top + height;
-
-  let player = state.player;
-  let center = player.pos.plus(player.size.times(0.5))
-                         .times(scale);
- if (center.x < left + margin) {
-    this.dom.scrollLeft = center.x - margin;
-  } else if (center.x > right - margin) {
-    this.dom.scrollLeft = center.x + margin - width;
-  }
-  if (center.y < top + margin) {
-    this.dom.scrollTop = center.y - margin;
-  } else if (center.y > bottom - margin) {
-    this.dom.scrollTop = center.y + margin - height;
-  }
-};
-```
+[PRE18]
 
 玩家中心的寻找方式展示了我们的 Vec 类型上的方法如何允许以相对可读的方式编写与对象的计算。要找到角色的中心，我们将其位置（左上角）和其大小的一半相加。那是在级别坐标中的中心，但我们需要它在像素坐标中，因此我们接着将结果向量乘以我们的显示比例。
 
@@ -410,15 +184,7 @@ DOMDisplay.prototype.scrollPlayerIntoView = function(state) {
 
 我们现在能够显示我们的微小级别。
 
-```js
-<link rel="stylesheet" href="css/game.css">
-
-<script>
-  let simpleLevel = new Level(simpleLevelPlan);
-  let display = new DOMDisplay(document.body, simpleLevel);
-  display.syncState(State.start(simpleLevel));
-</script>
-```
+[PRE19]
 
 ![图像](img/f0264-01.jpg)
 
@@ -438,24 +204,7 @@ DOMDisplay.prototype.scrollPlayerIntoView = function(state) {
 
 该方法告诉我们一个矩形（由位置和大小指定）是否接触到给定类型的网格元素。
 
-```js
-Level.prototype.touches = function(pos, size, type) {
-  let xStart = Math.floor(pos.x);
-  let xEnd = Math.ceil(pos.x + size.x);
-  let yStart = Math.floor(pos.y);
-  let yEnd = Math.ceil(pos.y + size.y);
-
-  for (let y = yStart; y < yEnd; y++) {
-    for (let x = xStart; x < xEnd; x++) {
-      let isOutside = x < 0 || x >= this.width ||
-                      y < 0 || y >= this.height;
-      let here = isOutside ? "wall" : this.rows[y][x];
-      if (here == type) return true;
-    }
-  }
-  return false;
-};
-```
+[PRE20]
 
 该方法通过对物体的坐标使用 Math.floor 和 Math.ceil 来计算物体重叠的网格方块集合。请记住，网格方块的大小为 1 x 1 单位。通过将盒子的边缘向上和向下取整，我们得到盒子接触的背景方块范围。
 
@@ -465,27 +214,7 @@ Level.prototype.touches = function(pos, size, type) {
 
 状态更新方法使用接触来判断玩家是否接触到岩浆。
 
-```js
-State.prototype.update = function(time, keys) {
-  let actors = this.actors
-    .map(actor => actor.update(time, this, keys));
-  let newState = new State(this.level, actors, this.status);
-
-  if (newState.status != "playing") return newState;
-
-  let player = newState.player;
-  if (this.level.touches(player.pos, player.size, "lava")) {
-    return new State(this.level, actors, "lost");
-  }
-
-  for (let actor of actors) {
-    if (actor != player && overlap(actor, player)) {
-      newState = actor.collide(newState);
-    }
-  }
-  return newState;
-};
-```
+[PRE21]
 
 方法接收一个时间步长和一个数据结构，告知它哪些按键被按下。它首先在所有参与者上调用更新方法，生成一个更新后的参与者数组。参与者还会获得时间步长、按键和状态，以便它们可以基于这些信息进行更新。只有玩家会实际读取按键，因为只有玩家是由键盘控制的参与者。
 
@@ -493,93 +222,29 @@ State.prototype.update = function(time, keys) {
 
 通过重叠函数检测角色之间的重叠。它接受两个角色对象，当它们相碰时返回真——这发生在它们在 x 轴和 y 轴上都重叠时。
 
-```js
-function overlap(actor1, actor2) {
-  return actor1.pos.x + actor1.size.x > actor2.pos.x &&
-         actor1.pos.x < actor2.pos.x + actor2.size.x &&
-         actor1.pos.y + actor1.size.y > actor2.pos.y &&
-         actor1.pos.y < actor2.pos.y + actor2.size.y;
-}
-```
+[PRE22]
 
 如果任何角色发生重叠，其碰撞方法有机会更新状态。接触熔岩角色会将游戏状态设置为“失败”。当你触碰到硬币时，它们会消失，并在它们是关卡的最后一枚硬币时将状态设置为“胜利”。
 
-```js
-Lava.prototype.collide = function(state) {
-  return new State(state.level, state.actors, "lost");
-};
-
-Coin.prototype.collide = function(state) {
-  let filtered = state.actors.filter(a => a != this);
-  let status = state.status;
-  if (!filtered.some(a => a.type == "coin")) status = "won";
-  return new State(state.level, filtered, status);
-};
-```
+[PRE23]
 
 ### 角色更新
 
 角色对象的更新方法接受时间步长、状态对象和键对象作为参数。熔岩角色类型的更新方法会忽略键对象。
 
-```js
-Lava.prototype.update = function(time, state) {
-  let newPos = this.pos.plus(this.speed.times(time));
-  if (!state.level.touches(newPos, this.size, "wall")) {
-    return new Lava(newPos, this.speed, this.reset);
-  } else if (this.reset) {
-    return new Lava(this.reset, this.speed, this.reset);
-  } else {
-    return new Lava(this.pos, this.speed.times(-1));
-  }
-};
-```
+[PRE24]
 
 这个更新方法通过将时间步长与当前速度的乘积添加到其旧位置来计算新位置。如果没有障碍物阻挡新位置，它将移动到那里。如果有障碍物，行为将取决于熔岩块的类型——滴落的熔岩有一个重置位置，当它碰到某物时会跳回到该位置。反弹的熔岩通过将速度乘以-1 来反转速度，使其开始朝相反的方向移动。
 
 硬币使用其更新方法进行摇晃。它们忽略与网格的碰撞，因为它们只是摇晃在自己方块内。
 
-```js
-const wobbleSpeed = 8, wobbleDist = 0.07;
-
-Coin.prototype.update = function(time) {
-  let wobble = this.wobble + time * wobbleSpeed;
-  let wobblePos = Math.sin(wobble) * wobbleDist;
-  return new Coin(this.basePos.plus(new Vec(0, wobblePos)),
-                  this.basePos, wobble);
-};
-```
+[PRE25]
 
 摇晃属性会递增以跟踪时间，然后用作 Math.sin 的参数，以找到波上的新位置。硬币的当前位置则根据其基础位置和基于此波的偏移量进行计算。
 
 这就涉及到玩家本身。玩家的运动在每个轴上单独处理，因为碰到地面不应该阻止水平运动，而碰到墙壁不应该停止下落或跳跃运动。
 
-```js
-const playerXSpeed = 7;
-const gravity = 30;
-const jumpSpeed = 17;
-
-Player.prototype.update = function(time, state, keys) {
-  let xSpeed = 0;
-  if (keys.ArrowLeft) xSpeed -= playerXSpeed;
-  if (keys.ArrowRight) xSpeed += playerXSpeed;
-  let pos = this.pos;
-  let movedX = pos.plus(new Vec(xSpeed * time, 0));
-  if (!state.level.touches(movedX, this.size, "wall")) {
-    pos = movedX;
-  }
-
-  let ySpeed = this.speed.y + time * gravity;
-  let movedY = pos.plus(new Vec(0, ySpeed * time));
-  if (!state.level.touches(movedY, this.size, "wall")) {
-    pos = movedY;
-  } else if (keys.ArrowUp && ySpeed > 0) {
-    ySpeed = -jumpSpeed;
-  } else {
-    ySpeed = 0;
- }
-  return new Player(pos, new Vec(xSpeed, ySpeed));
-};
-```
+[PRE26]
 
 水平运动是基于左箭头和右箭头键的状态进行计算的。当没有墙壁阻挡这个运动所创造的新位置时，就使用这个新位置。否则，保持旧位置不变。
 
@@ -597,23 +262,7 @@ Player.prototype.update = function(time, state, keys) {
 
 以下函数在给定一个键名数组时，将返回一个跟踪这些键当前状态的对象。它为“keydown”和“keyup”事件注册事件处理程序，并在事件中的键代码存在于它所跟踪的代码集中时，更新该对象。
 
-```js
-function trackKeys(keys) {
-  let down = Object.create(null);
-  function track(event) {
-    if (keys.includes(event.key)) {
-      down[event.key] = event.type == "keydown";
-      event.preventDefault();
-    }
-  }
-  window.addEventListener("keydown", track);
-  window.addEventListener("keyup", track);
-  return down;
-}
-
-const arrowKeys =
-  trackKeys(["ArrowLeft", "ArrowRight", "ArrowUp"]);
-```
+[PRE27]
 
 同一个处理程序函数用于这两种事件类型。它查看事件对象的 type 属性，以确定键状态是应该更新为 true（“keydown”）还是 false（“keyup”）。
 
@@ -623,20 +272,7 @@ requestAnimationFrame 函数，如我们在第十四章中看到的，提供了�
 
 让我们定义一个助手函数，将这些内容封装在一个方便的接口中，并允许我们简单地调用 runAnimation，传入一个期望时间差作为参数并绘制单帧。当帧函数返回 false 时，动画停止。
 
-```js
-function runAnimation(frameFunc) {
-  let lastTime = null;
-  function frame(time) {
-    if (lastTime != null) {
-      let timeStep = Math.min(time - lastTime, 100) / 1000;
-      if (frameFunc(timeStep) === false) return;
-    }
-    lastTime = time;
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-}
-```
+[PRE28]
 
 我将最大帧步长设置为 100 毫秒（十分之一秒）。当带有我们页面的浏览器标签或窗口被隐藏时，requestAnimationFrame 调用将被暂停，直到标签或窗口再次显示。在这种情况下，lastTime 和 time 之间的差值将是页面被隐藏的整个时间。一次性将游戏推进如此之多看起来会很傻，并可能导致奇怪的副作用，例如玩家掉落到地面下。
 
@@ -644,56 +280,17 @@ function runAnimation(frameFunc) {
 
 runLevel 函数接受一个 Level 对象和一个显示构造函数，并返回一个 Promise。它在 document.body 中显示关卡，并让用户进行游戏。当关卡结束（失败或胜利）时，runLevel 等待一秒钟（让用户看到发生了什么），然后清除显示，停止动画，并将 Promise 解析为游戏的结束状态。
 
-```js
-function runLevel(level, Display) {
-  let display = new Display(document.body, level);
-  let state = State.start(level);
-  let ending = 1;
-  return new Promise(resolve => {
- runAnimation(time => {
-      state = state.update(time, arrowKeys);
-      display.syncState(state);
-      if (state.status == "playing") {
-        return true;
-      } else if (ending > 0) {
-        ending -= time;
-        return true;
-      } else {
-        display.clear();
-        resolve(state.status);
-        return false;
-      }
-    });
-  });
-}
-```
+[PRE29]
 
 游戏是一个关卡的序列。每当玩家死亡时，当前关卡会重启。当一个关卡完成时，我们会进入下一个关卡。这可以通过以下函数表达，该函数接受一个关卡计划（字符串）数组和一个显示构造函数：
 
-```js
-async function runGame(plans, Display) {
-  for (let level = 0; level < plans.length;) {
-    let status = await runLevel(new Level(plans[level]),
-                                Display);
-    if (status == "won") level++;
-  }
-  console.log("You've won!");
-}
-```
+[PRE30]
 
 因为我们让 runLevel 返回一个 Promise，runGame 可以使用 async 函数来编写，如在第十一章中所示。它返回另一个 Promise，当玩家完成游戏时会被解析。
 
 本章沙盒中的 GAME_LEVELS 绑定提供了一组关卡计划 (*[`eloquentjavascript.net/code#16`](https://eloquentjavascript.net/code#16)*)。该页面将它们传递给 runGame，启动实际的游戏。
 
-```js
-<link rel="stylesheet" href="css/game.css">
-
-<body>
-  <script>
-    runGame(GAME_LEVELS, DOMDisplay);
-  </script>
-</body>
-```
+[PRE31]
 
 ### 练习
 

@@ -8,17 +8,7 @@
 
 Meadowfield 村不大。它由 11 个地点和 14 条道路组成。可以用以下道路数组进行描述：
 
-```js
-const roads = [
-  "Alice's House-Bob's House",   "Alice's House-Cabin",
-  "Alice's House-Post Office",   "Bob's House-Town Hall",
-  "Daria's House-Ernie's House", "Daria's House-Town Hall",
-  "Ernie's House-Grete's House", "Grete's House-Farm",
-  "Grete's House-Shop",          "Marketplace-Farm",
-  "Marketplace-Post Office",     "Marketplace-Shop",
-  "Marketplace-Town Hall",       "Shop-Town Hall"
-];
-```
+[PRE0]
 
 ![图片](img/f0116-01.jpg)
 
@@ -26,25 +16,7 @@ const roads = [
 
 字符串数组的处理并不容易。我们感兴趣的是从给定地点可以到达的目的地。让我们将道路列表转换为一个数据结构，该结构为每个地点提供可以从那里到达的地点。
 
-```js
-function buildGraph(edges) {
-  let graph = Object.create(null);
-  function addEdge(from, to) {
-    if (from in graph) {
-      graph[from].push(to);
-    } else {
-      graph[from] = [to];
-    }
-  }
-  for (let [from, to] of edges.map(r => r.split("-"))) {
-    addEdge(from, to);
-    addEdge(to, from);
-  }
-  return graph;
-}
-
-const roadGraph = buildGraph(roads);
-```
+[PRE1]
 
 给定一组边，buildGraph 创建一个地图对象，为每个节点存储一个连接节点的数组。它使用 split 方法将道路字符串（形式为 Start-End）转换为包含起始和结束的两个元素数组。
 
@@ -64,26 +36,7 @@ const roadGraph = buildGraph(roads);
 
 在这个过程中，让我们确保在机器人移动时不*改变*这个状态，而是为移动后的情况计算一个*新*状态。
 
-```js
-class VillageState {
-  constructor(place, parcels) {
-    this.place = place;
-    this.parcels = parcels;
-  }
-
-  move(destination) {
-    if (!roadGraph[this.place].includes(destination)) {
-      return this;
-    } else {
-      let parcels = this.parcels.map(p => {
-        if (p.place != this.place) return p;
-        return {place: destination, address: p.address};
-      }).filter(p => p.place != p.address);
-      return new VillageState(destination, parcels);
-    }
- }
-}
-```
+[PRE2]
 
 移动方法是动作发生的地方。它首先检查从当前位置到目的地是否有道路，如果没有，则返回旧状态，因为这不是一个有效的移动。
 
@@ -91,20 +44,7 @@ class VillageState {
 
 包裹对象在移动时不会被改变，而是被重新创建。移动方法给我们一个新的村庄状态，但完全保留了旧状态。
 
-```js
-let first = new VillageState(
-  "Post Office",
-  [{place: "Post Office", address: "Alice's House"}]
-);
-let next = first.move("Alice's House");
-
-console.log(next.place);
-// → Alice's House
-console.log(next.parcels);
-// → []
-console.log(first.place);
-// → Post Office
-```
+[PRE3]
 
 这个移动使得包裹被投递，这在下一个状态中得以反映。但初始状态仍然描述了机器人位于邮局且包裹未投递的情况。
 
@@ -114,12 +54,7 @@ console.log(first.place);
 
 在 JavaScript 中，几乎所有东西都*可以*被改变，因此处理应保持不变的值需要一些克制。有一个名为 Object.freeze 的函数，可以改变一个对象，使对其属性的写入被忽略。如果你想小心的话，可以使用它来确保你的对象不会被改变。冻结确实需要计算机进行一些额外的工作，而被忽视的更新与执行错误的操作几乎同样可能会让人困惑。我通常更喜欢直接告诉人们某个对象不应该被修改，并希望他们能记住。
 
-```js
-let object = Object.freeze({value: 5});
-object.value = 10;
-console.log(object.value);
-// → 5
-```
+[PRE4]
 
 我为什么要特别避免改变对象，尽管语言显然期待我这么做？因为这有助于我理解我的程序。这再次涉及复杂性管理。当我系统中的对象是固定、稳定的事物时，我可以孤立地考虑对它们的操作——从给定的起始状态移动到爱丽丝的家总是产生相同的新状态。当对象随时间变化时，这会给这种推理增加全新的复杂性维度。
 
@@ -133,20 +68,7 @@ console.log(object.value);
 
 因为我们希望机器人能够记住事物，以便它们可以制定和执行计划，所以我们也将它们的记忆传递给它们，并允许它们返回一个新的记忆。因此，机器人返回的东西是一个包含它想要移动的方向和一个记忆值的对象，该值将在下次调用时返回给它。
 
-```js
-function runRobot(state, robot, memory) {
-  for (let turn = 0;; turn++) {
-    if (state.parcels.length == 0) {
-      console.log(`Done in ${turn} turns`);
-      break;
-    }
-    let action = robot(state, memory);
-    state = state.move(action.direction);
-    memory = action.memory;
-    console.log(`Moved to ${action.direction}`);
-  }
-}
-```
+[PRE5]
 
 考虑一下机器人需要做些什么才能“解决”给定的状态。它必须通过访问每个有包裹的地点来收集所有包裹，然后通过访问每个包裹的地址来送递它们，但只能在收集完包裹后进行送递。
 
@@ -154,16 +76,7 @@ function runRobot(state, robot, memory) {
 
 这可能看起来是这样的：
 
-```js
-function randomPick(array) {
-  let choice = Math.floor(Math.random() * array.length);
-  return array[choice];
-}
-
-function randomRobot(state) {
-  return {direction: randomPick(roadGraph[state.place])};
-}
-```
+[PRE6]
 
 请记住，Math.random()返回一个介于 0 和 1 之间的数字——但总是小于 1。将这样的数字乘以数组的长度，然后应用 Math.floor，便可以得到数组的随机索引。
 
@@ -171,32 +84,13 @@ function randomRobot(state) {
 
 要让这个复杂的机器人开始工作，我们首先需要一种方法来创建一个带有一些包裹的新状态。一个静态方法（在这里通过直接向构造函数添加属性来编写）是放置该功能的好地方。
 
-```js
-VillageState.random = function(parcelCount = 5) {
-  let parcels = [];
-  for (let i = 0; i < parcelCount; i++) {
-    let address = randomPick(Object.keys(roadGraph));
-    let place;
-    do {
-      place = randomPick(Object.keys(roadGraph));
-    } while (place == address);
-    parcels.push({place, address});
-  }
-  return new VillageState("Post Office", parcels);
-};
-```
+[PRE7]
 
 我们不希望包裹从它们被寄往的地方发送出去。因此，当获取到一个与地址相等的地方时，do 循环会持续选择新的地点。
 
 让我们启动一个虚拟世界。
 
-```js
-runRobot(VillageState.random(), randomRobot);
-// → Moved to Marketplace
-// → Moved to Town Hall
-// → ...
-// → Done in 63 turns
-```
+[PRE8]
 
 机器人送递包裹需要经过很多次转弯，因为它的规划不够充分。我们会很快解决这个问题。
 
@@ -204,25 +98,11 @@ runRobot(VillageState.random(), randomRobot);
 
 我们应该能够比随机机器人做得更好。一个简单的改进是借鉴现实世界邮递的工作方式。如果我们找到一条经过村庄所有地点的路线，机器人可以沿着这条路线运行两次，这样它就一定能完成任务。这是一条这样的路线（从邮局出发）：
 
-```js
-const mailRoute = [
-  "Alice's House", "Cabin", "Alice's House", "Bob's House",
-  "Town Hall", "Daria's House", "Ernie's House",
-  "Grete's House", "Shop", "Grete's House", "Farm",
-  "Marketplace", "Post Office"
-];
-```
+[PRE9]
 
 为了实现跟随路线的机器人，我们需要利用机器人的记忆。机器人将其路线的其余部分保存在记忆中，并在每次转弯时丢弃第一个元素。
 
-```js
-function routeRobot(state, memory) {
-  if (memory.length == 0) {
-    memory = mailRoute;
-  }
-  return {direction: memory[0], memory: memory.slice(1)};
-}
-```
+[PRE10]
 
 这个机器人已经快得多。它最多会经过 26 次转弯（两次 13 步的路线），但通常会更少。
 
@@ -240,20 +120,7 @@ function routeRobot(state, memory) {
 
 这里有一个实现这个功能的函数：
 
-```js
-function findRoute(graph, from, to) {
-  let work = [{at: from, route: []}];
-  for (let i = 0; i < work.length; i++) {
-    let {at, route} = work[i];
-    for (let place of graph[at]) {
-      if (place == to) return route.concat(place);
-      if (!work.some(w => w.at == place)) {
-        work.push({at: place, route: route.concat(place)});
-      }
-    }
-  }
-}
-```
+[PRE11]
 
 探索必须按正确的顺序进行——首先到达的地方必须首先被探索。我们不能在到达一个地方后立即探索，因为那意味着从 *那里* 到达的地方也会立即被探索，依此类推，尽管可能还有其他尚未探索的更短路径。
 
@@ -265,19 +132,7 @@ function findRoute(graph, from, to) {
 
 我们的代码没有处理工作列表上没有更多工作项的情况，因为我们知道我们的图是*连通的*，这意味着每个位置都可以从所有其他位置到达。我们总是能够在两点之间找到一条路线，搜索不会失败。
 
-```js
-function goalOrientedRobot({place, parcels}, route) {
-  if (route.length == 0) {
-    let parcel = parcels[0];
-    if (parcel.place != place) {
-      route = findRoute(roadGraph, place, parcel.place);
-    } else {
-      route = findRoute(roadGraph, place, parcel.address);
-    }
-  }
-  return {direction: route[0], memory: route.slice(1)};
-}
-```
+[PRE12]
 
 这个机器人使用它的内存值作为移动方向的列表，就像跟踪路线的机器人一样。每当这个列表为空时，它必须找出接下来该做什么。它取出未交付包裹中的第一个，如果那个包裹还没有被取走，就为其规划一条路线。如果包裹*已经*被取走，它仍然需要被交付，因此机器人会创建一条前往交付地址的路线。
 

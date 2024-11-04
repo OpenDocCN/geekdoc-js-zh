@@ -18,40 +18,23 @@ Node 最初的构想是为了使异步编程变得简单方便。JavaScript 非�
 
 当 Node.js 安装在系统上时，它提供了一个名为 node 的程序，用于运行 JavaScript 文件。假设你有一个名为*hello.js*的文件，包含以下代码：
 
-```js
-let message = "Hello world";
-console.log(message);
-```
+[PRE0]
 
 然后你可以像这样从命令行运行 node 以执行程序：
 
-```js
-$ node hello.js
-Hello world
-```
+[PRE1]
 
 Node 中的 console.log 方法与浏览器中的作用类似。它输出一段文本。但在 Node 中，这段文本会发送到进程的标准输出流，而不是浏览器的 JavaScript 控制台。当从命令行运行 node 时，这意味着你会在终端中看到记录的值。
 
 如果你运行 node 而不指定文件，它会给你一个提示，你可以在此输入 JavaScript 代码并立即看到结果。
 
-```js
-$ node
-> 1 + 1
-2
-> [-1, -2, -3].map(Math.abs)
-[1, 2, 3]
-> process.exit(0)
-$
-```
+[PRE2]
 
 进程绑定，就像控制台绑定一样，在 Node 中是全局可用的。它提供了多种方式来检查和操作当前程序。exit 方法结束进程，并可以指定一个退出状态代码，这告诉启动 Node 的程序（在此情况下为命令行 shell）程序是否成功完成（代码零）或遇到错误（任何其他代码）。
 
 要查找传递给你脚本的命令行参数，你可以读取 process.argv，它是一个字符串数组。请注意，它还包括 node 命令的名称和你的脚本名称，因此实际参数从索引 2 开始。如果*showargv.js*包含语句 console.log(process.argv)，你可以这样运行它：
 
-```js
-$ node showargv.js one --and two
-["node", "/tmp/showargv.js", "one", "--and", "two"]
-```
+[PRE3]
 
 所有标准的 JavaScript 全局绑定，如 Array、Math 和 JSON，在 Node 的环境中也存在。与浏览器相关的功能，如 document 或 prompt，则不存在。
 
@@ -69,31 +52,17 @@ Node 最初使用基于 require 函数的 CommonJS 模块系统，我们在第�
 
 让我们建立一个由两个文件组成的小项目。第一个文件叫做*main.mjs*，它定义了一个可以从命令行调用的脚本，用于反转字符串。
 
-```js
-import {reverse} from "./reverse.mjs";
-
-// Index 2 holds the first actual command line argument
-let argument = process.argv[2];
-
-console.log(reverse(argument));
-```
+[PRE4]
 
 文件*reverse.mjs*定义了一个用于反转字符串的库，可以被这个命令行工具和需要直接访问字符串反转功能的其他脚本使用。
 
-```js
-export function reverse(string) {
-  return Array.from(string).reverse().join("");
-}
-```
+[PRE5]
 
 请记住，export 用于声明一个绑定是模块接口的一部分。这允许*main.mjs*导入并使用该函数。
 
 现在我们可以这样调用我们的工具：
 
-```js
-$ node main.mjs JavaScript
-tpircSavaJ
-```
+[PRE6]
 
 ### 使用 NPM 安装
 
@@ -101,15 +70,7 @@ NPM 在第十章中介绍，是一个在线 JavaScript 模块库，其中许多�
 
 NPM 的主要用途是下载包。我们在第十章中看到了 ini 包。我们可以使用 NPM 在我们的计算机上获取并安装该包。
 
-```js
-$ npm install ini
-added 1 package in 723ms
-
-$ node
-> const {parse} = require("ini");
-> parse("x = 1\ny = 2");
-{ x: '1', y: '2' }
-```
+[PRE7]
 
 运行 npm install 后，NPM 将创建一个名为*node_modules*的目录。该目录下将包含一个*ini*目录，其中包含库。你可以打开它并查看代码。当我们导入“ini”时，该库被加载，我们可以调用它的解析属性来解析配置文件。
 
@@ -121,20 +82,7 @@ $ node
 
 从第七章的机器人模拟，作为第十章练习中的模块化，可能会有一个这样的*package.json*文件：
 
-```js
-{
-  "author": "Marijn Haverbeke",
-  "name": "eloquent-javascript-robot",
-  "description": "Simulation of a package-delivery robot",
-  "version": "1.0.0",
-  "main": "run.mjs",
-  "dependencies": {
-    "dijkstrajs": "¹.0.1",
-    "random-item": "¹.0.0"
-  },
-  "license": "ISC"
-}
-```
+[PRE8]
 
 当你运行 npm install 而不指定要安装的包时，NPM 将安装*package.json*中列出的依赖项。当你安装一个未在依赖项中列出的特定包时，NPM 会将其添加到*package.json*中。
 
@@ -156,34 +104,15 @@ Node 中最常用的内置模块之一是 node:fs 模块，它代表“文件系
 
 例如，名为 readFile 的函数读取一个文件，然后调用回调函数传递文件内容。
 
-```js
-import {readFile} from "node:fs";
-readFile("file.txt", "utf8", (error, text) => {
-  if (error) throw error;
-  console.log("The file contains:", text);
-});
-```
+[PRE9]
 
 readFile 的第二个参数指示用于将文件解码为字符串的 *字符编码*。文本可以以多种方式编码为二进制数据，但大多数现代系统使用 UTF-8。除非你有理由相信使用了其他编码，否则在读取文本文件时传递“utf8”。如果不传递编码，Node 会假设你对二进制数据感兴趣，并会返回一个 Buffer 对象，而不是字符串。这个对象类似数组，包含表示文件中字节（8 位数据块）的数字。
 
-```js
-import {readFile} from "node:fs";
-readFile("file.txt", (error, buffer) => {
-  if (error) throw error;
-  console.log("The file contained", buffer.length, "bytes.",
-              "The first byte is:", buffer[0]);
-});
-```
+[PRE10]
 
 一个类似的函数 writeFile 用于将文件写入磁盘。
 
-```js
-import {writeFile} from "node:fs";
-writeFile("graffiti.txt", "Node was here", err => {
-  if (err) console.log(`Failed to write file: ${err}`);
-  else console.log("File written.");
-});
-```
+[PRE11]
 
 在这里不需要指定编码——writeFile 会假设当它接收到一个字符串而不是 Buffer 对象时，应使用其默认字符编码（UTF-8）将其作为文本写出。
 
@@ -193,19 +122,11 @@ node:fs 模块包含许多其他有用的函数：readdir 会将目录中的文�
 
 node:fs/promises 模块导出了与旧的 node:fs 模块大部分相同的函数，但使用了 Promise 而不是回调函数。
 
-```js
-import {readFile} from "node:fs/promises";
-readFile("file.txt", "utf8")
-  .then(text => console.log("The file contains:", text));
-```
+[PRE12]
 
 有时你并不需要异步操作，它反而会造成困扰。node:fs 中的许多函数也有同步变体，其名称后面加上 Sync。比如，readFile 的同步版本叫做 readFileSync。
 
-```js
-import {readFileSync} from "node:fs";
-console.log("The file contains:",
-            readFileSync("file.txt", "utf8"));
-```
+[PRE13]
 
 请注意，在执行这样的同步操作时，程序会完全停止。如果它应该响应用户或网络上的其他机器，被阻塞在同步操作上可能会造成令人烦恼的延迟。
 
@@ -215,18 +136,7 @@ console.log("The file contains:",
 
 启动 HTTP 服务器所需的就是这些：
 
-```js
-import {createServer} from "node:http";
-let server = createServer((request, response) => {
-  response.writeHead(200, {"Content-Type": "text/html"});
-  response.write(`
-    <h1>Hello!</h1>
-    <p>You asked for <code>${request.url}</code></p>`);
-  response.end();
-});
-server.listen(8000);
-console.log("Listening! (port 8000)");
-```
+[PRE14]
 
 如果你在自己的机器上运行这个脚本，你可以将你的 Web 浏览器指向 *http://localhost:8000/hello* 以向你的服务器发出请求。它将以一个小的 HTML 页面响应。
 
@@ -260,27 +170,13 @@ HTTP 服务器可以写入的响应对象是一个*可写流*对象的示例，�
 
 这段代码创建了一个服务器，读取请求体并将其以全大写文本流回客户端：
 
-```js
-import {createServer} from "node:http";
-createServer((request, response) => {
-  response.writeHead(200, {"Content-Type": "text/plain"});
-  request.on("data", chunk =>
-    response.write(chunk.toString().toUpperCase()));
-  request.on("end", () => response.end());
-}).listen(8000);
-```
+[PRE15]
 
 传递给数据处理程序的 chunk 值将是一个二进制 Buffer。我们可以通过使用其 toString 方法将其解码为 UTF-8 编码的字符，从而转换为字符串。
 
 下面的代码在启动大写服务器时运行，将向该服务器发送请求，并输出收到的响应：
 
-```js
-fetch("http://localhost:8000/", {
-  method: "POST",
-  body: "Hello server"
-}).then(resp => resp.text()).then(console.log);
-// → HELLO SERVER
-```
+[PRE16]
 
 ### 文件服务器
 
@@ -292,30 +188,7 @@ fetch("http://localhost:8000/", {
 
 我们将逐步构建程序，使用一个名为 methods 的对象来存储处理各种 HTTP 方法的函数。方法处理程序是异步函数，它们将请求对象作为参数，并返回一个解析为描述响应的对象的承诺。
 
-```js
-import {createServer} from "node:http";
-
-const methods = Object.create(null);
-
-createServer((request, response) => {
-  let handler = methods[request.method] || notAllowed;
-  handler(request).catch(error => {
-    if (error.status != null) return error;
-    return {body: String(error), status: 500};
-  }).then(({body, status = 200, type = "text/plain"}) => {
-    response.writeHead(status, {"Content-Type": type});
-    if (body?.pipe) body.pipe(response);
-    else response.end(body);
-  });
-}).listen(8000);
-
-async function notAllowed(request) {
-  return {
-    status: 405,
-    body: `Method ${request.method} not allowed.`
-  };
-}
-```
+[PRE17]
 
 这启动了一个只返回 405 错误响应的服务器，该代码用于指示服务器拒绝处理给定的方法。
 
@@ -327,21 +200,7 @@ async function notAllowed(request) {
 
 为了找出哪个文件路径对应于请求 URL，urlPath 函数使用内置的 URL 类（在浏览器中也存在）来解析 URL。该构造函数期望一个完整的 URL，而不仅仅是以斜杠开头的部分（我们从 request.url 中获得），因此我们提供一个虚拟域名来填充。它提取其路径名，类似于“/file.txt”，对其进行解码以去除%20 样式的转义码，并相对于程序的工作目录解析它。
 
-```js
-import {resolve, sep} from "node:path";
-
-const baseDirectory = process.cwd();
-
-function urlPath(url) {
-  let {pathname} = new URL(url, "http://d");
-  let path = resolve(decodeURIComponent(pathname).slice(1));
-  if (path != baseDirectory &&
-      !path.startsWith(baseDirectory + sep)) {
-    throw {status: 403, body: "Forbidden"};
-  }
-  return path;
-}
-```
+[PRE18]
 
 一旦你设置了一个程序来接受网络请求，就必须开始担心安全性。在这种情况下，如果我们不小心，很可能会意外地将整个文件系统暴露给网络。
 
@@ -355,34 +214,11 @@ function urlPath(url) {
 
 在服务器脚本所在的目录中，以下 npm 命令安装特定版本的 mime：
 
-```js
-$ npm install mime-types@2.1.0
-```
+[PRE19]
 
 当请求的文件不存在时，返回的正确 HTTP 状态码是 404。我们将使用 stat 函数，该函数查找有关文件的信息，以确定文件是否存在以及它是否是一个目录。
 
-```js
-import {createReadStream} from "node:fs";
-import {stat, readdir} from "node:fs/promises";
-import {lookup} from "mime-types";
-
-methods.GET = async function(request) {
-  let path = urlPath(request.url);
-  let stats;
-  try {
-    stats = await stat(path);
-  } catch (error) {
-    if (error.code != "ENOENT") throw error;
-    else return {status: 404, body: "File not found"};
-  }
-  if (stats.isDirectory()) {
-    return {body: (await readdir(path)).join("\n")};
-  } else {
-    return {body: createReadStream(path),
-            type: lookup(path)};
-  }
-};
-```
+[PRE20]
 
 由于它必须接触磁盘，因此可能需要一些时间，stat 是异步的。因为我们使用的是 Promise 而不是回调风格，所以它必须从 node:fs/promises 导入，而不是直接从 node:fs 导入。
 
@@ -394,23 +230,7 @@ stat 返回的 stats 对象告诉我们有关文件的许多信息，例如其�
 
 处理 DELETE 请求的代码稍微简单一些。
 
-```js
-import {rmdir, unlink} from "node:fs/promises";
-
-methods.DELETE = async function(request) {
-  let path = urlPath(request.url);
-  let stats;
-  try {
-    stats = await stat(path);
- } catch (error) {
-    if (error.code != "ENOENT") throw error;
-    else return {status: 204};
-  }
-  if (stats.isDirectory()) await rmdir(path);
-  else await unlink(path);
-  return {status: 204};
-};
-```
+[PRE21]
 
 当 HTTP 响应不包含任何数据时，可以使用状态码 204（“无内容”）来指示这一点。由于删除的响应不需要传输除操作是否成功之外的任何信息，因此在这里返回这个是合理的。
 
@@ -418,24 +238,7 @@ methods.DELETE = async function(request) {
 
 这是处理 PUT 请求的处理程序：
 
-```js
-import {createWriteStream} from "node:fs";
-
-function pipeStream(from, to) {
-  return new Promise((resolve, reject) => {
-    from.on("error", reject);
-    to.on("error", reject);
-    to.on("finish", resolve);
-    from.pipe(to);
-  });
-}
-
-methods.PUT = async function(request) {
-  let path = urlPath(request.url);
-  await pipeStream(request, createWriteStream(path));
-  return {status: 204};
-};
-```
+[PRE22]
 
 这次我们不需要检查文件是否存在——如果存在，我们只需覆盖它。我们再次使用管道将数据从可读流移动到可写流，在这种情况下是从请求到文件。但由于管道没有返回一个 Promise，我们需要编写一个包装器 pipeStream，它在调用管道的结果周围创建一个 Promise。
 
@@ -445,16 +248,7 @@ methods.PUT = async function(request) {
 
 命令行工具 curl 广泛用于类 Unix 系统（如 macOS 和 Linux），可用于发起 HTTP 请求。以下会话简要测试我们的服务器。-X 选项用于设置请求的方法，-d 选项用于包含请求主体。
 
-```js
-$ curl http://localhost:8000/file.txt
-File not found
-$ curl -X PUT -d CONTENT http://localhost:8000/file.txt
-$ curl http://localhost:8000/file.txt
-CONTENT
-$ curl -X DELETE http://localhost:8000/file.txt
-$ curl http://localhost:8000/file.txt
-File not found
-```
+[PRE23]
 
 对 file.txt 的第一次请求失败，因为文件尚不存在。PUT 请求创建了该文件，接着下一个请求成功检索了它。在通过 DELETE 请求删除后，文件再次消失。
 

@@ -16,12 +16,7 @@
 
 应用的写法与 JavaScript 相同，在表达式后放置括号，并在这些括号之间放入任意数量的参数，用逗号分隔。
 
-```js
-do(define(x, 10),
-   if(>(x, 5),
-      print("large"),
-      print("small")))
-```
+[PRE0]
 
 Egg 语言的统一性意味着 JavaScript 中的运算符（如>）在该语言中是普通绑定，与其他函数一样被应用。由于语法没有块的概念，我们需要一个 do 结构来表示顺序执行多个操作。
 
@@ -31,16 +26,7 @@ Egg 语言的统一性意味着 JavaScript 中的运算符（如>）在该语言
 
 前一个程序中的>(x, 5)部分将表示为：
 
-```js
-{
-  type: "apply",
-  operator: {type: "word", name: ">"},
-  args: [
-    {type: "word", name: "x"},
-    {type: "value", value: 5}
-  ]
-}
-```
+[PRE1]
 
 这样的数据结构被称为*语法树*。如果你想象这些对象为点，而它们之间的链接为这些点之间的线，如下图所示，结构呈现树状形状。表达式包含其他表达式，而这些表达式又可能包含更多的表达式，这类似于树枝的分叉和再分叉的方式。
 
@@ -56,29 +42,7 @@ Egg 语言的统一性意味着 JavaScript 中的运算符（如>）在该语言
 
 这是解析器的第一部分：
 
-```js
-function parseExpression(program) {
-  program = skipSpace(program);
-  let match, expr;
-  if (match = /^"([^"]*)"/.exec(program)) {
-    expr = {type: "value", value: match[1]};
-  } else if (match = /^\d+\b/.exec(program)) {
-    expr = {type: "value", value: Number(match[0])};
-  } else if (match = /^[^\s(),#"]+/.exec(program)) {
-    expr = {type: "word", name: match[0]};
-  } else {
-    throw new SyntaxError("Unexpected syntax: " + program);
-  }
-
-  return parseApply(expr, program.slice(match[0].length));
-}
-
-function skipSpace(string) {
-  let first = string.search(/\S/);
-  if (first == -1) return "";
-  return string.slice(first);
-}
-```
+[PRE2]
 
 因为 Egg（像 JavaScript 一样）允许元素之间有任意数量的空白，我们必须反复从程序字符串的开头去掉空白。skipSpace 函数对此提供了帮助。
 
@@ -86,28 +50,7 @@ function skipSpace(string) {
 
 然后我们从程序字符串中截去匹配的部分，并将其与表达式对象一起传递给 parseApply，后者检查该表达式是否为应用。如果是，它将解析一个括号内的参数列表。
 
-```js
-function parseApply(expr, program) {
-  program = skipSpace(program);
-  if (program[0] != "(") {
-    return {expr: expr, rest: program};
-  }
-
-  program = skipSpace(program.slice(1));
-  expr = {type: "apply", operator: expr, args: []};
-  while (program[0] != ")") {
-    let arg = parseExpression(program);
-    expr.args.push(arg.expr);
-    program = skipSpace(arg.rest);
-    if (program[0] == ",") {
-      program = skipSpace(program.slice(1));
-    } else if (program[0] != ")") {
-      throw new SyntaxError("Expected ',' or ')'");
-    }
-  }
-  return parseApply(expr, program.slice(1));
-}
-```
+[PRE3]
 
 如果程序中的下一个字符不是左括号，这就不是一个应用，parseApply 返回它所给出的表达式。否则，它会跳过左括号，并为这个应用表达式创建语法树对象。然后，它递归调用 parseExpression 以解析每个参数，直到找到右括号。递归是间接的，通过 parseApply 和 parseExpression 相互调用。
 
@@ -115,21 +58,7 @@ function parseApply(expr, program) {
 
 这就是解析 Egg 所需的一切。我们将其包装在一个方便的解析函数中，该函数在解析表达式后验证是否已经到达输入字符串的末尾（一个 Egg 程序是一个单一的表达式），这为我们提供了程序的数据结构。
 
-```js
-function parse(program) {
-  let {expr, rest} = parseExpression(program);
-  if (skipSpace(rest).length > 0) {
-    throw new SyntaxError("Unexpected text after program");
-  }
-  return expr;
-}
-
-console.log(parse("+(a, 10)"));
-// → {type: "apply",
-//    operator: {type: "word", name: "+"},
-//    args: [{type: "word", name: "a"},
-//           {type: "value", value: 10}]}
-```
+[PRE4]
 
 它有效！当它失败时并没有提供非常有用的信息，也没有存储每个表达式开始时的行和列，这在稍后报告错误时可能会很有帮助，但对于我们的目的来说已经足够了。
 
@@ -137,35 +66,7 @@ console.log(parse("+(a, 10)"));
 
 我们可以用程序的语法树做什么？当然是运行它！这就是求值器所做的。你给它一个语法树和一个将名称与值关联的作用域对象，它将评估树所代表的表达式并返回产生的值。
 
-```js
-const specialForms = Object.create(null);
-
-function evaluate(expr, scope) {
-  if (expr.type == "value") {
-    return expr.value;
-  } else if (expr.type == "word") {
-    if (expr.name in scope) {
-      return scope[expr.name];
-    } else {
-      throw new ReferenceError(
-        `Undefined binding: ${expr.name}`);
-    }
- } else if (expr.type == "apply") {
-    let {operator, args} = expr;
-    if (operator.type == "word" &&
-        operator.name in specialForms) {
-      return specialFormsoperator.name;
-    } else {
-      let op = evaluate(operator, scope);
-      if (typeof op == "function") {
-        return op(...args.map(arg => evaluate(arg, scope)));
-      } else {
-        throw new TypeError("Applying a non-function.");
-      }
-    }
-  }
-}
-```
+[PRE5]
 
 求值器为每种表达式类型都有代码。字面值表达式产生其值。（例如，表达式 100 评估为数字 100。）对于绑定，我们必须检查它是否在作用域中实际定义，如果是，则获取绑定的值。
 
@@ -181,17 +82,7 @@ function evaluate(expr, scope) {
 
 specialForms 对象用于在 Egg 中定义特殊语法。它将词与评估这些形式的函数关联。目前它是空的。让我们添加 if。
 
-```js
-specialForms.if = (args, scope) => {
-  if (args.length != 3) {
-    throw new SyntaxError("Wrong number of args to if");
-  } else if (evaluate(args[0], scope) !== false) {
-    return evaluate(args[1], scope);
-  } else {
- return evaluate(args[2], scope);
-  }
-};
-```
+[PRE6]
 
 Egg 的 if 构造期待恰好三个参数。它将评估第一个，如果结果不是值 false，则将评估第二个。否则，评估第三个。这个 if 形式更类似于 JavaScript 的三元运算符?:而不是 JavaScript 的 if。它是一个表达式，而不是语句，并且产生一个值——即第二或第三个参数的结果。
 
@@ -201,45 +92,15 @@ Egg 在处理 if 的条件值时也与 JavaScript 不同。它只会将值 false
 
 while 形式类似。
 
-```js
-specialForms.while = (args, scope) => {
-  if (args.length != 2) {
-    throw new SyntaxError("Wrong number of args to while");
-  }
-  while (evaluate(args[0], scope) !== false) {
-    evaluate(args[1], scope);
-  }
-
-  // Since undefined does not exist in Egg, we return false,
-  // for lack of a meaningful result
-  return false;
-};
-```
+[PRE7]
 
 另一个基本构建块是 do，它从上到下执行所有参数。它的值是最后一个参数产生的值。
 
-```js
-specialForms.do = (args, scope) => {
-  let value = false;
-  for (let arg of args) {
-    value = evaluate(arg, scope);
-  }
-  return value;
-};
-```
+[PRE8]
 
 为了能够创建绑定并给它们赋予新值，我们还创建了一个叫做 define 的形式。它的第一个参数期望一个单词，第二个参数期望一个产生赋值给该单词的表达式。由于 define 和其他所有内容一样，是一个表达式，因此它必须返回一个值。我们将使它返回被赋予的值（就像 JavaScript 的 = 操作符）。
 
-```js
-specialForms.define = (args, scope) => {
-  if (args.length != 2 || args[0].type != "word") {
-    throw new SyntaxError("Incorrect use of define");
-  }
-  let value = evaluate(args[1], scope);
-  scope[args[0].name] = value;
-  return value;
-};
-```
+[PRE9]
 
 ### 环境
 
@@ -247,59 +108,27 @@ evaluate 接受的作用域是一个对象，其中的属性名对应于绑定�
 
 为了能够使用我们刚定义的 if 构造，我们必须能够访问布尔值。由于只有两个布尔值，我们不需要为它们提供特殊的语法。我们简单地将两个名称绑定到值 true 和 false，并使用它们。
 
-```js
-const topScope = Object.create(null);
-
-topScope.true = true;
-topScope.false = false;
-```
+[PRE10]
 
 现在我们可以评估一个简单的表达式，它对布尔值取反。
 
-```js
-let prog = parse(`if(true, false, true)`);
-console.log(evaluate(prog, topScope));
-// → false
-```
+[PRE11]
 
 为了提供基本的算术和比较运算符，我们还会将一些函数值添加到作用域中。为了保持代码简洁，我们将使用 Function 在一个循环中合成一组运算符函数，而不是单独定义它们。
 
-```js
-for (let op of ["+", "-", "*", "/", "==", "<", ">"]) {
-  topScope[op] = Function("a, b", `return a ${op} b;`);
-}
-```
+[PRE12]
 
 也很有用的是有一种输出值的方法，因此我们将 console.log 包裹在一个函数中并将其命名为 print。
 
-```js
-topScope.print = value => {
-  console.log(value);
-  return value;
-};
-```
+[PRE13]
 
 这给了我们足够的基本工具来编写简单的程序。下面的函数提供了一种方便的方式来解析程序并在新的作用域中运行它：
 
-```js
-function run(program) {
-  return evaluate(parse(program), Object.create(topScope));
-}
-```
+[PRE14]
 
 我们将使用对象原型链来表示嵌套作用域，以便程序可以向其局部作用域添加绑定，而不改变顶层作用域。
 
-```js
-run(`
-do(define(total, 0),
-   define(count, 1),
-   while(<(count, 11),
-         do(define(total, +(total, count)),
-            define(count, +(count, 1)))),
-   print(total))
-`);
-// → 55
-```
+[PRE15]
 
 这是我们之前多次看到的程序，它计算从 1 到 10 的数字之和，用 Egg 表达。显然，它比等效的 JavaScript 程序更丑陋，但对于一个实现少于 150 行代码的语言来说，这并不算坏。
 
@@ -307,50 +136,11 @@ do(define(total, 0),
 
 没有函数的编程语言确实是个糟糕的编程语言。幸运的是，添加一个函数构造并不困难，它将最后一个参数视为函数体，并使用之前的所有参数作为函数参数的名称。
 
-```js
-specialForms.fun = (args, scope) => {
-  if (!args.length) {
-    throw new SyntaxError("Functions need a body");
-  }
-  let body = args[args.length - 1];
-  let params = args.slice(0, args.length - 1).map(expr => {
-    if (expr.type != "word") {
-      throw new SyntaxError("Parameter names must be words");
-    }
-    return expr.name;
-  });
-
-  return function(...args) {
-    if (args.length != params.length) {
-      throw new TypeError("Wrong number of arguments");
- }
-    let localScope = Object.create(scope);
-    for (let i = 0; i < args.length; i++) {
-      localScope[params[i]] = args[i];
-    }
-    return evaluate(body, localScope);
-  };
-};
-```
+[PRE16]
 
 Egg 中的函数有自己的局部作用域。由 fun 形式产生的函数创建这个局部作用域，并将参数绑定添加到其中。然后，它在这个作用域中评估函数体并返回结果。
 
-```js
-run(`
-do(define(plusOne, fun(a, +(a, 1))),
-   print(plusOne(10)))
-`);
-// → 11
-
-run(`
-do(define(pow, fun(base, exp,
-   if(==(exp, 0),
-      1,
-      *(base, pow(base, -(exp, 1)))))),
-   print(pow(2, 10)))
-`);
-// → 1024
-```
+[PRE17]
 
 ### 编译
 
@@ -374,17 +164,7 @@ do(define(pow, fun(base, exp,
 
 或者想象你正在构建一个程序，使得通过提供语言的逻辑描述可以快速创建解析器。你可以为此定义一种特定的符号表示法，并编写一个将其编译为解析器程序的编译器。
 
-```js
-expr = number | string | name | application
-
-number = digit+
-
-name = letter+
-
-string = '"' (! '"')* '"'
-
-application = expr '(' (expr (',' expr)*)? ')'
-```
+[PRE18]
 
 这通常被称为*领域特定语言*，是一种旨在表达狭窄知识领域的语言。这种语言比通用语言更具表现力，因为它专门设计用来准确描述该领域内需要描述的内容，而不是其他任何东西。
 
@@ -400,13 +180,7 @@ application = expr '(' (expr (',' expr)*)? ')'
 
 下面的程序说明了这一点：函数 f 返回一个函数，该函数将其参数与 f 的参数相加，这意味着它需要访问 f 内部的局部作用域，以便能够使用绑定 a。
 
-```js
-run(`
-do(define(f, fun(a, fun(b, +(a, b)))),
-   print(f(4)(5)))
-`);
-// → 9
-```
+[PRE19]
 
 返回到 fun 形式的定义，解释是什么机制使其起作用。
 

@@ -6,31 +6,17 @@
 
 如果你在浏览器的地址栏中输入 *[eloquentjavascript.net/18_http.xhtml](http://eloquentjavascript.net/18_http.xhtml)*，浏览器首先查找与 *eloquent [javascript.net](http://javascript.net)* 关联的服务器地址，并尝试在端口 80（HTTP 流量的默认端口）上打开一个 TCP 连接。如果服务器存在并接受连接，浏览器可能会发送类似这样的内容：
 
-```js
-GET /18_http.xhtml HTTP/1.1
-Host: eloquentjavascript.net
-User-Agent: Your browser's name
-```
+[PRE0]
 
 然后服务器通过相同的连接进行响应。
 
-```js
-HTTP/1.1 200 OK
-Content-Length: 87320
-Content-Type: text/html
-Last-Modified: Fri, 13 Oct 2023 10:05:41 GMT
-
-<!doctype html>
---snip--
-```
+[PRE1]
 
 浏览器获取空行后响应的部分，即它的 *主体*（不要与 HTML <body> 标签混淆），并将其显示为 HTML 文档。
 
 客户端发送的信息称为 *请求*。它以这一行开始：
 
-```js
-GET /18_http.xhtml HTTP/1.1
-```
+[PRE2]
 
 第一个词是请求的 *方法*。GET 意味着我们想要 *获取* 指定的资源。其他常见的方法有 DELETE 用于删除资源，PUT 用于创建或替换资源，POST 用于向其发送信息。请注意，服务器并不一定有义务执行它收到的每一个请求。如果你走到一个随机网站并告诉它删除其主页，它可能会拒绝。
 
@@ -42,19 +28,13 @@ GET /18_http.xhtml HTTP/1.1
 
 服务器的响应也会以一个版本开头，后面跟着响应的状态，首先是一个三位数的状态代码，然后是一个可读的字符串。
 
-```js
-HTTP/1.1 200 OK
-```
+[PRE3]
 
 以 2 开头的状态码表示请求成功。以 4 开头的代码意味着请求存在问题。最著名的 HTTP 状态码可能是 404，表示找不到该资源。以 5 开头的代码表示服务器发生了错误，请求没有错。
 
 请求或响应的第一行后面可以跟随任意数量的*头部*。这些是形如 name: value 的行，指定有关请求或响应的额外信息。这些头部是示例响应的一部分：
 
-```js
-Content-Length: 87320
-Content-Type: text/html
-Last-Modified: Fri, 13 Oct 2023 10:05:41 GMT
-```
+[PRE4]
 
 这告诉我们响应文档的大小和类型。在这种情况下，它是一个 87,320 字节的 HTML 文档。它还告诉我们该文档最后一次修改的时间。
 
@@ -70,42 +50,23 @@ Last-Modified: Fri, 13 Oct 2023 10:05:41 GMT
 
 HTML 页面可以包含*表单*，允许用户填写信息并将其发送到服务器。这是一个表单的示例：
 
-```js
-<form method="GET" action="example/message.xhtml">
-  <p>Name: <input type="text" name="name"></p>
-  <p>Message:<br><textarea name="message"></textarea></p>
-  <p><button type="submit">Send</button></p>
-</form>
-```
+[PRE5]
 
 这段代码描述了一个包含两个字段的表单：一个小字段用于输入名字，一个大字段用于写消息。当你点击发送按钮时，表单被*提交*，这意味着其字段的内容被打包成一个 HTTP 请求，浏览器会导航到该请求的结果。
 
 当<form>元素的 method 属性为 GET（或被省略）时，表单中的信息将作为*查询字符串*添加到动作 URL 的末尾。浏览器可能会向这个 URL 发起请求：
 
-```js
-GET /example/message.xhtml?name=Jean&message=Yes%3F HTTP/1.1
-```
+[PRE6]
 
 问号表示 URL 路径部分的结束和查询的开始。它后面跟随名称和值的对，分别对应于表单字段元素的 name 属性和这些元素的内容。一个&符号用于分隔这些对。
 
 URL 中编码的实际消息是 “Yes?”，但问号被一个奇怪的代码替换。一些查询字符串中的字符必须被转义。问号（以 %3F 表示）就是其中之一。似乎有一种不成文的规则，即每种格式都需要自己的一种字符转义方式。这种称为 *URL 编码* 的方式使用一个百分号，后跟两个十六进制（基数为 16）数字来编码字符代码。在这种情况下，3F 在十进制中是 63，是问号字符的代码。JavaScript 提供了 encodeURIComponent 和 decodeURIComponent 函数来编码和解码这种格式。
 
-```js
-console.log(encodeURIComponent("Yes?"));
-// → Yes%3F
-console.log(decodeURIComponent("Yes%3F"));
-// → Yes?
-```
+[PRE7]
 
 如果我们将之前看到的 HTML 表单的 method 属性更改为 POST，提交表单时发出的 HTTP 请求将使用 POST 方法，并将查询字符串放入请求的主体中，而不是将其添加到 URL 中。
 
-```js
-POST /example/message.xhtml HTTP/1.1
-Content-length: 24
-Content-type: application/x-www-form-urlencoded
-
-name=Jean&message=Yes%3F
-```
+[PRE8]
 
 GET 请求应当用于没有副作用的请求，仅仅是请求信息。例如，创建新账户或发布消息等更改服务器内容的请求，应使用其他方法，例如 POST。客户端软件（例如浏览器）知道不应盲目发送 POST 请求，但通常会隐式发送 GET 请求——例如，预取用户可能很快需要的资源。
 
@@ -115,14 +76,7 @@ GET 请求应当用于没有副作用的请求，仅仅是请求信息。例如�
 
 浏览器 JavaScript 可以进行 HTTP 请求的接口称为 fetch。
 
-```js
-fetch("example/data.txt").then(response => {
-  console.log(response.status);
-  // → 200
- console.log(response.headers.get("Content-Type"));
-  // → text/plain
-});
-```
+[PRE9]
 
 调用 fetch 返回一个 Promise，该 Promise 解析为一个 Response 对象，包含有关服务器响应的信息，例如其状态码和响应头。响应头被封装在一个类似 Map 的对象中，该对象将其键（头部名称）视为不区分大小写，因为头部名称不应区分大小写。这意味着 headers.get(“Content-Type”) 和 headers.get(“content-TYPE”) 将返回相同的值。
 
@@ -132,34 +86,19 @@ fetch 的第一个参数是应该请求的 URL。当该 URL 不以协议名称�
 
 要获取响应的实际内容，您可以使用其 text 方法。因为初始 Promise 一旦接收到响应的头部就会解决，而读取响应主体可能需要更长的时间，所以这再次返回一个 Promise。
 
-```js
-fetch("example/data.txt")
-  .then(resp => resp.text())
-  .then(text => console.log(text));
-// → This is the content of data.txt
-```
+[PRE10]
 
 一种类似的方法，称为 json，返回一个解析为 JSON 时的值的 promise，如果不是有效的 JSON，则会拒绝。
 
 默认情况下，fetch 使用 GET 方法发出请求，并且不包含请求主体。你可以通过将带有额外选项的对象作为第二个参数传递来配置它。例如，这个请求试图删除*example/data.txt*：
 
-```js
-fetch("example/data.txt", {method: "DELETE"}).then(resp => {
-  console.log(resp.status);
-  // → 405
-});
-```
+[PRE11]
 
 405 状态码表示“方法不被允许”，这是 HTTP 服务器表明“抱歉，我无法做到”的方式。
 
 要为 PUT 或 POST 请求添加请求主体，可以包含一个 body 选项。要设置头部，可以使用 headers 选项。例如，这个请求包含一个 Range 头部，指示服务器仅返回文档的一部分。
 
-```js
-fetch("example/data.txt", {headers: {Range: "bytes=8-19"}})
-  .then(resp => resp.text())
-  .then(console.log);
-// → The content
-```
+[PRE12]
 
 浏览器会自动添加一些请求头，例如“Host”和服务器确定主体大小所需的那些。但是，添加你自己的头部通常是有用的，以包含诸如身份验证信息或告诉服务器你希望接收的文件格式等内容。
 
@@ -171,9 +110,7 @@ fetch("example/data.txt", {headers: {Range: "bytes=8-19"}})
 
 当构建希望出于合法理由访问多个域的系统时，这可能是一个烦人的问题。幸运的是，服务器可以在其响应中包含这样的头部，以明确向浏览器指示请求可以来自另一个域：
 
-```js
-Access-Control-Allow-Origin: *
-```
+[PRE13]
 
 ### 理解 HTTP
 
@@ -218,17 +155,7 @@ Access-Control-Allow-Origin: *
 
 表单字段不一定要出现在 `<form>` 标签中。你可以将它们放置在页面的任何位置。这种无表单字段不能被提交（只有整个表单可以），但在使用 JavaScript 响应输入时，我们通常不希望正常提交我们的字段。
 
-```js
-<p><input type="text" value="abc"> (text)</p>
-<p><input type="password" value="abc"> (password)</p>
-<p><input type="checkbox" checked> (checkbox)</p>
-<p><input type="color" value="orange"> (color)</p>
-<p><input type="date" value="2023-10-13"> (date)</p>
-<p><input type="radio" value="A" name="choice">
-   <input type="radio" value="B" name="choice" checked>
-   <input type="radio" value="C" name="choice"> (radio)</p>
-<p><input type="file"> (file)</p>
-```
+[PRE14]
 
 使用此 HTML 代码创建的字段看起来是这样的：
 
@@ -238,23 +165,11 @@ Access-Control-Allow-Origin: *
 
 多行文本字段有自己的标签 `<textarea>`，主要是因为使用属性指定多行起始值会显得尴尬。`<textarea>` 标签需要一个匹配的 `</textarea>` 结束标签，并使用这两个标签之间的文本作为起始文本，而不是值属性。
 
-```js
-<textarea>
-one
-two
-three
-</textarea>
-```
+[PRE15]
 
 最后，`<select>` 标签用于创建一个字段，允许用户从多个预定义选项中进行选择。
 
-```js
-<select>
-  <option>Pancakes</option>
-  <option>Pudding</option>
-  <option>Ice cream</option>
-</select>
-```
+[PRE16]
 
 这样的字段看起来是这样的：
 
@@ -270,26 +185,13 @@ three
 
 我们可以通过 JavaScript 使用 focus 和 blur 方法控制焦点。第一个方法将焦点移动到调用的 DOM 元素，第二个方法则移除焦点。`document.activeElement` 的值对应于当前获得焦点的元素。
 
-```js
-<input type="text">
-<script>
-  document.querySelector("input").focus();
-  console.log(document.activeElement.tagName);
-  // → INPUT
-  document.querySelector("input").blur();
-  console.log(document.activeElement.tagName);
-  // → BODY
-</script>
-```
+[PRE17]
 
 对于某些页面，用户期望立即与表单字段进行交互。JavaScript 可以在文档加载时聚焦该字段，但 HTML 也提供了 autofocus 属性，该属性在让浏览器知道我们想要实现什么的同时产生相同的效果。这让浏览器在不适当的情况下有机会禁用这一行为，比如当用户将焦点放在其他地方时。
 
 浏览器允许用户通过按 TAB 移动焦点到下一个可聚焦元素，按 SHIFT-TAB 返回到上一个元素。默认情况下，元素按照它们在文档中出现的顺序被访问。可以使用 tabindex 属性来改变这个顺序。以下示例文档将允许焦点从文本输入跳转到 OK 按钮，而不是先经过帮助链接：
 
-```js
-<input type="text" tabindex=1> <a href=".">(help)</a>
-<button onclick="console.log('ok')" tabindex=2>OK</button>
-```
+[PRE18]
 
 默认情况下，大多数类型的 HTML 元素不能被聚焦。你可以给任何元素添加 tabindex 属性使其可聚焦。tabindex 为 0 的元素可以被聚焦而不影响聚焦顺序。
 
@@ -297,10 +199,7 @@ three
 
 所有表单字段都可以通过其 disabled 属性被 *禁用*。这是一个可以不带值指定的属性——只要存在，元素就会被禁用。
 
-```js
-<button>I'm all right</button>
-<button disabled>I'm out</button>
-```
+[PRE19]
 
 被禁用的字段无法聚焦或更改，浏览器会使其看起来呈灰色和褪色。
 
@@ -314,40 +213,13 @@ three
 
 表单字段的 name 属性决定了在提交表单时其值的识别方式。它也可以在访问表单的 elements 属性时用作属性名称，该属性既可以作为类似数组的对象（通过数字访问），也可以作为映射（通过名称访问）。
 
-```js
-<form action="example/submit.xhtml">
-  Name: <input type="text" name="name"><br>
-  Password: <input type="password" name="password"><br>
-  <button type="submit">Log in</button>
-</form>
-<script>
-  let form = document.querySelector("form");
-  console.log(form.elements[1].type);
-  // → password
-  console.log(form.elements.password.type);
-  // → password
-  console.log(form.elements.name.form == form);
-  // → true
-</script>
-```
+[PRE20]
 
 当一个具有提交类型属性的按钮被按下时，会导致表单被提交。在表单字段聚焦时按下 ENTER 键也会产生相同的效果。
 
 正常提交表单意味着浏览器导航到由表单的 action 属性指示的页面，使用 GET 或 POST 请求。但在这之前，会触发一个 “submit” 事件。你可以用 JavaScript 处理这个事件，并通过在事件对象上调用 preventDefault 来阻止这种默认行为。
 
-```js
-<form>
-  Value: <input type="text" name="value">
-  <button type="submit">Save</button>
-</form>
-<script>
-  let form = document.querySelector("form");
-  form.addEventListener("submit", event => {
-    console.log("Saving value", form.elements.value.value);
-    event.preventDefault();
-  });
-</script>
-```
+[PRE21]
 
 在 JavaScript 中拦截 “submit” 事件有多种用途。我们可以编写代码来验证用户输入的值是否合理，并立即显示错误信息，而不是提交表单。或者，我们可以完全禁用常规的提交表单方式，如示例所示，让我们的程序处理输入，可能使用 fetch 将其发送到服务器而无需重新加载页面。
 
@@ -359,26 +231,7 @@ three
 
 想象一下，你正在写一篇关于哈塞克赫姆维（Khasekhemwy），第二王朝的最后一位法老的文章，但在拼写他的名字时遇到了一些困难。以下代码连接了一个 `<textarea>` 标签，并添加了一个事件处理程序，当你按下 F2 时，会为你插入字符串 “Khasekhemwy”。
 
-```js
-<textarea></textarea>
-<script>
-  let textarea = document.querySelector("textarea");
-  textarea.addEventListener("keydown", event => {
-    if (event.key == "F2") {
-      replaceSelection(textarea, "Khasekhemwy");
-      event.preventDefault();
-    }
-  });
-  function replaceSelection(field, word) {
-    let from = field.selectionStart, to = field.selectionEnd;
-    field.value = field.value.slice(0, from) + word +
-                  field.value.slice(to);
-    // Put the cursor after the word
-    field.selectionStart = from + word.length;
-    field.selectionEnd = from + word.length;
-  }
-</script>
-```
+[PRE22]
 
 replaceSelection 函数将文本字段内容中当前选中的部分替换为给定的词，并将光标移动到该词后，以便用户可以继续输入。
 
@@ -386,58 +239,19 @@ replaceSelection 函数将文本字段内容中当前选中的部分替换为给
 
 以下示例展示了一个文本字段和一个计数器，显示该字段中文本的当前长度：
 
-```js
-<input type="text"> length: <span id="length">0</span>
-<script>
-  let text = document.querySelector("input");
-  let output = document.querySelector("#length");
- text.addEventListener("input", () => {
-    output.textContent = text.value.length;
-  });
-</script>
-```
+[PRE23]
 
 ### 复选框和单选按钮
 
 复选框字段是一个二元切换。它的值可以通过其 checked 属性提取或更改，该属性持有布尔值。
 
-```js
-<label>
-  <input type="checkbox" id="purple"> Make this page purple
-</label>
-<script>
-  let checkbox = document.querySelector("#purple");
-  checkbox.addEventListener("change", () => {
-    document.body.style.background =
-      checkbox.checked ? "mediumpurple" : "";
-  });
-</script>
-```
+[PRE24]
 
 `<label>` 标签将文档中的一部分与输入字段关联。点击标签上的任何地方将激活该字段，使其获得焦点，并在其为复选框或单选按钮时切换其值。
 
 单选按钮类似于复选框，但它隐式地与其他具有相同 name 属性的单选按钮关联，以确保在任何时候只有一个可以处于激活状态。
 
-```js
-Color:
-<label>
-  <input type="radio" name="color" value="orange"> Orange
-</label>
-<label>
-  <input type="radio" name="color" value="lightgreen"> Green
-</label>
-<label>
-  <input type="radio" name="color" value="lightblue"> Blue
-</label>
-<script>
-  let buttons = document.querySelectorAll("[name=color]");
-  for (let button of Array.from(buttons)) {
-    button.addEventListener("change", () => {
-      document.body.style.background = button.value;
-    });
-  }
-</script>
-```
+[PRE25]
 
 在传递给 querySelectorAll 的 CSS 查询中的方括号用于匹配属性。它选择 name 属性为 “color” 的元素。
 
@@ -453,27 +267,7 @@ Color:
 
 此示例从多个选择字段中提取所选值，并利用这些值组成一个二进制数字。按住 CTRL（或在 Mac 上按 COMMAND）以选择多个选项。
 
-```js
-<select multiple>
-  <option value="1">0001</option>
-  <option value="2">0010</option>
-  <option value="4">0100</option>
-  <option value="8">1000</option>
-</select> = <span id="output">0</span>
-<script>
-  let select = document.querySelector("select");
-  let output = document.querySelector("#output");
-  select.addEventListener("change", () => {
-    let number = 0;
-    for (let option of Array.from(select.options)) {
-      if (option.selected) {
-        number += Number(option.value);
-      }
-    }
-    output.textContent = number;
-  });
-</script>
-```
+[PRE26]
 
 ### 文件字段
 
@@ -481,19 +275,7 @@ Color:
 
 文件字段通常看起来像一个带有“选择文件”或“浏览”之类标签的按钮，旁边有所选文件的信息。
 
-```js
-<input type="file">
-<script>
-  let input = document.querySelector("input");
-  input.addEventListener("change", () => {
-    if (input.files.length > 0) {
-      let file = input.files[0];
-      console.log("You chose", file.name);
-      if (file.type) console.log("It has type", file.type);
-    }
-  });
-</script>
-```
+[PRE27]
 
 文件字段元素的 files 属性是一个类数组对象（再次强调，不是真正的数组），包含在字段中选择的文件。它最初是空的。没有简单的 file 属性的原因在于文件字段还支持 multiple 属性，这使得可以同时选择多个文件。
 
@@ -501,39 +283,13 @@ Color:
 
 它没有的属性是包含文件内容的属性。获取该内容的过程稍微复杂一些。由于从磁盘读取文件可能需要时间，因此接口是异步的，以避免冻结窗口。
 
-```js
-<input type="file" multiple>
-<script>
-  let input = document.querySelector("input");
-  input.addEventListener("change", () => {
-    for (let file of Array.from(input.files)) {
-      let reader = new FileReader();
-      reader.addEventListener("load", () => {
-        console.log("File", file.name, "starts with",
-                    reader.result.slice(0, 20));
-      });
-      reader.readAsText(file);
-    }
-  });
-</script>
-```
+[PRE28]
 
 读取文件是通过创建一个 FileReader 对象，为其注册一个“加载”事件处理程序，并调用其 readAsText 方法，同时传入我们想要读取的文件。一旦加载完成，读取器的 result 属性将包含文件的内容。
 
 `FileReaders` 在读取文件失败的任何原因时也会触发“错误”事件。错误对象本身将最终出现在阅读器的错误属性中。这个接口在承诺成为语言的一部分之前设计。你可以像这样将其封装在一个承诺中：
 
-```js
-function readFileText(file) {
-  return new Promise((resolve, reject) => {
-    let reader = new FileReader();
-    reader.addEventListener(
-      "load", () => resolve(reader.result));
-    reader.addEventListener(
-      "error", () => reject(reader.error));
-    reader.readAsText(file);
-  });
-}
-```
+[PRE29]
 
 ### 客户端数据存储
 
@@ -543,12 +299,7 @@ function readFileText(file) {
 
 `localStorage` 对象可以用于以在页面重载后仍然存在的方式存储数据。该对象允许你根据名称存储字符串值。
 
-```js
-localStorage.setItem("username", "marijn");
-console.log(localStorage.getItem("username"));
-// → marijn
-localStorage.removeItem("username");
-```
+[PRE30]
 
 `localStorage` 中的值会一直存在，直到被覆盖、使用 `removeItem` 移除，或用户清除他们的本地数据。
 
@@ -558,53 +309,7 @@ localStorage.removeItem("username");
 
 以下代码实现了一个粗略的记事本应用程序。它保持一组命名的笔记，并允许用户编辑笔记和创建新笔记。
 
-```js
-Notes: <select></select> <button>Add</button><br>
-<textarea style="width: 100%"></textarea>
-
-<script>
-  let list = document.querySelector("select");
-  let note = document.querySelector("textarea");
-
-  let state;
-  function setState(newState) {
-    list.textContent = "";
-    for (let name of Object.keys(newState.notes)) {
-      let option = document.createElement("option");
-      option.textContent = name;
-      if (newState.selected == name) option.selected = true;
-      list.appendChild(option);
-    }
-    note.value = newState.notes[newState.selected];
-
-    localStorage.setItem("Notes", JSON.stringify(newState));
-    state = newState;
-  }
-  setState(JSON.parse(localStorage.getItem("Notes")) ?? {
-    notes: {"shopping list": "Carrots\nRaisins"},
-    selected: "shopping list"
-  });
-
-  list.addEventListener("change", () => {
-    setState({notes: state.notes, selected: list.value});
-  });
-  note.addEventListener("change", () => {
-    let {selected} = state;
-    setState({
-      notes: {...state.notes, [selected]: note.value},
-      selected
-    });
-  });
-  document.querySelector("button")
-    .addEventListener("click", () => {
-      let name = prompt("Note name");
-      if (name) setState({
-        notes: {...state.notes, [name]: ""},
-        selected: name
-      });
- });
-</script>
-```
+[PRE31]
 
 脚本从本地存储中的“Notes”值获取其初始状态，或者如果缺少该值，则创建一个只有购物清单的示例状态。从 `localStorage` 读取不存在的字段将返回 `null`。将 `null` 传递给 `JSON.parse` 将使其解析字符串 “null” 并返回 `null`。因此，?? 运算符可以用于在这种情况下提供默认值。
 
@@ -620,11 +325,7 @@ Notes: <select></select> <button>Add</button><br>
 
 浏览器 JavaScript 进行 HTTP 请求的接口称为 fetch。发起请求的方式如下：
 
-```js
-fetch("/18_http.xhtml").then(r => r.text()).then(text => {
-  console.log(`The page starts with ${text.slice(0, 15)}`);
-});
-```
+[PRE32]
 
 浏览器通过发起 GET 请求来获取显示网页所需的资源。页面还可以包含表单，当表单被提交时，用户输入的信息会作为新页面请求发送。
 

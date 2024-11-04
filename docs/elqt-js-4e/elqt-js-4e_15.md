@@ -18,9 +18,7 @@
 
 *超文本传输协议（HTTP）*是用于检索命名资源（信息块，如网页或图片）的协议。它规定发出请求的一方应以类似这样的行开始，命名所请求的资源及其试图使用的协议版本：
 
-```js
-GET /index.xhtml HTTP/1.1
-```
+[PRE0]
 
 关于请求者如何在请求中包含更多信息，以及返回资源的另一方如何打包其内容，还有许多更多规则。我们将在第十八章中详细讨论 HTTP。
 
@@ -42,11 +40,7 @@ TCP 连接的工作方式如下：一台计算机必须处于等待状态，或*
 
 网络上的每个文档都有一个*统一资源定位符（URL）*，看起来像这样：
 
-```js
-  http://eloquentjavascript.net/13_browser.xhtml
- |      |                      |               |
- protocol       server               path
-```
+[PRE1]
 
 URL 的第一部分告诉我们该 URL 使用 HTTP 协议（与加密的 HTTP，例如*https://*相对）。接下来是标识我们请求文档的服务器的部分。最后是一个路径字符串，标识我们感兴趣的文档（或*资源*）。
 
@@ -60,21 +54,7 @@ URL 的第一部分告诉我们该 URL 使用 HTTP 协议（与加密的 HTTP，
 
 一个简短的 HTML 文档可能如下所示：
 
-```js
-<!doctype html>
-<html>
-  <head>
- <meta charset="utf-8">
-    <title>My home page</title>
-  </head>
-  <body>
-    <h1>My home page</h1>
-    <p>Hello, I am Marijn and this is my home page.</p>
-    <p>I also wrote a book! Read it
-      <a href="http://eloquentjavascript.net">here</a>.</p>
-  </body>
-</html>
-```
+[PRE2]
 
 在浏览器中，这样的文档可能看起来像这样：
 
@@ -98,17 +78,7 @@ HTML 以一种非常容错的方式进行解析。当应该存在的标签缺失
 
 以下文档将像之前显示的文档一样处理：
 
-```js
-<!doctype html>
-
-<meta charset=utf-8>
-<title>My home page</title>
-
-<h1>My home page</h1>
-<p>Hello, I am Marijn and this is my home page.
-<p>I also wrote a book! Read it
-  <a href=http://eloquentjavascript.net>here</a>.
-```
+[PRE3]
 
 <html>、<head>和<body>标签完全消失。浏览器知道<meta>和<title>属于头部，而<h1>表示正文已经开始。此外，我不再明确关闭段落，因为打开新段落或结束文档会隐式关闭它们。属性值周围的引号也消失了。
 
@@ -120,19 +90,13 @@ HTML 以一种非常容错的方式进行解析。当应该存在的标签缺失
 
 在本书的上下文中，最重要的 HTML 标签是<script>，它允许我们在文档中包含一段 JavaScript。
 
-```js
-<h1>Testing alert</h1>
-<script>alert("hello!");</script>
-```
+[PRE4]
 
 这样的脚本将在浏览器读取 HTML 时遇到<script>标签时立即运行。打开此页面时将弹出一个对话框——alert 函数类似于 prompt，它会弹出一个小窗口，但只显示消息而不要求输入。
 
 直接在 HTML 文档中包含大型程序通常不切实际。<script>标签可以设置一个 src 属性，从 URL 中获取一个脚本文件（包含 JavaScript 程序的文本文件）。
 
-```js
-<h1>Testing alert</h1>
-<script src="code/hello.js"></script>
-```
+[PRE5]
 
 这里包含的*code/hello.js*文件包含相同的程序——alert（“hello！”）。当 HTML 页面引用其他 URL 作为其一部分时，例如图像文件或脚本，网络浏览器会立即检索它们并将其包含在页面中。
 
@@ -142,9 +106,7 @@ HTML 以一种非常容错的方式进行解析。当应该存在的标签缺失
 
 一些属性也可以包含 JavaScript 程序。<button>标签（显示为按钮）支持 onclick 属性。每当按钮被点击时，属性的值将被执行。
 
-```js
-<button onclick="alert('Boom!');">DO NOT PRESS</button>
-```
+[PRE6]
 
 注意，我必须在 onclick 属性的字符串中使用单引号，因为双引号已经用来引用整个属性。我也可以使用 &quot; 来转义内部引号。
 

@@ -40,29 +40,7 @@
 
 应用状态将是一个具有 picture、tool 和 color 属性的对象。picture 本身是一个对象，存储图片的宽度、高度和像素内容。像素按行存储在一个单一数组中，从上到下。
 
-```js
-class Picture {
-  constructor(width, height, pixels) {
-    this.width = width;
-    this.height = height;
-    this.pixels = pixels;
-  }
-  static empty(width, height, color) {
-    let pixels = new Array(width * height).fill(color);
-    return new Picture(width, height, pixels);
-  }
-  pixel(x, y) {
-    return this.pixels[x + y * this.width];
-  }
-  draw(pixels) {
-    let copy = this.pixels.slice();
-    for (let {x, y, color} of pixels) {
-      copy[x + y * this.width] = color;
-    }
-    return new Picture(this.width, this.height, copy);
-  }
-}
-```
+[PRE0]
 
 我们希望能够将图片视为一个不可变的值，原因将在本章后面再提到。但我们有时也需要一次更新一大堆像素。为此，该类具有一个 draw 方法，期望接收一个更新的像素数组——包含 x、y 和颜色属性的对象——并使用这些像素覆盖创建一张新图片。此方法使用没有参数的 slice 来复制整个像素数组——切片的开始默认为 0，结束默认为数组的长度。
 
@@ -74,11 +52,7 @@ class Picture {
 
 我们将允许接口以对象的形式分发动作，这些对象的属性会覆盖之前状态的属性。当用户更改颜色字段时，可以分发一个对象，如 {color: *field*.*value*}，从中这个更新函数可以计算出一个新的状态。
 
-```js
-function updateState(state, action) {
-  return {...state, ...action};
-}
-```
+[PRE1]
 
 这种模式中，使用对象扩展先添加现有对象的属性，然后覆盖其中一些属性，在使用不可变对象的 JavaScript 代码中很常见。
 
@@ -86,31 +60,13 @@ function updateState(state, action) {
 
 界面组件的主要功能之一是创建 DOM 结构。我们同样不想直接使用冗长的 DOM 方法，因此这里是稍微扩展版的 elt 函数：
 
-```js
-function elt(type, props, ...children) {
-  let dom = document.createElement(type);
-  if (props) Object.assign(dom, props);
-  for (let child of children) {
-    if (typeof child != "string") dom.appendChild(child);
-    else dom.appendChild(document.createTextNode(child));
-  }
-  return dom;
-}
-```
+[PRE2]
 
 这个版本与我们在第十六章中使用的版本之间的主要区别在于，它将 *属性* 分配给 DOM 节点，而不是 *属性值*。这意味着我们不能用它来设置任意属性，但我们 *可以* 用它来设置值不是字符串的属性，例如 onclick，可以设置为一个函数以注册点击事件处理程序。
 
 这允许我们以这种方便的方式注册事件处理程序：
 
-```js
-<body>
-  <script>
-    document.body.appendChild(elt("button", {
-      onclick: () => console.log("click")
-    }, "The button"));
-  </script>
-</body>
-```
+[PRE3]
 
 ### 画布
 
@@ -118,96 +74,23 @@ function elt(type, props, ...children) {
 
 因此，我们可以将其定义为一个只知道当前图片的组件，而不是整个应用程序状态。因为它不知道整个应用程序的工作方式，所以不能直接分发动作。相反，在响应指针事件时，它调用由创建它的代码提供的回调函数，该函数将处理特定于应用程序的部分。
 
-```js
-const scale = 10;
-
-class PictureCanvas {
-  constructor(picture, pointerDown) {
-    this.dom = elt("canvas", {
-      onmousedown: event => this.mouse(event, pointerDown),
-      ontouchstart: event => this.touch(event, pointerDown)
-    });
-    this.syncState(picture);
-  }
-  syncState(picture) {
-    if (this.picture == picture) return;
-    this.picture = picture;
-    drawPicture(this.picture, this.dom, scale);
-  }
-}
-```
+[PRE4]
 
 我们将每个像素绘制为 10x10 的方块，具体由比例常量决定。为了避免不必要的工作，组件跟踪其当前图片，仅在 syncState 获得新图片时进行重绘。
 
 实际的绘制函数根据比例和图片大小设置画布的大小，并用一系列方块填充，每个方块对应一个像素。
 
-```js
-function drawPicture(picture, canvas, scale) {
-  canvas.width = picture.width * scale;
-  canvas.height = picture.height * scale;
-  let cx = canvas.getContext("2d");
-
-  for (let y = 0; y < picture.height; y++) {
-    for (let x = 0; x < picture.width; x++) {
-      cx.fillStyle = picture.pixel(x, y);
-      cx.fillRect(x * scale, y * scale, scale, scale);
-    }
-  }
-}
-```
+[PRE5]
 
 当鼠标左键在图片画布上被按下时，组件调用 pointerDown 回调，传递被点击的像素位置——以图片坐标表示。这将用于实现鼠标与图片的交互。回调可以返回另一个回调函数，以在按钮按下时，指针移动到不同的像素时收到通知。
 
-```js
-PictureCanvas.prototype.mouse = function(downEvent, onDown) {
-  if (downEvent.button != 0) return;
-  let pos = pointerPosition(downEvent, this.dom);
-  let onMove = onDown(pos);
-  if (!onMove) return;
-  let move = moveEvent => {
-    if (moveEvent.buttons == 0) {
-      this.dom.removeEventListener("mousemove", move);
-    } else {
-      let newPos = pointerPosition(moveEvent, this.dom);
-      if (newPos.x == pos.x && newPos.y == pos.y) return;
-      pos = newPos;
-      onMove(newPos);
-    }
-  };
-  this.dom.addEventListener("mousemove", move);
-};
-
-function pointerPosition(pos, domNode) {
-  let rect = domNode.getBoundingClientRect();
-  return {x: Math.floor((pos.clientX - rect.left) / scale),
-          y: Math.floor((pos.clientY - rect.top) / scale)};
-}
-```
+[PRE6]
 
 由于我们知道像素的大小，并且可以使用 getBoundingClientRect 找到画布在屏幕上的位置，因此可以将鼠标事件坐标（clientX 和 clientY）转换为图片坐标。这些坐标总是向下取整，以便指向特定的像素。
 
 对于触摸事件，我们需要做类似的事情，但使用不同的事件，并确保在“touchstart”事件上调用 preventDefault 以防止平移。
 
-```js
-PictureCanvas.prototype.touch = function(startEvent, onDown) {
-  let pos = pointerPosition(startEvent.touches[0], this.dom);
-  let onMove = onDown(pos);
-  startEvent.preventDefault();
-  if (!onMove) return;
-  let move = moveEvent => {
-    let newPos = pointerPosition(moveEvent.touches[0], this.dom);
-    if (newPos.x == pos.x && newPos.y == pos.y) return;
-    pos = newPos;
-    onMove(newPos);
-  };
-  let end = () => {
-    this.dom.removeEventListener("touchmove", move);
-    this.dom.removeEventListener("touchend", end);
-  };
-  this.dom.addEventListener("touchmove", move);
-  this.dom.addEventListener("touchend", end);
-};
-```
+[PRE7]
 
 对于触摸事件，clientX 和 clientY 在事件对象上并不可用，但我们可以使用 touches 属性中第一个触摸对象的坐标。
 
@@ -219,30 +102,7 @@ PictureCanvas.prototype.touch = function(startEvent, onDown) {
 
 *工具*用于绘制像素或填充区域。应用程序将可用工具的集合显示为一个<select>字段。当前选择的工具决定用户使用指针设备与图片互动时会发生什么。可用工具的集合作为一个对象提供，该对象将下拉字段中显示的名称映射到实现这些工具的函数。这些函数接收图片位置、当前应用程序状态和分发函数作为参数。它们可能返回一个移动处理函数，当指针移动到不同的像素时，以新的位置和当前状态作为参数被调用。
 
-```js
-class PixelEditor {
-  constructor(state, config) {
-    let {tools, controls, dispatch} = config;
-    this.state = state;
-
- this.canvas = new PictureCanvas(state.picture, pos => {
-      let tool = tools[this.state.tool];
-      let onMove = tool(pos, this.state, dispatch);
-      if (onMove) return pos => onMove(pos, this.state);
-    });
-    this.controls = controls.map(
-      Control => new Control(state, config));
-    this.dom = elt("div", {}, this.canvas.dom, elt("br"),
-                   ...this.controls.reduce(
-                     (a, c) => a.concat(" ", c.dom), []));
-  }
-  syncState(state) {
-    this.state = state;
-    this.canvas.syncState(state.picture);
-    for (let ctrl of this.controls) ctrl.syncState(state);
-  }
-}
-```
+[PRE8]
 
 传递给 PictureCanvas 的指针处理程序使用适当的参数调用当前选定的工具，并且如果返回一个移动处理程序，则还会调整它以接收状态。
 
@@ -250,19 +110,7 @@ class PixelEditor {
 
 第一个控件是工具选择菜单。它创建一个<select>元素，为每个工具设置一个选项，并设置一个“change”事件处理程序，当用户选择不同工具时更新应用程序状态。
 
-```js
-class ToolSelect {
-  constructor(state, {tools, dispatch}) {
-    this.select = elt("select", {
-      onchange: () => dispatch({tool: this.select.value})
-    }, ...Object.keys(tools).map(name => elt("option", {
-      selected: name == state.tool
-    }, name)));
-    this.dom = elt("label", null, " Tool: ", this.select);
-  }
-  syncState(state) { this.select.value = state.tool; }
-}
-```
+[PRE9]
 
 通过将标签文本和字段包装在<label>元素中，我们告诉浏览器该标签属于该字段，这样你可以点击标签来聚焦该字段。
 
@@ -274,19 +122,7 @@ class ToolSelect {
 
 此控件创建一个这样的区域，并将其与应用程序状态的颜色属性保持同步。
 
-```js
-class ColorSelect {
-  constructor(state, {dispatch}) {
-    this.input = elt("input", {
-      type: "color",
-      value: state.color,
-      onchange: () => dispatch({color: this.input.value})
-    });
-    this.dom = elt("label", null, " Color: ", this.input);
-  }
-  syncState(state) { this.input.value = state.color; }
-}
-```
+[PRE10]
 
 ### 绘图工具
 
@@ -294,40 +130,13 @@ class ColorSelect {
 
 最基本的工具是绘图工具，它将你点击或轻触的任何像素更改为当前选定的颜色。它派发一个操作，将图片更新为一个版本，其中所指向的像素被赋予当前选定的颜色。
 
-```js
-function draw(pos, state, dispatch) {
-  function drawPixel({x, y}, state) {
-    let drawn = {x, y, color: state.color};
-    dispatch({picture: state.picture.draw([drawn])});
-  }
-  drawPixel(pos, state);
-  return drawPixel;
-}
-```
+[PRE11]
 
 函数立即调用 drawPixel 函数，但也返回它，以便在用户拖动或滑动图片时，对新触摸的像素再次调用。
 
 为了绘制更大的形状，快速创建矩形是很有用的。矩形工具在你开始拖动的点和你拖动到的点之间绘制一个矩形。
 
-```js
-function rectangle(start, state, dispatch) {
-  function drawRectangle(pos) {
-    let xStart = Math.min(start.x, pos.x);
-    let yStart = Math.min(start.y, pos.y);
-    let xEnd = Math.max(start.x, pos.x);
-    let yEnd = Math.max(start.y, pos.y);
-    let drawn = [];
-    for (let y = yStart; y <= yEnd; y++) {
-      for (let x = xStart; x <= xEnd; x++) {
-        drawn.push({x, y, color: state.color});
-      }
-    }
-    dispatch({picture: state.picture.draw(drawn)});
-  }
-  drawRectangle(start);
-  return drawRectangle;
-}
-```
+[PRE12]
 
 这个实现中的一个重要细节是，在拖动时，矩形是在*原始*状态下在图片上重新绘制的。这样，你可以在创建矩形时将其变大或变小，而不会在最终图片中留下中间的矩形。这是不可变图片对象有用的原因之一——稍后我们将看到另一个原因。
 
@@ -337,66 +146,19 @@ function rectangle(start, state, dispatch) {
 
 有趣的是，我们将要做的方式有点像第七章中的路径查找代码。尽管那段代码在图形中搜索以找到路线，这段代码则在网格中搜索以找到所有“连接”的像素。跟踪一组分支可能路线的问题是类似的。
 
-```js
-const around = [{dx: -1, dy: 0}, {dx: 1, dy: 0},
-                {dx: 0, dy: -1}, {dx: 0, dy: 1}];
-
-function fill({x, y}, state, dispatch) {
-  let targetColor = state.picture.pixel(x, y);
-  let drawn = [{x, y, color: state.color}];
-  let visited = new Set();
-  for (let done = 0; done < drawn.length; done++) {
-    for (let {dx, dy} of around) {
-      let x = drawn[done].x + dx, y = drawn[done].y + dy;
-      if (x >= 0 && x < state.picture.width &&
-          y >= 0 && y < state.picture.height &&
-          !visited.has(x + "," + y) &&
-          state.picture.pixel(x, y) == targetColor) {
-        drawn.push({x, y, color: state.color});
-        visited.add(x + "," + y);
-      }
-    }
-  }
-  dispatch({picture: state.picture.draw(drawn)});
-}
-```
+[PRE13]
 
 绘制的像素数组同时充当函数的工作列表。对于每个到达的像素，我们必须查看是否有任何相邻像素具有相同的颜色并且尚未被覆盖。随着新像素的添加，循环计数器落后于绘制数组的长度。它前面的任何像素仍需要被探索。当它追上长度时，就没有未探索的像素了，函数也就完成了。
 
 最终的工具是一个颜色选择器，它允许你在图片上指向一个颜色，以将其用作当前绘图颜色。
 
-```js
-function pick(pos, state, dispatch) {
-  dispatch({color: state.picture.pixel(pos.x, pos.y)});
-}
-```
+[PRE14]
 
 ### 保存与加载
 
 当我们完成了我们的杰作时，我们会想把它保存下来。我们应该添加一个按钮，用于将当前图片作为图像文件下载。这个控件提供了这个按钮：
 
-```js
-class SaveButton {
-  constructor(state) {
-    this.picture = state.picture;
-    this.dom = elt("button", {
-      onclick: () => this.save()
-    }, " Save");
-  }
-  save() {
-    let canvas = elt("canvas");
-    drawPicture(this.picture, canvas, 1);
-    let link = elt("a", {
-      href: canvas.toDataURL(),
-      download: "pixelart.png"
-    });
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  }
-  syncState(state) { this.picture = state.picture; }
-}
-```
+[PRE15]
 
 该组件跟踪当前图片，以便在保存时可以访问它。为了创建图像文件，它使用一个<canvas>元素，在其上绘制图片（每个像素按一比一的比例）。
 
@@ -406,69 +168,17 @@ canvas 元素上的 toDataURL 方法创建一个使用 data:方案的 URL。与 
 
 而且情况还会更糟。我们还希望能够将现有的图像文件加载到我们的应用程序中。为此，我们再次定义一个按钮组件。
 
-```js
-class LoadButton {
-  constructor(_, {dispatch}) {
-    this.dom = elt("button", {
-      onclick: () => startLoad(dispatch)
-    }, " Load");
-  }
-  syncState() {}
-}
-
-function startLoad(dispatch) {
-  let input = elt("input", {
-    type: "file",
-    onchange: () => finishLoad(input.files[0], dispatch)
-  });
-  document.body.appendChild(input);
-  input.click();
-  input.remove();
-}
-```
+[PRE16]
 
 要访问用户计算机上的文件，我们需要用户通过文件输入字段选择文件。但我们不希望加载按钮看起来像文件输入字段，因此我们在按钮点击时创建文件输入，然后假装这个文件输入被点击了。
 
 当用户选择一个文件时，我们可以使用 FileReader 来访问其内容，再次以数据 URL 的形式。该 URL 可以用来创建一个<img>元素，但由于我们无法直接访问该图像中的像素，因此无法从中创建 Picture 对象。
 
-```js
-function finishLoad(file, dispatch) {
-  if (file == null) return;
-  let reader = new FileReader();
-  reader.addEventListener("load", () => {
-    let image = elt("img", {
-      onload: () => dispatch({
-        picture: pictureFromImage(image)
-      }),
-      src: reader.result
-    });
-  });
-  reader.readAsDataURL(file);
-}
-```
+[PRE17]
 
 为了访问像素，我们必须首先将图片绘制到<canvas>元素上。canvas 上下文具有 getImageData 方法，允许脚本读取其像素。因此，一旦图片在 canvas 上，我们就可以访问它并构建一个 Picture 对象。
 
-```js
-function pictureFromImage(image) {
-  let width = Math.min(100, image.width);
-  let height = Math.min(100, image.height);
-  let canvas = elt("canvas", {width, height});
-  let cx = canvas.getContext("2d");
-  cx.drawImage(image, 0, 0);
-  let pixels = [];
-  let {data} = cx.getImageData(0, 0, width, height);
-
- function hex(n) {
-    return n.toString(16).padStart(2, "0");
-  }
-  for (let i = 0; i < data.length; i += 4) {
-    let [r, g, b] = data.slice(i, i + 3);
-    pixels.push("#" + hex(r) + hex(g) + hex(b));
-  }
-  return new Picture(width, height, pixels);
-}
-```
+[PRE18]
 
 我们将把图像的大小限制在 100*×*100 像素，因为任何更大的图片在我们的显示器上看起来都会显得*巨大*，并可能会减慢界面速度。
 
@@ -488,29 +198,7 @@ getImageData 返回的对象的数据属性是一个颜色分量数组。对于�
 
 不过，我们并不想存储*每个*更改——只存储时间间隔一定的更改。为了做到这一点，我们需要一个第二个属性 doneAt，用来跟踪我们上次在历史中存储图像的时间。
 
-```js
-function historyUpdateState(state, action) {
-  if (action.undo == true) {
-    if (state.done.length == 0) return state;
-    return {
-      ...state,
-      picture: state.done[0],
- done: state.done.slice(1),
-      doneAt: 0
-    };
-  } else if (action.picture &&
-             state.doneAt < Date.now() - 1000) {
-    return {
-      ...state,
-      ...action,
-      done: [state.picture, ...state.done],
-      doneAt: Date.now()
-    };
-  } else {
-    return {...state, ...action};
-  }
-}
-```
+[PRE19]
 
 当操作是撤销操作时，函数从历史记录中获取最近的图像，并将其设为当前图像。它将 doneAt 设置为零，以确保下一个更改将图像存回历史中，让你在需要时可以恢复到这个图像。
 
@@ -518,64 +206,19 @@ function historyUpdateState(state, action) {
 
 撤销按钮组件并没有太多功能。它在被点击时分发撤销操作，当没有可以撤销的内容时则禁用自身。
 
-```js
-class UndoButton {
-  constructor(state, {dispatch}) {
-    this.dom = elt("button", {
-      onclick: () => dispatch({undo: true}),
-      disabled: state.done.length == 0
-    }, " Undo");
-  }
-  syncState(state) {
-    this.dom.disabled = state.done.length == 0;
-  }
-}
-```
+[PRE20]
 
 ### 让我们绘图
 
 为了设置应用程序，我们需要创建一个状态、一组工具、一组控件和一个调度函数。我们可以将它们传递给 PixelEditor 构造函数来创建主要组件。由于我们在练习中需要创建多个编辑器，我们首先定义一些绑定。
 
-```js
-const startState = {
-  tool: "draw",
-  color: "#000000",
- picture: Picture.empty(60, 30, "#f0f0f0"),
-  done: [],
-  doneAt: 0
-};
-
-const baseTools = {draw, fill, rectangle, pick};
-
-const baseControls = [
-  ToolSelect, ColorSelect, SaveButton, LoadButton, UndoButton
-];
-
-function startPixelEditor({state = startState,
-                           tools = baseTools,
-                           controls = baseControls}) {
-  let app = new PixelEditor(state, {
-    tools,
-    controls,
-    dispatch(action) {
-      state = historyUpdateState(state, action);
-      app.syncState(state);
-    }
-  });
-  return app.dom;
-}
-```
+[PRE21]
 
 在解构对象或数组时，可以在绑定名称后使用=来为绑定提供默认值，当属性缺失或为 undefined 时使用。startPixelEditor 函数利用这一点接受一个具有多个可选属性的对象作为参数。例如，如果你不提供 tools 属性，tools 将绑定到 baseTools。
 
 这就是我们如何在屏幕上获得实际编辑器的方式：
 
-```js
-<div></div>
-<script>
-  document.querySelector("div").appendChild(startPixelEditor({}));
-</script>
-```
+[PRE22]
 
 ### 为什么这会如此困难？
 

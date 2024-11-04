@@ -44,36 +44,19 @@
 
 作为一个例子，setTimeout 函数在 Node.js 和浏览器中都可用，它等待给定的毫秒数，然后调用一个函数。
 
-```js
-setTimeout(() => console.log("Tick"), 500);
-```
+[PRE0]
 
 等待通常不是重要的工作，但当你需要安排某件事情在特定时间发生或检查某个操作是否比预期耗时更长时，这可以非常有用。
 
 另一个常见异步操作的例子是从设备存储中读取文件。想象一下，你有一个函数 readTextFile，它将文件的内容读取为字符串并传递给回调函数。
 
-```js
-readTextFile("shopping_list.txt", content => {
-  console.log(`Shopping List:\n${content}`);
-});
-// → Shopping List:
-// → Peanut butter
-// → Bananas
-```
+[PRE1]
 
 readTextFile 函数不是标准 JavaScript 的一部分。我们将在后面的章节中看到如何在浏览器和 Node.js 中读取文件。
 
 使用回调在一系列异步操作中执行多个操作意味着你必须不断传递新的函数来处理在这些操作之后计算的继续。一个比较两个文件并生成一个布尔值，指示它们的内容是否相同的异步函数可能看起来像这样：
 
-```js
-function compareFiles(fileA, fileB, callback) {
-  readTextFile(fileA, contentA => {
-    readTextFile(fileB, contentB => {
- callback(contentA == contentB);
-    });
-  });
-}
-```
+[PRE2]
 
 这种编程风格是可行的，但每进行一次异步操作，缩进级别就会增加，因为你进入了另一个函数。进行更复杂的操作，比如将异步操作包装在循环中，可能会变得很尴尬。
 
@@ -87,25 +70,13 @@ function compareFiles(fileA, fileB, callback) {
 
 创建承诺的最简单方法是调用`Promise.resolve`。这个函数确保你提供的值被包装在一个承诺中。如果它已经是一个承诺，则直接返回。否则，你将得到一个新的承诺，它立即以你的值作为结果解析。
 
-```js
-let fifteen = Promise.resolve(15);
-fifteen.then(value => console.log(`Got ${value}`));
-// → Got 15
-```
+[PRE3]
 
 要创建一个不会立即解析的承诺，可以使用`Promise`作为构造函数。它的接口有些奇怪：构造函数期望一个函数作为参数，并立即调用它，传递一个可以用来解析承诺的函数。
 
 例如，这就是如何为`readTextFile`函数创建一个基于承诺的接口：
 
-```js
-function textFile(filename) {
-  return new Promise(resolve => {
-    readTextFile(filename, text => resolve(text));
-  });
-}
-
-textFile("plans.txt").then(console.log);
-```
+[PRE4]
 
 注意，与回调风格的函数相比，这个异步函数返回了一个有意义的值——一个承诺，承诺在未来某个时刻提供文件的内容。
 
@@ -113,14 +84,7 @@ textFile("plans.txt").then(console.log);
 
 这个函数读取一个包含文件名的文件，并返回该列表中随机文件的内容，展示了这种异步承诺管道：
 
-```js
-function randomFile(listFile) {
-  return textFile(listFile)
-    .then(content => content.trim().split("\n"))
-    .then(ls => ls[Math.floor(Math.random() * ls.length)])
-    .then(filename => textFile(filename));
-}
-```
+[PRE5]
 
 该函数返回这一系列 then 调用的结果。初始 promise 以字符串形式获取文件列表。第一次 then 调用将该字符串转换为行数组，从而产生一个新的 promise。第二次 then 调用从中随机选择一行，产生一个返回单个文件名的第三个 promise。最终的 then 调用读取这个文件，因此该函数的整体结果是一个返回随机文件内容的 promise。
 
@@ -128,13 +92,7 @@ function randomFile(listFile) {
 
 也可以在单个 then 回调中执行所有这些步骤，因为实际上只有最后一步是异步的。但那种仅执行某些同步数据转换的 then 包装器通常是有用的，例如，当你想返回一个生成某些异步结果处理版本的 promise 时。
 
-```js
-function jsonFile(filename) {
-  return textFile(filename).then(JSON.parse);
-}
-
-jsonFile("package.json").then(console.log);
-```
+[PRE6]
 
 通常，将 promise 视为一种设备是有益的，它使代码可以忽略值何时到达的问题。正常值必须在我们引用它之前实际存在。承诺的值是一个*可能*已经存在或者可能在未来某个时刻出现的值。通过将它们与 then 调用连接在一起定义的基于 promise 的计算，随着输入变得可用而异步执行。
 
@@ -146,12 +104,7 @@ jsonFile("package.json").then(console.log);
 
 一个常见的约定是使用回调的第一个参数来指示操作失败，第二个参数用来传递操作成功时产生的值。
 
-```js
-someAsyncFunction((error, value) => {
-  if (error) handleError(error);
-  else processValue(value);
-});
-```
+[PRE7]
 
 这样的回调函数必须始终检查是否收到异常，并确保它们引起的任何问题，包括它们调用的函数抛出的异常，都被捕获并传递给正确的函数。
 
@@ -167,30 +120,11 @@ Promises 使这变得更简单。它们可以被解决（操作成功完成）�
 
 当我们的 readTextFile 函数遇到问题时，它将错误作为第二个参数传递给回调函数。我们的 textFile 包装器实际上应该检查该参数，以确保失败导致返回的承诺被拒绝。
 
-```js
-function textFile(filename) {
-  return new Promise((resolve, reject) => {
-    readTextFile(filename, (text, error) => {
-      if (error) reject(error);
-      else resolve(text);
-    });
-  });
-}
-```
+[PRE8]
 
 通过调用 then 和 catch 创建的承诺值链形成了一条管道，异步值或失败通过这条管道传递。由于这样的链是通过注册处理程序创建的，因此每个链接都有一个成功处理程序或拒绝处理程序（或两者都有）。不匹配结果类型（成功或失败）的处理程序会被忽略。匹配的处理程序会被调用，其结果决定了接下来是什么样的值——当它们返回非承诺值时为成功，当它们抛出异常时为拒绝，而当它们返回一个承诺时则为承诺的结果。
 
-```js
-new Promise((_, reject) => reject(new Error("Fail")))
-  .then(value => console.log("Handler 1:", value))
-  .catch(reason => {
-    console.log("Caught failure " + reason);
-    return "nothing";
-  })
-  .then(value => console.log("Handler 2:", value));
-// → Caught failure Error: Fail
-// → Handler 2: nothing
-```
+[PRE9]
 
 第一个 then 处理程序函数没有被调用，因为在管道的那个点上，承诺持有一个拒绝。catch 处理程序处理该拒绝并返回一个值，该值被传递给第二个 then 处理程序函数。
 
@@ -220,14 +154,7 @@ new Promise((_, reject) => reject(new Error("Fail")))
 
 假设 Carla 有一个 joinWifi 函数。给定网络名称和密码（作为字符串），该函数尝试加入网络，返回一个如果成功则解析的 Promise，如果身份验证失败则拒绝的 Promise。她需要的第一件事是一个包装 Promise 的方法，以便在耗时过长后自动拒绝，这样如果接入点没有响应，程序就能迅速继续。
 
-```js
-function withTimeout(promise, time) {
-  return new Promise((resolve, reject) => {
-    promise.then(resolve, reject);
-    setTimeout(() => reject("Timed out"), time);
-  });
-}
-```
+[PRE10]
 
 这利用了 Promise 只能被解析或拒绝一次的事实。如果作为参数传入的 Promise 先解析或拒绝，那么该结果将是 withTimeout 返回的 Promise 的结果。另一方面，如果 setTimeout 先触发并拒绝了 Promise，那么任何进一步的解析或拒绝调用都会被忽略。
 
@@ -235,32 +162,11 @@ function withTimeout(promise, time) {
 
 因为你不能在 for 循环内等待一个 Promise，Carla 使用一个递归函数来驱动这个过程。在每次调用中，这个函数获取当前已知的代码以及要尝试的下一个数字。根据发生的情况，它可能返回一个完成的代码，或者再次调用自己，开始破解代码的下一个位置，或用另一个数字重试。
 
-```js
-function crackPasscode(networkID) {
-  function nextDigit(code, digit) {
-    let newCode = code + digit;
-    return withTimeout(joinWifi(networkID, newCode), 50)
-      .then(() => newCode)
-      .catch(failure => {
-        if (failure == "Timed out") {
-          return nextDigit(newCode, 0);
-        } else if (digit < 9) {
-          return nextDigit(code, digit + 1);
-        } else {
-          throw failure;
-        }
-      });
-  }
-  return nextDigit("", 0);
-}
-```
+[PRE11]
 
 接入点通常在大约 20 毫秒内响应错误的身份验证请求，因此为了安全起见，该函数在请求超时前等待 50 毫秒。
 
-```js
-crackPasscode("HANGAR 2").then(console.log);
-// → 555555
-```
+[PRE12]
 
 Carla 侧着头叹气。如果代码再难一些，她会觉得更满意。
 
@@ -274,26 +180,7 @@ Carla 侧着头叹气。如果代码再难一些，她会觉得更满意。
 
 我们可以像这样重写 crackPasscode：
 
-```js
-async function crackPasscode(networkID) {
-  for (let code = "";;) {
-    for (let digit = 0;; digit++) {
-      let newCode = code + digit;
-      try {
-        await withTimeout(joinWifi(networkID, newCode), 50);
-        return newCode;
-      } catch (failure) {
-        if (failure == "Timed out") {
-          code = newCode;
-          break;
-        } else if (digit == 9) {
-          throw failure;
-        }
-      }
-    }
-  }
-}
-```
+[PRE13]
 
 这个版本更清楚地展示了函数的双重循环结构（内循环尝试数字 0 到 9，外循环向密码中添加数字）。
 
@@ -311,33 +198,13 @@ async function crackPasscode(networkID) {
 
 当你用 function*定义一个函数（在单词 function 后加上星号）时，它变成一个生成器。当你调用生成器时，它返回一个迭代器，这在第六章中我们已经看到了。
 
-```js
-function* powers(n) {
-  for (let current = n;; current *= n) {
-    yield current;
-  }
-}
-
-for (let power of powers(3)) {
-  if (power > 50) break;
-  console.log(power);
-}
-// → 3
-// → 9
-// → 27
-```
+[PRE14]
 
 最初，当你调用 powers 时，函数在开始时被冻结。每次你在迭代器上调用 next 时，函数会运行直到遇到一个 yield 表达式，这会暂停它，并使得 yield 的值成为迭代器产生的下一个值。当函数返回时（示例中的函数从未返回），迭代器完成。
 
 当你使用生成器函数时，编写迭代器通常要容易得多。Group 类的迭代器（来自第六章的练习）可以用这个生成器来编写：
 
-```js
-Group.prototype[Symbol.iterator] = function*() {
-  for (let i = 0; i < this.members.length; i++) {
- yield this.members[i];
-  }
-};
-```
+[PRE15]
 
 不再需要创建一个对象来保存迭代状态——生成器会在每次 yield 时自动保存它们的局部状态。
 
@@ -361,30 +228,13 @@ Group.prototype[Symbol.iterator] = function*() {
 
 这段代码向本地网络上的所有地址发送显示更新消息，以查看哪个有效。IP 地址中的每个数字可以在 0 到 255 之间变化。在它发送的数据中，激活与网络地址最后一个数字对应的多个灯光。
 
-```js
-for (let addr = 1; addr < 256; addr++) {
-  let data = [];
-  for (let n = 0; n < 1500; n++) {
-    data.push(n < addr ? 3 : 0);
-  }
-  let ip = `10.0.0.${addr}`;
-  request(ip, {command: "display", data})
-    .then(() => console.log(`Request to ${ip} accepted`))
-    .catch(() => {});
-}
-```
+[PRE16]
 
 由于大多数这些地址不存在或不接受此类消息，捕捉调用确保网络错误不会使程序崩溃。所有请求立即发送，而不等待其他请求完成，以免在某些机器未响应时浪费时间。
 
 扫描网络后，卡拉回到外面查看结果。令她高兴的是，所有屏幕的左上角都显示了一条光带。它们*确实*在本地网络上，并且*确实*接受命令。她迅速记录下每个屏幕上显示的数字。有九个屏幕，排列成三行三列。它们的网络地址如下：
 
-```js
-const screenAddresses = [
-  "10.0.0.44", "10.0.0.45", "10.0.0.41",
-  "10.0.0.31", "10.0.0.40", "10.0.0.42",
-  "10.0.0.48", "10.0.0.47", "10.0.0.46"
-];
-```
+[PRE17]
 
 现在这为各种捣蛋行为打开了可能性。她可以在墙上用巨大的字母展示“乌鸦统治，人类流口水”。但这感觉有点粗糙。相反，她计划在晚上展示一段飞翔的乌鸦视频，覆盖所有屏幕。
 
@@ -396,57 +246,17 @@ Carla 找到了一段合适的视频剪辑，其中可以重复一秒半的镜�
 
 Promise 有一个静态方法`all`，可以将一个 promise 数组转换为一个解析为结果数组的单一 promise。这提供了一种方便的方式，使一些异步操作能够并行进行，等待它们全部完成，然后对它们的结果进行处理（或者至少等待它们以确保它们不会失败）。
 
-```js
-function displayFrame(frame) {
-  return Promise.all(frame.map((data, i) => {
-    return request(screenAddresses[i], {
-      command: "display",
-      data
-    });
-  }));
-}
-```
+[PRE18]
 
 这映射了帧中的图像（这是一个显示数据数组的数组），以创建一个请求 promise 的数组。然后它返回一个组合所有这些 promise 的 promise。
 
 为了能够停止正在播放的视频，该过程被封装在一个类中。这个类有一个异步的播放方法，返回一个仅在通过停止方法再次停止播放时才会解析的 promise。
 
-```js
-function wait(time) {
-  return new Promise(accept => setTimeout(accept, time));
-}
-
-class VideoPlayer {
-  constructor(frames, frameTime) {
-    this.frames = frames;
-    this.frameTime = frameTime;
-    this.stopped = true;
-  }
-
-  async play() {
-    this.stopped = false;
-    for (let i = 0; !this.stopped; i++) {
-      let nextFrame = wait(this.frameTime);
-      await displayFrame(this.frames[i % this.frames.length]);
-      await nextFrame;
-    }
-  }
-
-  stop() {
-    this.stopped = true;
- }
-}
-```
+[PRE19]
 
 `wait`函数将`setTimeout`包装在一个 promise 中，该 promise 在给定的毫秒数后解析。这对于控制播放速度非常有用。
 
-```js
-let video = new VideoPlayer(clipImages, 100);
-video.play().catch(e => {
-  console.log("Playback failed: " + e);
-});
-setTimeout(() => video.stop(), 15000);
-```
+[PRE20]
 
 在屏幕墙存在的整个星期，每晚，当天黑时，一个巨大的发光橙色鸟神秘地出现在上面。
 
@@ -458,40 +268,17 @@ setTimeout(() => video.stop(), 15000);
 
 异步行为发生在它自己空的函数调用栈上。这是没有 promise 时，跨异步代码管理异常如此困难的原因之一。由于每个回调开始时栈几乎是空的，当它们抛出异常时，你的 catch 处理程序不会在栈上。
 
-```js
-try {
-  setTimeout(() => {
-    throw new Error("Woosh");
-  }, 20);
-} catch (e) {
-  // This will not run
-  console.log("Caught", e);
-}
-```
+[PRE21]
 
 无论事件——如超时或传入请求——发生得多么紧密，JavaScript 环境一次只能运行一个程序。你可以把它看作是在你的程序周围运行一个大循环，称为 *事件循环*。当没有事情可做时，该循环会暂停。但是随着事件的到来，它们会被添加到队列中，代码会一个接一个地执行。因为没有两个事情可以同时运行，运行缓慢的代码可能会延迟处理其他事件。
 
 这个例子设置了一个超时，但随后拖延，直到超时预定的时间点之后，导致超时变得迟到。
 
-```js
-let start = Date.now();
-setTimeout(() => {
-  console.log("Timeout ran at", Date.now() - start);
-}, 20);
-while (Date.now() < start + 50) {}
-console.log("Wasted time until", Date.now() - start);
-// → Wasted time until 50
-// → Timeout ran at 55
-```
+[PRE22]
 
 Promise 总是作为一个新事件解析或拒绝。即使一个 promise 已经被解析，等待它也会导致你的回调在当前脚本完成后运行，而不是立即运行。
 
-```js
-Promise.resolve("Done").then(console.log);
-console.log("Me first!");
-// → Me first!
-// → Done
-```
+[PRE23]
 
 在后面的章节中，我们将看到在事件循环上运行的各种其他类型的事件。
 
@@ -501,16 +288,7 @@ console.log("Me first!");
 
 让我们看一个例子。这是一个尝试报告数组中每个文件大小的函数，确保同时读取它们，而不是按顺序读取。
 
-```js
-async function fileSizes(files) {
-  let list = "";
-  await Promise.all(files.map(async fileName => {
-    list += fileName + ": " +
-      (await textFile(fileName)).length + "\n";
-  }));
-  return list;
-}
-```
+[PRE24]
 
 async fileName => 部分展示了如何通过在箭头函数前面加上 async 关键字来使箭头函数也变为异步。
 
@@ -526,15 +304,7 @@ async fileName => 部分展示了如何通过在箭头函数前面加上 async �
 
 这本可以通过返回映射 promises 的行并在 Promise.all 的结果上调用 join 来轻松避免，而不是通过更改绑定来构建列表。像往常一样，计算新值比更改现有值更不易出错。
 
-```js
-async function fileSizes(files) {
-  let lines = files.map(async fileName => {
-    return fileName + ": " +
-      (await textFile(fileName)).length;
-  });
-  return (await Promise.all(lines)).join("\n");
-}
-```
+[PRE25]
 
 像这样的错误很容易出现，特别是在使用`await`时，你应该意识到代码中的漏洞所在。JavaScript 的*显式*异步性（无论是通过回调、Promise 还是 await）的一大优点是，发现这些漏洞相对简单。
 
@@ -552,11 +322,7 @@ Promise 使得异步编程变得更简单，Promise 是代表可能在未来完�
 
 她还记录了摄像头被触发的时间一段时间，并希望利用这些信息来可视化一周内哪些时段通常比较安静，哪些时段则比较繁忙。日志存储在每行包含一个时间戳数字（由`Date.now()`返回）的文件中。
 
-```js
-1695709940692
-1695701068331
-1695701189163
-```
+[PRE26]
 
 “camera_logs.txt”文件保存了日志文件的列表。编写一个异步函数`activityTable(day)`，该函数为给定的星期几返回一个包含 24 个数字的数组，每个数字对应一天中的每个小时，表示该小时内观察到的摄像头网络流量。星期几通过数字标识，使用`Date.getDay`的方法，其中星期天是 0，星期六是 6。
 
