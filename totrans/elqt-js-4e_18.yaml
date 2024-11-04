@@ -1,398 +1,568 @@
 - en: '16'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '16'
 - en: 'PROJECT: A PLATFORM GAME'
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 项目：一个平台游戏
 - en: Much of my initial fascination with computers, like that of many nerdy kids,
     had to do with computer games. I was drawn into the tiny simulated worlds that
     I could manipulate and in which stories (sort of) unfolded—more, I suppose, because
     of the way I projected my imagination into them than because of the possibilities
     they actually offered.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 我最初对计算机的迷恋，如同许多宅男孩童一样，源于电脑游戏。我被那些我可以操控的小型模拟世界吸引，故事（某种程度上）在其中展开——我想，这更多是因为我将想象投射到这些世界中，而不是因为它们实际提供的可能性。
 - en: I don’t wish a career in game programming on anyone. As with the music industry,
     the discrepancy between the number of eager young people wanting to work in it
     and the actual demand for such people creates a rather unhealthy environment.
     But writing games for fun is amusing.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 我不希望任何人走上游戏编程的职业道路。与音乐产业一样，渴望从事这一行业的年轻人数量与实际需求之间的差异，创造了一个相当不健康的环境。但为了乐趣而编写游戏是令人愉快的。
 - en: This chapter will walk through the implementation of a small platform game.
     Platform games (or “jump and run” games) are games that expect the player to move
     a figure through a world, which is usually two-dimensional and viewed from the
     side, while jumping over and onto things.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章将介绍一个小型平台游戏的实现。平台游戏（或称“跳跃跑动”游戏）是指玩家需要在一个通常为二维且从侧面观看的世界中移动角色，同时跳跃越过或登上物体的游戏。
 - en: The Game
+  id: totrans-5
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 游戏
 - en: 'Our game will be roughly based on Dark Blue (*[https://www.lessmilk.com/dark-blue/](https://www.lessmilk.com/dark-blue/)*)
     by Thomas Palef. I chose that game because it is both entertaining and minimalist
     and because it can be built without too much code. It looks like this:'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的游戏将大致基于托马斯·帕雷夫的《深蓝》（*[https://www.lessmilk.com/dark-blue/](https://www.lessmilk.com/dark-blue/)）。我选择这个游戏是因为它既有趣又简约，并且可以在不需要过多代码的情况下构建。它的样子如下：
 - en: '![Image](../images/f0254-01.jpg)'
+  id: totrans-7
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0254-01.jpg)'
 - en: The dark box represents the player, whose task is to collect the yellow boxes
     (coins) while avoiding the red stuff (lava). A level is completed when all coins
     have been collected.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 黑色方框代表玩家，其任务是在避开红色物体（熔岩）的同时收集黄色方框（硬币）。当所有硬币被收集后，关卡就完成了。
 - en: The player can walk around with the left and right arrow keys and can jump with
     the up arrow. Jumping is this game character’s specialty. It can reach several
     times its own height and can change direction in midair. This may not be entirely
     realistic, but it helps give the player the feeling of being in direct control
     of the on-screen avatar.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 玩家可以使用左箭头和右箭头键走动，并可以用上箭头键跳跃。跳跃是这个游戏角色的特长。它可以达到自身高度的几倍，并且可以在空中改变方向。这可能并不完全现实，但它帮助玩家感受到对屏幕上角色的直接控制。
 - en: The game consists of a static background, laid out like a grid, with the moving
     elements overlaid on that background. Each field on the grid is either empty,
     solid, or lava. The moving elements are the player, coins, and certain pieces
     of lava. The positions of these elements are not constrained to the grid—their
     coordinates may be fractional, allowing smooth motion.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 游戏由一个静态背景构成，背景呈网格布局，移动元素叠加在该背景上。网格上的每个格子要么是空的，要么是固体，要么是熔岩。移动元素包括玩家、硬币和某些熔岩块。这些元素的位置不受网格的限制——它们的坐标可以是小数，从而实现平滑的移动。
 - en: The Technology
+  id: totrans-11
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 技术
 - en: We will use the browser DOM to display the game, and we’ll read user input by
     handling key events.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将使用浏览器的DOM来显示游戏，并通过处理键盘事件来读取用户输入。
 - en: 'The screen- and keyboard-related code is only a small part of the work we need
     to do to build this game. Since everything looks like colored boxes, drawing is
     uncomplicated: we create DOM elements and use styling to give them a background
     color, size, and position.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 与屏幕和键盘相关的代码只是我们构建这个游戏所需工作的一小部分。由于一切看起来像是彩色方框，因此绘制非常简单：我们创建DOM元素，并使用样式为它们设置背景色、大小和位置。
 - en: We can represent the background as a table, since it is an unchanging grid of
     squares. The free-moving elements can be overlaid using absolutely positioned
     elements.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以将背景表示为一个表格，因为它是一个不变的方格网。可以使用绝对定位的元素叠加自由移动的元素。
 - en: In games and other programs that should animate graphics and respond to user
     input without noticeable delay, efficiency is important. Although the DOM was
     not originally designed for high-performance graphics, it is actually better at
     this than you would expect. You saw some animations in [Chapter 14](ch14.xhtml#ch14).
     On a modern machine, a simple game like this performs well, even if we don’t worry
     about optimization very much.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在需要动画图形并对用户输入做出快速响应的游戏和其他程序中，效率非常重要。尽管 DOM 最初并不是为了高性能图形设计的，但它在这方面实际上表现得比你想象的要好。你在[第
+    14 章](ch14.xhtml#ch14)中看到了某些动画。在现代计算机上，即使我们不太关心优化，这样简单的游戏运行也很好。
 - en: In the next chapter, we will explore another browser technology, the <canvas>
     tag, which provides a more traditional way to draw graphics, working in terms
     of shapes and pixels rather than DOM elements.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一章中，我们将探索另一种浏览器技术，<canvas> 标签，它提供了一种更传统的绘制图形的方式，以形状和像素为单位，而不是 DOM 元素。
 - en: Levels
+  id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 级别
 - en: We’ll want a human-readable, human-editable way to specify levels. Since it
     is OK for everything to start out on a grid, we could use big strings in which
     each character represents an element—either a part of the background grid or a
     moving element.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们希望有一种人类可读且可编辑的方式来指定级别。由于一切都可以从网格开始，我们可以使用大字符串，其中每个字符表示一个元素——要么是背景网格的一部分，要么是移动元素。
 - en: 'The plan for a small level might look like this:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 小级别的计划可能看起来是这样的：
 - en: '[PRE0]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Periods are empty space, hash (#) characters are walls, and plus signs are lava.
     The player’s starting position is the at sign (@). Every O character is a coin,
     and the equal sign (=) at the top is a block of lava that moves back and forth
     horizontally.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 句号表示空白，井号 (#) 字符表示墙，加号表示熔岩。玩家的起始位置是 @ 符号。每个 O 字符是一个金币，而顶部的等号 (=) 是一个水平往返移动的熔岩块。
 - en: 'We’ll support two additional kinds of moving lava: the pipe character (|) creates
     vertically moving blobs, and v indicates *dripping* lava—vertically moving lava
     that doesn’t bounce back and forth but only moves down, jumping back to its start
     position when it hits the floor.'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将支持两种额外类型的移动熔岩：管道字符 (|) 创建垂直移动的水滴，v 表示 *滴落* 熔岩——垂直移动的熔岩，它不会前后弹跳，而是仅向下移动，当它碰到地面时跳回起始位置。
 - en: A whole game consists of multiple levels that the player must complete. A level
     is completed when all coins have been collected. If the player touches lava, the
     current level is restored to its starting position, and the player may try again.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 整个游戏由多个级别组成，玩家必须完成这些级别。当所有金币都被收集时，级别即被视为完成。如果玩家碰到熔岩，当前级别将恢复到其起始位置，玩家可以重新尝试。
 - en: Reading a Level
+  id: totrans-24
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 读取级别
 - en: The following class stores a level object. Its argument should be the string
     that defines the level.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下类存储一个级别对象。它的参数应该是定义级别的字符串。
 - en: '[PRE1]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: The trim method is used to remove whitespace at the start and end of the plan
     string. This allows our example plan to start with a newline so that all lines
     are directly below each other. The remaining string is split on new-line characters,
     and each line is spread into an array, producing arrays of characters.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: trim 方法用于去除计划字符串开头和结尾的空白。这允许我们的示例计划以换行符开头，以便所有行直接相互对齐。剩余的字符串在换行符上进行分割，每一行被展开成一个数组，从而生成字符数组。
 - en: So rows holds an array of arrays of characters, the rows of the plan. We can
     derive the level’s width and height from these. But we must still separate the
     moving elements from the background grid. We’ll call moving elements *actors*.
     They’ll be stored in an array of objects. The background will be an array of arrays
     of strings, holding field types such as “empty”, “wall”, or “lava”.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以行保存了一个字符的数组数组，即计划的行。我们可以从中推导出级别的宽度和高度。但我们仍然需要将移动元素与背景网格分开。我们将移动元素称为 *演员*。它们将存储在一个对象数组中。背景将是一个字符串的数组数组，包含“空”、“墙”或“熔岩”等字段类型。
 - en: To create these arrays, we map over the rows and then over their content. Remember
     that map passes the array index as a second argument to the mapping function,
     which tells us the x- and y-coordinates of a given character. Positions in the
     game will be stored as pairs of coordinates, with the upper left being (0, 0)
     and each background square being 1 unit high and wide.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 要创建这些数组，我们需要遍历行，然后遍历它们的内容。记住，map 会将数组索引作为第二个参数传递给映射函数，这样我们就能知道给定字符的 x 和 y 坐标。游戏中的位置将以坐标对的形式存储，左上角为
+    (0, 0)，每个背景方块的高宽均为 1 个单位。
 - en: To interpret the characters in the plan, the Level constructor uses the levelChars
     object, which, for each character used in the level descriptions, holds a string
     if it is a background type, and a class if it produces an actor. When type is
     an actor class, its static create method is used to create an object, which is
     added to startActors, and the mapping function returns “empty” for this background
     square.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了解释计划中的字符，Level 构造函数使用 levelChars 对象，该对象为每个在关卡描述中使用的字符存储一个字符串（如果是背景类型）和一个类（如果生成一个演员）。当类型是演员类时，它的静态
+    create 方法用于创建一个对象，该对象被添加到 startActors 中，映射函数为这个背景方块返回“空”。
 - en: The position of the actor is stored as a Vec object. This is a two-dimensional
     vector, an object with x and y properties, as seen in the exercises of [Chapter
     6](ch06.xhtml#ch06).
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 演员的位置存储为一个 Vec 对象。这是一个二维向量，一个具有 x 和 y 属性的对象，如[第六章](ch06.xhtml#ch06)的练习中所示。
 - en: As the game runs, actors will end up in different places or even disappear entirely
     (as coins do when collected). We’ll use a State class to track the state of a
     running game.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着游戏的进行，演员将最终出现在不同的位置，甚至完全消失（如硬币被收集时）。我们将使用一个 State 类来跟踪正在运行的游戏的状态。
 - en: '[PRE2]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: The status property will switch to “lost” or “won” when the game has ended.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 当游戏结束时，status 属性将切换为“lost”或“won”。
 - en: This is again a persistent data structure—updating the game state creates a
     new state and leaves the old one intact.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 这再次是一个持久的数据结构——更新游戏状态会创建一个新状态并保持旧状态不变。
 - en: Actors
+  id: totrans-36
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 演员
 - en: Actor objects represent the current position and state of a given moving element
     (player, coin, or mobile lava) in our game. All actor objects conform to the same
     interface. They have size and pos properties holding the size and the coordinates
     of the upper-left corner of the rectangle representing this actor, and an update
     method.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 演员对象表示我们游戏中给定移动元素（玩家、硬币或流动熔岩）的当前位置和状态。所有演员对象遵循相同的接口。它们具有 size 和 pos 属性，分别保存表示该演员的矩形的大小和左上角的坐标，以及一个更新方法。
 - en: This update method is used to compute their new state and position after a given
     time step. It simulates the thing the actor does—moving in response to the arrow
     keys for the player and bouncing back and forth for the lava— and returns a new,
     updated actor object.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种更新方法用于计算在给定时间步长后它们的新状态和位置。它模拟了演员所做的事情——根据玩家的箭头键移动，以及熔岩的来回反弹——并返回一个新的、更新的演员对象。
 - en: A type property contains a string that identifies the type of the actor— ”player”,
     “coin”, or “lava”. This is useful when drawing the game—the look of the rectangle
     drawn for an actor is based on its type.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: type 属性包含一个字符串，用于识别演员的类型——“player”、“coin”或“lava”。这在绘制游戏时非常有用——为演员绘制的矩形的外观基于其类型。
 - en: Actor classes have a static create method used by the Level constructor to create
     an actor from a character in the level plan. It is given the coordinates of the
     character and the character itself, which is necessary because the Lava class
     handles several different characters.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 演员类具有一个静态 create 方法，由 Level 构造函数用于从关卡计划中的字符创建演员。它接收字符的坐标和字符本身，这是必要的，因为 Lava
+    类处理多种不同的字符。
 - en: This is the Vec class that we’ll use for our two-dimensional values, such as
     the position and size of actors.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我们将用于二维值的 Vec 类，例如演员的位置和大小。
 - en: '[PRE3]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: The times method scales a vector by a given number. It will be useful when we
     need to multiply a speed vector by a time interval to get the distance traveled
     during that time.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: times 方法通过给定的数字缩放向量。当我们需要将速度向量乘以时间间隔以获得在该时间内行驶的距离时，它将非常有用。
 - en: The different types of actors get their own classes, since their behavior is
     very different. Let’s define these classes. We’ll get to their update methods
     later.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 不同类型的演员拥有各自的类，因为它们的行为非常不同。让我们定义这些类。稍后我们将介绍它们的更新方法。
 - en: The player class has a speed property that stores its current speed to simulate
     momentum and gravity.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 玩家类具有一个 speed 属性，用于存储其当前速度，以模拟动量和重力。
 - en: '[PRE4]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Because a player is one-and-a-half squares high, its initial position is set
     to be half a square above the position where the @ character appeared. This way,
     its bottom aligns with the bottom of the square where it appeared.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于玩家的高度为一个半方块，因此其初始位置设置为在 @ 字符出现的位置上方半个方块。这样，它的底部与出现的方块底部对齐。
 - en: The size property is the same for all instances of Player, so we store it on
     the prototype rather than on the instances themselves. We could have used a getter
     like type, but that would create and return a new Vec object every time the property
     is read, which would be wasteful. (Strings, being immutable, don’t have to be
     re-created every time they are evaluated.)
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '`size` 属性对于所有 `Player` 的实例都是相同的，因此我们将其存储在原型上而不是实例本身。我们可以像 `type` 一样使用 getter，但这样做会每次读取属性时创建并返回一个新的
+    `Vec` 对象，这是浪费的。（字符串是不可变的，因此不必每次评估时重新创建它们。）'
 - en: When constructing a Lava actor, we need to initialize the object differently
     depending on the character it is based on. Dynamic lava moves along at its current
     speed until it hits an obstacle. At that point, if it has a reset property, it
     will jump back to its start position (dripping). If it does not, it will invert
     its speed and continue in the other direction (bouncing).
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 在构建熔岩角色时，我们需要根据其基础字符的不同进行对象的初始化。动态熔岩以当前速度移动，直到碰到障碍物为止。在那一点上，如果它有一个重置属性，它将跳回起始位置（滴落）。如果没有，它将反转速度并沿另一方向继续移动（弹跳）。
 - en: The create method looks at the character that the Level constructor passes and
     creates the appropriate lava actor.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`create` 方法检查 `Level` 构造函数传递的字符，并创建相应的熔岩角色。'
 - en: '[PRE5]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Coin actors are relatively simple. They mostly just sit in their place. But
     to liven up the game a little, they are given a “wobble,” a slight vertical back-and-forth
     motion. To track this, a coin object stores a base position as well as a wobble
     property that tracks the phase of the bouncing motion. Together, these determine
     the coin’s actual position (stored in the pos property).
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 硬币角色相对简单。它们大多数时间只是呆在原地。但为了稍微活跃一下游戏，它们被赋予了“摇晃”，即轻微的垂直来回运动。为了跟踪这一点，硬币对象存储了一个基础位置以及一个追踪弹跳运动相位的
+    `wobble` 属性。这些属性共同决定了硬币的实际位置（存储在 `pos` 属性中）。
 - en: '[PRE6]'
+  id: totrans-53
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: In [Chapter 14](ch14.xhtml#ch14), we saw that Math.sin gives us the y-coordinate
     of a point on a circle. That coordinate goes back and forth in a smooth waveform
     as we move along the circle, which makes the sine function useful for modeling
     a wavy motion.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 在[第14章](ch14.xhtml#ch14)中，我们看到 `Math.sin` 给出了圆上点的 `y` 坐标。随着我们沿着圆移动，该坐标在一个平滑的波形中来回移动，这使得正弦函数在建模波动运动时非常有用。
 - en: To avoid a situation where all coins move up and down synchronously, the starting
     phase of each coin is randomized. The period of Math.sin’s wave, the width of
     a wave it produces, is 2*π*. We multiply the value returned by Math.random by
     that number to give the coin a random starting position on the wave.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了避免所有硬币同步上下移动的情况，每个硬币的起始相位被随机化。`Math.sin` 波的周期，即它产生的波的宽度，是 `2*π*`。我们将 `Math.random`
+    返回的值乘以该数字，以在波上为硬币赋予一个随机的起始位置。
 - en: We can now define the levelChars object that maps plan characters to either
     background grid types or actor classes.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在可以定义 `levelChars` 对象，将平面字符映射到背景网格类型或角色类别。
 - en: '[PRE7]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: That gives us all the parts needed to create a Level instance.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 这给了我们创建 `Level` 实例所需的所有部分。
 - en: '[PRE8]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: The task ahead is to display such levels on the screen and to model time and
     motion inside them.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来的任务是在屏幕上显示这些关卡，并在其中模拟时间和运动。
 - en: Drawing
+  id: totrans-61
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 绘制
 - en: In the next chapter, we’ll display the same game in a different way. To make
     that possible, we put the drawing logic behind an interface and pass it to the
     game as an argument. That way, we can use the same game program with different
     new display modules.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一章中，我们将以不同的方式显示同一款游戏。为了实现这一点，我们将绘图逻辑放在一个接口后面，并将其作为参数传递给游戏。这样，我们可以用不同的新显示模块来使用同一个游戏程序。
 - en: A game display object draws a given level and state. We pass its constructor
     to the game to allow it to be replaced. The display class we define in this chapter
     is called DOMDisplay because it uses DOM elements to show the level.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 游戏显示对象绘制给定的关卡和状态。我们将其构造函数传递给游戏以允许替换它。我们在本章中定义的显示类称为 `DOMDisplay`，因为它使用 DOM 元素来显示关卡。
 - en: We’ll be using a style sheet to set the actual colors and other fixed properties
     of the elements that make up the game. It would also be possible to directly assign
     to the elements’ style property when we create them, but that would produce more
     verbose programs.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将使用样式表来设置组成游戏的元素的实际颜色和其他固定属性。当创建它们时，也可以直接赋值给元素的 `style` 属性，但这会产生更冗长的程序。
 - en: 'The following helper function provides a succinct way to create an element
     and give it some attributes and child nodes:'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的辅助函数提供了一种简洁的方法来创建一个元素，并为其添加一些属性和子节点：
 - en: '[PRE9]'
+  id: totrans-66
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: A display is created by giving it a parent element to which it should append
     itself and a level object.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示元素是通过给它一个父元素来创建的，应该将其附加到该父元素上，并传入一个级别对象。
 - en: '[PRE10]'
+  id: totrans-68
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: The level’s background grid, which never changes, is drawn once. Actors are
     redrawn every time the display is updated with a given state. The actorLayer property
     will be used to track the element that holds the actors so that they can be easily
     removed and replaced.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 级别的背景网格是一次绘制的，并且不会改变。演员在每次更新显示时都会被重新绘制，更新时会给定状态。actorLayer属性将用于跟踪持有演员的元素，以便能够轻松地移除和替换它们。
 - en: Our coordinates and sizes are tracked in grid units, where a size or distance
     of 1 means one grid block. When setting pixel sizes, we will have to scale these
     coordinates up—everything in the game would be ridiculously small at a single
     pixel per square. The scale constant gives the number of pixels that a single
     unit takes up on the screen.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的坐标和大小以网格单位进行追踪，其中1的大小或距离表示一个网格块。在设置像素大小时，我们必须将这些坐标放大——在每个方块只有一个像素的情况下，游戏中的一切都会显得极其微小。比例常数表示一个单位在屏幕上占用的像素数。
 - en: '[PRE11]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: The <table> element’s form nicely corresponds to the structure of the rows property
     of the level—each row of the grid is turned into a table row (<tr> element). The
     strings in the grid are used as class names for the table cell (<td>) elements.
     The code uses the spread (triple dot) operator to pass arrays of child nodes to
     elt as separate arguments.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: <table>元素的形式与级别的行属性结构相对应——网格的每一行都被转化为表格行（<tr>元素）。网格中的字符串用作表格单元格（<td>元素）的类名。代码使用扩展（三个点）操作符将子节点数组作为单独的参数传递给elt。
 - en: 'The following CSS makes the table look like the background we want:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下CSS使表格看起来像我们想要的背景：
 - en: '[PRE12]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Some of these (table-layout, border-spacing, and padding) are used to suppress
     unwanted default behavior. We don’t want the layout of the table to depend upon
     the contents of its cells, and we don’t want space between the table cells or
     padding inside them.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中一些（table-layout、border-spacing和padding）用于抑制不必要的默认行为。我们不希望表格的布局依赖于单元格的内容，也不希望单元格之间或内部有空间。
 - en: The background rule sets the background color. CSS allows colors to be specified
     both as words (white) or with a format such as rgb(*R*, *G*, *B*), where the red,
     green, and blue components of the color are separated into three numbers from
     0 to 255\. In rgb(52, 166, 251), the red component is 52, green is 166, and blue
     is 251\. Since the blue component is the largest, the resulting color will be
     bluish. In the .lava rule, the first number (red) is the largest.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 背景规则设置背景颜色。CSS允许颜色以单词（例如：白色）或使用格式如rgb(*R*, *G*, *B*)来指定，其中红、绿和蓝的颜色分量被分为从0到255的三个数字。在rgb(52,
+    166, 251)中，红色分量是52，绿色是166，蓝色是251。由于蓝色分量最大，结果颜色将偏蓝。在.lava规则中，第一个数字（红色）是最大的。
 - en: We draw each actor by creating a DOM element for it and setting that element’s
     position and size based on the actor’s properties. The values must be multiplied
     by scale to go from game units to pixels.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过为每个演员创建一个DOM元素，并根据演员的属性设置该元素的位置和大小来绘制每个演员。数值必须乘以比例，以从游戏单位转换为像素。
 - en: '[PRE13]'
+  id: totrans-78
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: To give an element more than one class, we separate the class names by spaces.
     In the following CSS code, the actor class gives the actors their absolute position.
     Their type name is used as an extra class to give them a color. We don’t have
     to define the lava class again because we’re reusing the class for the lava grid
     squares we defined earlier.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 要给一个元素添加多个类名，我们用空格分隔类名。在以下CSS代码中，actor类为演员提供了绝对位置。它们的类型名称作为额外的类来给它们上色。我们不需要重新定义lava类，因为我们在之前定义的lava网格方块中重用了该类。
 - en: '[PRE14]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: The syncState method is used to make the display show a given state. It first
     removes the old actor graphics, if any, and then redraws the actors in their new
     positions. It may be tempting to try to reuse the DOM elements for actors, but
@@ -400,25 +570,35 @@
     actors with DOM elements and to make sure we remove elements when their actors
     vanish. Since there will typically be only a handful of actors in the game, redrawing
     all of them is not expensive.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: syncState方法用于使显示显示给定状态。它首先移除旧的演员图形（如果有的话），然后在新位置重新绘制演员。尽管尝试重用演员的DOM元素可能很诱人，但为了使其工作，我们需要大量额外的管理，以将演员与DOM元素关联，并确保在演员消失时移除元素。由于游戏中通常只有少数演员，重新绘制它们并不昂贵。
 - en: '[PRE15]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: By adding the level’s current status as a class name to the wrapper, we can
     style the player actor slightly differently when the game is won or lost by adding
     a CSS rule that takes effect only when the player has an ancestor element with
     a given class.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将当前级别的状态作为类名添加到包装器中，当游戏获胜或失败时，我们可以稍微不同地为玩家角色设置样式，添加一个仅在玩家具有特定类的祖先元素时生效的CSS规则。
 - en: '[PRE16]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: After touching lava, the player turns dark red, suggesting scorching. When the
     last coin has been collected, we add two blurred white shadows— one to the upper
     left and one to the upper right—to create a white halo effect.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接触熔岩后，玩家变成深红色，暗示着灼烧。当最后一枚硬币被收集后，我们添加两个模糊的白色阴影——一个在左上方，一个在右上方——以创建白色光环效果。
 - en: 'We can’t assume that the level always fits in the *viewport*, the element into
     which we draw the game. That is why we need the scrollPlayerIntoView call: it
     ensures that if the level is protruding outside the viewport, we scroll that viewport
@@ -426,370 +606,531 @@
     wrapping DOM element a maximum size and ensures that anything that sticks out
     of the element’s box is not visible. We also give it a relative position so that
     the actors inside it are positioned relative to the level’s upper-left corner.'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们不能假设级别总是适合*视口*，即我们绘制游戏的元素。这就是我们需要scrollPlayerIntoView调用的原因：它确保如果级别超出视口，我们会滚动视口，以确保玩家位于其中心附近。以下CSS为游戏的包装DOM元素设置了最大大小，并确保任何超出元素框的部分不可见。我们还为其设置了相对位置，以便其中的角色相对于级别的左上角进行定位。
 - en: '[PRE17]'
+  id: totrans-87
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: In the scrollPlayerIntoView method, we find the player’s position and update
     the wrapping element’s scroll position. We change the scroll position by manipulating
     that element’s scrollLeft and scrollTop properties when the player is too close
     to the edge.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 在scrollPlayerIntoView方法中，我们找到播放器的位置并更新包装元素的滚动位置。当播放器太靠近边缘时，我们通过操作该元素的scrollLeft和scrollTop属性来改变滚动位置。
 - en: '[PRE18]'
+  id: totrans-89
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: The way the player’s center is found shows how the methods on our Vec type allow
     computations with objects to be written in a relatively readable way. To find
     the actor’s center, we add its position (its upper-left corner) and half its size.
     That is the center in level coordinates, but we need it in pixel coordinates,
     so we then multiply the resulting vector by our display scale.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 玩家中心的寻找方式展示了我们的Vec类型上的方法如何允许以相对可读的方式编写与对象的计算。要找到角色的中心，我们将其位置（左上角）和其大小的一半相加。那是在级别坐标中的中心，但我们需要它在像素坐标中，因此我们接着将结果向量乘以我们的显示比例。
 - en: Next, a series of checks verifies that the player position isn’t outside of
     the allowed range. Note that sometimes this will set nonsense scroll coordinates
     that are below zero or beyond the element’s scrollable area. This is OK—the DOM
     will constrain them to acceptable values. Setting scrollLeft to -10 will cause
     it to become 0.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，一系列检查验证玩家的位置是否在允许范围内。请注意，有时这会设置低于零或超出元素可滚动区域的无意义滚动坐标。这是可以的——DOM会将它们限制在可接受的值。将scrollLeft设置为-10会使其变为0。
 - en: While it would have been slightly simpler to always try to scroll the player
     to the center of the viewport, this creates a rather jarring effect. As you are
     jumping, the view will constantly shift up and down. It’s more pleasant to have
     a “neutral” area in the middle of the screen where you can move around without
     causing any scrolling.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然始终尝试将玩家滚动到视口中心会稍微简单一些，但这会产生一种相当刺耳的效果。当你跳跃时，视图会不断上下移动。在屏幕中间有一个“中立”区域，可以在不引起任何滚动的情况下自由移动，会更加愉快。
 - en: We are now able to display our tiny level.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在能够显示我们的微小级别。
 - en: '[PRE19]'
+  id: totrans-94
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '![Image](../images/f0264-01.jpg)'
+  id: totrans-95
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0264-01.jpg)'
 - en: The <link> tag, when used with rel=“stylesheet”, is a way to load a CSS file
     into a page. The file *game.css* contains the styles necessary for our game.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用rel=“stylesheet”的<link>标签时，它是一种将CSS文件加载到页面中的方式。文件*game.css*包含我们游戏所需的样式。
 - en: Motion and Collision
+  id: totrans-97
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 运动与碰撞
 - en: Now we’re at the point where we can start adding motion. The basic approach
     taken by most games like this is to split time into small steps and, for each
     step, move the actors by a distance corresponding to their speed multiplied by
     the size of the time step. We’ll measure time in seconds, so speeds are expressed
     in units per second.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们可以开始添加运动了。大多数这类游戏采用的基本方法是将时间分割成小步，并在每一步中，根据速度与时间步长的乘积移动角色。我们将时间以秒为单位进行测量，因此速度以每秒的单位表示。
 - en: Moving things is easy. The difficult part is dealing with the interactions between
     the elements. When the player hits a wall or floor, they should not simply move
     through it. The game must notice when a given motion causes an object to hit another
     object and respond accordingly. For walls, the motion must be stopped. When hitting
     a coin, that coin must be collected. When touching lava, the game should be lost.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 移动物体是简单的。困难的部分是处理元素之间的相互作用。当玩家撞到墙壁或地板时，他们不应该简单地穿过它。游戏必须注意到某个运动导致一个物体撞上另一个物体，并作出相应反应。对于墙壁，运动必须被停止。当撞到硬币时，必须收集该硬币。当触碰到岩浆时，游戏应该结束。
 - en: Solving this for the general case is a major task. You can find libraries, usually
     called *physics engines*, that simulate interaction between physical objects in
     two or three dimensions. We’ll take a more modest approach in this chapter, handling
     only collisions between rectangular objects and handling them in a rather simplistic
     way.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决一般情况是一个重大任务。你可以找到通常称为*物理引擎*的库，它们模拟二维或三维物体之间的交互。在这一章中，我们将采取更为谦逊的方法，仅处理矩形物体之间的碰撞，并以相对简单的方式处理它们。
 - en: Before moving the player or a block of lava, we test whether the motion would
     take it inside of a wall. If it does, we simply cancel the motion altogether.
     The response to such a collision depends on the type of actor—the player will
     stop, whereas a lava block will bounce back.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 在移动玩家或一块岩浆之前，我们测试运动是否会使其进入墙内。如果是这样，我们就简单地取消整个运动。对这种碰撞的反应取决于参与者的类型——玩家会停止，而岩浆块则会反弹。
 - en: This approach requires our time steps to be rather small, since it will cause
     motion to stop before the objects actually touch. If the time steps (and thus
     the motion steps) are too big, the player would end up hovering a noticeable distance
     above the ground. Another approach, arguably better but more complicated, would
     be to find the exact collision spot and move there. We will take the simple approach
     and hide its problems by ensuring the animation proceeds in small steps.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法要求我们的时间步长相对较小，因为这会导致运动在物体实际接触之前停止。如果时间步长（因此运动步长）过大，玩家将会悬浮在离地面明显的高度。另一种更复杂的、更好的方法是找到确切的碰撞点并移动到那里。我们将采取简单的方法，并通过确保动画以小步推进来掩盖其问题。
 - en: This method tells us whether a rectangle (specified by a position and a size)
     touches a grid element of the given type.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 该方法告诉我们一个矩形（由位置和大小指定）是否接触到给定类型的网格元素。
 - en: '[PRE20]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: The method computes the set of grid squares that the body overlaps with by using
     Math.floor and Math.ceil on its coordinates. Remember that grid squares are 1
     by 1 units in size. By rounding the sides of a box up and down, we get the range
     of background squares that the box touches.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 该方法通过对物体的坐标使用 Math.floor 和 Math.ceil 来计算物体重叠的网格方块集合。请记住，网格方块的大小为 1 x 1 单位。通过将盒子的边缘向上和向下取整，我们得到盒子接触的背景方块范围。
 - en: '![Image](../images/f0266-01.jpg)'
+  id: totrans-106
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0266-01.jpg)'
 - en: We loop over the block of grid squares found by rounding the coordinates and
     return true when a matching square is found. Squares outside of the level are
     always treated as “wall” to ensure that the player can’t leave the world and that
     we won’t accidentally try to read outside of the bounds of our rows array.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们遍历通过四舍五入坐标找到的网格方块，当找到匹配的方块时返回 true。关卡外的方块总是被视为“墙”，以确保玩家无法离开世界，并且我们不会意外尝试读取超出行数组边界的内容。
 - en: The state update method uses touches to figure out whether the player is touching
     lava.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 状态更新方法使用接触来判断玩家是否接触到岩浆。
 - en: '[PRE21]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: The method is passed a time step and a data structure that tells it which keys
     are being held down. The first thing it does is call the update method on all
     actors, producing an array of updated actors. The actors also get the time step,
     the keys, and the state so that they can base their update on those. Only the
     player will actually read keys, since that’s the only actor that’s controlled
     by the keyboard.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 方法接收一个时间步长和一个数据结构，告知它哪些按键被按下。它首先在所有参与者上调用更新方法，生成一个更新后的参与者数组。参与者还会获得时间步长、按键和状态，以便它们可以基于这些信息进行更新。只有玩家会实际读取按键，因为只有玩家是由键盘控制的参与者。
 - en: If the game is already over, no further processing has to be done (the game
     can’t be won after being lost, or vice versa). Otherwise, the method tests whether
     the player is touching background lava. If so, the game is lost and we’re done.
     Finally, if the game really is still going on, it sees whether any other actors
     overlap the player.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果游戏已经结束，则不需要进一步处理（游戏在失败后无法获胜，反之亦然）。否则，该方法会测试玩家是否接触到背景熔岩。如果是，游戏就失败了，我们结束了。最后，如果游戏确实仍在进行中，它会检查是否有其他角色与玩家重叠。
 - en: Overlap between actors is detected with the overlap function. It takes two actor
     objects and returns true when they touch—which is the case when they overlap both
     along the x-axis and along the y-axis.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过重叠函数检测角色之间的重叠。它接受两个角色对象，当它们相碰时返回真——这发生在它们在x轴和y轴上都重叠时。
 - en: '[PRE22]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: If any actor does overlap, its collide method gets a chance to update the state.
     Touching a lava actor sets the game status to “lost”. Coins vanish when you touch
     them and set the status to “won” when they are the last coin of the level.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果任何角色发生重叠，其碰撞方法有机会更新状态。接触熔岩角色会将游戏状态设置为“失败”。当你触碰到硬币时，它们会消失，并在它们是关卡的最后一枚硬币时将状态设置为“胜利”。
 - en: '[PRE23]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: Actor Updates
+  id: totrans-116
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 角色更新
 - en: Actor objects’ update methods take as arguments the time step, the state object,
     and a keys object. The one for the Lava actor type ignores the keys object.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 角色对象的更新方法接受时间步长、状态对象和键对象作为参数。熔岩角色类型的更新方法会忽略键对象。
 - en: '[PRE24]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: This update method computes a new position by adding the product of the time
     step and the current speed to its old position. If no obstacle blocks that new
     position, it moves there. If there is an obstacle, the behavior depends on the
     type of the lava block—dripping lava has a reset position, to which it jumps back
     when it hits something. Bouncing lava inverts its speed by multiplying it by -1
     so that it starts moving in the opposite direction.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个更新方法通过将时间步长与当前速度的乘积添加到其旧位置来计算新位置。如果没有障碍物阻挡新位置，它将移动到那里。如果有障碍物，行为将取决于熔岩块的类型——滴落的熔岩有一个重置位置，当它碰到某物时会跳回到该位置。反弹的熔岩通过将速度乘以-1来反转速度，使其开始朝相反的方向移动。
 - en: Coins use their update method to wobble. They ignore collisions with the grid,
     since they are simply wobbling around inside of their own square.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 硬币使用其更新方法进行摇晃。它们忽略与网格的碰撞，因为它们只是摇晃在自己方块内。
 - en: '[PRE25]'
+  id: totrans-121
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: The wobble property is incremented to track time and then used as an argument
     to Math.sin to find the new position on the wave. The coin’s current position
     is then computed from its base position and an offset based on this wave.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 摇晃属性会递增以跟踪时间，然后用作Math.sin的参数，以找到波上的新位置。硬币的当前位置则根据其基础位置和基于此波的偏移量进行计算。
 - en: That leaves the player itself. Player motion is handled separately per axis
     because hitting the floor should not prevent horizontal motion, and hitting a
     wall should not stop falling or jumping motion.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就涉及到玩家本身。玩家的运动在每个轴上单独处理，因为碰到地面不应该阻止水平运动，而碰到墙壁不应该停止下落或跳跃运动。
 - en: '[PRE26]'
+  id: totrans-124
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: The horizontal motion is computed based on the state of the left and right arrow
     keys. When there’s no wall blocking the new position created by this motion, it
     is used. Otherwise, the old position is kept.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 水平运动是基于左箭头和右箭头键的状态进行计算的。当没有墙壁阻挡这个运动所创造的新位置时，就使用这个新位置。否则，保持旧位置不变。
 - en: Vertical motion works in a similar way but has to simulate jumping and gravity.
     The player’s vertical speed (ySpeed) is first accelerated to account for gravity.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 垂直运动以类似的方式工作，但必须模拟跳跃和重力。玩家的垂直速度（ySpeed）首先会被加速，以考虑重力的影响。
 - en: We check for walls again. If we don’t hit any, the new position is used. If
     there *is* a wall, there are two possible outcomes. When the up arrow is pressed
     *and* we are moving down (meaning the thing we hit is below us), the speed is
     set to a relatively large, negative value. This causes the player to jump. If
     that is not the case, the player simply bumped into something, and the speed is
     set to zero.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们再次检查墙壁。如果没有碰到任何墙，新位置将被使用。如果*有*墙壁，则有两种可能的结果。当上箭头被按下*并且*我们正在向下移动（这意味着我们碰到的东西在我们下面），速度会被设置为相对较大的负值。这会导致玩家跳跃。如果情况不是这样，玩家只是碰到了什么东西，速度则被设置为零。
 - en: The gravity strength, jumping speed, and other constants in the game were determined
     by simply trying out some numbers and seeing which ones felt right. You can try
     experimenting with them.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 游戏中的重力强度、跳跃速度和其他常量是通过尝试一些数字并观察哪种感觉合适来确定的。你可以尝试进行实验。
 - en: Tracking Keys
+  id: totrans-129
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 追踪键
 - en: For a game like this, we do not want keys to take effect once per keypress.
     Rather, we want their effect (moving the player figure) to stay active as long
     as they are held.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于这样的游戏，我们不希望键在每次按下时只生效一次。相反，我们希望它们的效果（移动玩家角色）在按住时保持有效。
 - en: We need to set up a key handler that stores the current state of the left, right,
     and up arrow keys. We will also want to call preventDefault for those keys so
     that they don’t end up scrolling the page.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们需要设置一个键处理程序，存储左、右和上箭头键的当前状态。我们还希望对这些键调用 preventDefault，以防止它们滚动页面。
 - en: The following function, when given an array of key names, will return an object
     that tracks the current position of those keys. It registers event handlers for
     “keydown” and “keyup” events and, when the key code in the event is present in
     the set of codes that it is tracking, updates the object.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下函数在给定一个键名数组时，将返回一个跟踪这些键当前状态的对象。它为“keydown”和“keyup”事件注册事件处理程序，并在事件中的键代码存在于它所跟踪的代码集中时，更新该对象。
 - en: '[PRE27]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: The same handler function is used for both event types. It looks at the event
     object’s type property to determine whether the key state should be updated to
     true (”keydown”) or false (”keyup”).
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 同一个处理程序函数用于这两种事件类型。它查看事件对象的 type 属性，以确定键状态是应该更新为 true（“keydown”）还是 false（“keyup”）。
 - en: Running the Game
+  id: totrans-135
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 运行游戏
 - en: The requestAnimationFrame function, which we saw in [Chapter 14](ch14.xhtml#ch14),
     provides a good way to animate a game. But its interface is quite primitive—using
     it requires us to track the time at which our function was called the last time
     around and call requestAnimationFrame again after every frame.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: requestAnimationFrame 函数，如我们在[第14章](ch14.xhtml#ch14)中看到的，提供了一种很好的方式来动画游戏。但它的接口相当原始——使用它需要我们跟踪上一次调用函数的时间，并在每一帧之后再次调用
+    requestAnimationFrame。
 - en: Let’s define a helper function that wraps all that in a convenient interface
     and allows us to simply call runAnimation, giving it a function that expects a
     time difference as an argument and draws a single frame. When the frame function
     returns the value false, the animation stops.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们定义一个助手函数，将这些内容封装在一个方便的接口中，并允许我们简单地调用 runAnimation，传入一个期望时间差作为参数并绘制单帧。当帧函数返回
+    false 时，动画停止。
 - en: '[PRE28]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: I have set a maximum frame step of 100 milliseconds (one-tenth of a second).
     When the browser tab or window with our page is hidden, request AnimationFrame
     calls will be suspended until the tab or window is shown again. In this case,
     the difference between lastTime and time will be the entire time in which the
     page was hidden. Advancing the game by that much in a single step would look silly
     and might cause weird side effects, such as the player falling through the floor.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将最大帧步长设置为100毫秒（十分之一秒）。当带有我们页面的浏览器标签或窗口被隐藏时，requestAnimationFrame 调用将被暂停，直到标签或窗口再次显示。在这种情况下，lastTime
+    和 time 之间的差值将是页面被隐藏的整个时间。一次性将游戏推进如此之多看起来会很傻，并可能导致奇怪的副作用，例如玩家掉落到地面下。
 - en: The function also converts the time steps to seconds, which are an easier quantity
     to think about than milliseconds.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 该函数还将时间步长转换为秒，这比毫秒更容易理解。
 - en: The runLevel function takes a Level object and a display constructor and returns
     a promise. It displays the level (in document.body) and lets the user play through
     it. When the level is finished (lost or won), runLevel waits one more second (to
     let the user see what happens) and then clears the display, stops the animation,
     and resolves the promise to the game’s end status.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: runLevel 函数接受一个 Level 对象和一个显示构造函数，并返回一个 Promise。它在 document.body 中显示关卡，并让用户进行游戏。当关卡结束（失败或胜利）时，runLevel
+    等待一秒钟（让用户看到发生了什么），然后清除显示，停止动画，并将 Promise 解析为游戏的结束状态。
 - en: '[PRE29]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: 'A game is a sequence of levels. Whenever the player dies, the current level
     is restarted. When a level is completed, we move on to the next level. This can
     be expressed by the following function, which takes an array of level plans (strings)
     and a display constructor:'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 游戏是一个关卡的序列。每当玩家死亡时，当前关卡会重启。当一个关卡完成时，我们会进入下一个关卡。这可以通过以下函数表达，该函数接受一个关卡计划（字符串）数组和一个显示构造函数：
 - en: '[PRE30]'
+  id: totrans-144
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: Because we made runLevel return a promise, runGame can be written using an async
     function, as shown in [Chapter 11](ch11.xhtml#ch11). It returns another promise,
     which resolves when the player finishes the game.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为我们让 runLevel 返回一个 Promise，runGame 可以使用 async 函数来编写，如在[第11章](ch11.xhtml#ch11)中所示。它返回另一个
+    Promise，当玩家完成游戏时会被解析。
 - en: There is a set of level plans available in the GAME_LEVELS binding in this chapter’s
     sandbox (*[https://eloquentjavascript.net/code#16](https://eloquentjavascript.net/code#16)*).
     This page feeds them to runGame, starting an actual game.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章沙盒中的 GAME_LEVELS 绑定提供了一组关卡计划 (*[https://eloquentjavascript.net/code#16](https://eloquentjavascript.net/code#16)*)。该页面将它们传递给
+    runGame，启动实际的游戏。
 - en: '[PRE31]'
+  id: totrans-147
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: Exercises
+  id: totrans-148
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 练习
 - en: '*Game Over*'
+  id: totrans-149
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*游戏结束*'
 - en: It’s traditional for platform games to have the player start with a limited
     number of *lives* and subtract one life each time they die. When the player is
     out of lives, the game restarts from the beginning.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 平台游戏通常让玩家从有限的 *生命* 开始，每次死亡时减去一条生命。当玩家没有生命时，游戏从头开始。
 - en: Adjust runGame to implement lives. Have the player start with three. Output
     the current number of lives (using console.log) every time a level starts.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整 runGame 来实现生命值。让玩家从三条生命开始。每当关卡开始时，输出当前的生命值（使用 console.log）。
 - en: '*Pausing the Game*'
+  id: totrans-152
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*暂停游戏*'
 - en: Make it possible to pause (suspend) and unpause the game by pressing ESC. You
     can do this by changing the runLevel function to set up a keyboard event handler
     that interrupts or resumes the animation whenever ESC is hit.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过按 ESC 键使游戏能够暂停（挂起）和恢复。你可以通过更改 runLevel 函数来设置一个键盘事件处理程序，当按下 ESC 时中断或恢复动画。
 - en: The runAnimation interface may not look like it is suitable for this at first
     glance, but it is if you rearrange the way runLevel calls it.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: runAnimation 接口乍一看可能不适合这个，但如果你重新安排 runLevel 调用它的方式，它就适合了。
 - en: When you have that working, there’s something else you can try. The way we’ve
     been registering keyboard event handlers is somewhat problematic. The arrowKeys
     object is currently a global binding, and its event handlers are kept around even
     when no game is running. You could say they *leak* out of our system. Extend trackKeys
     to provide a way to unregister its handlers, then change runLevel to register
     its handlers when it starts and unregister them again when it is finished.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你完成这个后，还有其他可以尝试的事情。我们注册键盘事件处理程序的方式有些问题。arrowKeys 对象当前是一个全局绑定，即使没有游戏在运行，其事件处理程序也会被保留。你可以说它们在我们的系统中
+    *泄漏* 了。扩展 trackKeys 提供一种注销其处理程序的方法，然后更改 runLevel 以在开始时注册其处理程序，在结束时注销它们。
 - en: '*A Monster*'
+  id: totrans-156
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*一个怪物*'
 - en: It is traditional for platform games to have enemies that you can defeat by
     jumping on top of them. This exercise asks you to add such an actor type to the
     game.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于平台游戏来说，传统上有敌人可以通过从上方跳跃来击败。这个练习要求你将这样的角色类型添加到游戏中。
 - en: We’ll call this actor a monster. Monsters move only horizontally. You can make
     them move in the direction of the player, bounce back and forth like horizontal
     lava, or have any other movement pattern you want. The class doesn’t have to handle
     falling, but it should make sure the monster doesn’t walk through walls.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们称这个角色为怪物。怪物只能水平移动。你可以让它们朝玩家的方向移动，像水平熔岩一样来回反弹，或者采用你想要的任何其他移动模式。这个类不需要处理下落，但应该确保怪物不会穿过墙壁。
 - en: When a monster touches the player, the effect depends on whether the player
     is jumping on top of them or not. You can approximate this by checking whether
     the player’s bottom is near the monster’s top. If this is the case, the monster
     disappears. If not, the game is lost.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 当怪物触碰到玩家时，效果取决于玩家是否在它们的上方跳跃。你可以通过检查玩家的底部是否靠近怪物的顶部来近似判断。如果是这种情况，怪物就会消失。如果不是，游戏就结束了。
 - en: '*Drawing is deception.*'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: '*绘画是一种欺骗。*'
 - en: —M.C. Escher, cited by Bruno Ernst in *The Magic Mirror of M.C. Escher*
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: —M.C. 艾舍，由布鲁诺·恩斯特在 *M.C. 艾舍的魔镜* 中引用
 - en: '![Image](../images/f0274-01.jpg)'
+  id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0274-01.jpg)'
