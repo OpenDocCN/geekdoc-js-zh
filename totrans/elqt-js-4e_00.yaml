@@ -1,82 +1,110 @@
 - en: '**INTRODUCTION**'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '**引言**'
 - en: This is a book about instructing computers. Computers are about as common as
     screwdrivers today, but they are quite a bit more complex, and making them do
     what you want them to do isn’t always easy.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一本关于指导计算机的书。如今，计算机和螺丝刀一样常见，但它们要复杂得多，让它们按照你的想法运行并不总是容易的。
 - en: If the task you have for your computer is a common, well-understood one, such
     as showing you your email or acting like a calculator, you can open the appropriate
     application and get to work. But for unique or open-ended tasks, there often is
     no appropriate application.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你要给计算机的任务是常见且容易理解的，比如查看你的电子邮件或充当计算器，你可以打开相应的应用程序并开始工作。但对于独特或开放式的任务，往往没有合适的应用程序。
 - en: That is where programming may come in. *Programming* is the act of constructing
     a *program*—a set of precise instructions telling a computer what to do. Because
     computers are dumb, pedantic beasts, programming is fundamentally tedious and
     frustrating.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是编程可能发挥作用的地方。*编程*是构建一个*程序*的行为——一组精确的指令，告诉计算机该做什么。由于计算机是愚蠢的、迂腐的动物，编程在根本上是乏味和令人沮丧的。
 - en: Fortunately, if you can get over that fact—and maybe even enjoy the rigor of
     thinking in terms that dumb machines can deal with—programming can be rewarding.
     It allows you to do things in seconds that would take *forever* by hand. It is
     a way to make your computer tool do things that it couldn’t do before. On top
     of that, it makes for a wonderful game of puzzle solving and abstract thinking.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 幸运的是，如果你能克服这一事实——甚至享受以愚蠢机器能够处理的方式进行思考的严谨——编程是有回报的。它使你能够在几秒钟内完成手动操作需要*永远*才能完成的事情。它是让你的计算机工具完成之前无法做到的事情的一种方式。此外，它还成为了解决难题和抽象思维的美妙游戏。
 - en: Most programming is done with programming languages. A *programming language*
     is an artificially constructed language used to instruct computers. It is interesting
     that the most effective way we’ve found to communicate with a computer borrows
     so heavily from the way we communicate with each other. Like human languages,
     computer languages allow words and phrases to be combined in new ways, making
     it possible to express ever new concepts.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数编程都是使用编程语言进行的。*编程语言*是一种人工构造的语言，用于指导计算机。值得注意的是，我们与计算机沟通的最有效方式在很大程度上借鉴了我们彼此之间沟通的方式。像人类语言一样，计算机语言允许将单词和短语以新方式组合，使得表达不断新的概念成为可能。
 - en: At one point, language-based interfaces, such as the BASIC and DOS prompts of
     the 1980s and 1990s, were the main method of interacting with computers. For routine
     computer use, these have largely been replaced with visual interfaces, which are
     easier to learn but offer less freedom. But if you know where to look, the languages
     are still there. One of them, *JavaScript*, is built into every modern web browser—and
     is thus available on almost every device.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 曾几何时，以语言为基础的接口，比如1980年代和1990年代的BASIC和DOS提示符，是与计算机互动的主要方式。对于常规计算机使用，这些接口在很大程度上已被视觉界面取代，视觉界面更易于学习，但自由度较低。但是如果你知道在哪里寻找，语言依然存在。其中之一，*JavaScript*，内置于每个现代网页浏览器中，因此几乎在每个设备上都可用。
 - en: This book will try to make you familiar enough with this language to do useful
     and amusing things with it.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书将努力使你对这门语言足够熟悉，以便能够用它做一些有用且有趣的事情。
 - en: On Programming
+  id: totrans-8
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 关于编程
 - en: Besides explaining JavaScript, I will introduce the basic principles of programming.
     Programming, it turns out, is hard. The fundamental rules are simple and clear,
     but programs built on top of these rules tend to become complex enough to introduce
     their own rules and complexity. You’re building your own maze, in a way, and you
     can easily get lost in it.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了解释JavaScript，我还将介绍编程的基本原则。事实证明，编程是困难的。基本规则简单明了，但基于这些规则构建的程序往往变得复杂到引入自己的规则和复杂性。在某种程度上，你是在构建自己的迷宫，而你很容易在其中迷失。
 - en: There will be times when reading this book feels terribly frustrating. If you
     are new to programming, there will be a lot of new material to digest. Much of
     this material will then be *combined* in ways that require you to make additional
     connections.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 阅读这本书时，你可能会感到非常沮丧。如果你是编程新手，很多新材料需要消化。这些材料会以*结合*的方式呈现，要求你建立额外的联系。
 - en: It is up to you to make the necessary effort. When you are struggling to follow
     the book, do not jump to any conclusions about your own capabilities. You are
     fine—you just need to keep at it. Take a break, reread some material, and make
     sure you read and understand the example programs and exercises. Learning is hard
     work, but everything you learn is yours and will make further learning easier.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 你必须付出必要的努力。当你努力跟上书中的内容时，不要急于得出关于自己能力的结论。你很好——你只需要坚持下去。休息一下，重新阅读一些材料，确保你阅读并理解示例程序和练习。学习是艰苦的工作，但你所学的一切都是你的，并将使进一步的学习变得更容易。
 - en: '*When action grows unprofitable, gather information; when information grows
     unprofitable, sleep.*'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: '*当行动变得无利可图时，收集信息；当信息变得无利可图时，休息。*'
 - en: —Ursula K. Le Guin, *The Left Hand of Darkness*
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: —厄休拉·K·勒古恩，*《黑暗的左手》*
 - en: A program is many things. It is a piece of text typed by a programmer, it is
     the directing force that makes the computer do what it does, it is data in the
     computer’s memory, and, at the same time, it controls the actions performed on
@@ -85,109 +113,153 @@
     of separate parts tend to be involved, and to make the whole thing tick, we have
     to consider the ways in which these parts interconnect and contribute to the operation
     of the whole.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 程序有许多方面。它是程序员输入的文本，是驱动计算机执行操作的指令力量，是计算机内存中的数据，同时，它也控制着在该内存上执行的操作。试图将程序与熟悉的物体进行比较的类比往往显得苍白无力。一个表面上看似合适的比较是将程序比作机器——涉及许多独立的部分，要使整个系统运作，我们必须考虑这些部分如何相互连接并对整体操作做出贡献。
 - en: A computer is a physical machine that acts as a host for these immaterial machines.
     Computers themselves can do only stupidly straightforward things. The reason they
     are so useful is that they do these things at an incredibly high speed. A program
     can ingeniously combine an enormous number of these simple actions to do very
     complicated things.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算机是一个物理机器，充当这些无形机器的宿主。计算机本身只能做一些非常简单的事情。它们之所以如此有用，是因为它们以极高的速度完成这些事情。一个程序可以巧妙地组合大量这些简单的动作，从而做出非常复杂的事情。
 - en: A program is a building of thought. It is costless to build, it is weightless,
     and it grows easily under our typing hands. But as a program grows, so does its
     complexity. The skill of programming is the skill of building programs that don’t
     confuse the programmer. The best programs are those that manage to do something
     interesting while still being easy to understand.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 程序是一种思想的构建。构建是没有成本的，它是无重量的，并且在我们打字的手下容易增长。但是随着程序的增长，其复杂性也在增加。编程的技能是构建不会让程序员感到困惑的程序的技能。最好的程序是在保持易于理解的同时能够做一些有趣的事情。
 - en: Some programmers believe that this complexity is best managed by using only
     a small set of well-understood techniques in their programs. They have composed
     strict rules (“best practices”) prescribing the form that programs should have,
     and they carefully stay within their safe little zone.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些程序员认为，这种复杂性最好通过在他们的程序中使用一小组经过充分理解的技术来管理。他们制定了严格的规则（“最佳实践”），规定程序应该具有的形式，并且他们小心翼翼地待在他们安全的小区域内。
 - en: This is not only boring—it is ineffective. New problems often require new solutions.
     The field of programming is young and still developing rapidly, and it is varied
     enough to have room for wildly different approaches. There are many terrible mistakes
     to make in program design, and you should go ahead and make them at least once
     so that you understand them. A sense of what a good program looks like is developed
     with practice, not learned from a list of rules.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 这不仅无聊——而且无效。新问题通常需要新解决方案。编程领域年轻且仍在迅速发展，足够多样化以容纳截然不同的方法。在程序设计中有许多可怕的错误，你应该至少尝试犯一次，这样你才能理解它们。对优秀程序的感知是通过实践发展出来的，而不是通过一份规则清单来学习的。
 - en: Why Language Matters
+  id: totrans-19
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 为什么语言很重要
 - en: 'In the beginning, at the birth of computing, there were no programming languages.
     Programs looked something like this:'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 在计算的初始阶段，并不存在编程语言。程序的样子大致是这样的：
 - en: '[PRE0]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'This is a program to add the numbers from 1 to 10 together and print the result:
     1 + 2 + ... + 10 = 55. It could run on a simple hypothetical machine. To program
     early computers, it was necessary to set large arrays of switches in the right
     position or punch holes in strips of cardboard and feed them to the computer.
     You can imagine how tedious and error prone this procedure was. Even writing simple
     programs required much cleverness and discipline. Complex ones were nearly inconceivable.'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个将数字从 1 加到 10 并打印结果的程序：1 + 2 + ... + 10 = 55。它可以在一个简单的假设机器上运行。为了编程早期的计算机，有必要将大量开关设置到正确的位置，或在纸板条上打孔并将其送入计算机。你可以想象这个过程是多么繁琐和容易出错。即使是编写简单程序也需要相当的聪明才智和纪律性。复杂的程序几乎难以想象。
 - en: Of course, manually entering these arcane patterns of bits (the ones and zeros)
     did give the programmer a profound sense of being a mighty wizard. And that has
     to be worth something in terms of job satisfaction.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，手动输入这些晦涩的位模式（即零和一）确实让程序员有一种强大巫师的深刻感受。这在工作满足感上一定是值得的。
 - en: 'Each line of the previous program contains a single instruction. It could be
     written in English like this:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 上一个程序的每一行都包含一条指令。它可以用英语这样写：
 - en: Store the number 0 in memory location 0.
+  id: totrans-25
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在内存位置 0 存储数字 0。
 - en: Store the number 1 in memory location 1.
+  id: totrans-26
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在内存位置 1 存储数字 1。
 - en: Store the value of memory location 1 in memory location 2.
+  id: totrans-27
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将内存位置 1 的值存储到内存位置 2。
 - en: Subtract the number 11 from the value in memory location 2.
+  id: totrans-28
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 从内存位置 2 的值中减去数字 11。
 - en: If the value in memory location 2 is the number 0, continue with instruction
     9.
+  id: totrans-29
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果内存位置 2 的值是数字 0，继续执行指令 9。
 - en: Add the value of memory location 1 to memory location 0.
+  id: totrans-30
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将内存位置 1 的值加到内存位置 0。
 - en: Add the number 1 to the value of memory location 1.
+  id: totrans-31
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将数字 1 加到内存位置 1 的值上。
 - en: Continue with instruction 3.
+  id: totrans-32
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 继续执行指令 3。
 - en: Output the value of memory location 0.
+  id: totrans-33
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 输出内存位置 0 的值。
 - en: Although that is already more readable than the soup of bits, it is still rather
     obscure. Using names instead of numbers for the instructions and memory locations
     helps.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管这已经比位的混合更加可读，但仍然相当模糊。使用名称而不是数字作为指令和内存位置会有所帮助。
 - en: '[PRE1]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'Can you see how the program works at this point? The first two lines give two
     memory locations their starting values: total will be used to build up the result
     of the computation, and count will keep track of the number that we are currently
@@ -199,14 +271,23 @@
     a decision based on that value. The next two lines add the value of count to the
     result and increment count by 1 every time the program decides that count is not
     11 yet.'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 你能看到程序此时是如何工作的吗？前两行给两个内存位置赋予了初始值：total 将用于构建计算结果，而 count 将跟踪我们当前查看的数字。使用 compare
+    的行可能是最令人困惑的。程序想要检查 count 是否等于 11，以决定是否可以停止运行。因为我们的假设机器相当原始，所以它只能测试一个数字是否为零，并基于此做出决定。因此，它使用标记为
+    compare 的内存位置来计算 count - 11 的值，并根据该值做出决定。接下来的两行将 count 的值加到结果中，并在程序决定 count 还不是
+    11 时每次将 count 增加 1。
 - en: 'Here is the same program in JavaScript:'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是相同程序的 JavaScript 版本：
 - en: '[PRE2]'
+  id: totrans-38
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: This version gives us a few more improvements. Most importantly, there is no
     need to specify the way we want the program to jump back and forth anymore—the
     while construct takes care of that. It continues executing the block (wrapped
@@ -215,61 +296,87 @@
     have to create a temporary value and compare that to zero, which was just an uninteresting
     detail. Part of the power of programming languages is that they can take care
     of uninteresting details for us.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个版本给我们带来了一些改进。最重要的是，我们不再需要指定程序要如何来回跳转——while 结构解决了这个问题。只要给定的条件成立，它就会继续执行下面的代码块（用大括号括起来）。这个条件是
+    count <= 10，这意味着“计数小于或等于 10。”我们不再需要创建一个临时值并将其与零进行比较，这只是一个无趣的细节。编程语言的一部分强大之处在于，它们可以为我们处理这些无趣的细节。
 - en: At the end of the program, after the while construct has finished, the console.log
     operation is used to write out the result.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 在程序结束时，当 while 结构完成后，使用 console.log 操作来输出结果。
 - en: 'Finally, here is what the program could look like if we happened to have the
     convenient operations range and sum available, which respectively create a collection
     of numbers within a range and compute the sum of a collection of numbers:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，如果我们恰好有方便的操作 range 和 sum 可用，分别用于创建一个范围内的数字集合和计算一组数字的总和，程序可能看起来像这样：
 - en: '[PRE3]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'The moral of this story is that the same program can be expressed in both long
     and short, unreadable and readable ways. The first version of the program was
     extremely obscure, whereas this last one is almost English: log the sum of the
     range of numbers from 1 to 10\. (We will see in later chapters how to define operations
     like sum and range.)'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个故事的寓意是同一个程序可以用长短不同、可读和不可读的方式表达。程序的第一个版本极为晦涩，而最后一个版本几乎是英文：记录从 1 到 10 的数字范围的总和。（我们将在后面的章节中看到如何定义像
+    sum 和 range 这样的操作。）
 - en: A good programming language helps the programmer by allowing them to talk about
     the actions that the computer has to perform on a higher level. It helps omit
     details, provides convenient building blocks (such as while and console.log),
     allows you to define your own building blocks (such as sum and range), and makes
     those blocks easy to compose.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种好的编程语言通过让程序员以更高的层次谈论计算机必须执行的操作来帮助他们。它帮助省略细节，提供方便的构建模块（例如 while 和 console.log），允许你定义自己的构建模块（例如
+    sum 和 range），并使这些模块易于组合。
 - en: What Is JavaScript?
+  id: totrans-45
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 什么是 JavaScript？
 - en: JavaScript was introduced in 1995 as a way to add programs to web pages in the
     Netscape Navigator browser. The language has since been adopted by all other major
     graphical web browsers. It has made modern web applications possible—that is,
     applications with which you can interact directly without doing a page reload
     for every action. JavaScript is also used in more traditional websites to provide
     various forms of interactivity and cleverness.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript 于 1995 年推出，作为一种向 Netscape Navigator 浏览器的网页添加程序的方式。此后，这种语言被所有其他主要图形网页浏览器所采纳。它使现代网页应用成为可能——也就是说，这些应用可以让你直接互动，而无需每次操作都重新加载页面。JavaScript
+    还用于更传统的网站，以提供各种形式的互动性和巧妙性。
 - en: It is important to note that JavaScript has almost nothing to do with the programming
     language named Java. The similar name was inspired by marketing considerations
     rather than good judgment. When JavaScript was being introduced, the Java language
     was being heavily marketed and was gaining popularity. Someone thought it was
     a good idea to try to ride along on this success. Now we are stuck with the name.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要注意，JavaScript 与名为 Java 的编程语言几乎没有关系。相似的名称是出于营销考虑而非明智的判断。当 JavaScript 被引入时，Java
+    语言正受到强力推广并日益流行。有人认为借助这一成功的想法不错。现在我们被这个名称困住了。
 - en: After its adoption outside of Netscape, a standard document was written to describe
     the way the JavaScript language should work so that the various pieces of software
     that claimed to support JavaScript could make sure they actually provided the
     same language. This is called the ECMAScript standard, after the Ecma International
     organization that conducted the standardization. In practice, the terms ECMAScript
     and JavaScript can be used interchangeably—they are two names for the same language.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Netscape 之外被采纳后，编写了一份标准文档，描述 JavaScript 语言应该如何工作，以便那些声称支持 JavaScript 的各种软件可以确保它们实际提供的是同一种语言。这被称为
+    ECMAScript 标准，以进行标准化的 Ecma International 组织命名。在实践中，ECMAScript 和 JavaScript 这两个术语可以互换使用——它们是同一种语言的两个名称。
 - en: 'There are those who will say *terrible* things about JavaScript. Many of these
     things are true. When I was required to write something in JavaScript for the
     first time, I quickly came to despise it. It would accept almost anything I typed
@@ -279,14 +386,18 @@
     what it allows. The idea behind this design was that it would make programming
     in JavaScript easier for beginners. In actuality, it mostly makes finding problems
     in your programs harder because the system will not point them out to you.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 有人会说*可怕*的关于JavaScript的事情。这些话中很多都是事实。当我第一次被要求用JavaScript写东西时，我很快开始厌恶它。它几乎接受我输入的任何内容，但以一种完全不同于我意图的方式解读。这当然与我当时对自己在做什么毫无头绪有很大关系，但这里确实存在一个问题：JavaScript在其允许的范围上极为宽松。这个设计理念是为了让初学者更容易进行JavaScript编程。实际上，这主要让你在程序中找到问题变得更加困难，因为系统不会直接指出它们。
 - en: This flexibility also has its advantages, though. It leaves room for techniques
     that are impossible in more rigid languages and makes for a pleasant, informal
     style of programming. After learning the language properly and working with it
     for a while, I have come to actually *like* JavaScript.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这种灵活性也有其优点。它为更灵活语言中不可能实现的技术留出了空间，并形成了一种愉快的非正式编程风格。在正确学习这门语言并使用一段时间后，我实际上开始*喜欢*上JavaScript。
 - en: There have been several versions of JavaScript. ECMAScript version 3 was the
     widely supported version during JavaScript’s ascent to dominance, roughly between
     2000 and 2010\. During this time, work was underway on an ambitious version 4,
@@ -296,47 +407,62 @@
     ambitious version 5, which made only some uncontroversial improvements, came out
     in 2009\. In 2015, version 6 came out, a major update that included some of the
     ideas planned for version 4\. Since then we’ve had new, small updates every year.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript经历了多个版本。ECMAScript版本3是在2000年至2010年间JavaScript崛起时得到广泛支持的版本。在此期间，版本4的雄心勃勃的开发正在进行，计划对语言进行一系列激进的改进和扩展。然而，以如此激进的方式改变一个生动且被广泛使用的语言，结果在政治上是困难的，因此版本4的工作在2008年被放弃。一个雄心较小的版本5于2009年发布，仅进行了一些不具争议性的改进。2015年，版本6发布，这是一个重要更新，包括了一些计划在版本4中的理念。从那时起，我们每年都有新的小更新。
 - en: The fact that JavaScript is evolving means that browsers have to constantly
     keep up. If you’re using an older browser, it may not support every feature. The
     language designers are careful to not make any changes that could break existing
     programs, so new browsers can still run old programs. In this book, I’m using
     the 2024 version of JavaScript.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript的演变意味着浏览器必须不断跟上。如果你使用的是较旧的浏览器，它可能不支持所有功能。语言设计者非常小心，不做任何可能破坏现有程序的更改，因此新浏览器仍然可以运行旧程序。在本书中，我使用的是2024版的JavaScript。
 - en: Web browsers are not the only platforms on which JavaScript is used. Some databases,
     such as MongoDB and CouchDB, use JavaScript as their scripting and query language.
     Several platforms for desktop and server programming, most notably the Node.js
     project (the subject of [Chapter 20](ch20.xhtml#ch20)), provide an environment
     for programming JavaScript outside of the browser.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 网络浏览器并不是唯一使用JavaScript的平台。一些数据库，例如MongoDB和CouchDB，将JavaScript作为其脚本和查询语言。多个桌面和服务器编程平台，最显著的是Node.js项目（见[第20章](ch20.xhtml#ch20)），提供了在浏览器外编程JavaScript的环境。
 - en: Code, and What to Do with It
+  id: totrans-54
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 代码及其用途
 - en: '*Code* is the text that makes up programs. Most chapters in this book contain
     quite a lot of code. I believe reading code and writing code are indispensable
     parts of learning to program. Try to not just glance over the examples— read them
     attentively and understand them. This may be slow and confusing at first, but
     I promise that you’ll quickly get the hang of it. The same goes for the exercises.
     Don’t assume you understand them until you’ve actually written a working solution.'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '*代码*是构成程序的文本。本书的大多数章节都包含了相当多的代码。我相信阅读代码和编写代码是学习编程不可或缺的部分。尽量不要只是匆匆浏览示例——要认真阅读并理解它们。起初这可能会很慢且令人困惑，但我保证你很快就会掌握其中的窍门。练习题也是如此。在你真正写出一个有效的解决方案之前，不要假设你理解它们。'
 - en: I recommend you try your solutions to exercises in an actual JavaScript interpreter.
     That way, you’ll get immediate feedback on whether what you are doing is working,
     and, I hope, you’ll be tempted to experiment and go beyond the exercises.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 我建议你在实际的JavaScript解释器中尝试练习题的解答。这样，你可以立即得到反馈，看看你所做的是否有效，并且我希望你会被诱惑去实验，超越练习。
 - en: The easiest way to run the example code in the book—and to experiment with it—is
     to look it up in the online version of the book at *[https://eloquentjavascript.net](https://eloquentjavascript.net)*.
     There, you can click any code example to edit and run it and to see the output
     it produces. To work on the exercises, go to *[https://eloquentjavascript.net/code](https://eloquentjavascript.net/code)*,
     which provides starting code for each coding exercise and allows you to look at
     the solutions.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书中运行示例代码最简单的方法——也是进行实验的方法——是在* [https://eloquentjavascript.net](https://eloquentjavascript.net)
+    *的在线版本中查找它。你可以单击任何代码示例进行编辑和运行，并查看它产生的输出。要进行练习，请访问*[https://eloquentjavascript.net/code](https://eloquentjavascript.net/code)*，该网站提供每个编码练习的起始代码，并允许你查看解决方案。
 - en: Running the programs defined in this book outside of the book’s web-site requires
     some care. Many examples stand on their own and should work in any JavaScript
     environment. But code in later chapters is often written for a specific environment
@@ -344,19 +470,25 @@
     bigger programs, and the pieces of code that appear in them depend on each other
     or on external files. The sandbox on the website provides links to ZIP files containing
     all the scripts and data files necessary to run the code for a given chapter.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书的网站之外运行本书定义的程序需要小心。许多示例可以独立运行，并且应该在任何JavaScript环境中工作。但后面的章节中的代码通常是为特定环境（浏览器或Node.js）编写的，只能在那里运行。此外，许多章节定义了更大的程序，其中的代码片段彼此依赖或依赖外部文件。网站上的沙盒提供链接到包含运行特定章节所需的所有脚本和数据文件的ZIP文件。
 - en: Overview of This Book
+  id: totrans-59
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 本书概述
 - en: This book contains roughly three parts. The first 12 chapters discuss the JavaScript
     language. The next seven chapters are about web browsers and the way JavaScript
     is used to program them. Finally, two chapters are devoted to Node.js, another
     environment to program JavaScript in. There are five *project chapters* in the
     book that describe larger example programs to give you a taste of actual programming.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书大致分为三个部分。前12章讨论JavaScript语言。接下来的七章则讲述网页浏览器以及如何使用JavaScript对其进行编程。最后，两章专门讲解Node.js，另一个编写JavaScript的环境。本书中有五个*项目章节*描述了更大的示例程序，让你体验实际编程。
 - en: The language part of the book starts with four chapters that introduce the basic
     structure of the JavaScript language. They discuss control structures (such as
     the while word you saw in this introduction), functions (writing your own building
@@ -364,50 +496,71 @@
     Next, [Chapters 5](ch05.xhtml#ch05) and [6](ch06.xhtml#ch06) introduce techniques
     to use functions and objects to write more *abstract* code and keep complexity
     under control.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的语言部分以四个章节开始，介绍JavaScript语言的基本结构。它们讨论控制结构（例如你在本介绍中看到的while语句）、函数（编写自己的构建块）和数据结构。在这些之后，你将能够编写基本程序。接下来，[第5章](ch05.xhtml#ch05)和[第6章](ch06.xhtml#ch06)介绍了使用函数和对象编写更*抽象*代码并控制复杂性的技巧。
 - en: After a first project chapter that builds a crude delivery robot, the language
     part of the book continues with chapters on error handling and bug fixing, regular
     expressions (an important tool for working with text), modularity (another defense
     against complexity), and asynchronous programming (dealing with events that take
     time). The second project chapter, where we implement a programming language,
     concludes the first part of the book.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第一项目章节构建一个简单的送货机器人后，本书的语言部分继续探讨错误处理和修复、正则表达式（处理文本的重要工具）、模块化（抵御复杂性的另一种手段）以及异步编程（处理耗时事件）。第二个项目章节实现了一种编程语言，结束了本书的第一部分。
 - en: The second part of the book, [Chapters 13](ch13.xhtml#ch13) to [19](ch19.xhtml#ch19),
     describes the tools that browser JavaScript has access to. You’ll learn to display
     things on the screen ([Chapters 14](ch14.xhtml#ch14) and [17](ch17.xhtml#ch17)),
     respond to user input ([Chapter 15](ch15.xhtml#ch15)), and communicate over the
     network ([Chapter 18](ch18.xhtml#ch18)). There are again two project chapters
     in this part, building a platform game and a pixel paint program.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的第二部分，[第13章](ch13.xhtml#ch13)到[第19章](ch19.xhtml#ch19)，描述了浏览器 JavaScript 可访问的工具。你将学习如何在屏幕上显示内容（[第14章](ch14.xhtml#ch14)和[第17章](ch17.xhtml#ch17)）、响应用户输入（[第15章](ch15.xhtml#ch15)）以及通过网络进行通信（[第18章](ch18.xhtml#ch18)）。在这一部分还有两个项目章节，构建一个平台游戏和一个像素画程序。
 - en: '[Chapter 20](ch20.xhtml#ch20) describes Node.js and [Chapter 21](ch21.xhtml#ch21)
     builds a small website using that tool. Finally, [Chapter 22](ch22.xhtml#ch22)
     describes some of the considerations that come up when optimizing JavaScript programs
     for speed.'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '[第20章](ch20.xhtml#ch20)描述了 Node.js，[第21章](ch21.xhtml#ch21)则使用该工具构建一个小网站。最后，[第22章](ch22.xhtml#ch22)讨论了优化
+    JavaScript 程序以提高速度时需要考虑的一些事项。'
 - en: Typographic Conventions
+  id: totrans-65
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 排版约定
 - en: 'In this book, text written in a monospaced font will represent elements of
     programs. Sometimes these are self-sufficient fragments, and sometimes they just
     refer to part of a nearby program. Programs (of which you have already seen a
     few) are written as follows:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书中，以等宽字体书写的文本将代表程序的元素。有时这些是自足的片段，有时它们只是引用了附近程序的一部分。程序（你已经见过一些）书写如下：
 - en: '[PRE4]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Sometimes, to show the output that a program produces, the expected output is
     written after it, with two slashes and an arrow in front.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时，为了显示程序产生的输出，预期的输出会在其后面写出，前面加上两个斜杠和一个箭头。
 - en: '[PRE5]'
+  id: totrans-69
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Good luck!
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 祝好运！

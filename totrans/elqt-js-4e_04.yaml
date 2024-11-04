@@ -1,55 +1,77 @@
 - en: '3'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '3'
 - en: FUNCTIONS
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 函数
 - en: Functions are one of the most central tools in Java-Script programming. The
     concept of wrapping a piece of program in a value has many uses. It gives us a
     way to structure larger programs, to reduce repetition, to associate names with
     subprograms, and to isolate these subprograms from each other.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数是 JavaScript 编程中最核心的工具之一。将一段程序包装在一个值中的概念有很多用途。它为我们提供了一种结构化大型程序的方法，减少重复，将名称与子程序关联，以及将这些子程序相互隔离。
 - en: The most obvious use of functions is defining new vocabulary. Creating new words
     is usually bad style in prose, but it’s indispensable in programming.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数最明显的用途是定义新词汇。在散文中，创造新词通常被视为不良风格，但在编程中这是不可或缺的。
 - en: Typical adult English speakers have some 20,000 words in their vocabulary. Few
     programming languages come with 20,000 commands built in. And the vocabulary that
     *is* available tends to be more precisely defined, and thus less flexible, than
     in human language. Therefore, we *have* to introduce new words to avoid excessive
     verbosity.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 典型的成人英语使用者的词汇量大约有 20,000 个单词。很少有编程语言内置 20,000 个命令。而可用的词汇往往被定义得更为精确，因此在灵活性上不如人类语言。因此，我们*必须*引入新词，以避免过于冗长。
 - en: Defining a Function
+  id: totrans-5
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 定义函数
 - en: 'A function definition is a regular binding where the value of the binding is
     a function. For example, this code defines square to refer to a function that
     produces the square of a given number:'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数定义是一种常规绑定，其中绑定的值是一个函数。例如，以下代码将 square 定义为指向一个生成给定数字平方的函数：
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: A function is created with an expression that starts with the keyword function.
     Functions have a set of *parameters* (in this case, only x) and a *body*, which
     contains the statements that are to be executed when the function is called. The
     body of a function created this way must always be wrapped in braces, even when
     it consists of only a single statement.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数是通过以关键字 function 开头的表达式创建的。函数有一组 *参数*（在此例中，仅为 x）和一个 *主体*，主体包含在调用函数时要执行的语句。以这种方式创建的函数主体必须始终用大括号包裹，即使它仅由一个语句组成。
 - en: 'A function can have multiple parameters or no parameters at all. In the following
     example, makeNoise does not list any parameter names, whereas roundTo (which rounds
     n to the nearest multiple of step) lists two:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数可以有多个参数或根本没有参数。在以下示例中，makeNoise 没有列出任何参数名，而 roundTo（将 n 四舍五入到 step 的最近倍数）列出了两个：
 - en: '[PRE1]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Some functions, such as roundTo and square, produce a value, and some don’t,
     such as makeNoise, whose only result is a side effect. A return statement determines
     the value the function returns. When control comes across such a statement, it
@@ -57,404 +79,581 @@
     the code that called the function. A return keyword without an expression after
     it will cause the function to return undefined. Functions that don’t have a return
     statement at all, such as makeNoise, similarly return undefined.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些函数，比如 roundTo 和 square，会产生一个值，而有些则不会，比如 makeNoise，它唯一的结果是一个副作用。返回语句决定了函数返回的值。当控制流遇到这样的语句时，它会立即跳出当前函数，并将返回的值传递给调用该函数的代码。如果
+    return 关键字后没有表达式，函数将返回 undefined。没有返回语句的函数，例如 makeNoise，也同样返回 undefined。
 - en: Parameters to a function behave like regular bindings, but their initial values
     are given by the *caller* of the function, not the code in the function itself.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数的参数表现得像常规绑定，但它们的初始值由函数的 *调用者* 提供，而不是函数内部的代码。
 - en: Bindings and Scopes
+  id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 绑定与作用域
 - en: Each binding has a *scope*, which is the part of the program in which the binding
     is visible. For bindings defined outside of any function, block, or module (see
     [Chapter 10](ch10.xhtml#ch10)), the scope is the whole program—you can refer to
     such bindings wherever you want. These are called *global*.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个绑定都有一个 *作用域*，即绑定可见的程序部分。对于在任何函数、块或模块外部定义的绑定（见 [第 10 章](ch10.xhtml#ch10)），作用域是整个程序——你可以在任何地方引用这些绑定。这些被称为
+    *全局* 绑定。
 - en: Bindings created for function parameters or declared inside a function can be
     referenced only in that function, so they are known as *local* bindings. Every
     time the function is called, new instances of these bindings are created. This
     provides some isolation between functions—each function call acts in its own little
     world (its local environment) and can often be understood without knowing a lot
     about what’s going on in the global environment.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 为函数参数创建的绑定或在函数内部声明的绑定只能在该函数内引用，因此它们被称为 *局部* 绑定。每次调用函数时，这些绑定的新实例都会被创建。这在函数之间提供了一些隔离——每个函数调用都在自己的小世界中运行（其局部环境），并且通常可以在不需要了解全局环境中发生的事情的情况下理解。
 - en: Bindings declared with let and const are in fact local to the *block* in which
     they are declared, so if you create one of those inside a loop, the code before
     and after the loop cannot “see” it. In pre-2015 JavaScript, only functions created
     new scopes, so old-style bindings, created with the var keyword, are visible throughout
     the whole function in which they appear—or throughout the global scope, if they
     are not in a function.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 let 和 const 声明的绑定实际上是局部于其声明所在的*块*，因此如果在循环内部创建了其中一个，循环前后的代码无法“看到”它。在 2015
+    年之前的 JavaScript 中，只有函数会创建新作用域，因此使用 var 关键字创建的旧式绑定在整个函数中可见——如果不在函数内，则在全局作用域内可见。
 - en: '[PRE2]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Each scope can “look out” into the scope around it, so x is visible inside the
     block in the example. The exception is when multiple bindings have the same name—in
     that case, code can see only the innermost binding. For example, when the code
     inside the halve function refers to n, it is seeing its *own* n, not the global
     n.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个作用域可以“向外”查看周围的作用域，因此在示例中的块内部可以看到 x。例外情况是当多个绑定具有相同名称时——在这种情况下，代码只能看到最内层的绑定。例如，当
+    halve 函数内部的代码引用 n 时，它看到的是它*自己的* n，而不是全局的 n。
 - en: '[PRE3]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: Nested Scope
+  id: totrans-20
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 嵌套作用域
 - en: JavaScript distinguishes not just global and local bindings. Blocks and functions
     can be created inside other blocks and functions, producing multiple degrees of
     locality.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript 不仅区分全局绑定和局部绑定。块和函数可以在其他块和函数内部创建，从而产生多重局部性。
 - en: 'For example, this function—which outputs the ingredients needed to make a batch
     of hummus—has another function inside it:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，这个函数——输出制作一批鹰嘴豆泥所需的成分——内部还有另一个函数：
 - en: '[PRE4]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: The code inside the ingredient function can see the factor binding from the
     outer function. But its local bindings, such as unit or ingredientAmount, are
     not visible in the outer function.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 成分函数内部的代码可以看到外部函数的 factor 绑定。但它的局部绑定，例如 unit 或 ingredientAmount，在外部函数中不可见。
 - en: The set of bindings visible inside a block is determined by the place of that
     block in the program text. Each local scope can also see all the local scopes
     that contain it, and all scopes can see the global scope. This approach to binding
     visibility is called *lexical scoping*.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 块内可见的绑定集合由该块在程序文本中的位置决定。每个局部作用域也可以看到包含它的所有局部作用域，所有作用域都可以看到全局作用域。这种绑定可见性的处理方式称为
+    *词法作用域*。
 - en: Functions as Values
+  id: totrans-26
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 函数作为值
 - en: A function binding usually simply acts as a name for a specific piece of the
     program. Such a binding is defined once and never changed. This makes it easy
     to confuse the function and its name.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数绑定通常只是程序中某个特定部分的名称。这种绑定定义一次，永不改变。这使得函数和其名称之间容易混淆。
 - en: 'But the two are different. A function value can do all the things that other
     values can do—you can use it in arbitrary expressions, not just call it. It is
     possible to store a function value in a new binding, pass it as an argument to
     a function, and so on. Similarly, a binding that holds a function is still just
     a regular binding and can, if not constant, be assigned a new value, like so:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 但二者是不同的。函数值可以执行其他值能够做的所有操作——你可以在任意表达式中使用它，而不仅仅是调用它。可以将函数值存储在新的绑定中，作为参数传递给一个函数，等等。类似地，持有函数的绑定仍然只是一个常规绑定，如果不是常量，它可以被分配一个新值，如下所示：
 - en: '[PRE5]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: In [Chapter 5](ch05.xhtml#ch05) we’ll discuss the interesting things we can
     do by passing function values to other functions.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 [第 5 章](ch05.xhtml#ch05)中，我们将讨论通过将函数值传递给其他函数可以做的有趣事情。
 - en: Declaration Notation
+  id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 声明符号
 - en: There is a slightly shorter way to create a function binding. When the function
     keyword is used at the start of a statement, it works differently.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建函数绑定有一种稍短的方式。当在语句开始时使用函数关键字时，它的工作方式是不同的。
 - en: '[PRE6]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: This is a function *declaration*. The statement defines the binding square and
     points it at the given function. It is slightly easier to write and doesn’t require
     a semicolon after the function.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个函数 *声明*。该语句定义了绑定 square，并指向给定的函数。它稍微容易写一点，并且在函数后不需要分号。
 - en: There is one subtlety with this form of function definition.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种形式的函数定义有一个细微之处。
 - en: '[PRE7]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: The preceding code works, even though the function is defined *below* the code
     that uses it. Function declarations are not part of the regular top-to-bottom
     flow of control. They are conceptually moved to the top of their scope and can
     be used by all the code in that scope. This is sometimes useful because it offers
     the freedom to order code in a way that seems the clearest, without worrying about
     having to define all functions before they are used.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 前面的代码可以正常工作，即使函数定义在使用它的代码 *下面*。函数声明并不是常规自上而下控制流的一部分。它们在概念上被移到作用域的顶部，可以被该作用域内的所有代码使用。这在某些情况下很有用，因为它提供了按最清晰的方式排列代码的自由，而不必担心在使用之前定义所有函数。
 - en: Arrow Functions
+  id: totrans-38
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 箭头函数
 - en: There’s a third notation for functions, which looks very different from the
     others. Instead of the function keyword, it uses an arrow (=>) made up of an equal
     sign and a greater-than character (not to be confused with the greater-than-or-equal
     operator, which is written >=).
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数还有第三种表示法，它看起来与其他两种非常不同。它使用一个箭头（=>），由一个等号和一个大于号字符组成（不要与大于或等于运算符混淆，该运算符写作 >=）。
 - en: '[PRE8]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: The arrow comes *after* the list of parameters and is followed by the function’s
     body. It expresses something like “this input (the parameters) produces this result
     (the body).”
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 箭头位于参数列表 *之后*，并后接函数的主体。它表达了类似于“这个输入（参数）产生这个结果（主体）”的意思。
 - en: 'When there is only one parameter name, you can omit the parentheses around
     the parameter list. If the body is a single expression rather than a block in
     braces, that expression will be returned from the function. That means these two
     definitions of square do the same thing:'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 当只有一个参数名称时，可以省略参数列表周围的括号。如果主体是单个表达式而不是用大括号括起来的代码块，那么该表达式将从函数中返回。这意味着这两种对 square
+    的定义做的是同样的事情：
 - en: '[PRE9]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: When an arrow function has no parameters at all, its parameter list is just
     an empty set of parentheses.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 当箭头函数没有任何参数时，它的参数列表只是一个空的括号。
 - en: '[PRE10]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: There’s no deep reason to have both arrow functions and function expressions
     in the language. Apart from a minor detail, which we’ll discuss in [Chapter 6](ch06.xhtml#ch06),
     they do the same thing. Arrow functions were added in 2015, mostly to make it
     possible to write small function expressions in a less verbose way. We’ll use
     them often in [Chapter 5](ch05.xhtml#ch05).
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 语言中同时存在箭头函数和函数表达式没有深层原因。除了一个我们将在[第六章](ch06.xhtml#ch06)中讨论的小细节，它们做的是同样的事情。箭头函数是在2015年添加的，主要是为了以较少的冗长方式编写小的函数表达式。我们将在[第五章](ch05.xhtml#ch05)中经常使用它们。
 - en: The Call Stack
+  id: totrans-47
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 调用栈
 - en: 'The way control flows through functions is somewhat involved. Let’s take a
     closer look at it. Here is a simple program that makes a few function calls:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 控制在函数中的流动方式有些复杂。让我们仔细看看。以下是一个简单的程序，进行了一些函数调用：
 - en: '[PRE11]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'A run through this program goes roughly like this: the call to greet causes
     control to jump to the start of that function (line 2). The function calls console.log,
     which takes control, does its job, and then returns control to line 2\. There,
     it reaches the end of the greet function, so it returns to the place that called
     it—line 4\. The line after that calls console.log again. After that returns, the
     program reaches its end.'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行这个程序大致是这样的：对 greet 的调用使控制跳到该函数的开始（第2行）。该函数调用 console.log，console.log 接管控制，完成它的工作，然后将控制返回到第2行。在那里，它到达
+    greet 函数的末尾，因此返回到调用它的地方——第4行。之后的行再次调用 console.log。在返回后，程序到达结束。
 - en: 'We could show the flow of control schematically like this:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以将控制流示意性地展示如下：
 - en: '[PRE12]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Because a function has to jump back to the place that called it when it returns,
     the computer must remember the context from which the call happened. In one case,
     console.log has to return to the greet function when it is done. In the other
     case, it returns to the end of the program.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为函数在返回时必须跳回调用它的地方，所以计算机必须记住调用发生的上下文。在一种情况下，console.log 在完成时必须返回到 greet 函数。在另一种情况下，它返回到程序的末尾。
 - en: The place where the computer stores this context is the *call stack*. Every
     time a function is called, the current context is stored on top of this stack.
     When a function returns, it removes the top context from the stack and uses that
     context to continue execution.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算机存储这个上下文的地方是*调用栈*。每次调用函数时，当前上下文会被存储在这个栈的顶部。当函数返回时，它从栈中移除顶部的上下文，并使用该上下文继续执行。
 - en: Storing this stack requires space in the computer’s memory. When the stack grows
     too big, the computer will fail with a message like “out of stack space” or “too
     much recursion.” The following code illustrates this by asking the computer a
     really hard question that causes an infinite back-and-forth between two functions.
     Or rather, it *would* be infinite, if the computer had an infinite stack. As it
     is, we will run out of space, or “blow the stack.”
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储这个栈需要计算机内存中的空间。当栈增长得太大时，计算机会出现“栈空间不足”或“递归过多”等错误消息。以下代码通过向计算机提出一个非常棘手的问题来说明这一点，这会导致两个函数之间发生无限的往返。或者说，如果计算机有无限的栈，这将是无限的。实际上，我们会耗尽空间，或者“使栈溢出”。
 - en: '[PRE13]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: Optional Arguments
+  id: totrans-57
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 可选参数
 - en: 'The following code is allowed and executes without any problem:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码是允许的，并且没有任何问题地执行：
 - en: '[PRE14]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: We defined square with only one parameter. Yet when we call it with three, the
     language doesn’t complain. It ignores the extra arguments and computes the square
     of the first one.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们仅用一个参数定义了平方。然而，当我们用三个参数调用它时，语言并不会抱怨。它会忽略额外的参数，计算第一个参数的平方。
 - en: JavaScript is extremely broad-minded about the number of arguments you can pass
     to a function. If you pass too many, the extra ones are ignored. If you pass too
     few, the missing parameters are assigned the value undefined.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript 对于你可以传递给函数的参数数量极为宽松。如果你传递太多，额外的参数会被忽略。如果你传递的参数太少，缺失的参数会被赋值为`undefined`。
 - en: 'The downside of this is that it is possible—likely, even—that you’ll accidentally
     pass the wrong number of arguments to functions. And no one will tell you about
     it. The upside is that you can use this behavior to allow a function to be called
     with different numbers of arguments. For example, this minus function tries to
     imitate the - operator by acting on either one or two arguments:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样做的缺点是，可能——甚至很可能——你会不小心向函数传递错误数量的参数。而且没有人会告诉你。好处是，你可以利用这种行为，使得一个函数可以接受不同数量的参数。例如，这个`minus`函数尝试模仿`-`运算符，可以处理一个或两个参数：
 - en: '[PRE15]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: If you write an = operator after a parameter, followed by an expression, the
     value of that expression will replace the argument when it is not given. For example,
     this version of roundTo makes its second argument optional. If you don’t provide
     it or pass the value undefined, it will default to one.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果在参数后写一个`=`运算符，后面跟一个表达式，当未提供参数时，该表达式的值将替代参数。例如，这个版本的`roundTo`使得它的第二个参数变为可选。如果你不提供它或传递值`undefined`，它将默认为`1`。
 - en: '[PRE16]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: The next chapter will introduce a way in which a function body can get at the
     whole list of arguments it was passed. This is helpful because it allows a function
     to accept any number of arguments. For example, console.log does this, outputting
     all values it is given.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一章将介绍一种方法，通过这种方法，函数体可以访问它所接收到的所有参数列表。这是非常有帮助的，因为它允许函数接受任意数量的参数。例如，`console.log`就是这样做的，输出它所接收到的所有值。
 - en: '[PRE17]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: Closure
+  id: totrans-68
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 闭包
 - en: 'The ability to treat functions as values, combined with the fact that local
     bindings are re-created every time a function is called, brings up an interesting
     question: What happens to local bindings when the function call that created them
     is no longer active?'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 将函数视为值的能力，加上每次调用函数时局部绑定会被重新创建的事实，提出了一个有趣的问题：当创建它们的函数调用不再活跃时，局部绑定会发生什么？
 - en: The following code shows an example of this. It defines a function, wrapValue,
     that creates a local binding. It then returns a function that accesses and returns
     this local binding.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码展示了这个例子。它定义了一个函数`wrapValue`，创建了一个局部绑定。然后返回一个可以访问并返回这个局部绑定的函数。
 - en: '[PRE18]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: This is allowed and works as you’d hope—both instances of the binding can still
     be accessed. This situation is a good demonstration of the fact that local bindings
     are created anew for every call, and different calls don’t affect each other’s
     local bindings.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是允许的，并且按你所希望的那样工作——两个绑定实例仍然可以被访问。这种情况很好地展示了局部绑定是为每次调用重新创建的，不同的调用不会互相影响各自的局部绑定。
 - en: This feature—being able to reference a specific instance of a local binding
     in an enclosing scope—is called *closure*. A function that references bindings
     from local scopes around it is called *a* closure. This behavior not only frees
     you from having to worry about the lifetimes of bindings but also makes it possible
     to use function values in some creative ways.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一特性——能够引用包围作用域中特定实例的局部绑定——被称为*闭包*。引用周围局部作用域中绑定的函数被称为*闭包*。这种行为不仅让你不必担心绑定的生命周期，而且使得以某种创造性的方式使用函数值成为可能。
 - en: With a slight change, we can turn the previous example into a way to create
     functions that multiply by an arbitrary amount.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过稍微修改，我们可以将之前的示例转变为一种创建可以乘以任意数值的函数的方法。
 - en: '[PRE19]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: The explicit local binding from the wrapValue example isn’t really needed, since
     a parameter is itself a local binding.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 在wrapValue示例中的显式局部绑定其实并不是必需的，因为参数本身就是一个局部绑定。
 - en: Thinking about programs like this takes some practice. A good mental model is
     to think of function values as containing both the code in their body and the
     environment in which they are created. When called, the function body sees the
     environment in which it was created, not the environment in which it is called.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 以这种方式思考程序需要一些练习。一个好的心理模型是将函数值视为包含其主体中的代码以及创建它时的环境。当被调用时，函数主体看到的是它创建时的环境，而不是它被调用时的环境。
 - en: In the example, multiplier is called and creates an environment in which its
     factor parameter is bound to 2\. The function value it returns, which is stored
     in twice, remembers this environment so that when that is called, it multiplies
     its argument by 2.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个示例中，multiplier被调用并创建了一个环境，其中其因子参数绑定为2。它返回的函数值被存储在twice中，记住了这个环境，以便在调用时将其参数乘以2。
 - en: Recursion
+  id: totrans-79
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 递归
 - en: 'It is perfectly OK for a function to call itself, as long as it doesn’t do
     it so often that it overflows the stack. A function that calls itself is called
     *recursive*. Recursion allows some functions to be written in a different style.
     Take, for example, this power function, which does the same as the ** (exponentiation)
     operator:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数自我调用是完全可以的，只要它不会频繁到溢出堆栈。自我调用的函数被称为*递归*。递归允许某些函数以不同的风格编写。以这个幂函数为例，它与**（指数）运算符的功能相同：
 - en: '[PRE20]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: This is rather close to the way mathematicians define exponentiation and arguably
     describes the concept more clearly than the loop we used in [Chapter 2](ch02.xhtml#ch02).
     The function calls itself multiple times with ever smaller exponents to achieve
     the repeated multiplication.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 这与数学家对指数运算的定义非常接近，并且可以说比我们在[第二章](ch02.xhtml#ch02)中使用的循环更清晰地描述了这一概念。该函数多次调用自身，指数越来越小，以实现重复乘法。
 - en: 'However, this implementation has one problem: in typical JavaScript implementations,
     it’s about three times slower than a version using a for loop. Running through
     a simple loop is generally cheaper than calling a function multiple times.'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这种实现存在一个问题：在典型的JavaScript实现中，它的速度大约是使用for循环版本的三倍慢。运行一个简单的循环通常比多次调用函数更便宜。
 - en: The dilemma of speed versus elegance is an interesting one. You can see it as
     a kind of continuum between human-friendliness and machine-friendliness. Almost
     any program can be made faster by making it bigger and more convoluted. The programmer
     has to find an appropriate balance.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于速度与优雅之间的困境是一个有趣的话题。你可以将其视为人性化和机器友好之间的一种连续体。几乎任何程序都可以通过变得更大、更复杂来加快速度。程序员需要找到一个合适的平衡。
 - en: In the case of the power function, an inelegant (looping) version is still fairly
     simple and easy to read. It doesn’t make much sense to replace it with a recursive
     function. Often, though, a program deals with such complex concepts that giving
     up some efficiency in order to make the program more straightforward is helpful.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于幂函数而言，一个不优雅的（循环）版本仍然相当简单且易于阅读。用递归函数替代它并没有太大意义。然而，通常情况下，程序处理的概念如此复杂，以至于为了使程序更简洁而牺牲一些效率是有益的。
 - en: Worrying about efficiency can be a distraction. It’s yet another factor that
     complicates program design, and when you’re doing something that’s already difficult,
     that extra thing to worry about can be paralyzing.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 过于关注效率可能会分散注意力。这又是一个使程序设计复杂化的因素，当你正在做一些已经很困难的事情时，额外需要担心的事可能会让人感到无从下手。
 - en: Therefore, you should generally start by writing something that’s correct and
     easy to understand. If you’re worried that it’s too slow—which it usually isn’t,
     since most code simply isn’t executed often enough to take any significant amount
     of time—you can measure afterward and improve it if necessary.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，你通常应该从编写一些正确且易于理解的代码开始。如果你担心它太慢——而实际上它通常并不慢，因为大多数代码并不会频繁执行，无法占用显著的时间——你可以在之后进行测量，并在必要时进行改进。
 - en: Recursion is not always just an inefficient alternative to looping. Some problems
     really are easier to solve with recursion than with loops. Most often these are
     problems that require exploring or processing several “branches,” each of which
     might branch out again into even more branches.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 递归并不总是仅仅是循环的一个低效替代方案。有些问题确实用递归比用循环更容易解决。通常这些是需要探索或处理多个“分支”的问题，每个分支可能又会进一步分叉。
 - en: 'Consider this puzzle: by starting from the number 1 and repeatedly either adding
     5 or multiplying by 3, an infinite set of numbers can be produced. How would you
     write a function that, given a number, tries to find a sequence of such additions
     and multiplications that produces that number? For example, the number 13 could
     be reached by first multiplying by 3 and then adding 5 twice, whereas the number
     15 cannot be reached at all.'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑这个难题：通过从数字 1 开始，反复添加 5 或乘以 3，可以产生一个无限集合的数字。你会如何写一个函数，给定一个数字，尝试找到这样一系列的加法和乘法来生成那个数字？例如，数字
+    13 可以通过先乘以 3 然后加 5 两次来得到，而数字 15 则根本无法得到。
 - en: 'Here is a recursive solution:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个递归解决方案：
 - en: '[PRE21]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: Note that this program doesn’t necessarily find the *shortest* sequence of operations.
     It is satisfied when it finds any sequence at all.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，这个程序并不一定找到操作的*最短*序列。它在找到任何序列时就会满足。
 - en: It’s OK if you don’t see how this code works right away. Let’s work through
     it, since it makes for a great exercise in recursive thinking.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你立刻看不懂这段代码也没关系。我们一步一步来，因为这将是一个很好的递归思维练习。
 - en: 'The inner function find does the actual recursing. It takes two arguments:
     the current number and a string that records how we reached this number. If it
     finds a solution, it returns a string that shows how to get to the target. If
     it can find no solution starting from this number, it returns null.'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 内部函数 `find` 实际上执行递归。它接受两个参数：当前数字和一个记录我们如何到达这个数字的字符串。如果它找到了解决方案，它会返回一个显示如何达到目标的字符串。如果从这个数字出发找不到解决方案，它会返回
+    null。
 - en: To do this, the function performs one of three actions. If the current number
     is the target number, the current history is a way to reach that target, so it
     is returned. If the current number is greater than the target, there’s no sense
@@ -464,16 +663,24 @@
     number by calling itself twice, once for addition and once for multiplication.
     If the first call returns something that is not null, it is returned. Otherwise,
     the second call is returned, regardless of whether it produces a string or null.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 为此，该函数执行三种操作之一。如果当前数字是目标数字，那么当前历史就是达到该目标的方式，因此会返回。如果当前数字大于目标，继续探索这个分支就没有意义，因为加法和乘法只会使数字变大，因此返回
+    null。最后，如果我们仍然低于目标数字，函数会通过调用自身两次尝试从当前数字开始的两个可能路径，一次用于加法，一次用于乘法。如果第一次调用返回的结果不是
+    null，那么返回它。否则，返回第二次调用的结果，无论它是否生成字符串或 null。
 - en: To better understand how this function produces the effect we’re looking for,
     let’s look at all the calls to find that are made when searching for a solution
     for the number 13.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了更好地理解这个函数是如何产生我们所期望的效果的，让我们查看在搜索数字 13 的解决方案时所进行的所有对 `find` 的调用。
 - en: '[PRE22]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: The indentation indicates the depth of the call stack. The first time find is
     called, the function starts by calling itself to explore the solution that starts
     with (1 + 5). That call will further recurse to explore *every* continued solution
@@ -483,112 +690,159 @@
     luck—its first recursive call, through yet *another* recursive call, hits upon
     the target number. That innermost call returns a string, and each of the ?? operators
     in the intermediate calls passes that string along, ultimately returning the solution.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 缩进表示调用栈的深度。第一次调用find时，函数开始通过调用自身来探索以(1 + 5)开头的解决方案。该调用将进一步递归，以探索*每个*导致小于或等于目标数字的持续解决方案。由于没有找到一个正好命中的目标，因此返回null回到第一次调用。在那里，??运算符导致探索(1
+    * 3)的调用发生。这个搜索更幸运——它的第一个递归调用，通过又*一个*递归调用，找到了目标数字。最内层的调用返回一个字符串，而中间调用中的每个??运算符将该字符串传递下去，最终返回解决方案。
 - en: Growing Functions
+  id: totrans-99
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 增长函数
 - en: There are two more or less natural ways for functions to be introduced into
     programs.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数引入程序的方式有两种或多种自然的方法。
 - en: The first occurs when you find yourself writing similar code multiple times.
     You’d prefer not to do that, as having more code means more space for mistakes
     to hide and more material to read for people trying to understand the program.
     So you take the repeated functionality, find a good name for it, and put it into
     a function.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个情况发生在你发现自己多次编写类似代码时。你会更希望不这样做，因为代码越多，隐藏错误的空间就越大，尝试理解程序的人需要阅读的材料也就越多。因此，你提取出重复的功能，为其找到一个好名字，并将其放入一个函数中。
 - en: The second way is that you find you need some functionality that you haven’t
     written yet and that sounds like it deserves its own function. You start by naming
     the function, and then write its body. You might even start writing code that
     uses the function before you actually define the function itself.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二种方法是你发现需要一些你尚未编写的功能，这听起来应该有自己的函数。你首先给函数命名，然后编写它的主体。在实际定义函数之前，你甚至可能会开始编写使用该函数的代码。
 - en: How difficult it is to find a good name for a function is a good indication
     of how clear a concept it is that you’re trying to wrap. Let’s go through an example.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 找到一个好名字为函数命名的难易程度，很好地指示了你试图封装的概念有多清晰。让我们通过一个例子来说明。
 - en: 'We want to write a program that prints two numbers: the numbers of cows and
     chickens on a farm, with the words Cows and Chickens after them and zeros padded
     before both numbers so that they are always three digits long.'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们想写一个程序，打印两个数字：农场上牛和鸡的数量，后面跟上“Cows”和“Chickens”这两个词，并在这两个数字前面填充零，使其始终为三位数。
 - en: '[PRE23]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: This asks for a function of two arguments—the number of cows and the number
     of chickens. Let’s get coding.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 这要求一个有两个参数的函数——牛的数量和鸡的数量。让我们开始编码吧。
 - en: '[PRE24]'
+  id: totrans-107
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: Writing .length after a string expression will give us the length of that string.
     Thus, the while loops keep adding zeros in front of the number strings until they
     are at least three characters long.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 在字符串表达式后面写.length会给我们该字符串的长度。因此，while循环不断在数字字符串前面添加零，直到它们至少有三个字符长。
 - en: Mission accomplished! But just as we are about to send the farmer the code (along
     with a hefty invoice), she calls and tells us she’s also started keeping pigs,
     and couldn’t we please extend the software to also print pigs?
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 任务完成！但就在我们准备将代码（以及一份高额账单）发送给农民时，她打电话告诉我们她也开始养猪了，能不能请我们扩展软件，以便也能打印猪的数量？
 - en: 'We sure can. But just as we’re in the process of copying and pasting those
     four lines one more time, we stop and reconsider. There has to be a better way.
     Here’s a first attempt:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们当然可以。但是就在我们准备再复制粘贴那四行代码时，我们停下来重新考虑。这一定有更好的方法。下面是第一次尝试：
 - en: '[PRE25]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: It works! But that name, printZeroPaddedWithLabel, is a little awkward. It conflates
     three things—printing, zero-padding, and adding a label—into a single function.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 它成功了！但是这个名字printZeroPaddedWithLabel有点尴尬。它将打印、零填充和添加标签这三件事混为一谈，放入了一个函数中。
 - en: Instead of lifting out the repeated part of our program wholesale, let’s try
     to pick out a single *concept*.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 与其将程序中重复的部分整体提取出来，不如试着挑出一个单一的*概念*。
 - en: '[PRE26]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: A function with a nice, obvious name like zeroPad makes it easier for someone
     who reads the code to figure out what it does. Such a function is also useful
     in more situations than just this specific program. For example, you could use
     it to help print nicely aligned tables of numbers.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个名字清晰明显的函数，如`zeroPad`，让阅读代码的人更容易理解其作用。这样的函数在比这个特定程序更多的场景中也很有用。例如，你可以使用它来帮助打印对齐整齐的数字表。
 - en: How smart and versatile *should* our function be? We could write anything, from
     a terribly simple function that can only pad a number to be three characters wide
     to a complicated generalized number-formatting system that handles fractional
     numbers, negative numbers, alignment of decimal dots, padding with different characters,
     and so on.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的函数应该有多聪明和多功能？我们可以编写任何东西，从只能将数字填充为三个字符宽的简单函数，到一个复杂的通用数字格式化系统，能够处理分数、负数、对齐小数点、用不同字符填充等等。
 - en: A useful principle is to refrain from adding cleverness unless you are absolutely
     sure you’re going to need it. It can be tempting to write general “frameworks”
     for every bit of functionality you come across. Resist that urge. You won’t get
     any real work done—you’ll be too busy writing code that you never use.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个有用的原则是，除非你绝对确定需要，否则不要添加聪明的功能。为你遇到的每一项功能编写通用的“框架”可能会让人心动，但要抵制这种冲动。你不会真正完成任何工作——你会忙于编写从未使用的代码。
 - en: Functions and Side Effects
+  id: totrans-118
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 函数与副作用
 - en: Functions can be roughly divided into those that are called for their side effects
     and those that are called for their return value (though it’s also possible to
     both have side effects and return a value).
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数大致可以分为两类：一类是由于其副作用而被调用，另一类是由于其返回值而被调用（尽管也可能同时具有副作用和返回值）。
 - en: 'The first helper function in the farm example, printZeroPaddedWithLabel, is
     called for its side effect: it prints a line. The second version, zeroPad, is
     called for its return value. It is no coincidence that the second is useful in
     more situations than the first. Functions that create values are easier to combine
     in new ways than functions that directly perform side effects.'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在农场示例中，第一个辅助函数`printZeroPaddedWithLabel`因其副作用而被调用：它打印一行。第二个版本`zeroPad`因其返回值而被调用。第二个函数在更多情况下有用并非偶然。创建值的函数比直接执行副作用的函数更容易以新的方式组合。
 - en: A *pure* function is a specific kind of value-producing function that not only
     has no side effects but also doesn’t rely on side effects from other code—for
     example, it doesn’t read global bindings whose value might change. A pure function
@@ -598,111 +852,161 @@
     When you are not sure that a pure function is working correctly, you can test
     it by simply calling it and know that if it works in that context, it will work
     in any context. Nonpure functions tend to require more scaffolding to test.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个*纯*函数是一种特定类型的值生成函数，它不仅没有副作用，而且不依赖于其他代码的副作用——例如，它不读取可能会改变值的全局绑定。一个纯函数有一个愉快的特性，即在使用相同的参数调用时，它总是产生相同的值（而且不做其他事情）。对这样的函数的调用可以用它的返回值替代，而不改变代码的含义。当你不确定一个纯函数是否正确工作时，可以通过简单地调用它来测试，如果它在那个上下文中工作，那么在任何上下文中都将工作。非纯函数往往需要更多的支架来进行测试。
 - en: Still, there’s no need to feel bad when writing functions that are not pure.
     Side effects are often useful. There’s no way to write a pure version of console.log,
     for example, and console.log is good to have. Some operations are also easier
     to express in an efficient way when we use side effects.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 不必感到羞愧，当你编写不是纯函数的函数时。副作用往往是有用的。例如，`console.log`的纯版本是无法编写的，但`console.log`是非常有用的。在某些操作中，当我们使用副作用时，表达起来也更高效。
 - en: Summary
+  id: totrans-123
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 总结
 - en: This chapter taught you how to write your own functions. The function keyword,
     when used as an expression, can create a function value. When used as a statement,
     it can be used to declare a binding and give it a function as its value. Arrow
     functions are yet another way to create functions.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章教你如何编写自己的函数。当作为表达式使用时，`function`关键字可以创建一个函数值。当作为语句使用时，它可以用于声明一个绑定，并将函数作为其值。箭头函数是创建函数的另一种方式。
 - en: '[PRE27]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: A key part of understanding functions is understanding scopes. Each block creates
     a new scope. Parameters and bindings declared in a given scope are local and not
     visible from the outside. Bindings declared with var behave differently—they end
     up in the nearest function scope or the global scope.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解函数的一个关键部分是理解作用域。每个代码块都会创建一个新的作用域。在给定作用域中声明的参数和绑定是局部的，外部不可见。用 var 声明的绑定行为有所不同——它们会进入最近的函数作用域或全局作用域。
 - en: Separating the tasks your program performs into different functions is helpful.
     You won’t have to repeat yourself as much, and functions can help organize a program
     by grouping code into pieces that do specific things.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 将程序执行的任务分离成不同的函数是有帮助的。你将不必如此频繁地重复自己，函数可以通过将代码分组为执行特定任务的片段来帮助组织程序。
 - en: Exercises
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 练习
 - en: '*Minimum*'
+  id: totrans-129
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*最小值*'
 - en: The previous chapter introduced the standard function Math.min that returns
     its smallest argument. We can write a function like that ourselves now. Define
     the function min that takes two arguments and returns their minimum.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 前一章介绍了标准函数 Math.min，它返回最小的参数。我们现在可以自己编写这样的函数。定义一个名为 min 的函数，它接受两个参数并返回它们的最小值。
 - en: '*Recursion*'
+  id: totrans-131
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*递归*'
 - en: 'We’ve seen that we can use % (the remainder operator) to test whether a number
     is even or odd by using % 2 to see whether it’s divisible by two. Here’s another
     way to define whether a positive whole number is even or odd:'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经看到可以使用 %（余数运算符）来测试一个数字是偶数还是奇数，通过使用 % 2 来查看它是否可以被二整除。这里还有另一种方法来定义一个正整数是偶数还是奇数：
 - en: Zero is even.
+  id: totrans-133
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 零是偶数。
 - en: One is odd.
+  id: totrans-134
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一是奇数。
 - en: For any other number *N*, its evenness is the same as *N* – 2.
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于任何其他数字 *N*，其偶性与 *N* - 2 相同。
 - en: Define a recursive function isEven corresponding to this description. The function
     should accept a single parameter (a positive, whole number) and return a Boolean.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 定义一个递归函数 isEven，符合这个描述。该函数应该接受一个单一参数（一个正整数）并返回一个布尔值。
 - en: Test it on 50 and 75\. See how it behaves on –1\. Why? Can you think of a way
     to fix this?
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 50 和 75 上测试一下。看看它在 -1 上的表现。为什么？你能想到修复这个问题的方法吗？
 - en: '*Bean Counting*'
+  id: totrans-138
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*豆子计数*'
 - en: You can get the *N*th character, or letter, from a string by writing [*N*] after
     the string (for example, string[2]). The resulting value will be a string containing
     only one character (for example, “b”). The first character has position 0, which
     causes the last one to be found at position string.length - 1. In other words,
     a two-character string has length 2, and its characters have positions 0 and 1.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过在字符串后写 [*N*] 来获取字符串中的第 *N* 个字符或字母（例如，string[2]）。得到的值将是一个只包含一个字符的字符串（例如，“b”）。第一个字符的位置是
+    0，这导致最后一个字符位于 string.length - 1 的位置。换句话说，一个两个字符的字符串长度为 2，其字符的位置分别为 0 和 1。
 - en: Write a function called countBs that takes a string as its only argument and
     returns a number that indicates how many uppercase B characters there are in the
     string.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个名为 countBs 的函数，它以字符串作为唯一参数并返回一个数字，表示字符串中大写字母 B 的数量。
 - en: Next, write a function called countChar that behaves like countBs, except it
     takes a second argument that indicates the character that is to be counted (rather
     than counting only uppercase B characters). Rewrite countBs to make use of this
     new function.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，编写一个名为 countChar 的函数，行为类似于 countBs，但它接受一个第二个参数，表示要计数的字符（而不仅仅是计数大写字母 B）。重写
+    countBs 以利用这个新函数。
 - en: '*On two occasions I have been asked, “Pray, Mr. Babbage, if you put into the
     machine wrong figures, will the right answers come out?” [. . .] I am not able
     rightly to apprehend the kind of confusion of ideas that could provoke such a
     question.*'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在两个场合，我被问到：“请问，巴贝奇先生，如果你输入错误的数字，机器会输出正确的答案吗？” [. . .] 我无法正确理解会引发这样问题的那种思想混乱。*'
 - en: —Charles Babbage, *Passages from the Life of a Philosopher* (1864)
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: —查尔斯·巴贝奇，*哲学家生平的片段*（1864）
 - en: '![Image](../images/f0056-01.jpg)'
+  id: totrans-144
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0056-01.jpg)'
