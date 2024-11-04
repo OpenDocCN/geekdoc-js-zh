@@ -1,0 +1,1069 @@
+- en: '9'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: REGULAR EXPRESSIONS
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Programming tools and techniques survive and spread in a chaotic, evolutionary
+    way. It’s not always the best or most brilliant ones that win, but rather the
+    ones that function well enough within the right niche or that happen to be integrated
+    with another successful piece of technology.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, I will discuss one such tool, *regular expressions*. Regular
+    expressions are a way to describe patterns in string data. They form a small,
+    separate language that is part of JavaScript and many other languages and systems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regular expressions are both terribly awkward and extremely useful. Their syntax
+    is cryptic and the programming interface JavaScript provides for them is clumsy.
+    But they are a powerful tool for inspecting and processing strings. Properly understanding
+    regular expressions will make you a more effective programmer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating a Regular Expression
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: A regular expression is a type of object. It can be either constructed with
+    the RegExp constructor or written as a literal value by enclosing a pattern in
+    forward slash (/) characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Both of those regular expression objects represent the same pattern: an *a*
+    character followed by a *b* followed by a *c*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: When using the RegExp constructor, the pattern is written as a normal string,
+    so the usual rules apply for backslashes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second notation, where the pattern appears between slash characters, treats
+    backslashes somewhat differently. First, since a forward slash ends the pattern,
+    we need to put a backslash before any forward slash that we want to be *part*
+    of the pattern. In addition, backslashes that aren’t part of special character
+    codes (like \n) will be *preserved*, rather than ignored as they are in strings,
+    and change the meaning of the pattern. Some characters, such as question marks
+    and plus signs, have special meanings in regular expressions and must be preceded
+    by a backslash if they are meant to represent the character itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: Testing for Matches
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Regular expression objects have a number of methods. The simplest one is test.
+    If you pass it a string, it will return a Boolean telling you whether the string
+    contains a match of the pattern in the expression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: A regular expression consisting of only nonspecial characters simply represents
+    that sequence of characters. If *abc* occurs anywhere in the string we are testing
+    against (not just at the start), test will return true.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sets of Characters
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Finding out whether a string contains *abc* could just as well be done with
+    a call to indexOf. Regular expressions are useful because they allow us to describe
+    more complicated patterns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Say we want to match any number. In a regular expression, putting a set of characters
+    between square brackets makes that part of the expression match any of the characters
+    between the brackets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Both of the following expressions match all strings that contain a digit:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: Within square brackets, a hyphen (-) between two characters can be used to indicate
+    a range of characters, where the ordering is determined by the character’s Unicode
+    number. Characters 0 to 9 sit right next to each other in this ordering (codes
+    48 to 57), so [0-9] covers all of them and matches any digit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A number of common character groups have their own built-in shortcuts. Digits
+    are one of them: \d means the same thing as [0-9].'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| \d | Any digit character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \w | An alphanumeric character (“word character”) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \s | Any whitespace character (space, tab, newline, and similar) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \D | A character that is *not* a digit |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \W | A nonalphanumeric character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \S | A nonwhitespace character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| . | Any character except for newline |'
+  prefs: []
+  type: TYPE_TB
+- en: 'You could match a date and time format like 01-30-2003 15:20 with the following
+    expression:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: That regular expression looks completely awful, doesn’t it? Half of it is backslashes,
+    producing a background noise that makes it hard to spot the actual pattern expressed.
+    We’ll see a slightly improved version of this expression later.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These backslash codes can also be used inside square brackets. For example,
+    [\d.] means any digit or a period character. The period itself, between square
+    brackets, loses its special meaning. The same goes for other special characters,
+    such as the plus sign (+).
+  prefs: []
+  type: TYPE_NORMAL
+- en: To *invert* a set of characters—that is, to express that you want to match any
+    character *except* the ones in the set—you can write a caret (^) character after
+    the opening bracket.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: International Characters
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Because of JavaScript’s initial simplistic implementation and the fact that
+    this simplistic approach was later set in stone as standard behavior, Java-Script’s
+    regular expressions are rather dumb about characters that do not appear in the
+    English language. For example, as far as JavaScript’s regular expressions are
+    concerned, a “word character” is only one of the 26 characters in the Latin alphabet
+    (uppercase or lowercase), decimal digits, and, for some reason, the underscore
+    character. Things like *é* or *β*, which most definitely are word characters,
+    will not match \w (and *will* match uppercase \W, the nonword category).
+  prefs: []
+  type: TYPE_NORMAL
+- en: By a strange historical accident, \s (whitespace) does not have this problem
+    and matches all characters that the Unicode standard considers whitespace, including
+    things like the nonbreaking space and the Mongolian vowel separator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is possible to use \p in a regular expression to match all characters to
+    which the Unicode standard assigns a given property. This allows us to match things
+    like letters in a more cosmopolitan way. However, again due to compatibility with
+    the original language standards, those are recognized only when you put a u character
+    (for Unicode) after the regular expression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| \p{L} | Any letter |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \p{N} | Any numeric character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \p{P} | Any punctuation character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \P{L} | Any nonletter (uppercase P inverts) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| \p{Script=Hangul} | Any character from the given script (see [Chapter 5](ch05.xhtml#ch05))
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: Using \w for text processing that may need to handle non-English text (or even
+    English text with borrowed words like *cliché*) is a liability, since it won’t
+    treat characters like *é* as letters. Though they tend to be a bit more verbose,
+    \p property groups are more robust.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: On the other hand, if you are matching numbers in order to do something with
+    them, you often do want \d for digits, since converting arbitrary numeric characters
+    into a JavaScript number is not something that a function like Number can do for
+    you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Repeating Parts of a Pattern
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We now know how to match a single digit. What if we want to match a whole number—a
+    sequence of one or more digits?
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you put a plus sign (+) after something in a regular expression, it indicates
+    that the element may be repeated more than once. Thus, /\d+/ matches one or more
+    digit characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: The star (*) has a similar meaning but also allows the pattern to match zero
+    times. Something with a star after it never prevents a pattern from matching—it’ll
+    just match zero instances if it can’t find any suitable text to match.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A question mark (?) makes a part of a pattern *optional*, meaning it may occur
+    zero times or one time. In the following example, the *u* character is allowed
+    to occur, but the pattern also matches when it is missing:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'To indicate that a pattern should occur a precise number of times, use braces.
+    Putting {4} after an element, for example, requires it to occur exactly four times.
+    It is also possible to specify a range this way: {2,4} means the element must
+    occur at least twice and at most four times.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is another version of the date and time pattern that allows both single-
+    and double-digit days, months, and hours. It is also slightly easier to decipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: You can also specify open-ended ranges when using braces by omitting the number
+    after the comma. For example, {5,} means five or more times.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Grouping Subexpressions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: To use an operator like * or + on more than one element at a time, you must
+    use parentheses. A part of a regular expression that is enclosed in parentheses
+    counts as a single element as far as the operators following it are concerned.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: The first and second + characters apply only to the second o in boo and hoo,
+    respectively. The third + applies to the whole group (hoo+), matching one or more
+    sequences like that.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The i at the end of the expression in the example makes this regular expression
+    case insensitive, allowing it to match the uppercase *B* in the input string,
+    even though the pattern is itself all lowercase.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Matches and Groups
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The test method is the absolute simplest way to match a regular expression.
+    It tells you only whether it matched and nothing else. Regular expressions also
+    have an exec (execute) method that will return null if no match was found and
+    return an object with information about the match otherwise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: An object returned from exec has an index property that tells us *where* in
+    the string the successful match begins. Other than that, the object looks like
+    (and in fact is) an array of strings, whose first element is the string that was
+    matched. In the previous example, this is the sequence of digits that we were
+    looking for.
+  prefs: []
+  type: TYPE_NORMAL
+- en: String values have a match method that behaves similarly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: When the regular expression contains subexpressions grouped with parentheses,
+    the text that matched those groups will also show up in the array. The whole match
+    is always the first element. The next element is the part matched by the first
+    group (the one whose opening parenthesis comes first in the expression), then
+    the second group, and so on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: When a group does not end up being matched at all (for example, when followed
+    by a question mark), its position in the output array will hold undefined. When
+    a group is matched multiple times (for example, when followed by a +), only the
+    last match ends up in the array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'If you want to use parentheses purely for grouping, without having them show
+    up in the array of matches, you can put ?: after the opening parenthesis.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: Groups can be useful for extracting parts of a string. If we don’t just want
+    to verify whether a string contains a date but also extract it and construct an
+    object that represents it, we can wrap parentheses around the digit patterns and
+    directly pick the date out of the result of exec.
+  prefs: []
+  type: TYPE_NORMAL
+- en: But first we’ll take a brief detour to discuss the built-in way to represent
+    date and time values in JavaScript.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Date Class
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: JavaScript has a standard Date class for representing dates, or rather, points
+    in time. If you simply create a date object using new, you get the current date
+    and time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: You can also create an object for a specific time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: JavaScript uses a convention where month numbers start at zero (so December
+    is 11), yet day numbers start at one. This is confusing and silly. Be careful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The last four arguments (hours, minutes, seconds, and milliseconds) are optional
+    and taken to be zero when not given.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Timestamps are stored as the number of milliseconds since the start of 1970,
+    in the UTC time zone. This follows a convention set by “Unix time,” which was
+    invented around that time. You can use negative numbers for times before 1970\.
+    The getTime method on a date object returns this number. It is big, as you can
+    imagine.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: If you give the Date constructor a single argument, that argument is treated
+    as such a millisecond count. You can get the current millisecond count by creating
+    a new Date object and calling getTime on it or by calling the Date.now function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Date objects provide methods such as getFullYear, getMonth, getDate, getHours,
+    getMinutes, and getSeconds to extract their components. Besides getFullYear there’s
+    also getYear, which gives you the year minus 1900 (such as 98 or 125) and is mostly
+    useless.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Putting parentheses around the parts of the expression that we are interested
+    in, we can now create a date object from a string.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: The underscore (_) binding is ignored and used only to skip the full match element
+    in the array returned by exec.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Boundaries and Look-Ahead
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Unfortunately, getDate will also happily extract a date from the string “100-1
+    -30000”. A match may happen anywhere in the string, so in this case, it’ll just
+    start at the second character and end at the second-to-last character.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If we want to enforce that the match must span the whole string, we can add
+    the markers ^ and $. The caret matches the start of the input string, whereas
+    the dollar sign matches the end. Thus /^\d+$/ matches a string consisting entirely
+    of one or more digits, /^!/ matches any string that starts with an exclamation
+    mark, and /x^/ does not match any string (there cannot be an x before the start
+    of the string).
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is also a \b marker that matches *word boundaries*, positions that have
+    a word character on one side and a nonword character on the other. Unfortunately,
+    these use the same simplistic concept of word characters as \w and are therefore
+    not very reliable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note that these boundary markers don’t match any actual characters. They just
+    enforce that a given condition holds at the place where it appears in the pattern.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Look-ahead* tests do something similar. They provide a pattern and will make
+    the match fail if the input doesn’t match that pattern, but don’t actually move
+    the match position forward. They are written between (?= and ).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: The e in the first example is necessary to match, but is not part of the matched
+    string. The (?! ) notation expresses a *negative* look-ahead. This matches only
+    if the pattern in the parentheses *doesn’t* match, causing the second example
+    to match only a characters that don’t have a space after them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Choice Patterns
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Say we want to know whether a piece of text contains not only a number but a
+    number followed by one of the words *pig*, *cow*, or *chicken*, or any of their
+    plural forms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We could write three regular expressions and test them in turn, but there is
+    a nicer way. The pipe character (|) denotes a choice between the pattern to its
+    left and the pattern to its right. We can use it in expressions like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: Parentheses can be used to limit the part of the pattern to which the pipe operator
+    applies, and you can put multiple such operators next to each other to express
+    a choice between more than two alternatives.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Mechanics of Matching
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Conceptually, when you use exec or test, the regular expression engine looks
+    for a match in your string by trying to match the expression first from the start
+    of the string, then from the second character, and so on until it finds a match
+    or reaches the end of the string. It’ll either return the first match that can
+    be found or fail to find any match at all.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To do the actual matching, the engine treats a regular expression something
+    like a flow diagram. This is the diagram for the livestock expression in the previous
+    example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0150-01.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: If we can find a path from the left side of the diagram to the right side, our
+    expression matches. We keep a current position in the string, and every time we
+    move through a box, we verify that the part of the string after our current position
+    matches that box.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtracking
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The regular expression /^([01]+b|[\da-f]+h|\d+)$/ matches either a binary number
+    followed by a b, a hexadecimal number (that is, base 16, with the letters a to
+    f standing for the digits 10 to 15) followed by an h, or a regular decimal number
+    with no suffix character. This is the corresponding diagram:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0150-02.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: When matching this expression, the top (binary) branch will often be entered
+    even though the input does not actually contain a binary number. When matching
+    the string “103”, for example, it becomes clear only at the 3 that we are in the
+    wrong branch. The string *does* match the expression, just not the branch we are
+    currently in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So the matcher *backtracks*. When entering a branch, it remembers its current
+    position (in this case, at the start of the string, just past the first boundary
+    box in the diagram) so that it can go back and try another branch if the current
+    one does not work out. For the string “103”, after encountering the 3 character,
+    the matcher starts trying the branch for hexadecimal numbers, which fails again
+    because there is no h after the number. It then tries the decimal number branch.
+    This one fits, and a match is reported after all.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The matcher stops as soon as it finds a full match. This means that if multiple
+    branches could potentially match a string, only the first one (ordered by where
+    the branches appear in the regular expression) is used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Backtracking also happens for repetition operators like + and *. If you match
+    /^.*x/ against “abcxe”, the .* part will first try to consume the whole string.
+    The engine will then realize that it needs an x to match the pattern. Since there
+    is no x past the end of the string, the star operator tries to match one character
+    less. But the matcher doesn’t find an x after abcx either, so it backtracks again,
+    matching the star operator to just abc. *Now* it finds an x where it needs it
+    and reports a successful match from positions 0 to 4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is possible to write regular expressions that will do a *lot* of backtracking.
+    This problem occurs when a pattern can match a piece of input in many different
+    ways. For example, if we get confused while writing a binary-number regular expression,
+    we might accidentally write something like /([01]+)+b/.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0151-01.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: If that tries to match some long series of zeros and ones with no trailing *b*
+    character, the matcher first goes through the inner loop until it runs out of
+    digits. Then it notices there is no *b*, so it backtracks one position, goes through
+    the outer loop once, and gives up again, trying to backtrack out of the inner
+    loop once more. It will continue to try every possible route through these two
+    loops. This means the amount of work *doubles* with each additional character.
+    For even just a few dozen characters, the resulting match will take practically
+    forever.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The replace Method
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: String values have a replace method that can be used to replace part of the
+    string with another string.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: The first argument can also be a regular expression, in which case the first
+    match of the regular expression is replaced. When a g option (for *global*) is
+    added after the regular expression, *all* matches in the string will be replaced,
+    not just the first.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The real power of using regular expressions with replace comes from the fact
+    that we can refer to matched groups in the replacement string. For example, say
+    we have a big string containing the names of people, one name per line, in the
+    format Lastname, Firstname. If we want to swap these names and remove the comma
+    to get a Firstname Lastname format, we can use the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: The $1 and $2 in the replacement string refer to the parenthesized groups in
+    the pattern. $1 is replaced by the text that matched against the first group,
+    $2 by the second, and so on, up to $9. The whole match can be referred to with
+    $&.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is possible to pass a function—rather than a string—as the second argument
+    to replace. For each replacement, the function will be called with the matched
+    groups (as well as the whole match) as arguments, and its return value will be
+    inserted into the new string.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here’s an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: This code takes a string, finds all occurrences of a number followed by an alphanumeric
+    word, and returns a string that has one less of every such quantity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The (\d+) group ends up as the amount argument to the function, and the (\p{L}+)
+    group gets bound to unit. The function converts amount to a number—which always
+    works, since it matched \d+ earlier—and makes some adjustments in case there is
+    only one or zero left.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Greed
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'We can use replace to write a function that removes all comments from a piece
+    of JavaScript code. Here is a first attempt:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: The part before the | operator matches two slash characters followed by any
+    number of non-newline characters. The part for multiline comments is more involved.
+    We use [^] (any character that is not in the empty set of characters) as a way
+    to match any character. We cannot just use a period here because block comments
+    can continue on a new line, and the period character does not match newline characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: But the output for the last line appears to have gone wrong. Why?
+  prefs: []
+  type: TYPE_NORMAL
+- en: The [^]* part of the expression, as I described in the section on backtracking,
+    will first match as much as it can. If that causes the next part of the pattern
+    to fail, the matcher moves back one character and tries again from there. In the
+    example, the matcher first tries to match the whole rest of the string and then
+    moves back from there. It will find an occurrence of */ after going back four
+    characters and match that. This is not what we wanted—the intention was to match
+    a single comment, not to go all the way to the end of the code and find the end
+    of the last block comment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Because of this behavior, we say the repetition operators (+, *, ?, and {})
+    are *greedy*, meaning they match as much as they can and backtrack from there.
+    If you put a question mark after them (+?, *?, ??, {}?), they become nongreedy
+    and start by matching as little as possible, matching more only when the remaining
+    pattern does not fit the smaller match.
+  prefs: []
+  type: TYPE_NORMAL
+- en: And that is exactly what we want in this case. By having the star match the
+    smallest stretch of characters that brings us to a */, we consume one block comment
+    and nothing more.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: A lot of bugs in regular expression programs can be traced to unintentionally
+    using a greedy operator where a nongreedy one would work better. When using a
+    repetition operator, prefer the nongreedy variant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dynamically Creating RegExp Objects
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In some cases, you may not know the exact pattern you need to match against
+    when you are writing your code. Say you want to test for the user’s name in a
+    piece of text. You can build up a string and use the RegExp constructor on that.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: When creating the \s part of the string, we have to use two backslashes because
+    we are writing them in a normal string, not a slash-enclosed regular expression.
+    The second argument to the RegExp constructor contains the options for the regular
+    expression—in this case, “gi” for global and case insensitive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: But what if the name is “dea+hl[]rd” because our user is a nerdy teenager? That
+    would result in a nonsensical regular expression that won’t actually match the
+    user’s name.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To work around this, we can add backslashes before any character that has a
+    special meaning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: The search Method
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: While the indexOf method on strings cannot be called with a regular expression,
+    there is another method, search, that does expect a regular expression. Like indexOf,
+    it returns the first index on which the expression was found, or -1 when it wasn’t
+    found.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: Unfortunately, there is no way to indicate that the match should start at a
+    given offset (like we can with the second argument to indexOf), which would often
+    be useful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The lastIndex Property
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The exec method similarly does not provide a convenient way to start searching
+    from a given position in the string. But it does provide an *in*convenient way.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regular expression objects have properties. One such property is source, which
+    contains the string that expression was created from. Another property is lastIndex,
+    which controls, in some limited circumstances, where the next match will start.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Those circumstances are that the regular expression must have the global (g)
+    or sticky (y) option enabled, and the match must happen through the exec method.
+    Again, a less confusing solution would have been to just allow an extra argument
+    to be passed to exec, but confusion is an essential feature of JavaScript’s regular
+    expression interface.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: If the match was successful, the call to exec automatically updates the lastIndex
+    property to point after the match. If no match was found, lastIndex is set back
+    to 0, which is also the value it has in a newly constructed regular expression
+    object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The difference between the global and the sticky options is that when sticky
+    is enabled, the match will succeed only if it starts directly at lastIndex, whereas
+    with global, it will search ahead for a position where a match can start.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: When using a shared regular expression value for multiple exec calls, these
+    automatic updates to the lastIndex property can cause problems. Your regular expression
+    might be accidentally starting at an index left over from a previous call.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: Another interesting effect of the global option is that it changes the way the
+    match method on strings works. When called with a global expression, instead of
+    returning an array similar to that returned by exec, match will find *all* matches
+    of the pattern in the string and return an array containing the matched strings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: So be cautious with global regular expressions. The cases where they are necessary—calls
+    to replace and places where you want to explicitly use lastIndex—are typically
+    the only situations where you want to use them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A common thing to do is to find all the matches of a regular expression in a
+    string. We can do this by using the matchAll method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: This method returns an array of match arrays. The regular expression given to
+    matchAll *must* have g enabled.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Parsing an INI File
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'To conclude the chapter, we’ll look at a problem that calls for regular expressions.
+    Imagine we are writing a program to automatically collect information about our
+    enemies from the internet. (We will not actually write that program here, just
+    the part that reads the configuration file. Sorry.) The configuration file looks
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The exact rules for this format—which is a widely used file format, usually
+    called an *INI* file—are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Blank lines and lines starting with semicolons are ignored.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Lines wrapped in [ and ] start a new section.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Lines containing an alphanumeric identifier followed by an = character add a
+    setting to the current section.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Anything else is invalid.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Our task is to convert a string like this into an object whose properties hold
+    strings for settings written before the first section header and subobjects for
+    sections, with those subobjects holding the section’s settings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since the format has to be processed line by line, splitting up the file into
+    separate lines is a good start. We saw the split method in [Chapter 4](ch04.xhtml#ch04).
+    Some operating systems, however, use not just a newline character to separate
+    lines but a carriage return character followed by a newline (”\r\n”). Given that
+    the split method also allows a regular expression as its argument, we can use
+    a regular expression like /\r?\n/ to split in a way that allows both ”\n” and
+    “\r\n” between lines.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: The code goes over the file’s lines and builds up an object. Properties at the
+    top are stored directly into that object, whereas properties found in sections
+    are stored in a separate section object. The section binding points at the object
+    for the current section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are two kinds of significant lines—section headers or property lines.
+    When a line is a regular property, it is stored in the current section. When it
+    is a section header, a new section object is created, and section is set to point
+    at it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note the recurring use of ^ and $ to make sure the expression matches the whole
+    line, not just part of it. Leaving these out results in code that mostly works
+    but behaves strangely for some input, which can be a difficult bug to track down.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The pattern if (match = *string*.match(...)) makes use of the fact that the
+    value of an assignment expression (=) is the assigned value. You often aren’t
+    sure that your call to match will succeed, so you can access the resulting object
+    only inside an if statement that tests for this. To not break the pleasant chain
+    of else if forms, we assign the result of the match to a binding and immediately
+    use that assignment as the test for the if statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If a line is not a section header or a property, the function checks whether
+    it is a comment or an empty line using the expression /^\s*(;|$)/ to match lines
+    that contain either only whitespace, or whitespace followed by a semicolon (making
+    the rest of the line a comment). When a line doesn’t match any of the expected
+    forms, the function throws an exception.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Code Units and Characters
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Another design mistake that’s been standardized in JavaScript regular expressions
+    is that by default, operators like . or ? work on code units (as discussed in
+    [Chapter 5](ch05.xhtml#ch05)), not actual characters. This means characters that
+    are composed of two code units behave strangely.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: The problem is that the ![Image](../images/apple.jpg) in the first line is treated
+    as two code units, and {3} is applied only to the second unit. Similarly, the
+    dot matches a single code unit, not the two that make up the rose emoji.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You must add the u (Unicode) option to your regular expression to make it treat
+    such characters properly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: Summary
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Regular expressions are objects that represent patterns in strings. They use
+    their own language to express these patterns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| /abc/ | A sequence of characters |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /[abc]/ | Any character from a set of characters |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /[^abc]/ | Any character *not* in a set of characters |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /[0-9]/ | Any character in a range of characters |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /x+/ | One or more occurrences of the pattern x |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /x+?/ | One or more occurrences, nongreedy |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /x*/ | Zero or more occurrences |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /x?/ | Zero or one occurrence |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /x{2,4}/ | Two to four occurrences |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /(abc)/ | A group |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /a&#124;b&#124;c/ | Any one of several patterns |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /\d/ | Any digit character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /\w/ | An alphanumeric character (“word character”) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /\s/ | Any whitespace character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /./ | Any character except newlines |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /\p{L}/u | Any letter character |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /^/ | Start of input |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /$/ | End of input |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /(?=a)/ | A look-ahead test |'
+  prefs: []
+  type: TYPE_TB
+- en: A regular expression has a method test to test whether a given string matches
+    it. It also has a method exec that, when a match is found, returns an array containing
+    all matched groups. Such an array has an index property that indicates where the
+    match started.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strings have a match method to match them against a regular expression and a
+    search method to search for one, returning only the starting position of the match.
+    Their replace method can replace matches of a pattern with a replacement string
+    or function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regular expressions can have options, which are written after the closing slash.
+    The i option makes the match case insensitive. The g option makes the expression
+    *global*, which, among other things, causes the replace method to replace all
+    instances instead of just the first. The y option makes an expression sticky,
+    which means that it will not search ahead and skip part of the string when looking
+    for a match. The u option turns on Unicode mode, which enables \p syntax and fixes
+    a number of problems around the handling of characters that take up two code units.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regular expressions are a sharp tool with an awkward handle. They simplify some
+    tasks tremendously but can quickly become unmanageable when applied to complex
+    problems. Part of knowing how to use them is resisting the urge to try to shoehorn
+    things into them that they cannot cleanly express.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exercises
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: It is almost unavoidable that, in the course of working on these exercises,
+    you will get confused and frustrated by some regular expression’s inexplicable
+    behavior. Sometimes it helps to enter your expression into an online tool like
+    *[https://www.debuggex.com](https://www.debuggex.com)* to see whether its visualization
+    corresponds to what you intended and to experiment with the way it responds to
+    various input strings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Regexp Golf*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*Code golf* is a term used for the game of trying to express a particular program
+    in as few characters as possible. Similarly, *regexp golf* is the practice of
+    writing as tiny a regular expression as possible to match a given pattern and
+    *only* that pattern.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For each of the following items, write a regular expression to test whether
+    the given pattern occurs in a string. The regular expression should match only
+    strings containing the pattern. When your expression works, see whether you can
+    make it any smaller.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*car* and *cat*'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '*pop* and *prop*'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '*ferret*, *ferry*, and *ferrari*'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Any word ending in *ious*
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: A whitespace character followed by a period, comma, colon, or semicolon
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: A word longer than six letters
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: A word without the letter *e* (or *E*)
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Refer to the table in the chapter summary for help. Test each solution with
+    a few test strings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Quoting Style*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Imagine you have written a story and used single quotation marks throughout
+    to mark pieces of dialogue. Now you want to replace all the dialogue quotes with
+    double quotes, while keeping the single quotes used in contractions like *aren’t*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Think of a pattern that distinguishes these two kinds of quote usage and craft
+    a call to the replace method that does the proper replacement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Numbers Again*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Write an expression that matches only JavaScript-style numbers. It must support
+    an optional minus *or* plus sign in front of the number, the decimal dot, and
+    exponent notation—5e-3 or 1E10—again with an optional sign in front of the exponent.
+    Also note that it is not necessary for there to be digits in front of or after
+    the dot, but the number cannot be a dot alone. That is, .5 and 5. are valid JavaScript
+    numbers, but a lone dot isn’t.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Write code that is easy to delete, not easy to extend.*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: —Tef, *programming is terrible*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0162-01.jpg)'
+  prefs: []
+  type: TYPE_IMG

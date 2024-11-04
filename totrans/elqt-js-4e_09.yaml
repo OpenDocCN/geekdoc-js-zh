@@ -1,0 +1,646 @@
+- en: '8'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: BUGS AND ERRORS
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Flaws in computer programs are usually called *bugs*. It makes programmers feel
+    good to imagine them as little things that just happen to crawl into our work.
+    In reality, of course, we put them there ourselves.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If a program is crystallized thought, we can roughly categorize bugs into those
+    caused by the thoughts being confused and those caused by mistakes introduced
+    while converting a thought to code. The former type is generally harder to diagnose
+    and fix than the latter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Language
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Many mistakes could be pointed out to us automatically by the computer if it
+    knew enough about what we’re trying to do. But here, JavaScript’s looseness is
+    a hindrance. Its concept of bindings and properties is vague enough that it will
+    rarely catch typos before actually running the program. Even then, it allows you
+    to do some clearly nonsensical things without complaint, such as computing true
+    * “monkey”.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are some things that JavaScript does complain about. Writing a program
+    that does not follow the language’s grammar will immediately make the computer
+    complain. Other things, such as calling something that’s not a function or looking
+    up a property on an undefined value, will cause an error to be reported when the
+    program tries to perform the action.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Often, however, your nonsense computation will merely produce NaN (not a number)
+    or an undefined value, while the program happily continues, convinced that it’s
+    doing something meaningful. The mistake will manifest itself only later, after
+    the bogus value has traveled through several functions. It might not trigger an
+    error at all, but silently cause the program’s output to be wrong. Finding the
+    source of such problems can be difficult.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The process of finding mistakes—bugs—in programs is called *debugging*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strict Mode
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'JavaScript can be made a *little* stricter by enabling *strict mode*. This
+    can be done by putting the string “use strict” at the top of a file or a function
+    body. Here’s an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: Code inside classes and modules (which we will discuss in [Chapter 10](ch10.xhtml#ch10))
+    is automatically strict. The old nonstrict behavior still exists only because
+    some old code might depend on it, and the language designers work hard to avoid
+    breaking any existing programs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Normally, when you forget to put let in front of your binding, as with counter
+    in the example, JavaScript quietly creates a global binding and uses that. In
+    strict mode, an error is reported instead. This is very helpful. It should be
+    noted, though, that this doesn’t work when the binding in question already exists
+    somewhere in scope. In that case, the loop will still quietly overwrite the value
+    of the binding.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another change in strict mode is that the this binding holds the value undefined
+    in functions that are not called as methods. When making such a call outside of
+    strict mode, this refers to the global scope object, which is an object whose
+    properties are the global bindings. So if you accidentally call a method or constructor
+    incorrectly in strict mode, JavaScript will produce an error as soon as it tries
+    to read something from this, rather than happily writing to the global scope.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, consider the following code, which calls a constructor function
+    without the new keyword so that its this will *not* refer to a newly constructed
+    object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: The bogus call to Person succeeded, but returned an undefined value and created
+    the global binding name. In strict mode, the result is different.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: We are immediately told that something is wrong. This is helpful. Fortunately,
+    constructors created with the class notation will always complain if they are
+    called without new, making this less of a problem even in nonstrict mode.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Strict mode does a few more things. It disallows giving a function multiple
+    parameters with the same name and removes certain problematic language features
+    entirely (such as the with statement, which is so wrong it is not further discussed
+    in this book).
+  prefs: []
+  type: TYPE_NORMAL
+- en: In short, putting “use strict” at the top of your program rarely hurts and might
+    help you spot a problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Types
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Some languages want to know the types of all your bindings and expressions before
+    even running a program. They will tell you right away when a type is used in an
+    inconsistent way. JavaScript considers types only when actually running the program,
+    and even there often tries to implicitly convert values to the type it expects,
+    so it’s not much help.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Still, types provide a useful framework for talking about programs. A lot of
+    mistakes come from being confused about the kind of value that goes into or comes
+    out of a function. If you have that information written down, you’re less likely
+    to get confused.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You could add a comment like the following before the findRoute function from
+    the previous chapter to describe its type:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: There are a number of different conventions for annotating JavaScript programs
+    with types.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A thing about types is that they need to introduce their own complexity to be
+    able to describe enough code to be useful. What do you think would be the type
+    of the randomPick function that returns a random element from an array? You’d
+    need to introduce a *type variable*, *T*, which can stand in for any type, so
+    that you can give randomPick a type like (T[]) *→* T (function from an array of
+    *T*s to a *T*).
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the types of a program are known, it is possible for the computer to *check*
+    them for you, pointing out mistakes before the program is run. There are several
+    JavaScript dialects that add types to the language and check them. The most popular
+    one is called TypeScript. If you are interested in adding more rigor to your programs,
+    I recommend you give it a try.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this book, we will continue using raw, dangerous, untyped Java-Script code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Testing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'If the language is not going to do much to help us find mistakes, we’ll have
+    to find them the hard way: by running the program and seeing whether it does the
+    right thing.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Doing this by hand, again and again, is a really bad idea. Not only is it annoying
+    but it also tends to be ineffective, since it takes too much time to exhaustively
+    test everything every time you make a change.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Computers are good at repetitive tasks, and testing is the ideal repetitive
+    task. Automated testing is the process of writing a program that tests another
+    program. Writing tests is a bit more work than testing manually, but once you’ve
+    done it, you gain a kind of superpower: it takes you only a few seconds to verify
+    that your program still behaves properly in all the situations you wrote tests
+    for. When you break something, you’ll immediately notice rather than randomly
+    running into it at some later time.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Tests usually take the form of little labeled programs that verify some aspect
+    of your code. For example, a set of tests for the (standard, probably already
+    tested by someone else) toUpperCase method might look like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Writing tests like this tends to produce rather repetitive, awkward code. Fortunately,
+    there exist pieces of software that help you build and run collections of tests
+    (*test suites*) by providing a language (in the form of functions and methods)
+    suited to expressing tests and by outputting informative information when a test
+    fails. These are usually called *test runners*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some code is easier to test than other code. Generally, the more external objects
+    that the code interacts with, the harder it is to set up the context in which
+    to test it. The style of programming shown in the previous chapter, which uses
+    self-contained persistent values rather than changing objects, tends to be easy
+    to test.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Debugging
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Once you notice there is something wrong with your program because it misbehaves
+    or produces errors, the next step is to figure out *what* the problem is.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sometimes it is obvious. The error message will point at a specific line of
+    your program, and if you look at the error description and that line of code,
+    you can often see the problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: But not always. Sometimes the line that triggered the problem is simply the
+    first place where a flaky value produced elsewhere gets used in an invalid way.
+    If you have been solving the exercises in earlier chapters, you will probably
+    have already experienced such situations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following example program tries to convert a whole number to a string in
+    a given base (decimal, binary, and so on) by repeatedly picking out the last digit
+    and then dividing the number to get rid of this digit. But the strange output
+    that it currently produces suggests that it has a bug.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: Even if you see the problem already, pretend for a moment that you don’t. We
+    know that our program is malfunctioning, and we want to find out why.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is where you must resist the urge to start making random changes to the
+    code to see whether that makes it better. Instead, *think*. Analyze what is happening
+    and come up with a theory of why it might be happening. Then make additional observations
+    to test this theory—or, if you don’t yet have a theory, make additional observations
+    to help you come up with one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Putting a few strategic console.log calls into the program is a good way to
+    get additional information about what the program is doing. In this case, we want
+    n to take the values 13, 1, and then 0. Let’s write out its value at the start
+    of the loop.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '*Right*. Dividing 13 by 10 does not produce a whole number. Instead of n /=
+    base, what we actually want is n = Math.floor(n / base) so that the number is
+    properly “shifted” to the right.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An alternative to using console.log to peek into the program’s behavior is to
+    use the *debugger* capabilities of your browser. Browsers come with the ability
+    to set a *breakpoint* on a specific line of your code. When the execution of the
+    program reaches a line with a breakpoint, it is paused, and you can inspect the
+    values of bindings at that point. I won’t go into details, as debuggers differ
+    from browser to browser, but look in your browser’s developer tools or search
+    the web for instructions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to set a breakpoint is to include a debugger statement (consisting
+    simply of that keyword) in your program. If the developer tools of your browser
+    are active, the program will pause whenever it reaches such a statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Error Propagation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Not all problems can be prevented by the programmer, unfortunately. If your
+    program communicates with the outside world in any way, it is possible to get
+    malformed input, to become overloaded with work, or to have the network fail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you’re programming only for yourself, you can afford to just ignore such
+    problems until they occur. But if you build something that is going to be used
+    by anybody else, you usually want the program to do better than just crash. Sometimes
+    the right thing to do is take the bad input in stride and continue running. In
+    other cases, it is better to report to the user what went wrong and then give
+    up. In either situation the program has to actively do something in response to
+    the problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Say you have a function promptNumber that asks the user for a number and returns
+    it. What should it return if the user inputs “orange”?
+  prefs: []
+  type: TYPE_NORMAL
+- en: One option is to make it return a special value. Common choices for such values
+    are null, undefined, or -1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: Now any code that calls promptNumber must check whether an actual number was
+    read and, failing that, must somehow recover—maybe by asking again or by filling
+    in a default value. Or it could again return a special value to *its* caller to
+    indicate that it failed to do what it was asked.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In many situations, mostly when errors are common and the caller should be explicitly
+    taking them into account, returning a special value is a good way to indicate
+    an error. It does, however, have its downsides. First, what if the function can
+    already return every possible kind of value? In such a function, you’ll have to
+    do something like wrap the result in an object to be able to distinguish success
+    from failure, the way the next method on the iterator interface does.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: The second issue with returning special values is that it can lead to awkward
+    code. If a piece of code calls promptNumber 10 times, it has to check 10 times
+    whether null was returned. If its response to finding null is to simply return
+    null itself, callers of the function will in turn have to check for it, and so
+    on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exceptions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: When a function cannot proceed normally, what we would often *like* to do is
+    just stop what we are doing and immediately jump to a place that knows how to
+    handle the problem. This is what *exception handling* does.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Exceptions are a mechanism that makes it possible for code that runs into a
+    problem to *raise* (or *throw*) an exception. An exception can be any value. Raising
+    one somewhat resembles a supercharged return from a function: it jumps out of
+    not just the current function but also its callers, all the way down to the first
+    call that started the current execution. This is called *unwinding the stack*.
+    You may remember the stack of function calls mentioned in [Chapter 3](ch03.xhtml#ch03).
+    An exception zooms down this stack, throwing away all the call contexts it encounters.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If exceptions always zoomed right down to the bottom of the stack, they would
+    not be of much use. They’d just provide a novel way to blow up your program. Their
+    power lies in the fact that you can set “obstacles” along the stack to *catch*
+    the exception as it is zooming down. Once you’ve caught an exception, you can
+    do something with it to address the problem and then continue to run the program.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here’s an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: The throw keyword is used to raise an exception. Catching one is done by wrapping
+    a piece of code in a try block, followed by the keyword catch. When the code in
+    the try block causes an exception to be raised, the catch block is evaluated,
+    with the name in parentheses bound to the exception value. After the catch block
+    finishes—or if the try block finishes without problems—the program proceeds beneath
+    the entire try/catch statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this case, we used the Error constructor to create our exception value.
+    This is a standard JavaScript constructor that creates an object with a message
+    property. Instances of Error also gather information about the call stack that
+    existed when the exception was created, a so-called *stack trace*. This information
+    is stored in the stack property and can be helpful when trying to debug a problem:
+    it tells us the function where the problem occurred and which functions made the
+    failing call.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Note that the look function completely ignores the possibility that prompt
+    Direction might go wrong. This is the big advantage of exceptions: error-handling
+    code is necessary only at the point where the error occurs and at the point where
+    it is handled. The functions in between can forget all about it.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Well, almost . . .
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cleaning Up After Exceptions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The effect of an exception is another kind of control flow. Every action that
+    might cause an exception, which is pretty much every function call and property
+    access, might cause control to suddenly leave your code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This means when code has several side effects, even if its “regular” control
+    flow looks like they’ll always all happen, an exception might prevent some of
+    them from taking place.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is some really bad banking code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: The transfer function transfers a sum of money from a given account to another,
+    asking for the name of the other account in the process. If given an invalid account
+    name, getAccount throws an exception.
+  prefs: []
+  type: TYPE_NORMAL
+- en: But transfer *first* removes the money from the account and *then* calls getAccount
+    before it adds it to another account. If it is broken off by an exception at that
+    point, it’ll just make the money disappear.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That code could have been written a little more intelligently, for example by
+    calling getAccount before it starts moving money around. But often problems like
+    this occur in more subtle ways. Even functions that don’t look like they will
+    throw an exception might do so in exceptional circumstances or when they contain
+    a programmer mistake.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One way to address this is to use fewer side effects. Again, a programming style
+    that computes new values instead of changing existing data helps. If a piece of
+    code stops running in the middle of creating a new value, no existing data structures
+    were damaged, making it easier to recover.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since that isn’t always practical, try statements have another feature: they
+    may be followed by a finally block either instead of or in addition to a catch
+    block. A finally block says “no matter *what* happens, run this code after trying
+    to run the code in the try block.”'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: This version of the function tracks its progress, and if, when leaving, it notices
+    that it was aborted at a point where it had created an inconsistent program state,
+    it repairs the damage it did.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note that even though the finally code is run when an exception is thrown in
+    the try block, it does not interfere with the exception. After the finally block
+    runs, the stack continues unwinding.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing programs that operate reliably even when exceptions pop up in unexpected
+    places is hard. Many people simply don’t bother, and because exceptions are typically
+    reserved for exceptional circumstances, the problem may occur so rarely that it
+    is never even noticed. Whether that is a good thing or a really bad thing depends
+    on how much damage the software will do when it fails.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Selective Catching
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: When an exception makes it all the way to the bottom of the stack without being
+    caught, it gets handled by the environment. What this means differs between environments.
+    In browsers, a description of the error typically gets written to the JavaScript
+    console (reachable through the browser’s Tools or Developer menu). Node.js, the
+    browserless JavaScript environment we will discuss in [Chapter 20](ch20.xhtml#ch20),
+    is more careful about data corruption. It aborts the whole process when an unhandled
+    exception occurs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For programmer mistakes, just letting the error go through is often the best
+    you can do. An unhandled exception is a reasonable way to signal a broken program,
+    and the JavaScript console will, on modern browsers, provide you with some information
+    about which function calls were on the stack when the problem occurred.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For problems that are *expected* to happen during routine use, crashing with
+    an unhandled exception is a terrible strategy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Invalid uses of the language, such as referencing a nonexistent binding, looking
+    up a property on null, or calling something that’s not a function, will also result
+    in exceptions being raised. Such exceptions can also be caught.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a catch body is entered, all we know is that *something* in our try body
+    caused an exception. But we don’t know *what* did or *which* exception it caused.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'JavaScript (in a rather glaring omission) doesn’t provide direct support for
+    selectively catching exceptions: either you catch them all or you don’t catch
+    any. This makes it tempting to *assume* that the exception you get is the one
+    you were thinking about when you wrote the catch block.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'But it might not be. Some other assumption might be violated, or you might
+    have introduced a bug that is causing an exception. Here is an example that *attempts*
+    to keep on calling promptDirection until it gets a valid answer:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: The for (;;) construct is a way to intentionally create a loop that doesn’t
+    terminate on its own. We break out of the loop only when a valid direction is
+    given. Unfortunately, we misspelled promptDirection, which will result in an “undefined
+    variable” error. Because the catch block completely ignores its exception value
+    (e), assuming it knows what the problem is, it wrongly treats the binding error
+    as indicating bad input. Not only does this cause an infinite loop but it also
+    “buries” the useful error message about the misspelled binding.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a general rule, don’t blanket-catch exceptions unless it is for the purpose
+    of “routing” them somewhere—for example, over the network to tell another system
+    that our program crashed. And even then, think carefully about how you might be
+    hiding information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We want to catch a *specific* kind of exception. We can do this by checking
+    in the catch block whether the exception we got is the one we are interested in,
+    and if not, rethrow it. But how do we recognize an exception?
+  prefs: []
+  type: TYPE_NORMAL
+- en: We could compare its message property against the error message we happen to
+    expect. But that’s a shaky way to write code—we’d be using information that’s
+    intended for human consumption (the message) to make a programmatic decision.
+    As soon as someone changes (or translates) the message, the code will stop working.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Rather, let’s define a new type of error and use instanceof to identify it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: The new error class extends Error. It doesn’t define its own constructor, which
+    means that it inherits the Error constructor, which expects a string message as
+    its argument. In fact, it doesn’t define anything at all—the class is empty. InputError
+    objects behave like Error objects, except that they have a different class by
+    which we can recognize them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now the loop can catch these more carefully.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: This will catch only instances of InputError and let unrelated exceptions through.
+    If you reintroduce the typo, the undefined binding error will be properly reported.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assertions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Assertions* are checks inside a program that verify that something is the
+    way it is supposed to be. They are used not to handle situations that can come
+    up in normal operation but to find programmer mistakes.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If, for example, firstElement is described as a function that should never
+    be called on empty arrays, we might write it like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: Now, instead of silently returning undefined (which you get when reading an
+    array property that does not exist), this will loudly blow up your program as
+    soon as you misuse it. This makes it less likely for such mistakes to go unnoticed
+    and easier to find their cause when they occur.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I do not recommend trying to write assertions for every possible kind of bad
+    input. That’d be a lot of work and would lead to very noisy code. You’ll want
+    to reserve them for mistakes that are easy to make (or that you find yourself
+    making).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: An important part of programming is finding, diagnosing, and fixing bugs. Problems
+    can become easier to notice if you have an automated test suite or add assertions
+    to your programs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Problems caused by factors outside the program’s control should usually be actively
+    planned for. Sometimes, when the problem can be handled locally, special return
+    values are a good way to track them. Otherwise, exceptions may be preferable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Throwing an exception causes the call stack to be unwound until the next enclosing
+    try/catch block or until the bottom of the stack. The exception value will be
+    given to the catch block that catches it, which should verify that it is actually
+    the expected kind of exception and then do something with it. To help address
+    the unpredictable control flow caused by exceptions, finally blocks can be used
+    to ensure that a piece of code *always* runs when a block finishes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exercises
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Retry*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Say you have a function primitiveMultiply that in 20 percent of cases multiplies
+    two numbers and in the other 80 percent of cases raises an exception of type MultiplicatorUnitFailure.
+    Write a function that wraps this clunky function and just keeps trying until a
+    call succeeds, after which it returns the result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Make sure you handle only the exceptions you are trying to handle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*The Locked Box*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Consider the following (rather contrived) object:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: It is a box with a lock. There is an array in the box, but you can get at it
+    only when the box is unlocked.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Write a function called withBoxUnlocked that takes a function value as its argument,
+    unlocks the box, runs the function, and then ensures that the box is locked again
+    before returning, regardless of whether the argument function returned normally
+    or threw an exception.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For extra points, make sure that if you call withBoxUnlocked when the box is
+    already unlocked, the box stays unlocked.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Some people, when confronted with a problem, think “I know, I’ll use regular
+    expressions.” Now they have two problems.*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: —Jamie Zawinski
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0140-01.jpg)'
+  prefs: []
+  type: TYPE_IMG

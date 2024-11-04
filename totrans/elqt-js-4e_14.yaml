@@ -1,0 +1,20 @@
+- en: PART II
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: BROWSER
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: '*The dream behind the Web is of a common information space in which we communicate
+    by sharing information. Its universality is essential: the fact that a hypertext
+    link can point to anything, be it personal, local or global, be it draft or highly
+    polished.*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '—Tim Berners-Lee, *The World Wide Web: A Very Short Personal History*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0208-01.jpg)'
+  prefs: []
+  type: TYPE_IMG

@@ -1,0 +1,795 @@
+- en: '16'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'PROJECT: A PLATFORM GAME'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Much of my initial fascination with computers, like that of many nerdy kids,
+    had to do with computer games. I was drawn into the tiny simulated worlds that
+    I could manipulate and in which stories (sort of) unfolded—more, I suppose, because
+    of the way I projected my imagination into them than because of the possibilities
+    they actually offered.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I don’t wish a career in game programming on anyone. As with the music industry,
+    the discrepancy between the number of eager young people wanting to work in it
+    and the actual demand for such people creates a rather unhealthy environment.
+    But writing games for fun is amusing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter will walk through the implementation of a small platform game.
+    Platform games (or “jump and run” games) are games that expect the player to move
+    a figure through a world, which is usually two-dimensional and viewed from the
+    side, while jumping over and onto things.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Game
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Our game will be roughly based on Dark Blue (*[https://www.lessmilk.com/dark-blue/](https://www.lessmilk.com/dark-blue/)*)
+    by Thomas Palef. I chose that game because it is both entertaining and minimalist
+    and because it can be built without too much code. It looks like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0254-01.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: The dark box represents the player, whose task is to collect the yellow boxes
+    (coins) while avoiding the red stuff (lava). A level is completed when all coins
+    have been collected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The player can walk around with the left and right arrow keys and can jump with
+    the up arrow. Jumping is this game character’s specialty. It can reach several
+    times its own height and can change direction in midair. This may not be entirely
+    realistic, but it helps give the player the feeling of being in direct control
+    of the on-screen avatar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The game consists of a static background, laid out like a grid, with the moving
+    elements overlaid on that background. Each field on the grid is either empty,
+    solid, or lava. The moving elements are the player, coins, and certain pieces
+    of lava. The positions of these elements are not constrained to the grid—their
+    coordinates may be fractional, allowing smooth motion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Technology
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We will use the browser DOM to display the game, and we’ll read user input by
+    handling key events.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The screen- and keyboard-related code is only a small part of the work we need
+    to do to build this game. Since everything looks like colored boxes, drawing is
+    uncomplicated: we create DOM elements and use styling to give them a background
+    color, size, and position.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can represent the background as a table, since it is an unchanging grid of
+    squares. The free-moving elements can be overlaid using absolutely positioned
+    elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In games and other programs that should animate graphics and respond to user
+    input without noticeable delay, efficiency is important. Although the DOM was
+    not originally designed for high-performance graphics, it is actually better at
+    this than you would expect. You saw some animations in [Chapter 14](ch14.xhtml#ch14).
+    On a modern machine, a simple game like this performs well, even if we don’t worry
+    about optimization very much.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next chapter, we will explore another browser technology, the <canvas>
+    tag, which provides a more traditional way to draw graphics, working in terms
+    of shapes and pixels rather than DOM elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Levels
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: We’ll want a human-readable, human-editable way to specify levels. Since it
+    is OK for everything to start out on a grid, we could use big strings in which
+    each character represents an element—either a part of the background grid or a
+    moving element.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The plan for a small level might look like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: Periods are empty space, hash (#) characters are walls, and plus signs are lava.
+    The player’s starting position is the at sign (@). Every O character is a coin,
+    and the equal sign (=) at the top is a block of lava that moves back and forth
+    horizontally.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We’ll support two additional kinds of moving lava: the pipe character (|) creates
+    vertically moving blobs, and v indicates *dripping* lava—vertically moving lava
+    that doesn’t bounce back and forth but only moves down, jumping back to its start
+    position when it hits the floor.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A whole game consists of multiple levels that the player must complete. A level
+    is completed when all coins have been collected. If the player touches lava, the
+    current level is restored to its starting position, and the player may try again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading a Level
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The following class stores a level object. Its argument should be the string
+    that defines the level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: The trim method is used to remove whitespace at the start and end of the plan
+    string. This allows our example plan to start with a newline so that all lines
+    are directly below each other. The remaining string is split on new-line characters,
+    and each line is spread into an array, producing arrays of characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So rows holds an array of arrays of characters, the rows of the plan. We can
+    derive the level’s width and height from these. But we must still separate the
+    moving elements from the background grid. We’ll call moving elements *actors*.
+    They’ll be stored in an array of objects. The background will be an array of arrays
+    of strings, holding field types such as “empty”, “wall”, or “lava”.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To create these arrays, we map over the rows and then over their content. Remember
+    that map passes the array index as a second argument to the mapping function,
+    which tells us the x- and y-coordinates of a given character. Positions in the
+    game will be stored as pairs of coordinates, with the upper left being (0, 0)
+    and each background square being 1 unit high and wide.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To interpret the characters in the plan, the Level constructor uses the levelChars
+    object, which, for each character used in the level descriptions, holds a string
+    if it is a background type, and a class if it produces an actor. When type is
+    an actor class, its static create method is used to create an object, which is
+    added to startActors, and the mapping function returns “empty” for this background
+    square.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The position of the actor is stored as a Vec object. This is a two-dimensional
+    vector, an object with x and y properties, as seen in the exercises of [Chapter
+    6](ch06.xhtml#ch06).
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the game runs, actors will end up in different places or even disappear entirely
+    (as coins do when collected). We’ll use a State class to track the state of a
+    running game.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: The status property will switch to “lost” or “won” when the game has ended.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is again a persistent data structure—updating the game state creates a
+    new state and leaves the old one intact.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Actors
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Actor objects represent the current position and state of a given moving element
+    (player, coin, or mobile lava) in our game. All actor objects conform to the same
+    interface. They have size and pos properties holding the size and the coordinates
+    of the upper-left corner of the rectangle representing this actor, and an update
+    method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This update method is used to compute their new state and position after a given
+    time step. It simulates the thing the actor does—moving in response to the arrow
+    keys for the player and bouncing back and forth for the lava— and returns a new,
+    updated actor object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A type property contains a string that identifies the type of the actor— ”player”,
+    “coin”, or “lava”. This is useful when drawing the game—the look of the rectangle
+    drawn for an actor is based on its type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Actor classes have a static create method used by the Level constructor to create
+    an actor from a character in the level plan. It is given the coordinates of the
+    character and the character itself, which is necessary because the Lava class
+    handles several different characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is the Vec class that we’ll use for our two-dimensional values, such as
+    the position and size of actors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: The times method scales a vector by a given number. It will be useful when we
+    need to multiply a speed vector by a time interval to get the distance traveled
+    during that time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The different types of actors get their own classes, since their behavior is
+    very different. Let’s define these classes. We’ll get to their update methods
+    later.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The player class has a speed property that stores its current speed to simulate
+    momentum and gravity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Because a player is one-and-a-half squares high, its initial position is set
+    to be half a square above the position where the @ character appeared. This way,
+    its bottom aligns with the bottom of the square where it appeared.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The size property is the same for all instances of Player, so we store it on
+    the prototype rather than on the instances themselves. We could have used a getter
+    like type, but that would create and return a new Vec object every time the property
+    is read, which would be wasteful. (Strings, being immutable, don’t have to be
+    re-created every time they are evaluated.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: When constructing a Lava actor, we need to initialize the object differently
+    depending on the character it is based on. Dynamic lava moves along at its current
+    speed until it hits an obstacle. At that point, if it has a reset property, it
+    will jump back to its start position (dripping). If it does not, it will invert
+    its speed and continue in the other direction (bouncing).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The create method looks at the character that the Level constructor passes and
+    creates the appropriate lava actor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: Coin actors are relatively simple. They mostly just sit in their place. But
+    to liven up the game a little, they are given a “wobble,” a slight vertical back-and-forth
+    motion. To track this, a coin object stores a base position as well as a wobble
+    property that tracks the phase of the bouncing motion. Together, these determine
+    the coin’s actual position (stored in the pos property).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: In [Chapter 14](ch14.xhtml#ch14), we saw that Math.sin gives us the y-coordinate
+    of a point on a circle. That coordinate goes back and forth in a smooth waveform
+    as we move along the circle, which makes the sine function useful for modeling
+    a wavy motion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To avoid a situation where all coins move up and down synchronously, the starting
+    phase of each coin is randomized. The period of Math.sin’s wave, the width of
+    a wave it produces, is 2*π*. We multiply the value returned by Math.random by
+    that number to give the coin a random starting position on the wave.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can now define the levelChars object that maps plan characters to either
+    background grid types or actor classes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: That gives us all the parts needed to create a Level instance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: The task ahead is to display such levels on the screen and to model time and
+    motion inside them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Drawing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In the next chapter, we’ll display the same game in a different way. To make
+    that possible, we put the drawing logic behind an interface and pass it to the
+    game as an argument. That way, we can use the same game program with different
+    new display modules.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A game display object draws a given level and state. We pass its constructor
+    to the game to allow it to be replaced. The display class we define in this chapter
+    is called DOMDisplay because it uses DOM elements to show the level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We’ll be using a style sheet to set the actual colors and other fixed properties
+    of the elements that make up the game. It would also be possible to directly assign
+    to the elements’ style property when we create them, but that would produce more
+    verbose programs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following helper function provides a succinct way to create an element
+    and give it some attributes and child nodes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: A display is created by giving it a parent element to which it should append
+    itself and a level object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: The level’s background grid, which never changes, is drawn once. Actors are
+    redrawn every time the display is updated with a given state. The actorLayer property
+    will be used to track the element that holds the actors so that they can be easily
+    removed and replaced.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Our coordinates and sizes are tracked in grid units, where a size or distance
+    of 1 means one grid block. When setting pixel sizes, we will have to scale these
+    coordinates up—everything in the game would be ridiculously small at a single
+    pixel per square. The scale constant gives the number of pixels that a single
+    unit takes up on the screen.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: The <table> element’s form nicely corresponds to the structure of the rows property
+    of the level—each row of the grid is turned into a table row (<tr> element). The
+    strings in the grid are used as class names for the table cell (<td>) elements.
+    The code uses the spread (triple dot) operator to pass arrays of child nodes to
+    elt as separate arguments.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following CSS makes the table look like the background we want:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: Some of these (table-layout, border-spacing, and padding) are used to suppress
+    unwanted default behavior. We don’t want the layout of the table to depend upon
+    the contents of its cells, and we don’t want space between the table cells or
+    padding inside them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The background rule sets the background color. CSS allows colors to be specified
+    both as words (white) or with a format such as rgb(*R*, *G*, *B*), where the red,
+    green, and blue components of the color are separated into three numbers from
+    0 to 255\. In rgb(52, 166, 251), the red component is 52, green is 166, and blue
+    is 251\. Since the blue component is the largest, the resulting color will be
+    bluish. In the .lava rule, the first number (red) is the largest.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We draw each actor by creating a DOM element for it and setting that element’s
+    position and size based on the actor’s properties. The values must be multiplied
+    by scale to go from game units to pixels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: To give an element more than one class, we separate the class names by spaces.
+    In the following CSS code, the actor class gives the actors their absolute position.
+    Their type name is used as an extra class to give them a color. We don’t have
+    to define the lava class again because we’re reusing the class for the lava grid
+    squares we defined earlier.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: The syncState method is used to make the display show a given state. It first
+    removes the old actor graphics, if any, and then redraws the actors in their new
+    positions. It may be tempting to try to reuse the DOM elements for actors, but
+    to make that work, we would need a lot of additional book-keeping to associate
+    actors with DOM elements and to make sure we remove elements when their actors
+    vanish. Since there will typically be only a handful of actors in the game, redrawing
+    all of them is not expensive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: By adding the level’s current status as a class name to the wrapper, we can
+    style the player actor slightly differently when the game is won or lost by adding
+    a CSS rule that takes effect only when the player has an ancestor element with
+    a given class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: After touching lava, the player turns dark red, suggesting scorching. When the
+    last coin has been collected, we add two blurred white shadows— one to the upper
+    left and one to the upper right—to create a white halo effect.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We can’t assume that the level always fits in the *viewport*, the element into
+    which we draw the game. That is why we need the scrollPlayerIntoView call: it
+    ensures that if the level is protruding outside the viewport, we scroll that viewport
+    to make sure the player is near its center. The following CSS gives the game’s
+    wrapping DOM element a maximum size and ensures that anything that sticks out
+    of the element’s box is not visible. We also give it a relative position so that
+    the actors inside it are positioned relative to the level’s upper-left corner.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: In the scrollPlayerIntoView method, we find the player’s position and update
+    the wrapping element’s scroll position. We change the scroll position by manipulating
+    that element’s scrollLeft and scrollTop properties when the player is too close
+    to the edge.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: The way the player’s center is found shows how the methods on our Vec type allow
+    computations with objects to be written in a relatively readable way. To find
+    the actor’s center, we add its position (its upper-left corner) and half its size.
+    That is the center in level coordinates, but we need it in pixel coordinates,
+    so we then multiply the resulting vector by our display scale.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, a series of checks verifies that the player position isn’t outside of
+    the allowed range. Note that sometimes this will set nonsense scroll coordinates
+    that are below zero or beyond the element’s scrollable area. This is OK—the DOM
+    will constrain them to acceptable values. Setting scrollLeft to -10 will cause
+    it to become 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: While it would have been slightly simpler to always try to scroll the player
+    to the center of the viewport, this creates a rather jarring effect. As you are
+    jumping, the view will constantly shift up and down. It’s more pleasant to have
+    a “neutral” area in the middle of the screen where you can move around without
+    causing any scrolling.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We are now able to display our tiny level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '![Image](../images/f0264-01.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: The <link> tag, when used with rel=“stylesheet”, is a way to load a CSS file
+    into a page. The file *game.css* contains the styles necessary for our game.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Motion and Collision
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Now we’re at the point where we can start adding motion. The basic approach
+    taken by most games like this is to split time into small steps and, for each
+    step, move the actors by a distance corresponding to their speed multiplied by
+    the size of the time step. We’ll measure time in seconds, so speeds are expressed
+    in units per second.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Moving things is easy. The difficult part is dealing with the interactions between
+    the elements. When the player hits a wall or floor, they should not simply move
+    through it. The game must notice when a given motion causes an object to hit another
+    object and respond accordingly. For walls, the motion must be stopped. When hitting
+    a coin, that coin must be collected. When touching lava, the game should be lost.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Solving this for the general case is a major task. You can find libraries, usually
+    called *physics engines*, that simulate interaction between physical objects in
+    two or three dimensions. We’ll take a more modest approach in this chapter, handling
+    only collisions between rectangular objects and handling them in a rather simplistic
+    way.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Before moving the player or a block of lava, we test whether the motion would
+    take it inside of a wall. If it does, we simply cancel the motion altogether.
+    The response to such a collision depends on the type of actor—the player will
+    stop, whereas a lava block will bounce back.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This approach requires our time steps to be rather small, since it will cause
+    motion to stop before the objects actually touch. If the time steps (and thus
+    the motion steps) are too big, the player would end up hovering a noticeable distance
+    above the ground. Another approach, arguably better but more complicated, would
+    be to find the exact collision spot and move there. We will take the simple approach
+    and hide its problems by ensuring the animation proceeds in small steps.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This method tells us whether a rectangle (specified by a position and a size)
+    touches a grid element of the given type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: The method computes the set of grid squares that the body overlaps with by using
+    Math.floor and Math.ceil on its coordinates. Remember that grid squares are 1
+    by 1 units in size. By rounding the sides of a box up and down, we get the range
+    of background squares that the box touches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0266-01.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: We loop over the block of grid squares found by rounding the coordinates and
+    return true when a matching square is found. Squares outside of the level are
+    always treated as “wall” to ensure that the player can’t leave the world and that
+    we won’t accidentally try to read outside of the bounds of our rows array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The state update method uses touches to figure out whether the player is touching
+    lava.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: The method is passed a time step and a data structure that tells it which keys
+    are being held down. The first thing it does is call the update method on all
+    actors, producing an array of updated actors. The actors also get the time step,
+    the keys, and the state so that they can base their update on those. Only the
+    player will actually read keys, since that’s the only actor that’s controlled
+    by the keyboard.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the game is already over, no further processing has to be done (the game
+    can’t be won after being lost, or vice versa). Otherwise, the method tests whether
+    the player is touching background lava. If so, the game is lost and we’re done.
+    Finally, if the game really is still going on, it sees whether any other actors
+    overlap the player.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Overlap between actors is detected with the overlap function. It takes two actor
+    objects and returns true when they touch—which is the case when they overlap both
+    along the x-axis and along the y-axis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: If any actor does overlap, its collide method gets a chance to update the state.
+    Touching a lava actor sets the game status to “lost”. Coins vanish when you touch
+    them and set the status to “won” when they are the last coin of the level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: Actor Updates
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Actor objects’ update methods take as arguments the time step, the state object,
+    and a keys object. The one for the Lava actor type ignores the keys object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: This update method computes a new position by adding the product of the time
+    step and the current speed to its old position. If no obstacle blocks that new
+    position, it moves there. If there is an obstacle, the behavior depends on the
+    type of the lava block—dripping lava has a reset position, to which it jumps back
+    when it hits something. Bouncing lava inverts its speed by multiplying it by -1
+    so that it starts moving in the opposite direction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Coins use their update method to wobble. They ignore collisions with the grid,
+    since they are simply wobbling around inside of their own square.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: The wobble property is incremented to track time and then used as an argument
+    to Math.sin to find the new position on the wave. The coin’s current position
+    is then computed from its base position and an offset based on this wave.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That leaves the player itself. Player motion is handled separately per axis
+    because hitting the floor should not prevent horizontal motion, and hitting a
+    wall should not stop falling or jumping motion.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: The horizontal motion is computed based on the state of the left and right arrow
+    keys. When there’s no wall blocking the new position created by this motion, it
+    is used. Otherwise, the old position is kept.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vertical motion works in a similar way but has to simulate jumping and gravity.
+    The player’s vertical speed (ySpeed) is first accelerated to account for gravity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We check for walls again. If we don’t hit any, the new position is used. If
+    there *is* a wall, there are two possible outcomes. When the up arrow is pressed
+    *and* we are moving down (meaning the thing we hit is below us), the speed is
+    set to a relatively large, negative value. This causes the player to jump. If
+    that is not the case, the player simply bumped into something, and the speed is
+    set to zero.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The gravity strength, jumping speed, and other constants in the game were determined
+    by simply trying out some numbers and seeing which ones felt right. You can try
+    experimenting with them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tracking Keys
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: For a game like this, we do not want keys to take effect once per keypress.
+    Rather, we want their effect (moving the player figure) to stay active as long
+    as they are held.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We need to set up a key handler that stores the current state of the left, right,
+    and up arrow keys. We will also want to call preventDefault for those keys so
+    that they don’t end up scrolling the page.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following function, when given an array of key names, will return an object
+    that tracks the current position of those keys. It registers event handlers for
+    “keydown” and “keyup” events and, when the key code in the event is present in
+    the set of codes that it is tracking, updates the object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: The same handler function is used for both event types. It looks at the event
+    object’s type property to determine whether the key state should be updated to
+    true (”keydown”) or false (”keyup”).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running the Game
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The requestAnimationFrame function, which we saw in [Chapter 14](ch14.xhtml#ch14),
+    provides a good way to animate a game. But its interface is quite primitive—using
+    it requires us to track the time at which our function was called the last time
+    around and call requestAnimationFrame again after every frame.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s define a helper function that wraps all that in a convenient interface
+    and allows us to simply call runAnimation, giving it a function that expects a
+    time difference as an argument and draws a single frame. When the frame function
+    returns the value false, the animation stops.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: I have set a maximum frame step of 100 milliseconds (one-tenth of a second).
+    When the browser tab or window with our page is hidden, request AnimationFrame
+    calls will be suspended until the tab or window is shown again. In this case,
+    the difference between lastTime and time will be the entire time in which the
+    page was hidden. Advancing the game by that much in a single step would look silly
+    and might cause weird side effects, such as the player falling through the floor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The function also converts the time steps to seconds, which are an easier quantity
+    to think about than milliseconds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The runLevel function takes a Level object and a display constructor and returns
+    a promise. It displays the level (in document.body) and lets the user play through
+    it. When the level is finished (lost or won), runLevel waits one more second (to
+    let the user see what happens) and then clears the display, stops the animation,
+    and resolves the promise to the game’s end status.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'A game is a sequence of levels. Whenever the player dies, the current level
+    is restarted. When a level is completed, we move on to the next level. This can
+    be expressed by the following function, which takes an array of level plans (strings)
+    and a display constructor:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: Because we made runLevel return a promise, runGame can be written using an async
+    function, as shown in [Chapter 11](ch11.xhtml#ch11). It returns another promise,
+    which resolves when the player finishes the game.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a set of level plans available in the GAME_LEVELS binding in this chapter’s
+    sandbox (*[https://eloquentjavascript.net/code#16](https://eloquentjavascript.net/code#16)*).
+    This page feeds them to runGame, starting an actual game.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: Exercises
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Game Over*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: It’s traditional for platform games to have the player start with a limited
+    number of *lives* and subtract one life each time they die. When the player is
+    out of lives, the game restarts from the beginning.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adjust runGame to implement lives. Have the player start with three. Output
+    the current number of lives (using console.log) every time a level starts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Pausing the Game*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Make it possible to pause (suspend) and unpause the game by pressing ESC. You
+    can do this by changing the runLevel function to set up a keyboard event handler
+    that interrupts or resumes the animation whenever ESC is hit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The runAnimation interface may not look like it is suitable for this at first
+    glance, but it is if you rearrange the way runLevel calls it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you have that working, there’s something else you can try. The way we’ve
+    been registering keyboard event handlers is somewhat problematic. The arrowKeys
+    object is currently a global binding, and its event handlers are kept around even
+    when no game is running. You could say they *leak* out of our system. Extend trackKeys
+    to provide a way to unregister its handlers, then change runLevel to register
+    its handlers when it starts and unregister them again when it is finished.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*A Monster*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: It is traditional for platform games to have enemies that you can defeat by
+    jumping on top of them. This exercise asks you to add such an actor type to the
+    game.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We’ll call this actor a monster. Monsters move only horizontally. You can make
+    them move in the direction of the player, bounce back and forth like horizontal
+    lava, or have any other movement pattern you want. The class doesn’t have to handle
+    falling, but it should make sure the monster doesn’t walk through walls.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a monster touches the player, the effect depends on whether the player
+    is jumping on top of them or not. You can approximate this by checking whether
+    the player’s bottom is near the monster’s top. If this is the case, the monster
+    disappears. If not, the game is lost.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Drawing is deception.*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: —M.C. Escher, cited by Bruno Ernst in *The Magic Mirror of M.C. Escher*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Image](../images/f0274-01.jpg)'
+  prefs: []
+  type: TYPE_IMG

@@ -1,0 +1,1344 @@
+- en: 'APPENDIX: EXERCISE HINTS'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The hints below might help when you are stuck with one of the exercises in this
+    book. They don’t give away the entire solution, but rather try to help you find
+    it yourself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 2: Program Structure'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Looping a Triangle*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You can start with a program that prints out the numbers 1 to 7, which you can
+    derive by making a few modifications to the even number printing example given
+    earlier in the chapter, where the for loop was introduced.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now consider the equivalence between numbers and strings of hash characters.
+    You can go from 1 to 2 by adding 1 (+= 1). You can go from “#” to “##” by adding
+    a character (+= “#”). Thus, your solution can closely follow the number-printing
+    program.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*FizzBuzz*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Going over the numbers is clearly a looping job, and selecting what to print
+    is a matter of conditional execution. Remember the trick of using the remainder
+    (%) operator for checking whether a number is divisible by another number (has
+    a remainder of zero).
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the first version, there are three possible outcomes for every number, so
+    you’ll have to create an if/else if/else chain.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second version of the program has a straightforward solution and a clever
+    one. The simple solution is to add another conditional “branch” to precisely test
+    the given condition. For the clever solution, build up a string containing the
+    word or words to output and print either this word or the number if there is no
+    word, potentially by making good use of the || operator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Chessboard*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You can build the string by starting with an empty one (”“) and repeatedly adding
+    characters. A newline character is written “\n”.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To work with two dimensions, you will need a loop inside of a loop. Put braces
+    around the bodies of both loops to make it easy to see where they start and end.
+    Try to properly indent these bodies. The order of the loops must follow the order
+    in which we build up the string (line by line, left to right, top to bottom).
+    So the outer loop handles the lines, and the inner loop handles the characters
+    on a line.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You’ll need two bindings to track your progress. To know whether to put a space
+    or a hash sign at a given position, you could test whether the sum of the two
+    counters is even (% 2).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Terminating a line by adding a newline character must happen after the line
+    has been built up, so do this after the inner loop but inside the outer loop.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 3: Functions'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Minimum*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: If you have trouble putting braces and parentheses in the right place to get
+    a valid function definition, start by copying one of the examples in this chapter
+    and modifying it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A function may contain multiple return statements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Recursion*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Your function will likely look somewhat similar to the inner find function in
+    the recursive findSolution example in this chapter, with an if/else if/else chain
+    that tests which of the three cases applies. The final else, corresponding to
+    the third case, makes the recursive call. Each of the branches should contain
+    a return statement or in some other way arrange for a specific value to be returned.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When given a negative number, the function will recurse again and again, passing
+    itself an ever more negative number, thus getting further and further away from
+    returning a result. It will eventually run out of stack space and abort.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Bean Counting*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Your function will need a loop that looks at every character in the string.
+    It can run an index from zero to one below its length (< *string*.length). If
+    the character at the current position is the same as the one the function is looking
+    for, it adds 1 to a counter variable. Once the loop has finished, the counter
+    can be returned.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Take care to make all the bindings used in the function *local* to the function
+    by properly declaring them with the let or const keyword.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 4: Data Structures: Objects and Arrays'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*The Sum of a Range*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Building up an array is most easily done by first initializing a binding to
+    [] (a fresh, empty array) and repeatedly calling its push method to add a value.
+    Don’t forget to return the array at the end of the function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since the end boundary is inclusive, you’ll need to use the <= operator rather
+    than < to check for the end of your loop.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The step parameter can be an optional parameter that defaults (using the = operator)
+    to 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Having range understand negative step values is probably best done by writing
+    two separate loops—one for counting up and one for counting down—because the comparison
+    that checks whether the loop is finished needs to be >= rather than <= when counting
+    downward.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It might also be worthwhile to use a different default step, namely, –1, when
+    the end of the range is smaller than the start. That way, range(5, 2) returns
+    something meaningful rather than getting stuck in an infinite loop. It is possible
+    to refer to previous parameters in the default value of a parameter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Reversing an Array*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: There are two obvious ways to implement reverseArray. The first is to simply
+    go over the input array from front to back and use the unshift method on the new
+    array to insert each element at its start. The second is to loop over the input
+    array backward and use the push method. Iterating over an array backward requires
+    a (somewhat awkward) for specification, like (let i = array.length - 1; i >= 0;
+    i--).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reversing the array in place is harder. You have to be careful not to overwrite
+    elements that you will later need. Using reverseArray or otherwise copying the
+    whole array (array.slice() is a good way to copy an array) works but is cheating.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The trick is to *swap* the first and last elements, then the second and second-to-last,
+    and so on. You can do this by looping over half the length of the array (use Math.floor
+    to round down—you don’t need to touch the middle element in an array with an odd
+    number of elements) and swapping the element at position i with the one at position
+    array.length - 1 - i. You can use a local binding to briefly hold onto one of
+    the elements, overwrite that one with its mirror image, and then put the value
+    from the local binding in the place where the mirror image used to be.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*A List*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Building up a list is easier when done back to front. So arrayToList could
+    iterate over the array backward (see the previous exercise) and, for each element,
+    add an object to the list. You can use a local binding to hold the part of the
+    list that was built so far and use an assignment like list = {value: *X*, rest:
+    list} to add an element.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To run over a list (in listToArray and nth), a for loop specification like
+    this can be used:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: Can you see how that works? Every iteration of the loop, node points to the
+    current sublist, and the body can read its value property to get the current element.
+    At the end of an iteration, node moves to the next sublist. When that is null,
+    we have reached the end of the list, and the loop is finished.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The recursive version of nth will, similarly, look at an ever smaller part of
+    the “tail” of the list and at the same time count down the index until it reaches
+    zero, at which point it can return the value property of the node it is looking
+    at. To get the zeroth element of a list, you simply take the value property of
+    its head node. To get element *N* + 1, you take the *N*th element of the list
+    that’s in this list’s rest property.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Deep Comparison*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Your test for whether you are dealing with a real object will look something
+    like typeof x == “object” && x != null. Be careful to compare properties only
+    when *both* arguments are objects. In all other cases you can just immediately
+    return the result of applying ===.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Use Object.keys to go over the properties. You need to test whether both objects
+    have the same set of property names and whether those properties have identical
+    values. One way to do that is to ensure that both objects have the same number
+    of properties (the lengths of the property lists are the same). And then, when
+    looping over one of the object’s properties to compare them, always first make
+    sure the other actually has a property by that name. If they have the same number
+    of properties and all properties in one also exist in the other, they have the
+    same set of property names.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Returning the correct value from the function is best done by immediately returning
+    false when a mismatch is found and returning true at the end of the function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 5: Higher-Order Functions'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Everything*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Like the && operator, the every method can stop evaluating further elements
+    as soon as it has found one that doesn’t match. So the loop-based version can
+    jump out of the loop—with break or return—as soon as it runs into an element for
+    which the predicate function returns false. If the loop runs to its end without
+    finding such an element, we know that all elements matched and we should return
+    true.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To build every on top of some, we can apply *De Morgan’s laws*, which state
+    that a && b equals !(!a || !b). This can be generalized to arrays, where all elements
+    in the array match if there is no element in the array that does not match.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Dominant Writing Direction*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Your solution might look a lot like the first half of the textScripts example.
+    You again have to count characters by a criterion based on characterScript and
+    then filter out the part of the result that refers to uninteresting (scriptless)
+    characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finding the direction with the highest character count can be done with reduce.
+    If it’s not clear how, refer to the example earlier in the chapter, where reduce
+    was used to find the script with the most characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 6: The Secret Life of Objects'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*A Vector Type*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Look back to the Rabbit class example if you’re unsure how class declarations
+    look.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adding a getter property to the constructor can be done by putting the word
+    get before the method name. To compute the distance from (0, 0) to (*x*, *y*),
+    you can use the Pythagorean theorem, which says that the square of the distance
+    we are looking for is equal to the square of the x-coordinate plus the square
+    of the y-coordinate. Thus, ![Image](../images/f0391-01.jpg) is the number you
+    want. Math.sqrt is the way you compute a square root in JavaScript and x ** 2
+    can be used to square a number.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Groups*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The easiest way to do this is to store an array of group members in an instance
+    property. The includes or indexOf methods can be used to check whether a given
+    value is in the array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your class’s constructor can set the member collection to an empty array. When
+    add is called, it must check whether the given value is in the array or add it
+    otherwise, possibly using push.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Deleting an element from an array, in delete, is less straightforward, but you
+    can use filter to create a new array without the value. Don’t forget to overwrite
+    the property holding the members with the newly filtered version of the array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The from method can use a for/of loop to get the values out of the iterable
+    object and call add to put them into a newly created group.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Iterable Groups*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: It is probably worthwhile to define a new class GroupIterator. Iterator instances
+    should have a property that tracks the current position in the group. Every time
+    next is called, it checks whether it is done and, if not, moves past the current
+    value and returns it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Group class itself gets a method named by Symbol.iterator that, when called,
+    returns a new instance of the iterator class for that group.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 7: Project: A Robot'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Measuring a Robot*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You’ll have to write a variant of the runRobot function that, instead of logging
+    the events to the console, returns the number of steps the robot took to complete
+    the task.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your measurement function can then, in a loop, generate new states and count
+    the steps each of the robots takes. When it has generated enough measurements,
+    it can use console.log to output the average for each robot, which is the total
+    number of steps taken divided by the number of measurements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Robot Efficiency*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The main limitation of goalOrientedRobot is that it considers only one parcel
+    at a time. It will often walk back and forth across the village because the parcel
+    it happens to be looking at happens to be at the other side of the map, even if
+    there are others much closer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One possible solution would be to compute routes for all packages and then take
+    the shortest one. Even better results can be obtained, if there are multiple shortest
+    routes, by preferring the ones that go to pick up a package instead of delivering
+    a package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Persistent Group*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The most convenient way to represent the set of member values is still as an
+    array, since arrays are easy to copy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a value is added to the group, you can create a new group with a copy of
+    the original array that has the value added (for example, using concat). When
+    a value is deleted, you filter it from the array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The class’s constructor can take such an array as its argument and store it
+    as the instance’s (only) property. This array is never updated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To add the empty property to the constructor, you can declare it as a static
+    property.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You need only one empty instance because all empty groups are the same and instances
+    of the class don’t change. You can create many different groups from that single
+    empty group without affecting it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 8: Bugs and Errors'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Retry*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The call to primitiveMultiply should definitely happen in a try block. The corresponding
+    catch block should rethrow the exception when it is not an instance of MultiplicatorUnitFailure
+    and ensure the call is retried when it is.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To do the retrying, you can either use a loop that stops only when a call succeeds—as
+    in the look example earlier in this chapter—or use recursion and hope you don’t
+    get a string of failures so long that it overflows the stack (which is a pretty
+    safe bet).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*The Locked Box*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: This exercise calls for a finally block. Your function should first unlock the
+    box and then call the argument function from inside a try body. The finally block
+    after it should lock the box again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To make sure we don’t lock the box when it wasn’t already locked, check its
+    lock at the start of the function and unlock and lock it only when it started
+    out locked.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 9: Regular Expressions'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Quoting Style*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The most obvious solution is to replace only quotes with a nonletter character
+    on at least one side—something like /\P{L}’|’\P{L}/u. But you also have to take
+    the start and end of the line into account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition, you must ensure that the replacement also includes the characters
+    that were matched by the \P{L} pattern so that those are not dropped. This can
+    be done by wrapping them in parentheses and including their groups in the replacement
+    string ($1, $2). Groups that are not matched will be replaced by nothing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Numbers Again*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: First, do not forget the backslash in front of the period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Matching the optional sign in front of the number, as well as in front of the
+    exponent, can be done with [+\-]? or (\+|-|) (plus, minus, or nothing).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The more complicated part of the exercise is the problem of matching both “5.”
+    and “.5” without also matching “.” For this, a good solution is to use the | operator
+    to separate the two cases—either one or more digits optionally followed by a dot
+    and zero or more digits *or* a dot followed by one or more digits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, to make the *e* case insensitive, either add an i option to the regular
+    expression or use [eE].
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 10: Modules'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*A Modular Robot*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: 'Here’s what I would have done (but again, there is no single *right* way to
+    design a given module):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The code used to build the road graph lives in the *graph.js* module. Because
+    I’d rather use dijkstrajs from NPM than our own pathfinding code, we’ll make this
+    build the kind of graph data that dijkstrajs expects. This module exports a single
+    function, buildGraph. I’d have buildGraph accept an array of two-element arrays,
+    rather than strings containing hyphens, to make the module less dependent on the
+    input format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *roads.js* module contains the raw road data (the roads array) and the roadGraph
+    binding. This module depends on *./graph.js* and exports the road graph.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The VillageState class lives in the *state.js* module. It depends on the *./roads.js*
+    module because it needs to be able to verify that a given road exists. It also
+    needs randomPick. Since that is a three-line function, we could just put it into
+    the *state.js* module as an internal helper function. But randomRobot needs it
+    too. So we’d have to either duplicate it or put it into its own module. Since
+    this function happens to exist on NPM in the random-item package, a reasonable
+    solution is to just make both modules depend on that. We can add the runRobot
+    function to this module as well, since it’s small and closely related to state
+    management. The module exports both the VillageState class and the runRobot function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, the robots, along with the values they depend on, such as mailRoute,
+    could go into an *example-robots.js* module, which depends on *./roads.js* and
+    exports the robot functions. To make it possible for goalOrientedRobot to do route-finding,
+    this module also depends on dijkstrajs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By offloading some work to NPM modules, the code became a little smaller. Each
+    individual module does something rather simple and can be read on its own. Dividing
+    code into modules also often suggests further improvements to the program’s design.
+    In this case, it seems a little odd that the VillageState and the robots depend
+    on a specific road graph. It might be a better idea to make the graph an argument
+    to the state’s constructor and make the robots read it from the state object—this
+    reduces dependencies (which is always good) and makes it possible to run simulations
+    on different maps (which is even better).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Is it a good idea to use NPM modules for things that we could have written ourselves?
+    In principle, yes—for nontrivial things like the pathfinding function you are
+    likely to make mistakes and waste time writing them yourself. For tiny functions
+    like random-item, writing them yourself is easy enough. But adding them wherever
+    you need them does tend to clutter your modules.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, you should also not underestimate the work involved in *finding* an
+    appropriate NPM package. And even if you find one, it might not work well or may
+    be missing some feature you need. On top of that, depending on NPM packages means
+    you have to make sure they are installed, you have to distribute them with your
+    program, and you might have to periodically upgrade them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So again, this is a trade-off, and you can decide either way depending on how
+    much a given package actually helps you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Roads Module*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Since this is an ES module, you have to use import to access the graph module.
+    That was described as exporting a buildGraph function, which you can pick out
+    of its interface object with a destructuring const declaration.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To export roadGraph, you put the keyword export before its definition. Because
+    buildGraph takes a data structure that doesn’t precisely match roads, the splitting
+    of the road strings must happen in your module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Circular Dependencies*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The trick is that require adds the interface object for a module to its cache
+    *before* it starts loading the module. That way, if any require call made while
+    it is running tries to load it, it is already known, and the current interface
+    will be returned, rather than starting to load the module once more (which would
+    eventually overflow the stack).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 11: Asynchronous Programming'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Quiet Times*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You will need to convert the content of these files to an array. The easiest
+    way to do that is to use the split method on the string produced by textFile.
+    Note that for the logfiles, that will still give you an array of strings, which
+    you have to convert to numbers before passing them to new Date.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summarizing all the time points into a table of hours can be done by creating
+    a table (array) that holds a number for each hour in the day. You can then loop
+    over all the timestamps (over the logfiles and the numbers in every logfile) and
+    for each one, if it happened on the correct day, take the hour it occurred in,
+    and add one to the corresponding number in the table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Make sure you use await on the result of asynchronous functions before doing
+    anything with it, or you’ll end up with a Promise where you expected a string.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Real Promises*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The most straightforward approach to writing this function is to use a chain
+    of then calls. The first promise is produced by reading the list of logfiles.
+    The first callback can split this list and map textFile over it to get an array
+    of promises to pass to Promise.all. It can return the object returned by Promise.all
+    so that whatever that returns becomes the result of the return value of this first
+    then.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We now have a promise that returns an array of logfiles. We can call then again
+    on that, and put the timestamp-counting logic in there. Something like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: Or you could, for even better work scheduling, put the analysis of each file
+    inside of the Promise.all, so that that work can be started for the first file
+    that comes back from disk, even before the other files come back.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: This shows that the way you structure your promises can have a real effect on
+    the way the work is scheduled. A simple loop with await in it will make the process
+    completely linear—it waits for each file to load before proceeding. Promise.all
+    makes it possible for multiple tasks to conceptually be worked on at the same
+    time, allowing them to make progress while files are still being loaded. This
+    can be faster, but it also makes the order in which things will happen less predictable.
+    In this case, we’re only going to be incrementing numbers in a table, which isn’t
+    hard to do in a safe way. For other kinds of problems, it may be a lot more difficult.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a file in the list doesn’t exist, the promise returned by textFile will
+    be rejected. Because Promise.all rejects if any of the promises given to it fail,
+    the return value of the callback given to the first then will also be a rejected
+    promise. That makes the promise returned by then fail, so the callback given to
+    the second then isn’t even called, and a rejected promise is returned from the
+    function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Building Promise.all*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The function passed to the Promise constructor will have to call then on each
+    of the promises in the given array. When one of them succeeds, two things need
+    to happen. The resulting value needs to be stored in the correct position of a
+    result array, and we must check whether this was the last pending promise and
+    finish our own promise if it was.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The latter can be done with a counter that is initialized to the length of the
+    input array and from which we subtract 1 every time a promise succeeds. When it
+    reaches 0, we are done. Make sure you take into account the situation where the
+    input array is empty (and thus no promise will ever resolve).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Handling failure requires some thought but turns out to be extremely simple.
+    Just pass the reject function of the wrapping promise to each of the promises
+    in the array as a catch handler or as a second argument to then so that a failure
+    in one of them triggers the rejection of the whole wrapper promise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 12: Project: A Programming Language'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Arrays*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The easiest way to do this is to represent Egg arrays with JavaScript arrays.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The values added to the top scope must be functions. By using a rest argument
+    (with triple-dot notation), the definition of array can be *very* simple.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Closure*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Again, we are riding along on a JavaScript mechanism to get the equivalent feature
+    in Egg. Special forms are passed the local scope in which they are evaluated so
+    that they can evaluate their subforms in that scope. The function returned by
+    fun has access to the scope argument given to its enclosing function and uses
+    that to create the function’s local scope when it is called.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This means that the prototype of the local scope will be the scope in which
+    the function was created, which makes it possible to access bindings in that scope
+    from the function. This is all there is to implementing closure (though to compile
+    it in a way that is actually efficient, you’d need to do some more work).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Comments*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Make sure your solution handles multiple comments in a row, with whitespace
+    potentially between or after them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A regular expression is probably the easiest way to solve this. Write something
+    that matches “whitespace or a comment, zero or more times.” Use the exec or match
+    method and look at the length of the first element in the returned array (the
+    whole match) to find out how many characters to slice off.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Fixing Scope*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You will have to loop through one scope at a time, using Object.getPrototypeOf
+    to go to the next outer scope. For each scope, use Object.hasOwn to find out whether
+    the binding, indicated by the name property of the first argument to set, exists
+    in that scope. If it does, set it to the result of evaluating the second argument
+    to set and then return that value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the outermost scope is reached (Object.getPrototypeOf returns null) and we
+    haven’t found the binding yet, it doesn’t exist, and an error should be thrown.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 14: The Document Object Model'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Build a Table*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You can use document.createElement to create new element nodes, document.createTextNode
+    to create text nodes, and the appendChild method to put nodes into other nodes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You’ll want to loop over the key names once to fill in the top row and then
+    again for each object in the array to construct the data rows. To get an array
+    of key names from the first object, Object.keys will be useful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To add the table to the correct parent node, you can use document.getElementById
+    or document.querySelector with “#mountains” to find the node.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Elements by Tag Name*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The solution is most easily expressed with a recursive function, similar to
+    the talksAbout function defined earlier in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You could call byTagname itself recursively, concatenating the resulting arrays
+    to produce the output. Or you could create an inner function that calls itself
+    recursively and that has access to an array binding defined in the outer function,
+    to which it can add the matching elements it finds. Don’t forget to call the inner
+    function once from the outer function to start the process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The recursive function must check the node type. Here we are interested only
+    in node type 1 (Node.ELEMENT_NODE). For such nodes, we must loop over their children
+    and, for each child, see whether the child matches the query while also doing
+    a recursive call on it to inspect its own children.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*The Cat’s Hat*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Math.cos and Math.sin measure angles in radians, where a full circle is 2*π*.
+    For a given angle, you can get the opposite angle by adding half of this, which
+    is Math.PI. This can be useful for putting the hat on the opposite side of the
+    orbit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 15: Handling Events'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Balloon*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You’ll want to register a handler for the “keydown” event and look at event.key
+    to figure out whether the up or down arrow key was pressed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The current size can be kept in a binding so that you can base the new size
+    on it. It’ll be helpful to define a function that updates the size—both the binding
+    and the style of the balloon in the DOM—so that you can call it from your event
+    handler, and possibly also once when starting, to set the initial size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can change the balloon to an explosion by replacing the text node with another
+    one (using replaceChild) or by setting the textContent property of its parent
+    node to a new string.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Mouse Trail*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Creating the elements is best done with a loop. Append them to the document
+    to make them show up. To be able to access them later to change their position,
+    you’ll want to store the elements in an array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cycling through them can be done by keeping a counter variable and adding 1
+    to it every time the “mousemove” event fires. The remainder operator (% *elements*.length)
+    can then be used to get a valid array index to pick the element you want to position
+    during a given event.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another interesting effect can be achieved by modeling a simple physics system.
+    Use the “mousemove” event only to update a pair of bindings that track the mouse
+    position. Then use requestAnimationFrame to simulate the trailing elements being
+    attracted to the position of the mouse pointer. At every animation step, update
+    their position based on their position relative to the pointer (and, optionally,
+    a speed that is stored for each element). Figuring out a good way to do this is
+    up to you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Tabs*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: One pitfall you might run into is that you can’t directly use the node’s childNodes
+    property as a collection of tab nodes. For one thing, when you add the buttons,
+    they will also become child nodes and end up in this object because it is a live
+    data structure. For another, the text nodes created for the whitespace between
+    the nodes are also in childNodes but should not get their own tabs. You can use
+    children instead of childNodes to ignore text nodes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You could start by building up an array of tabs so that you have easy access
+    to them. To implement the styling of the buttons, you could store objects that
+    contain both the tab panel and its button.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I recommend writing a separate function for changing tabs. You can either store
+    the previously selected tab and change only the styles needed to hide that and
+    show the new one, or you can just update the style of all tabs every time a new
+    tab is selected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You might want to call this function immediately to make the interface start
+    with the first tab visible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 16: Project: A Platform Game'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Pausing the Game*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: An animation can be interrupted by returning false from the function given to
+    runAnimation. It can be continued by calling runAnimation again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So we need to communicate the fact that we are pausing the game to the function
+    given to runAnimation. For that, you can use a binding that both the event handler
+    and that function have access to.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When finding a way to unregister the handlers that were registered by trackKeys,
+    remember that the *exact* same function value that was passed to addEventListener
+    must be passed to removeEventListener to successfully remove a handler. Thus,
+    the handler function value created in trackKeys must be available to the code
+    that unregisters the handlers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can add a property to the object returned by trackKeys, containing either
+    that function value or a method that handles the unregistering directly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*A Monster*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: If you want to implement a type of motion that is stateful, such as bouncing,
+    make sure you store the necessary state in the actor object—include it as a constructor
+    argument and add it as a property.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Remember that update returns a *new* object rather than changing the old one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When handling collision, find the player in state.actors and compare its position
+    to the monster’s position. To get the *bottom* of the player, you have to add
+    its vertical size to its vertical position. The creation of an updated state will
+    resemble either Coin’s collide method (removing the actor) or Lava’s (changing
+    the status to “lost”), depending on the player position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 17: Drawing on Canvas'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Shapes*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The trapezoid (1) is easiest to draw using a path. Pick suitable center coordinates
+    and add each of the four corners around the center.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The diamond (2) can be drawn the straightforward way, with a path, or the interesting
+    way, with a rotate transformation. To use rotation, you will have to apply a trick
+    similar to what we did in the flipHorizontally function. Because you want to rotate
+    around the center of your rectangle and not around the point (0, 0), you must
+    first translate to there, then rotate, and then translate back.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Make sure you reset the transformation after drawing any shape that creates
+    one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the zigzag (3) it becomes impractical to write a new call to lineTo for
+    each line segment. Instead, you should use a loop. You can have each iteration
+    draw either two line segments (right and then left again) or one, in which case
+    you must use the evenness (% 2) of the loop index to determine whether to go left
+    or right.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You’ll also need a loop for the spiral (4). If you draw a series of points,
+    with each point moving farther along a circle around the spiral’s center, you
+    get a circle. If, during the loop, you vary the radius of the circle on which
+    you are putting the current point and go around more than once, the result is
+    a spiral.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The star (5) depicted is built out of quadraticCurveTo lines. You could also
+    draw one with straight lines. Divide a circle into eight pieces for a star with
+    eight points, or however many pieces you want. Draw lines between these points,
+    making them curve toward the center of the star. With quadratic CurveTo, you can
+    use the center as the control point.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*The Pie Chart*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You will need to call fillText and set the context’s textAlign and textBaseline
+    properties in such a way that the text ends up where you want it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A sensible way to position the labels would be to put the text on the line going
+    from the center of the pie through the middle of the slice. You don’t want to
+    put the text directly against the side of the pie but rather move the text out
+    to the side of the pie by a given number of pixels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The angle of this line is currentAngle + 0.5 * sliceAngle. The following code
+    finds a position on this line 120 pixels from the center:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: For textBaseline, the value “middle” is probably appropriate when using this
+    approach. What to use for textAlign depends on which side of the circle we are
+    on. On the left, it should be “right”, and on the right, it should be ”left”,
+    so that the text is positioned away from the pie.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are not sure how to find out which side of the circle a given angle is
+    on, look to the explanation of Math.cos in [Chapter 14](ch14.xhtml#ch14). The
+    cosine of an angle tells us which x-coordinate it corresponds to, which in turn
+    tells us exactly which side of the circle we are on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*A Bouncing Ball*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: A box is easy to draw with strokeRect. Define a binding that holds its size,
+    or define two bindings if your box’s width and height differ. To create a round
+    ball, start a path and call arc(x, y, radius, 0, 7), which creates an arc going
+    from zero to more than a whole circle. Then fill the path.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To model the ball’s position and speed, you can use the Vec class from [Chapter
+    16](ch16.xhtml#ch16). Give it a starting speed, preferably one that is not purely
+    vertical or horizontal, and for every frame multiply that speed by the amount
+    of time that elapsed. When the ball gets too close to a vertical wall, invert
+    the *x* component in its speed. Likewise, invert the *y* component when it hits
+    a horizontal wall.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After finding the ball’s new position and speed, use clearRect to delete the
+    scene and redraw it using the new position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Precomputed Mirroring*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The key to the solution is the fact that we can use a canvas element as a source
+    image when using drawImage. It is possible to create an extra <canvas> element,
+    without adding it to the document, and draw our inverted sprites to it, once.
+    When drawing an actual frame, we just copy the already inverted sprites to the
+    main canvas.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some care would be required because images do not load instantly. We do the
+    inverted drawing only once, and if we do it before the image loads, it won’t draw
+    anything. A “load” handler on the image can be used to draw the inverted images
+    to the extra canvas. This canvas can be used as a drawing source immediately (it’ll
+    simply be blank until we draw the character onto it).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 18: HTTP and Forms'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Content Negotiation*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Base your code on the fetch examples earlier in the chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Asking for a bogus media type will return a response with code 406, “Not acceptable,”
+    which is the code a server should return when it can’t fulfill the Accept header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*A JavaScript Workbench*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Use document.querySelector or document.getElementById to get access to the elements
+    defined in your HTML. An event handler for “click” or “mousedown” events on the
+    button can get the value property of the text field and call Function on it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Make sure you wrap both the call to Function and the call to its result in a
+    try block so you can catch the exceptions it produces. In this case, we really
+    don’t know what type of exception we are looking for, so catch everything.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The textContent property of the output element can be used to fill it with a
+    string message. Or, if you want to keep the old content around, create a new text
+    node using document.createTextNode and append it to the element. Remember to add
+    a newline character to the end so that not all output appears on a single line.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Conway’s Game of Life*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: To solve the problem of having the changes conceptually happen at the same time,
+    try to see the computation of a generation as a pure function, which takes one
+    grid and produces a new grid that represents the next turn.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Representing the matrix can be done with a single array of width *×* height
+    elements, storing values row by row, so, for example, the third element in the
+    fifth row is (using zero-based indexing) stored at position 4 *× width* + 2\.
+    You can count live neighbors with two nested loops, looping over adjacent coordinates
+    in both dimensions. Take care not to count cells outside of the field and to ignore
+    the cell in the center, whose neighbors we are counting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ensuring that changes to checkboxes take effect on the next generation can be
+    done in two ways. An event handler could notice these changes and update the current
+    grid to reflect them, or you could generate a fresh grid from the values in the
+    checkboxes before computing the next turn.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you choose to go with event handlers, you might want to attach attributes
+    that identify the position that each checkbox corresponds to so that it is easy
+    to find out which cell to change.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To draw the grid of checkboxes, you can either use a <table> element (see [Chapter
+    14](ch14.xhtml#ch14)) or simply put them all in the same element and put <br>
+    (line break) elements between the rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 19: Project: A Pixel Art Editor'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Keyboard Bindings*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The key property of events for letter keys will be the lowercase letter itself,
+    if SHIFT isn’t being held. We’re not interested in key events with SHIFT here.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A “keydown” handler can inspect its event object to see whether it matches any
+    of the shortcuts. You can automatically get the list of first letters from the
+    tools object so that you don’t have to write them out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the key event matches a shortcut, call preventDefault on it and dispatch
+    the appropriate action.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Efficient Drawing*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: This exercise is a good example of how immutable data structures can make code
+    *faster*. Because we have both the old and the new picture, we can compare them
+    and redraw only the pixels that changed color, saving more than 99 percent of
+    the drawing work in most cases.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can either write a new function updatePicture or have drawPicture take an
+    extra argument, which may be undefined or the previous picture. For each pixel,
+    the function checks whether a previous picture was passed with the same color
+    at this position and skips the pixel when that is the case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Because the canvas gets cleared when we change its size, you should also avoid
+    touching its width and height properties when the old picture and the new picture
+    have the same size. If they are different, which will happen when a new picture
+    has been loaded, you can set the binding holding the old picture to null after
+    changing the canvas size because you shouldn’t skip any pixels after you’ve changed
+    the canvas size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Circles*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You can take some inspiration from the rectangle tool. As with that tool, you’ll
+    want to keep drawing on the *starting* picture, rather than the current picture,
+    when the pointer moves.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To figure out which pixels to color, you can use the Pythagorean theorem. First
+    figure out the distance between the current pointer position and the start position
+    by taking the square root (Math.sqrt) of the sum of the square (x ** 2) of the
+    difference in x-coordinates and the square of the difference in y-coordinates.
+    Then loop over a square of pixels around the start position, whose sides are at
+    least twice the radius, and color those that are within the circle’s radius, again
+    using the Pythagorean formula to figure out their distance from the center.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Make sure you don’t try to color pixels that are outside of the picture’s boundaries.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Proper Lines*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The thing about the problem of drawing a pixelated line is that it is really
+    four similar but slightly different problems. Drawing a horizontal line from the
+    left to the right is easy—you loop over the x-coordinates and color a pixel at
+    every step. If the line has a slight slope (less than 45 degrees or ![Image](../images/f0404-01.jpg)
+    radians), you can interpolate the y-coordinate along the slope. You still need
+    one pixel per *x* position, with the *y* position of those pixels determined by
+    the slope.
+  prefs: []
+  type: TYPE_NORMAL
+- en: But as soon as your slope goes across 45 degrees, you need to switch the way
+    you treat the coordinates. You now need one pixel per *y* position, since the
+    line goes up more than it goes left. And then, when you cross 135 degrees, you
+    have to go back to looping over the x-coordinates, but from right to left.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You don’t actually have to write four loops. Since drawing a line from *A* to
+    *B* is the same as drawing a line from *B* to *A*, you can swap the start and
+    end positions for lines going from right to left and treat them as going left
+    to right.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So you need two different loops. The first thing your line drawing function
+    should do is check whether the difference between the x-coordinates is larger
+    than the difference between the y-coordinates. If it is, this is a horizontalish
+    line, and if not, a verticalish one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Make sure you compare the *absolute* values of the *x* and *y* difference, which
+    you can get with Math.abs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Once you know along which axis you will be looping, you can check whether the
+    start point has a higher coordinate along that axis than the endpoint and swap
+    them if necessary. A succinct way to swap the values of two bindings in JavaScript
+    uses destructuring assignment like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Then you can compute the slope of the line, which determines the amount the
+    coordinate on the other axis changes for each step you take along your main axis.
+    With that, you can run a loop along the main axis while also tracking the corresponding
+    position on the other axis, and you can draw pixels on every iteration. Make sure
+    you round the nonmain axis coordinates, since they are likely to be fractional
+    and the draw method doesn’t respond well to fractional coordinates.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 20: Node.js'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Search Tool*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: Your first command line argument, the regular expression, can be found in process.argv[2].
+    The input files come after that. You can use the RegExp constructor to go from
+    a string to a regular expression object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Doing this synchronously, with readFileSync, is more straightforward, but if
+    you use node:fs/promises to get promise-returning functions and write an async
+    function, the code looks similar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To figure out whether something is a directory, you can again use stat (or statSync)
+    and the stats object’s isDirectory method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exploring a directory is a branching process. You can do it either by using
+    a recursive function or by keeping an array of work (files that still need to
+    be explored). To find the files in a directory, you can call readdir or readdirSync.
+    Note the strange capitalization—Node’s filesystem function naming is loosely based
+    on standard Unix functions, such as readdir, that are all lowercase, but then
+    it adds Sync with a capital letter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To go from a filename read with readdir to a full path name, you have to combine
+    it with the name of the directory, either putting sep from node:path between them
+    or using the join function from that same package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Directory Creation*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You can use the function that implements the DELETE method as a blueprint for
+    the MKCOL method. When no file is found, try to create a directory with mkdir.
+    When a directory exists at that path, you can return a 204 response so that directory
+    creation requests are idempotent. If a nondirectory file exists here, return an
+    error code. Code 400 (“bad request”) would be appropriate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*A Public Space on the Web*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You can create a <textarea> element to hold the content of the file that is
+    being edited. A GET request, using fetch, can retrieve the current content of
+    the file. You can use relative URLs like *index.xhtml*, instead of *http://localhost:8000/index.xhtml*,
+    to refer to files on the same server as the running script.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Then, when the user clicks a button (you can use a <form> element and ”submit”
+    event), make a PUT request to the same URL, with the content of the <textarea>
+    as the request body, to save the file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can then add a <select> element that contains all the files in the server’s
+    top directory by adding <option> elements containing the lines returned by a GET
+    request to the URL */*. When the user selects another file (a ”change” event on
+    the field), the script must fetch and display that file. When saving a file, use
+    the currently selected filename.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 21: Project: Skill-Sharing Website'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Disk Persistence*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The simplest solution I can come up with is to encode the whole talks object
+    as JSON and dump it to a file with writeFile. There is already a method (updated)
+    that is called every time the server’s data changes. It can be extended to write
+    the new data to disk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Pick a filename, such as *./talks.json*. When the server starts, it can try
+    to read that file with readFile, and if that succeeds, the server can use the
+    file’s contents as its starting data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Comment Field Resets*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: The best way to do this is probably to make the talk component an object, with
+    a syncState method, so that they can be updated to show a modified version of
+    the talk. During normal operation, the only way a talk can be changed is by adding
+    more comments, so the syncState method can be relatively simple.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The difficult part is that when a changed list of talks comes in, we have to
+    reconcile the existing list of DOM components with the talks on the new list—deleting
+    components whose talk was deleted and updating components whose talk changed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To do this, it might be helpful to keep a data structure that stores the talk
+    components under the talk titles so that you can easily figure out whether a component
+    exists for a given talk. You can then loop over the new array of talks, and for
+    each of them, either synchronize an existing component or create a new one. To
+    delete components for deleted talks, you’ll have to also loop over the components
+    and check whether the corresponding talks still exist.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 22: JavaScript and Performance'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Prime Numbers*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: You can define a generator with a function* declaration, using yield in a loop
+    to produce the numbers. You’ll want to keep checking ever higher numbers, skipping
+    those that can be divided by a smaller number, and yielding those that can’t.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Testing whether a number is divisible by another number can be done with the
+    remainder operator: n % i == 0 is true only when n is divisible by i.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: To run through the results of the generator in order to time it, you can either
+    use a for/of loop that stops after ten thousand results or directly call the next
+    method on the iterator that primes() returns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Faster Prime Numbers*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: There are two ways to recognize and avoid useless remainder tests in this function.
+    The first makes use of the fact that if a number is divisible by another number,
+    that divisor will be either a prime number or a multiple of a prime number because
+    all nonprime numbers are multiples of some prime number. Thus, there is no need
+    to test against nonprime numbers. If the function keeps an array of the prime
+    numbers it has found so far, it only needs to check against those, as opposed
+    to all numbers between 2 and the next potential prime number.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second trick uses the observation that if a number *N* is the product of
+    *A* and *B*, then the lesser of *A* and *B* is smaller or equal to the square
+    root of *N*. If we test divisors starting with the smaller ones, we don’t have
+    to check any numbers greater than this square root, since *if* our potential prime
+    number is the product of two whole numbers, we would have noticed that when testing
+    the smaller of those two.
+  prefs: []
+  type: TYPE_NORMAL
