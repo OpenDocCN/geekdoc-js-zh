@@ -1,20 +1,24 @@
 - en: '13'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: JAVASCRIPT AND THE BROWSER
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: The next chapters of this book will discuss web browsers. Without browsers,
     there would be no JavaScript— or if there were, no one would ever have paid any
     attention to it.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
 - en: Web technology has been decentralized from the start, not just technically but
     also in terms of the way it evolved. Various browser vendors have added new functionality
     in ad hoc and sometimes poorly thought-out ways, which were then—sometimes—adopted
     by others, and finally set down in standards.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
 - en: This is both a blessing and a curse. On the one hand, it is empowering to not
@@ -23,21 +27,25 @@
     hand, the haphazard way in which the web was developed means that the resulting
     system is not exactly a shining example of internal consistency. Some parts of
     it are downright confusing and badly designed.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
 - en: Networks and the Internet
+  id: totrans-5
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: Computer networks have been around since the 1950s. If you put cables between
     two or more computers and allow them to send data back and forth through these
     cables, you can do all kinds of wonderful things.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: If connecting two machines in the same building allows us to do wonderful things,
     connecting machines all over the planet should be even better. The technology
     to start implementing this vision was developed in the 1980s, and the resulting
     network is called the *internet*. It has lived up to its promise.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: A computer can use this network to shoot bits at another computer. For any effective
@@ -45,25 +53,31 @@
     know what the bits are supposed to represent. The meaning of any given sequence
     of bits depends entirely on the kind of thing that it is trying to express and
     on the encoding mechanism used.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: A *network protocol* describes a style of communication over a network. There
     are protocols for sending email, for fetching email, for sharing files, and even
     for controlling computers that happen to be infected by malicious software.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: 'The *HyperText Transfer Protocol (HTTP)* is a protocol for retrieving named
     resources (chunks of information, such as web pages or pictures). It specifies
     that the side making the request should start with a line like this, naming the
     resource and the version of the protocol that it is trying to use:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: There are many more rules about the way the requester can include more information
     in the request and the way the other side, which returns the resource, packages
     up its content. We’ll look at HTTP in a little more detail in [Chapter 18](ch18.xhtml#ch18).
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
 - en: Most protocols are built on top of other protocols. HTTP treats the network
@@ -71,11 +85,13 @@
     correct destination in the correct order. Providing those guarantees on top of
     the primitive data-sending that the network gives you is already a rather tricky
     problem.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
 - en: The *Transmission Control Protocol (TCP)* is a protocol that addresses this
     problem. All internet-connected devices “speak” it, and most communication on
     the internet is built on top of it.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: 'A TCP connection works as follows: one computer must be waiting, or *listening*,
@@ -85,21 +101,25 @@
     should be used by default. For example, when we want to send an email using the
     SMTP protocol, the machine through which we send it is expected to be listening
     on port 25.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
 - en: Another computer can then establish a connection by connecting to the target
     machine using the correct port number. If the target machine can be reached and
     is listening on that port, the connection is successfully created. The listening
     computer is called the *server*, and the connecting computer is called the *client*.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: Such a connection acts as a two-way pipe through which bits can flow— the machines
     on both ends can put data into it. Once the bits are successfully transmitted,
     they can be read out again by the machine on the other side. This is a convenient
     model. You could say that TCP provides an abstraction of the network.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
 - en: The Web
+  id: totrans-18
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -107,24 +127,30 @@
     set of protocols and formats that allow us to visit web pages in a browser. The
     word *Web* refers to the fact that such pages can easily link to each other, thus
     connecting into a huge mesh that users can move through.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
 - en: To become part of the web, all you need to do is connect a machine to the internet
     and have it listen on port 80 with the HTTP protocol so that other computers can
     ask it for documents.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: 'Each document on the web is named by a *uniform resource locator (URL)*, which
     looks something like this:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: The first part tells us that this URL uses the HTTP protocol (as opposed to,
     for example, encrypted HTTP, which would be *https://*). Then comes the part that
     identifies which server we are requesting the document from. Last is a path string
     that identifies the document (or *resource*) we are interested in.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
 - en: Machines connected to the internet get an *IP address*, a number that can be
@@ -134,6 +160,7 @@
     address or set of addresses. I registered *eloquent [javascript.net](http://javascript.net)*
     to point at the IP address of a machine I control and can thus use that domain
     name to serve web pages.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: If you type this URL into your browser’s address bar, the browser will try to
@@ -142,36 +169,46 @@
     to. Then, using the HTTP protocol, it will make a connection to the server at
     that address and ask for the resource */13_browser.xhtml*. If all goes well, the
     server sends back a document, which your browser then displays on your screen.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
 - en: HTML
+  id: totrans-26
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: '*HTML*, which stands for HyperText Markup Language, is the document format
     used for web pages. An HTML document contains text, as well as *tags* that give
     structure to the text, describing things such as links, paragraphs, and headings.'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
 - en: 'A short HTML document might look like this:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'This is what such a document would look like in the browser:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
 - en: '![Image](../images/f0212-01.jpg)'
+  id: totrans-31
   prefs: []
   type: TYPE_IMG
 - en: The tags, wrapped in angle brackets (< and >, the symbols for “less than” and
     “greater than”), provide information about the structure of the document. The
     other text is just plaintext.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: The document starts with <!doctype html>, which tells the browser to interpret
     the page as *modern* HTML, as opposed to obsolete styles used in the past.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: HTML documents have a head and a body. The head contains information *about*
@@ -180,6 +217,7 @@
     UTF-8 encoding, which is a way to encode Unicode text as binary data. The document’s
     body contains a heading (<h1>, meaning “heading 1”—<h2> to <h6> produce subheadings)
     and two paragraphs (<p>).
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
 - en: Tags come in several forms. An element, such as the body, a paragraph, or a
@@ -188,10 +226,12 @@
     in the form of name=“value” pairs. These are called *attributes*. In this case,
     the destination of the link is indicated with href=“http://eloquent javascript.net”,
     where href stands for “hypertext reference.”
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
 - en: Some kinds of tags do not enclose anything and thus do not need to be closed.
     The metadata tag <meta charset=“utf-8”> is an example of this.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
 - en: To be able to include angle brackets in the text of a document even though they
@@ -200,36 +240,44 @@
     a closing bracket is written as &gt; (“greater than”). In HTML, an ampersand (&)
     character followed by a name or character code and a semicolon (;) is called an
     *entity* and will be replaced by the character it encodes.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
 - en: This is analogous to the way backslashes are used in JavaScript strings. Since
     this mechanism gives ampersand characters a special meaning too, they need to
     be escaped as &amp;. Inside attribute values, which are wrapped in double quotes,
     &quot; can be used to insert a literal quote character.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
 - en: HTML is parsed in a remarkably error-tolerant way. When tags that should be
     there are missing, the browser automatically adds them. The way this is done has
     been standardized, and you can rely on all modern browsers to do it in the same
     way.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: 'The following document will be treated just like the one shown previously:'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE3]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: The <html>, <head>, and <body> tags are completely gone. The browser knows that
     <meta> and <title> belong in the head and that <h1> means the body has started.
     Furthermore, I am no longer explicitly closing the paragraphs, since opening a
     new paragraph or ending the document will close them implicitly. The quotes around
     the attribute values are also gone.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: This book will usually omit the <html>, <head>, and <body> tags from examples
     to keep them short and free of clutter. I *will* close tags and include quotes
     around attributes, though.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: I will also usually omit the doctype and charset declaration. Don’t take this
@@ -237,63 +285,80 @@
     things when you forget them. Consider the doctype and the charset metadata to
     be implicitly present in examples, even when they are not actually shown in the
     text.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: HTML and JavaScript
+  id: totrans-45
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: In the context of this book, the most important HTML tag is <script>, which
     allows us to include a piece of JavaScript in a document.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Such a script will run as soon as its <script> tag is encountered while the
     browser reads the HTML. This page will pop up a dialog when opened—the alert function
     resembles prompt, in that it pops up a little window, but only shows a message
     without asking for input.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
 - en: Including large programs directly in HTML documents is often impractical. The
     <script> tag can be given an src attribute to fetch a script file (a text file
     containing a JavaScript program) from a URL.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE5]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The *code/hello.js* file included here contains the same program—alert (“hello!”).
     When an HTML page references other URLs as part of itself, such as an image file
     or a script, web browsers will retrieve them immediately and include them in the
     page.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: A script tag must always be closed with </script>, even if it refers to a script
     file and doesn’t contain any code. If you forget this, the rest of the page will
     be interpreted as part of the script.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: You can load ES modules (see [Chapter 10](ch10.xhtml#ch10)) in the browser by
     giving your script tag a type=“module” attribute. Such modules can depend on other
     modules by using URLs relative to themselves as module names in import declarations.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: Some attributes can also contain a JavaScript program. The <button> tag (which
     shows up as a button) supports an onclick attribute. The attribute’s value will
     be run whenever the button is clicked.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE6]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: Note that I had to use single quotes for the string in the onclick attribute
     because double quotes are already used to quote the whole attribute. I could also
     have used &quot; to escape the inner quotes.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: In the Sandbox
+  id: totrans-57
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -301,24 +366,28 @@
     don’t know much about the people behind most sites you visit, and they do not
     necessarily mean well. Running programs by malicious actors is how you get your
     computer infected by viruses, your data stolen, and your accounts hacked.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: 'Yet the attraction of the web is that you can browse it without necessarily
     trusting all the pages you visit. This is why browsers severely limit the things
     a JavaScript program may do: it can’t look at the files on your computer or modify
     anything not related to the web page it was embedded in.'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: Isolating a programming environment in this way is called *sandboxing*, the
     idea being that the program is harmlessly playing in a sandbox. But you should
     imagine this particular kind of sandbox as having a cage of thick steel bars over
     it so that the programs playing in it can’t actually get out.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: The hard part of sandboxing is allowing programs enough room to be useful while
     restricting them from doing anything dangerous. Lots of useful functionality,
     such as communicating with other servers or reading the content of the copy-paste
     clipboard, can also be used for problematic, privacy-invading purposes.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
 - en: Every now and then, someone comes up with a new way to circumvent the limitations
@@ -327,9 +396,11 @@
     developers respond by fixing the hole, and all is well again—until the next problem
     is discovered, and hopefully publicized rather than secretly exploited by some
     government agency or criminal organization.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: Compatibility and the Browser Wars
+  id: totrans-63
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -339,6 +410,7 @@
     was dominant, that browser’s vendor would feel entitled to unilaterally invent
     new features for the web. Since most users used the most popular browser, websites
     would simply start using those features—never mind the other browsers.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
 - en: This was the dark age of compatibility, often called the *browser wars*. Web
@@ -346,6 +418,7 @@
     To make things worse, the browsers in use around 2003 were all full of bugs, and
     of course the bugs were different for each browser. Life was hard for people writing
     web pages.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: Mozilla Firefox, a not-for-profit offshoot of Netscape, challenged Internet
@@ -354,6 +427,7 @@
     away from it. Around the same time, Google introduced its Chrome browser and Apple’s
     Safari browser gained popularity, leading to a situation where there were four
     major players rather than one.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: The new players had a more serious attitude toward standards and better engineering
@@ -362,27 +436,39 @@
     which replaced Internet Explorer. If you are starting to learn web development
     today, consider yourself lucky. The latest versions of the major browsers behave
     quite uniformly and have relatively few bugs.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 新的参与者对标准和工程实践持有更加严肃的态度，从而减少了不兼容性和漏洞。微软看到其市场份额急剧下降，开始采纳这些态度，在其取代Internet Explorer的Edge浏览器中实施。如果你今天开始学习网络开发，可以认为自己很幸运。主要浏览器的最新版本表现得相当一致，且相对较少出现漏洞。
 - en: Unfortunately, with Firefox’s market share getting ever smaller, and Edge becoming
     just a wrapper around Chrome’s core in 2018, this uniformity might once again
     take the form of a single vendor—Google, this time— having enough control over
     the browser market to push its idea of what the web should look like onto the
     rest of the world.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，随着Firefox的市场份额越来越小，而Edge在2018年仅仅成为Chrome内核的外壳，这种统一性可能再次变成单一供应商——这次是谷歌——在浏览器市场上拥有足够的控制权，将其对网络的看法强加于世界其他地方。
 - en: This long chain of historical events and accidents produced the web platform
     that we have today. In the next chapters, we are going to write programs for it.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一系列历史事件和偶然事故造就了我们今天所拥有的网络平台。在接下来的章节中，我们将为其编写程序。
 - en: '*Too bad! Same old story! Once you’ve finished building your house you notice
     you’ve accidentally learned something that you really should have known—before
     you started.*'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '*真可惜！老调重弹！一旦你建好了房子，你会发现自己意外学到了一些你本该在开始之前就知道的东西。*'
 - en: —Friedrich Nietzsche, *Beyond Good and Evil*
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: —弗里德里希·尼采，*超越善恶*
 - en: '![Image](../images/f0216-01.jpg)'
+  id: totrans-72
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0216-01.jpg)'
