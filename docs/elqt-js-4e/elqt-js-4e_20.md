@@ -1,6 +1,4 @@
-## 18
-
-## HTTP 与表单
+#  第十九章：HTTP 与表单
 
 超文本传输协议（HyperText Transfer Protocol），在第十三章中介绍，是在万维网上请求和提供数据的机制。本章更详细地描述了该协议，并解释了浏览器 JavaScript 如何访问它。
 
