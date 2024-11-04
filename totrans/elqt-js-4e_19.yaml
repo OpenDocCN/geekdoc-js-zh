@@ -1,29 +1,39 @@
 - en: '17'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '17'
 - en: DRAWING ON CANVAS
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 在画布上绘图
 - en: Browsers give us several ways to display graphics. The simplest way is to use
     styles to position and color regular DOM elements. This can get us quite far,
     as the game in the previous chapter showed. By adding partially transparent background
     images to the nodes, we can make them look exactly the way we want. It is even
     possible to rotate or skew nodes with the transform style.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器为我们提供了几种显示图形的方式。最简单的方法是使用样式来定位和着色常规DOM元素。正如上一章中的游戏所示，这可以使我们走得很远。通过向节点添加部分透明的背景图像，我们可以使它们看起来完全符合我们的要求。甚至可以使用变换样式来旋转或倾斜节点。
 - en: But we’d be using the DOM for something that it wasn’t originally designed for.
     Some tasks, such as drawing a line between arbitrary points, are extremely awkward
     to do with regular HTML elements.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是我们将使用DOM做一些它最初并未设计的事情。有些任务，例如在任意点之间绘制一条线，使用常规HTML元素来完成非常笨拙。
 - en: There are two alternatives. The first is DOM based but utilizes *Scalable Vector
     Graphics (SVG)* rather than HTML. Think of SVG as a document-markup dialect that
     focuses on shapes rather than text. You can embed an SVG document directly in
     an HTML document or include it with an <img> tag.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两种选择。第一种是基于DOM，但使用*可缩放矢量图形（SVG）*而不是HTML。可以将SVG视为一种文档标记方言，专注于形状而非文本。您可以直接在HTML文档中嵌入SVG文档，或使用<img>标签将其包含。
 - en: The second alternative is called a *canvas*. A canvas is a single DOM element
     that encapsulates a picture. It provides a programming interface for drawing shapes
     onto the space taken up by the node. The main difference between a canvas and
@@ -33,462 +43,674 @@
     and does not remember what these pixels represent. The only way to move a shape
     on a canvas is to clear the canvas (or the part of the canvas around the shape)
     and redraw it with the shape in a new position.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二种选择被称为*画布*。画布是一个单一的DOM元素，用于封装一幅图像。它提供了一个编程接口，可以在节点占用的空间上绘制形状。画布和SVG图像之间的主要区别在于，在SVG中，形状的原始描述被保留，因此可以随时移动或调整大小。而画布则在绘制形状后立即将其转换为像素（光栅上的彩色点），并不记住这些像素代表什么。要在画布上移动一个形状，唯一的方法是清空画布（或清空形状周围的画布部分），然后在新的位置重新绘制该形状。
 - en: SVG
+  id: totrans-6
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: SVG
 - en: This book won’t go into SVG in detail, but I’ll briefly explain how it works.
     At the end of the chapter, I’ll come back to the trade-offs that you must consider
     when deciding which drawing mechanism is appropriate for a given application.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书不会详细讲解SVG，但我会简要说明它的工作原理。在本章结束时，我会回到在决定适合特定应用程序的绘图机制时必须考虑的权衡。
 - en: 'This is an HTML document with a simple SVG picture in it:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个包含简单SVG图像的HTML文档：
 - en: '[PRE0]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: The xmlns attribute changes an element (and its children) to a different *XML
     namespace*. This namespace, identified by a URL, specifies the dialect that we
     are currently speaking. The <circle> and <rect> tags, which do not exist in HTML,
     do have a meaning in SVG—they draw shapes using the style and position specified
     by their attributes.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: xmlns属性将元素（及其子元素）更改为不同的*XML命名空间*。这个由URL标识的命名空间指定了我们当前所使用的方言。<circle>和<rect>标签在HTML中不存在，但在SVG中具有意义——它们使用其属性指定的样式和位置绘制形状。
 - en: 'The document is displayed like this:'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 文档的显示效果如下：
 - en: '![Image](../images/f0276-01.jpg)'
+  id: totrans-12
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](../images/f0276-01.jpg)'
 - en: 'These tags create DOM elements, just like HTML tags, that scripts can interact
     with. For example, this changes the <circle> element to be colored cyan instead:'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些标签创建了DOM元素，就像HTML标签一样，脚本可以与之互动。例如，这将<circle>元素的颜色改为青色：
 - en: '[PRE1]'
+  id: totrans-14
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: The canvas Element
+  id: totrans-15
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 画布元素
 - en: Canvas graphics can be drawn onto a <canvas> element. You can give such an element
     width and height attributes to determine its size in pixels.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 画布图形可以绘制到<canvas>元素上。您可以为此类元素设置宽度和高度属性，以确定其在像素中的大小。
 - en: A new canvas is empty, meaning it is entirely transparent and thus shows up
     as empty space in the document.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个新的画布是空的，这意味着它完全透明，因此在文档中显示为空白区域。
 - en: 'The <canvas> tag is intended to allow different styles of drawing. To get access
     to an actual drawing interface, we first need to create a *context*, an object
     whose methods provide the drawing interface. There are currently three widely
     supported drawing styles: “2d” for two-dimensional graphics, “webgl” for three-dimensional
     graphics through the OpenGL interface, and “webgpu”, a more modern and flexible
     alternative to WebGL.'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '`<canvas>`标签旨在允许不同的绘图样式。要访问实际的绘图接口，我们首先需要创建一个*上下文*，这是一个对象，其方法提供绘图接口。目前有三种广泛支持的绘图样式：“2d”用于二维图形，“webgl”通过OpenGL接口用于三维图形，以及“webgpu”，这是一个更现代和灵活的WebGL替代方案。'
 - en: This book won’t discuss WebGL or WebGPU—we’ll stick to two dimensions. But if
     you are interested in three-dimensional graphics, I do encourage you to look into
     WebGPU. It provides a direct interface to graphics hardware and allows you to
     render even complicated scenes efficiently, using JavaScript.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书不会讨论WebGL或WebGPU——我们将专注于二维。不过，如果你对三维图形感兴趣，我鼓励你了解WebGPU。它提供了一个直接访问图形硬件的接口，并允许你高效地使用JavaScript渲染复杂场景。
 - en: You create a context with the getContext method on the <canvas> DOM element.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过在`<canvas>` DOM元素上使用getContext方法创建一个上下文。
 - en: '[PRE2]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: After creating the context object, the example draws a red rectangle that is
     100 pixels wide and 50 pixels high, with its upper-left corner at coordinates
     (10, 10).
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建上下文对象后，示例绘制了一个宽100像素、高50像素的红色矩形，其左上角的坐标为(10, 10)。
 - en: '![Image](../images/f0277-01.jpg)'
+  id: totrans-23
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0277-01.jpg)'
 - en: Just like in HTML (and SVG), the coordinate system that the canvas uses puts
     (0, 0) at the upper-left corner, and the positive y-axis goes down from there.
     This means (10, 10) is 10 pixels below and to the right of the upper-left corner,
     for example.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 就像在HTML（和SVG）中一样，画布使用的坐标系统将(0, 0)放在左上角，正y轴从那里向下。这意味着(10, 10)位于左上角下方和右侧10像素，例如。
 - en: Lines and Surfaces
+  id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 线条和表面
 - en: In the canvas interface, a shape can be *filled*, meaning its area is given
     a certain color or pattern, or it can be *stroked*, which means a line is drawn
     along its edge. SVG uses the same terminology.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 在画布接口中，形状可以被*填充*，即其区域被赋予某种颜色或图案，或者可以被*描边*，即沿着其边缘绘制一条线。SVG使用相同的术语。
 - en: The fillRect method fills a rectangle. It takes first the x- and y-coordinates
     of the rectangle’s upper-left corner, then its width, and then its height. A similar
     method called strokeRect draws the outline of a rectangle.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: fillRect方法填充一个矩形。它首先接受矩形左上角的x和y坐标，然后是宽度，然后是高度。类似的方法strokeRect绘制矩形的轮廓。
 - en: Neither method takes any further parameters. The color of the fill, thickness
     of the stroke, and so on, are not determined by an argument to the method, as
     you might reasonably expect, but rather by properties of the context object.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两种方法都不接受任何其他参数。填充的颜色、描边的粗细等，并不是通过方法的参数来确定的，正如你合理期望的那样，而是通过上下文对象的属性来确定的。
 - en: The fillStyle property controls the way shapes are filled. It can be set to
     a string that specifies a color, using the color notation used by CSS.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: fillStyle属性控制形状的填充方式。它可以设置为指定颜色的字符串，使用CSS使用的颜色表示法。
 - en: The strokeStyle property works similarly but determines the color used for a
     stroked line. The width of that line is determined by the lineWidth property,
     which may contain any positive number.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: strokeStyle属性类似地工作，但确定用于描边线的颜色。该线的宽度由lineWidth属性确定，lineWidth属性可以包含任何正数。
 - en: '[PRE3]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: This code draws two blue squares, using a thicker line for the second one.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 这段代码绘制了两个蓝色的正方形，第二个正方形使用了更粗的线条。
 - en: '![Image](../images/f0278-01.jpg)'
+  id: totrans-33
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0278-01.jpg)'
 - en: When no width or height attribute is specified, as in the example, a canvas
     element gets a default width of 300 pixels and height of 150 pixels.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 当没有指定宽度或高度属性时，如示例所示，画布元素的默认宽度为300像素，高度为150像素。
 - en: Paths
+  id: totrans-35
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 路径
 - en: A path is a sequence of lines. The 2D canvas interface takes a peculiar approach
     to describing such a path. It is done entirely through side effects. Paths are
     not values that can be stored and passed around. Instead, if you want to do something
     with a path, you make a sequence of method calls to describe its shape.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 路径是一系列线条。2D画布接口以一种特殊的方式描述这样的路径。它完全通过副作用来完成。路径不是可以存储和传递的值。相反，如果你想对路径执行某个操作，你需要通过一系列方法调用来描述它的形状。
 - en: '[PRE4]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: This example creates a path with a number of horizontal line segments and then
     strokes it using the stroke method. Each segment created with lineTo starts at
     the path’s *current* position. That position is usually the end of the last segment,
     unless moveTo was called. In that case, the next segment would start at the position
     passed to moveTo.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 该示例创建了一条包含多个水平线段的路径，然后使用 stroke 方法对其进行描边。每个使用 lineTo 创建的线段都从路径的 *当前位置* 开始。该位置通常是最后一个线段的末端，除非调用了
+    moveTo。在这种情况下，下一条线段将从传递给 moveTo 的位置开始。
 - en: 'The path described by the previous program looks like this:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 上一个程序描述的路径看起来像这样：
 - en: '![Image](../images/f0279-01.jpg)'
+  id: totrans-40
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0279-01.jpg)'
 - en: When filling a path (using the fill method), each shape is filled separately.
     A path can contain multiple shapes—each moveTo motion starts a new one. But the
     path needs to be *closed* (meaning its start and end are in the same position)
     before it can be filled. If the path is not already closed, a line is added from
     its end to its start, and the shape enclosed by the completed path is filled.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 填充路径时（使用 fill 方法），每个形状都是单独填充的。一个路径可以包含多个形状——每个 moveTo 动作都开始一个新的形状。但路径在被填充之前需要是
+    *闭合* 的（意味着起点和终点在同一位置）。如果路径尚未闭合，将从其末尾添加一条线到起点，填充由完成路径围成的形状。
 - en: '[PRE5]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: This example draws a filled triangle. Note that only two of the triangle’s sides
     are explicitly drawn. The third, from the lower-right corner back to the top,
     is implied and wouldn’t be there if you stroked the path.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 该示例绘制一个填充三角形。请注意，三角形的两条边是显式绘制的。第三条边，从右下角返回到顶部，是隐含的，如果你描边路径，它将不会存在。
 - en: '![Image](../images/f0279-02.jpg)'
+  id: totrans-44
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0279-02.jpg)'
 - en: You could also use the closePath method to explicitly close a path by adding
     an actual line segment back to the path’s start. This segment *is* drawn when
     stroking the path.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以使用 closePath 方法通过添加一条实际的线段返回路径的起点来显式闭合路径。当描边路径时，这条线段 *会* 被绘制。
 - en: Curves
+  id: totrans-46
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 曲线
 - en: A path may also contain curved lines. These are unfortunately a bit more involved
     to draw.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 一条路径也可以包含曲线。不幸的是，这些曲线的绘制稍微复杂一些。
 - en: 'The quadraticCurveTo method draws a curve to a given point. To determine the
     curvature of the line, the method is given a control point as well as a destination
     point. Imagine this control point as *attracting* the line, giving it its curve.
     The line won’t go through the control point, but its direction at the start and
     end points will be such that a straight line in that direction would point toward
     the control point. The following example illustrates this:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: quadraticCurveTo 方法绘制一条到给定点的曲线。为了确定线的曲率，此方法需要一个控制点和一个目标点。想象这个控制点如同 *吸引* 线条，给予它曲线。线不会经过控制点，但起点和终点的方向会使得一条直线在该方向上指向控制点。以下示例说明了这一点：
 - en: '[PRE6]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'It produces a path that looks like this:'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果产生的路径看起来像这样：
 - en: '![Image](../images/f0280-01.jpg)'
+  id: totrans-51
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0280-01.jpg)'
 - en: 'We draw a quadratic curve from the left to the right, with (60, 10) as the
     control point, and then draw two line segments going through that control point
     and back to the start of the line. The result somewhat resembles a *Star Trek*
     insignia. You can see the effect of the control point: the lines leaving the lower
     corners start off in the direction of the control point and then curve toward
     their target.'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们从左到右绘制一条二次曲线，控制点为 (60, 10)，然后绘制两条经过该控制点并返回到线段起点的线段。结果有些类似于 *星际迷航* 的徽章。你可以看到控制点的效果：从下角出发的线段最初朝着控制点的方向延伸，然后弯曲朝向目标。
 - en: 'The bezierCurveTo method draws a similar kind of curve. Instead of a single
     control point, this method has two—one for each of the line’s end points. Here
     is a similar sketch to illustrate the behavior of such a curve:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: bezierCurveTo 方法绘制类似的曲线。与单一控制点不同，此方法有两个——分别对应于线段的两个端点。这里有一个类似的草图来说明这种曲线的行为：
 - en: '[PRE7]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: The two control points specify the direction at both ends of the curve. The
     farther they are away from their corresponding point, the more the curve will
     “bulge” in that direction.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个控制点指定了曲线两端的方向。它们距离各自的点越远，曲线在那个方向的“膨胀”就越明显。
 - en: '![Image](../images/f0281-01.jpg)'
+  id: totrans-56
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0281-01.jpg)'
 - en: Such curves can be hard to work with—it’s not always clear how to find the control
     points that provide the shape you are looking for. Sometimes you can compute them,
     and sometimes you’ll just have to find a suitable value by trial and error.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样的曲线可能很难处理——并不总是清楚如何找到提供所需形状的控制点。有时你可以计算出它们，有时你只能通过反复试验找到合适的值。
 - en: The arc method is a way to draw a line that curves along the edge of a circle.
     It takes a pair of coordinates for the arc’s center, a radius, and then a start
     angle and end angle.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 弧形方法是一种沿圆边缘绘制曲线的线条。它需要一对弧心的坐标，一个半径，然后是起始角度和结束角度。
 - en: Those last two parameters make it possible to draw only part of the circle.
     The angles are measured in radians, not degrees. This means a full circle has
     an angle of 2*π*, or 2 * Math.PI, which is about 6.28\. The angle starts counting
     at the point to the right of the circle’s center and goes clockwise from there.
     You can use a start of 0 and an end bigger than 2*π* (say, 7) to draw a full circle.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两个最后的参数使得只绘制圆的一部分成为可能。角度以弧度为单位，而不是度数。这意味着完整圆的角度为 2*π* 或 2 * Math.PI，大约为 6.28。角度从圆心右侧的点开始计数，然后顺时针方向进行。你可以使用
+    0 作为起始角度，并用大于 2*π* 的结束角度（例如，7）来绘制一个完整的圆。
 - en: '[PRE8]'
+  id: totrans-60
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: The resulting picture contains a line from the right of the full circle (first
     call to arc) to the right of the quarter-circle (second call).
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成的图像从完整圆的右侧（第一次调用弧）到四分之一圆的右侧（第二次调用）。
 - en: '![Image](../images/f0281-02.jpg)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0281-02.jpg)'
 - en: Like other path-drawing methods, a line drawn with arc is connected to the previous
     path segment. You can call moveTo or start a new path to avoid this.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 像其他路径绘制方法一样，用弧绘制的线条与前一个路径段相连。你可以调用 moveTo 或开始新路径来避免这种情况。
 - en: Drawing a Pie Chart
+  id: totrans-64
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 绘制饼图
 - en: Imagine you’ve just taken a job at EconomiCorp, Inc. Your first assignment is
     to draw a pie chart of its customer satisfaction survey results.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，你刚在 EconomiCorp, Inc. 找到了一份工作。你的第一个任务是绘制客户满意度调查结果的饼图。
 - en: The results binding contains an array of objects that represent the survey responses.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果绑定包含一个对象数组，代表调查响应。
 - en: '[PRE9]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: To draw a pie chart, we draw a number of pie slices, each made up of an arc
     and a pair of lines to the center of that arc. We can compute the angle taken
     up by each arc by dividing a full circle (2*π*) by the total number of responses
     and then multiplying that number (the angle per response) by the number of people
     who picked a given choice.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 要绘制饼图，我们绘制多个饼切片，每个切片由一个弧和一对线段连接到该弧的中心。我们可以通过将完整圆（2*π*）除以总响应数来计算每个弧占用的角度，然后将这个数字（每个响应的角度）乘以选择特定选项的人数。
 - en: '[PRE10]'
+  id: totrans-69
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'This draws the following chart:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将绘制以下图表：
 - en: '![Image](../images/f0282-01.jpg)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0282-01.jpg)'
 - en: But a chart that doesn’t tell us what the slices mean isn’t very helpful. We
     need a way to draw text to the canvas.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是一个没有说明切片含义的图表并没有太大帮助。我们需要一种在画布上绘制文本的方法。
 - en: Text
+  id: totrans-73
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 文本
 - en: A 2D canvas drawing context provides the methods fillText and strokeText. The
     latter can be useful for outlining letters, but usually fillText is what you need.
     It will fill the outline of the given text with the current fillStyle.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 2D 画布绘图上下文提供了 fillText 和 strokeText 方法。后者对于描边字母很有用，但通常你需要的是 fillText。它将使用当前
+    fillStyle 填充给定文本的轮廓。
 - en: '[PRE11]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: You can specify the size, style, and font of the text with the font property.
     This example just gives a font size and family name. It is also possible to add
     italic or bold to the start of the string to select a style.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过 font 属性指定文本的大小、样式和字体。这个例子仅给出了字体大小和家族名称。也可以在字符串开头添加斜体或粗体以选择样式。
 - en: The last two arguments to fillText and strokeText provide the position at which
     the font is drawn. By default, they indicate the position of the start of the
     text’s alphabetic baseline, which is the line that letters “stand” on, not counting
     hanging parts in letters such as *j* or *p*. You can change the horizontal position
     by setting the textAlign property to “end” or “center” and the vertical position
     by setting textBaseline to “top”, “middle”, or “bottom”.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: fillText 和 strokeText 的最后两个参数提供了绘制字体的位置。默认情况下，它们表示文本字母基线的起始位置，这是一条字母“站立”的线，不计算字母中的悬挂部分，如
+    *j* 或 *p*。你可以通过将 textAlign 属性设置为“end”或“center”来改变水平位置，通过将 textBaseline 设置为“top”、“middle”或“bottom”来改变垂直位置。
 - en: We’ll come back to our pie chart, and the problem of labeling the slices, in
     the exercises at the end of the chapter.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将在本章末尾的练习中回到我们的饼图，以及标记切片的问题。
 - en: Images
+  id: totrans-79
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 图片
 - en: In computer graphics, a distinction is often made between *vector* graphics
     and *bitmap* graphics. The first is what we have been doing so far in this chapter—specifying
     a picture by giving a logical description of shapes. Bitmap graphics, on the other
     hand, don’t specify actual shapes but rather work with pixel data (rasters of
     colored dots).
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 在计算机图形学中，通常区分*矢量*图形和*位图*图形。前者是我们在本章中所做的——通过给出形状的逻辑描述来指定图片。位图图形则不同，它不指定实际形状，而是处理像素数据（彩色点的光栅）。
 - en: The drawImage method allows us to draw pixel data onto a canvas. This pixel
     data can originate from an <img> element or from another canvas. The following
     example creates a detached <img> element and loads an image file into it. But
     the method cannot immediately start drawing from this picture because the browser
     may not have loaded it yet. To deal with this, we register a “load” event handler
     and do the drawing after the image has loaded.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: drawImage方法允许我们将像素数据绘制到画布上。这些像素数据可以来自<img>元素或另一个画布。以下示例创建一个分离的<img>元素并将图像文件加载到其中。但此方法不能立即开始从该图片绘制，因为浏览器可能尚未加载它。为了解决这个问题，我们注册一个“load”事件处理程序，并在图像加载后进行绘制。
 - en: '[PRE12]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: By default, drawImage will draw the image at its original size. You can also
     give it two additional arguments to specify the width and height of the drawn
     image, when those aren’t the same as the origin image.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，drawImage会以其原始大小绘制图像。你还可以给它两个额外的参数，以指定绘制图像的宽度和高度，当它们与原始图像不同时。
 - en: When drawImage is given *nine* arguments, it can be used to draw only a fragment
     of an image. The second through fifth arguments indicate the rectangle (*x*, *y*,
     width, and height) in the source image that should be copied, and the sixth to
     ninth arguments give the rectangle (on the canvas) into which it should be copied.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 当drawImage给出*九个*参数时，它可以用于仅绘制图像的一部分。第二到第五个参数指示源图像中应复制的矩形（*x*，*y*，宽度和高度），第六到第九个参数给出应复制到画布上的矩形。
 - en: 'This can be used to pack multiple *sprites* (image elements) into a single
     image file and then draw only the part you need. For example, this picture contains
     a game character in multiple poses:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可以用于将多个*精灵*（图像元素）打包到一个单独的图像文件中，然后只绘制你需要的部分。例如，这张图片包含了一个游戏角色的多个姿势：
 - en: '![Image](../images/f0284-01.jpg)'
+  id: totrans-86
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0284-01.jpg)'
 - en: By alternating which pose we draw, we can show an animation that looks like
     a walking character.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过交替绘制不同的姿势，我们可以展示一个看起来像是走动角色的动画。
 - en: To animate a picture on a canvas, the clearRect method is useful. It resembles
     fillRect, but instead of coloring the rectangle, it makes it transparent, removing
     the previously drawn pixels.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 要在画布上动画化图像，clearRect方法非常有用。它类似于fillRect，但不是给矩形上色，而是使其透明，移除之前绘制的像素。
 - en: 'We know that each *sprite*, each subpicture, is 24 pixels wide and 30 pixels
     high. The following code loads the image and then sets up an interval (repeated
     timer) to draw the next frame:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们知道每个*精灵*、每个子图像的宽度为24像素，高度为30像素。以下代码加载图像，然后设置一个间隔（重复计时器）来绘制下一个帧：
 - en: '[PRE13]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: The cycle binding tracks our position in the animation. For each frame, it is
     incremented and then clipped back to the 0 to 7 range by using the remainder operator.
     This binding is then used to compute the x-coordinate that the sprite for the
     current pose has in the picture.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 循环绑定跟踪我们在动画中的位置。对于每一帧，它会递增，然后通过使用余数运算符限制在0到7的范围内。此绑定用于计算当前姿势的精灵在图像中的x坐标。
 - en: Transformation
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 变换
 - en: What if we want our character to walk to the left instead of to the right? We
     could draw another set of sprites, of course. But we could also instruct the canvas
     to draw the picture the other way round.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们想让角色向左走而不是向右走呢？当然，我们可以绘制另一组精灵。但我们也可以指示画布反向绘制图像。
 - en: Calling the scale method will cause anything drawn after it to be scaled. This
     method takes two parameters, one to set a horizontal scale and one to set a vertical
     scale.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用scale方法会使之后绘制的任何内容都进行缩放。此方法接受两个参数，一个设置水平缩放，另一个设置垂直缩放。
 - en: '[PRE14]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Because of the call to scale, the circle is drawn three times as wide and half
     as high.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于调用了scale，圆形的宽度绘制为三倍，高度为一半。
 - en: '![Image](../images/f0285-01.jpg)'
+  id: totrans-97
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0285-01.jpg)'
 - en: Scaling will cause everything about the drawn image, including the line width,
     to be stretched out or squeezed together as specified. Scaling by a negative amount
     will flip the picture around. The flipping happens around point (0, 0), which
     means it will also flip the direction of the coordinate system. When a horizontal
     scaling of –1 is applied, a shape drawn at *x* position 100 will end up at what
     used to be position –100.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 缩放将导致绘制的图像的所有内容，包括线宽，按照指定的方式被拉伸或压缩。以负值进行缩放将翻转图片。翻转围绕点(0, 0)发生，这意味着它也会翻转坐标系统的方向。当应用水平缩放-1时，绘制在*x*位置100的形状将最终位于原本是位置-100的地方。
 - en: To turn a picture around, we can’t simply add cx.scale(-1, 1) before the call
     to drawImage. That would move our picture outside of the canvas, where it won’t
     be visible. We could adjust the coordinates given to drawImage to compensate for
     this by drawing the image at *x* position –50 instead of 0\. Another solution,
     which doesn’t require the code doing the drawing to know about the scale change,
     is to adjust the axis around which the scaling happens.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 要旋转一张图片，我们不能简单地在调用drawImage之前添加cx.scale(-1, 1)。那样会将我们的图片移出画布，导致它不可见。我们可以调整传递给drawImage的坐标来弥补这个问题，将图片绘制在*x*位置-50而不是0。另一种解决方案是调整缩放发生的轴，不需要绘图代码了解缩放变化。
 - en: There are several other methods besides scale that influence the coordinate
     system for a canvas. You can rotate subsequently drawn shapes with the rotate
     method and move them with the translate method. The interesting— and confusing—thing
     is that these transformations *stack*, meaning that each one happens relative
     to the previous transformations.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了缩放之外，还有几种其他方法影响画布的坐标系统。你可以使用rotate方法旋转随后绘制的形状，并用translate方法移动它们。有趣且令人困惑的是，这些变换会*叠加*，意味着每个变换都是相对于先前的变换发生的。
 - en: If we translate by 10 horizontal pixels twice, everything will be drawn 20 pixels
     to the right. If we first move the center of the coordinate system to (50, 50)
     and then rotate by 20 degrees (about 0.1*π* radians), that rotation will happen
     *around* point (50, 50).
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们平移10个水平像素两次，所有内容将向右绘制20个像素。如果我们首先将坐标系统的中心移动到(50, 50)，然后按20度旋转（约0.1*π*弧度），那么旋转将围绕点(50,
+    50)发生。
 - en: '![Image](../images/f0286-01.jpg)'
+  id: totrans-102
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0286-01.jpg)'
 - en: But if we *first* rotate by 20 degrees and *then* translate by (50, 50), the
     translation will happen in the rotated coordinate system and thus produce a different
     orientation. The order in which transformations are applied matters.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 但如果我们*首先*旋转20度，然后按(50, 50)进行平移，平移将在旋转的坐标系统中发生，从而产生不同的方向。变换应用的顺序很重要。
 - en: 'To flip a picture around the vertical line at a given *x* position, we can
     do the following:'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 要围绕给定*x*位置的垂直线翻转图片，我们可以做以下操作：
 - en: '[PRE15]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'We move the y-axis to where we want our mirror to be, apply the mirroring,
     and finally move the y-axis back to its proper place in the mirrored universe.
     The following picture explains why this works:'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将y轴移动到希望镜像的位置，应用镜像，最后将y轴移回在镜像宇宙中的正确位置。下图解释了为什么这样有效：
 - en: '![Image](../images/f0286-02.jpg)'
+  id: totrans-107
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0286-02.jpg)'
 - en: This shows the coordinate systems before and after mirroring across the central
     line. The triangles are numbered to illustrate each step. If we draw a triangle
     at a positive *x* position, it would, by default, be in the place where triangle
@@ -497,152 +719,223 @@
     3\. This is not where it should be, if it were mirrored in the given line. The
     second translate call fixes this—it “cancels” the initial translation and makes
     triangle 4 appear exactly where it should.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 这显示了在中心线两侧镜像前后的坐标系统。三角形被编号以说明每一步。如果我们在一个正的*x*位置绘制一个三角形，它默认会位于三角形1所在的位置。首次调用flipHorizontally会向右平移，这使我们到达三角形2。接着它会缩放，将三角形翻转到位置3。如果按给定线进行镜像，这并不是它应该在的位置。第二次平移调用修正了这一点——它“抵消”了初始平移，使三角形4正好出现在应该的位置。
 - en: We can now draw a mirrored character at position (100, 0) by flipping the world
     around the character’s vertical center.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在可以通过围绕字符的垂直中心翻转世界，在位置(100, 0)绘制一个镜像字符。
 - en: '[PRE16]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Storing and Clearing Transformations
+  id: totrans-111
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 存储和清除变换
 - en: Transformations stick around. Everything else we draw after drawing that mirrored
     character would also be mirrored. That might be inconvenient.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 变换会持续存在。我们在绘制该镜像字符后绘制的其他所有内容也会被镜像。这可能会带来不便。
 - en: It is possible to save the current transformation, do some drawing and transforming,
     and then restore the old transformation. This is usually the proper thing to do
     for a function that needs to temporarily transform the coordinate system. First,
     we save whatever transformation the code that called the function was using. Then
     the function does its thing, adding more transformations on top of the current
     transformation. Finally, we revert to the transformation we started with.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以保存当前的转换，进行一些绘制和转换，然后恢复旧的转换。这通常是需要暂时转换坐标系统的函数所应做的事情。首先，我们保存调用该函数的代码所使用的任何转换。然后，该函数进行其操作，在当前转换上添加更多转换。最后，我们恢复到最初的转换。
 - en: The save and restore methods on the 2D canvas context do this transformation
     management. They conceptually keep a stack of transformation states. When you
     call save, the current state is pushed onto the stack, and when you call restore,
     the state on top of the stack is taken off and used as the context’s current transformation.
     You can also call resetTransform to fully reset the transformation.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 2D 画布上下文上的 save 和 restore 方法用于管理这种转换。它们在概念上保持着一个转换状态的堆栈。当你调用 save 时，当前状态会被推入堆栈，而当你调用
+    restore 时，堆栈顶部的状态会被弹出并用作上下文的当前转换。你还可以调用 resetTransform 来完全重置转换。
 - en: The branch function in the following example illustrates what you can do with
     a function that changes the transformation and then calls a function (in this
     case itself), which continues drawing with the given transformation.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面示例中的 branch 函数展示了你可以用一个改变转换的函数来做什么，然后再调用一个函数（在这个例子中是它自己），该函数继续使用给定的转换进行绘制。
 - en: This function draws a treelike shape by drawing a line, moving the center of
     the coordinate system to the end of the line, and calling itself twice— first
     rotated to the left and then rotated to the right. Every call reduces the length
     of the branch drawn, and the recursion stops when the length drops below 8.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个函数通过绘制一条线、将坐标系统的中心移动到线的末端，并调用自身两次来绘制一个树状形状——第一次向左旋转，然后向右旋转。每次调用都会减少绘制的分支长度，当长度降到
+    8 以下时递归停止。
 - en: '[PRE17]'
+  id: totrans-117
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: The result is a simple fractal.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果是一个简单的分形。
 - en: '![Image](../images/f0288-01.jpg)'
+  id: totrans-119
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0288-01.jpg)'
 - en: If the calls to save and restore were not there, the second recursive call to
     branch would end up with the position and rotation created by the first call.
     It would be connected not to the current branch but rather to the innermost, rightmost
     branch drawn by the first call. The resulting shape might also be interesting,
     but it is definitely not a tree.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果没有 save 和 restore 的调用，第二次递归调用 branch 将会保留第一次调用所创建的位置和旋转。它将与当前分支没有关联，而是连接到第一次调用绘制的最内层、最右侧的分支。最终形状可能也会很有趣，但它绝对不是一棵树。
 - en: Back to the Game
+  id: totrans-121
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 回到游戏
 - en: We now know enough about canvas drawing to start working on a canvas-based display
     system for the game from the previous chapter. The new display will no longer
     be showing just colored boxes. Instead, we’ll use drawImage to draw pictures that
     represent the game’s elements.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在对画布绘制有了足够的了解，可以开始为上一章的游戏构建一个基于画布的显示系统。新的显示不再仅仅显示彩色方块。相反，我们将使用 drawImage
+    来绘制代表游戏元素的图像。
 - en: We define another display object type called CanvasDisplay, supporting the same
     interface as DOMDisplay from [Chapter 16](ch16.xhtml#ch16)—namely, the methods
     syncState and clear.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们定义了另一种显示对象类型，称为 CanvasDisplay，它支持与 [第16章](ch16.xhtml#ch16) 中的 DOMDisplay 相同的接口——即方法
+    syncState 和 clear。
 - en: This object keeps a little more information than DOMDisplay. Rather than using
     the scroll position of its DOM element, it tracks its own viewport, which tells
     us which part of the level we are currently looking at. Finally, it keeps a flipPlayer
     property so that even when the player is standing still, it keeps facing the direction
     in which it last moved.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个对象比 DOMDisplay 保持了更多的信息。它并不使用其 DOM 元素的滚动位置，而是跟踪自己的视口，这告诉我们当前正在查看关卡的哪一部分。最后，它保留了一个
+    flipPlayer 属性，以便即使玩家静止不动，它也会面朝上次移动的方向。
 - en: '[PRE18]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: The syncState method first computes a new viewport and then draws the game scene
     at the appropriate position.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: syncState 方法首先计算一个新的视口，然后在适当的位置绘制游戏场景。
 - en: '[PRE19]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: Contrary to DOMDisplay, this display style *does* have to redraw the background
     on every update. Because shapes on a canvas are just pixels, after we draw them
     there is no good way to move them (or remove them). The only way to update the
     canvas display is to clear it and redraw the scene. We may also have scrolled,
     which requires the background to be in a different position.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 `DOMDisplay` 相反，这种显示样式*确实*需要在每次更新时重绘背景。由于画布上的形状仅仅是像素，绘制后没有好的方法来移动它们（或删除它们）。更新画布显示的唯一方法是清除它并重新绘制场景。我们可能还会滚动，这要求背景处于不同的位置。
 - en: The updateViewport method is similar to DOMDisplay’s scrollPlayerIntoView method.
     It checks whether the player is too close to the edge of the screen and moves
     the viewport when this is the case.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '`updateViewport` 方法类似于 `DOMDisplay` 的 `scrollPlayerIntoView` 方法。它检查玩家是否太靠近屏幕边缘，并在这种情况下移动视口。'
 - en: '[PRE20]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: The calls to Math.max and Math.min ensure that the viewport does not end up
     showing space outside of the level. Math.max(*x*, 0) makes sure the resulting
     number is not less than zero. Math.min similarly guarantees that a value stays
     below a given bound.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 对 `Math.max` 和 `Math.min` 的调用确保视口不会显示关卡之外的区域。 `Math.max(*x*, 0)` 确保结果数字不小于零。
+    `Math.min` 同样保证值保持在给定的界限之内。
 - en: When clearing the display, we’ll use a slightly different color depending on
     whether the game is won (brighter) or lost (darker).
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 清除显示时，我们将根据游戏是胜利（更亮）还是失败（更暗）使用略微不同的颜色。
 - en: '[PRE21]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: To draw the background, we run through the tiles that are visible in the current
     viewport, using the same trick used in the touches method from the previous chapter.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了绘制背景，我们遍历当前视口中可见的瓦片，使用与上一章的 `touches` 方法相同的技巧。
 - en: '[PRE22]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: Tiles that are not empty are drawn with drawImage. The otherSprites image contains
     the pictures used for elements other than the player. It contains, from left to
     right, the wall tile, the lava tile, and the sprite for a coin.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 非空的瓦片通过 `drawImage` 绘制。 `otherSprites` 图像包含用于除玩家之外的元素的图片。它从左到右包含墙壁瓦片、岩浆瓦片和硬币的精灵。
 - en: '![Image](../images/f0291-01.jpg)'
+  id: totrans-137
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](../images/f0291-01.jpg)'
 - en: Background tiles are 20 by 20 pixels, since we’ll use the same scale as in DOMDisplay.
     Thus, the offset for lava tiles is 20 (the value of the scale binding), and the
     offset for walls is 0.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 背景瓦片为 20 x 20 像素，因为我们将使用与 `DOMDisplay` 相同的比例。因此，岩浆瓦片的偏移量为 20（比例绑定的值），墙壁的偏移量为
+    0。
 - en: We don’t bother waiting for the sprite image to load. Calling drawImage with
     an image that hasn’t been loaded yet will simply do nothing. Thus, we might fail
     to draw the game properly for the first few frames while the image is still loading,
     but that isn’t a serious problem. Since we keep updating the screen, the correct
     scene will appear as soon as the loading finishes.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们不费心等待精灵图像加载。用尚未加载的图像调用 `drawImage` 将什么也不做。因此，我们可能在图像仍在加载时无法正确绘制游戏的前几帧，但这不是一个严重的问题。由于我们持续更新屏幕，正确的场景将在加载完成后立即出现。
 - en: The walking character shown earlier will be used to represent the player. The
     code that draws it needs to pick the right sprite and direction based on the player’s
     current motion. The first eight sprites contain a walking animation. When the
@@ -651,234 +944,338 @@
     When the player is standing still, we draw the ninth sprite. During jumps, which
     are recognized by the fact that the vertical speed is not zero, we use the tenth,
     rightmost sprite.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 前面展示的行走角色将用于表示玩家。绘制它的代码需要根据玩家当前的运动选择正确的精灵和方向。前八个精灵包含行走动画。当玩家在地面上移动时，我们根据当前时间循环播放它们。我们希望每
+    60 毫秒切换帧，因此首先将时间除以 60。当玩家静止时，我们绘制第九个精灵。在跳跃时（通过垂直速度不为零来识别），我们使用第十个、最右侧的精灵。
 - en: Because the sprites are slightly wider than the player object—24 instead of
     16 pixels to allow some space for feet and arms—the method has to adjust the x-coordinate
     and width by a given amount (playerXOverlap).
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为精灵比玩家对象稍宽——24 像素而不是 16 像素，以便为脚和手臂留出一些空间——该方法必须按给定的量（`playerXOverlap`）调整 x
+    坐标和宽度。
 - en: '[PRE23]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: The drawPlayer method is called by drawActors, which is responsible for drawing
     all the actors in the game.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '`drawPlayer` 方法由 `drawActors` 调用，负责绘制游戏中的所有角色。'
 - en: '[PRE24]'
+  id: totrans-144
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: When drawing something that is not the player, we look at its type to find the
     offset of the correct sprite. The lava tile is found at offset 20, and the coin
     sprite is found at 40 (two times scale).
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 在绘制非玩家对象时，我们查看其类型以找到正确精灵的偏移量。岩浆砖块位于偏移量20处，硬币精灵位于40处（两倍缩放）。
 - en: We have to subtract the viewport’s position when computing the actor’s position,
     since (0, 0) on our canvas corresponds to the upper left of the viewport, not
     the upper left of the level. We could also have used translate for this. Either
     way works.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算角色的位置时，我们必须减去视口的位置，因为我们canvas上的(0, 0)对应于视口的左上角，而不是关卡的左上角。我们也可以使用平移来实现这一点。两种方法都可行。
 - en: 'That concludes the new display system. The resulting game looks something like
     this:'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是新显示系统的总结。生成的游戏大致如下：
 - en: '![Image](../images/f0293-01.jpg)'
+  id: totrans-148
   prefs: []
   type: TYPE_IMG
+  zh: '![图像](../images/f0293-01.jpg)'
 - en: Choosing a Graphics Interface
+  id: totrans-149
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 选择图形接口
 - en: When you need to generate graphics in the browser, you can choose among plain
     HTML, SVG, and canvas. There is no single *best* approach that works in all situations.
     Each option has strengths and weaknesses.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你需要在浏览器中生成图形时，可以选择普通HTML、SVG和canvas。没有一种在所有情况下都能完美适用的*最佳*方法。每种选择都有其优缺点。
 - en: Plain HTML has the advantage of being simple. It also integrates well with text.
     Both SVG and canvas allow you to draw text, but they won’t help you position that
     text or wrap it when it takes up more than one line. In an HTML-based picture,
     it is much easier to include blocks of text.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 普通HTML的优点在于简单。它还与文本很好地集成。SVG和canvas都允许你绘制文本，但它们不会帮助你定位文本或在文本占用多于一行时换行。在基于HTML的图像中，包含文本块要容易得多。
 - en: SVG can be used to produce crisp graphics that look good at any zoom level.
     Unlike HTML, it is designed for drawing and is thus more suitable for that purpose.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: SVG可以用于生成在任何缩放级别下都看起来清晰的图形。与HTML不同，SVG是为绘图设计的，因此更适合此目的。
 - en: Both SVG and HTML build up a data structure (the DOM) that represents your picture.
     This makes it possible to modify elements after they are drawn. If you need to
     repeatedly change a small part of a big picture in response to what the user is
     doing or as part of an animation, doing it in a canvas can be needlessly expensive.
     The DOM also allows us to register mouse event handlers on every element in the
     picture (even on shapes drawn with SVG). You can’t do that with canvas.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: SVG和HTML都会建立一个表示图像的数据结构（DOM）。这使得在绘制后修改元素成为可能。如果你需要根据用户的操作或作为动画的一部分，反复更改大图的一小部分，在canvas中这样做可能会无谓地昂贵。DOM还允许我们在图像中的每个元素上注册鼠标事件处理程序（即使是用SVG绘制的形状）。这在canvas中是做不到的。
 - en: But canvas’s pixel-oriented approach can be an advantage when drawing a huge
     number of tiny elements. The fact that it does not build up a data structure but
     only repeatedly draws onto the same pixel surface gives canvas a lower cost per
     shape. There are also effects that are only practical with a canvas element, such
     as rendering a scene one pixel at a time (for example, using a ray tracer) or
     postprocessing an image with JavaScript (blurring or distorting it).
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 但canvas的像素导向方法在绘制大量微小元素时可以成为一种优势。它不建立数据结构，而是重复在同一像素表面上绘制，这使得canvas每个形状的成本更低。还有一些效果只有在canvas元素中才实用，例如逐像素渲染场景（例如，使用光线追踪器）或使用JavaScript对图像进行后处理（模糊或扭曲图像）。
 - en: In some cases, you may want to combine several of these techniques. For example,
     you might draw a graph with SVG or canvas but show textual information by positioning
     an HTML element on top of the picture.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 在某些情况下，你可能想要结合这些技术。例如，你可以用SVG或canvas绘制图表，但通过将HTML元素放在图像上方来显示文本信息。
 - en: For nondemanding applications, it really doesn’t matter much which interface
     you choose. The display we built for our game in this chapter could have been
     implemented using any of these three graphics technologies, since it does not
     need to draw text, handle mouse interaction, or work with an extraordinarily large
     number of elements.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于不要求高的应用程序，选择哪个接口其实并没有太大关系。本章中为我们的游戏构建的显示可以使用这三种图形技术中的任何一种来实现，因为它不需要绘制文本、处理鼠标交互或处理数量极多的元素。
 - en: Summary
+  id: totrans-157
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 总结
 - en: In this chapter, we discussed techniques for drawing graphics in the browser,
     focusing on the <canvas> element.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们讨论了在浏览器中绘制图形的技术，重点是<canvas>元素。
 - en: A canvas node represents an area in a document that our program may draw on.
     This drawing is done through a drawing context object, created with the getContext
     method.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 画布节点表示文档中我们程序可以绘制的区域。这个绘制是通过使用 `getContext` 方法创建的绘图上下文对象完成的。
 - en: The 2D drawing interface allows us to fill and stroke various shapes. The context’s
     fillStyle property determines how shapes are filled. The strokeStyle and lineWidth
     properties control the way lines are drawn.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 2D 绘图接口允许我们填充和描边各种形状。上下文的 `fillStyle` 属性决定形状的填充方式。`strokeStyle` 和 `lineWidth`
+    属性控制线条的绘制方式。
 - en: Rectangles and pieces of text can be drawn with a single method call. The fillRect
     and strokeRect methods draw rectangles, and the fillText and strokeText methods
     draw text. To create custom shapes, we must first build up a path.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 矩形和文本片段可以通过一个方法调用绘制。`fillRect` 和 `strokeRect` 方法绘制矩形，而 `fillText` 和 `strokeText`
+    方法绘制文本。要创建自定义形状，我们必须先构建一条路径。
 - en: Calling beginPath starts a new path. A number of other methods add lines and
     curves to the current path. For example, lineTo can add a straight line. When
     a path is finished, it can be filled with the fill method or stroked with the
     stroke method.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用 `beginPath` 开始一条新路径。其他一些方法可以向当前路径添加线条和曲线。例如，`lineTo` 可以添加一条直线。当路径完成时，可以使用
+    `fill` 方法填充或使用 `stroke` 方法描边。
 - en: Moving pixels from an image or another canvas onto our canvas is done with the
     drawImage method. By default, this method draws the whole source image, but by
     giving it more parameters, you can copy a specific area of the image. We used
     this for our game by copying individual poses of the game character out of an
     image that contained many such poses.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 将图像或另一个画布的像素移动到我们的画布上是通过 `drawImage` 方法完成的。默认情况下，此方法绘制整个源图像，但通过提供更多参数，您可以复制图像的特定区域。我们在游戏中使用这一点，通过从包含多个姿势的图像中复制游戏角色的单个姿势。
 - en: Transformations allow you to draw a shape in multiple orientations. A 2D drawing
     context has a current transformation that can be changed with the translate, scale,
     and rotate methods. These will affect all subsequent drawing operations. A transformation
     state can be saved with the save method and restored with the restore method.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 变换允许您以多种方向绘制形状。2D 绘图上下文具有一个当前变换，可以通过 `translate`、`scale` 和 `rotate` 方法进行更改。这些将影响所有后续的绘图操作。可以使用
+    `save` 方法保存变换状态，并使用 `restore` 方法恢复。
 - en: When showing an animation on a canvas, the clearRect method can be used to clear
     part of the canvas before redrawing it.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 在画布上显示动画时，可以使用 `clearRect` 方法在重新绘制之前清除画布的部分区域。
 - en: Exercises
+  id: totrans-166
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 练习
 - en: '*Shapes*'
+  id: totrans-167
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*形状*'
 - en: 'Write a program that draws the following shapes on a canvas:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个程序，在画布上绘制以下形状：
 - en: A trapezoid (a rectangle that is wider on one side)
+  id: totrans-169
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 一个梯形（一个一侧更宽的矩形）
 - en: A red diamond (a rectangle rotated 45 degrees or ![Image](../images/f0294-01.jpg)
     radians)
+  id: totrans-170
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 一个红色菱形（一个旋转了 45 度或 ![Image](../images/f0294-01.jpg) 弧度的矩形）
 - en: A zigzagging line
+  id: totrans-171
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 一条锯齿形的线
 - en: A spiral made up of 100 straight line segments
+  id: totrans-172
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 由 100 段直线组成的螺旋形
 - en: A yellow star
+  id: totrans-173
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 一个黄色星星
 - en: '![Image](../images/f0295-01.jpg)'
+  id: totrans-174
   prefs: []
   type: TYPE_IMG
+  zh: '![Image](../images/f0295-01.jpg)'
 - en: When drawing the last two shapes, you may want to refer to the explanation of
     Math.cos and Math.sin in [Chapter 14](ch14.xhtml#ch14), which describes how to
     get coordinates on a circle using these functions.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 在绘制最后两个形状时，您可能想参考[第 14 章](ch14.xhtml#ch14)中关于 `Math.cos` 和 `Math.sin` 的解释，该章描述了如何使用这些函数获取圆上的坐标。
 - en: I recommend creating a function for each shape. Pass the position, and optionally
     other properties such as the size or the number of points, as parameters. The
     alternative, which is to hardcode numbers all over your code, tends to make the
     code needlessly hard to read and modify.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 我建议为每个形状创建一个函数。将位置以及其他属性（如大小或点数）作为参数传递。另一种选择是将数字硬编码到代码中，这往往会使代码变得难以阅读和修改。
 - en: '*The Pie Chart*'
+  id: totrans-177
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*饼图*'
 - en: Earlier in the chapter, we saw an example program that drew a pie chart. Modify
     this program so that the name of each category is shown next to the slice that
     represents it. Try to find a pleasing-looking way to automatically position this
     text that would work for other datasets as well. You may assume that categories
     are big enough to leave enough room for their labels.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章早些时候，我们看到一个绘制饼图的示例程序。修改该程序，使每个类别的名称显示在表示它的切片旁边。尝试找到一种悦目的方式来自动定位这些文本，使其适用于其他数据集。您可以假设类别足够大，以留出足够的空间用于标签。
 - en: You might need Math.sin and Math.cos again, which are described in [Chapter
     14](ch14.xhtml#ch14).
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可能需要再次使用 `Math.sin` 和 `Math.cos`，它们在[第 14 章](ch14.xhtml#ch14)中进行了描述。
 - en: '*A Bouncing Ball*'
+  id: totrans-180
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*一个弹跳的球*'
 - en: Use the requestAnimationFrame technique that we saw in [Chapter 14](ch14.xhtml#ch14)
     and [Chapter 16](ch16.xhtml#ch16) to draw a box with a bouncing ball in it. The
     ball moves at a constant speed and bounces off the box’s sides when it hits them.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用我们在[第14章](ch14.xhtml#ch14)和[第16章](ch16.xhtml#ch16)中看到的requestAnimationFrame技术，绘制一个带有弹跳球的盒子。球以恒定速度移动，并在碰到盒子的边缘时反弹。
 - en: '*Precomputed Mirroring*'
+  id: totrans-182
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*预计算镜像*'
 - en: One unfortunate thing about transformations is that they slow down the drawing
     of bitmaps. The position and size of each pixel have to be transformed, and though
     it is possible that browsers will get cleverer about transformation in the future,
     they currently cause a measurable increase in the time it takes to draw a bitmap.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 变换的一个不幸之处是它们会减慢位图的绘制速度。每个像素的位置和大小都需要被变换，尽管浏览器未来可能会在变换方面变得更加智能，但目前它们确实会导致绘制位图所需时间的可测量增加。
 - en: In a game like ours, where we are drawing only a single transformed sprite,
     this is a nonissue. But imagine that we need to draw hundreds of characters or
     thousands of rotating particles from an explosion.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 在像我们这样的游戏中，我们只绘制一个变换后的精灵，这并不是问题。但想象一下，我们需要绘制数百个角色或成千上万的旋转粒子来自爆炸。
 - en: Think of a way to draw an inverted character without loading additional image
     files and without having to make transformed drawImage calls every frame.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 想出一种方法来绘制一个反转的角色，而不加载额外的图像文件，也不必每帧都进行变换的drawImage调用。
 - en: '*What was often difficult for people to understand about the design was that
     there was nothing else beyond URLs, HTTP and HTML. There was no central computer
     “controlling” the Web, no single network on which these protocols worked, not
     even an organisation anywhere that “ran” the Web. The Web was not a physical “thing”
     that existed in a certain “place.” It was a “space” in which information could
     exist.*'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '*人们常常难以理解设计的一点是，除了URLs、HTTP和HTML之外，没有其他东西。没有一个中央计算机“控制”着网络，没有一个单一的网络可以使用这些协议，甚至没有任何地方的组织“运行”这个网络。网络并不是一个存在于某个“地方”的物理“东西”。它是一个可以存在信息的“空间”。*'
 - en: —Tim Berners-Lee
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: —蒂姆·伯纳斯-李
 - en: '![Image](../images/f0296-01.jpg)'
+  id: totrans-188
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0296-01.jpg)'
