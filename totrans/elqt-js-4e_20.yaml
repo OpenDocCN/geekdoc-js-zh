@@ -3,11 +3,13 @@
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '18'
 - en: HTTP AND FORMS
   id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: HTTP 与表单
 - en: The HyperText Transfer Protocol, introduced in [Chapter 13](ch13.xhtml#ch13),
     is the mechanism through which data is requested and provided on the World Wide
     Web. This chapter describes the protocol in more detail and explains the way browser
@@ -15,11 +17,14 @@
   id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 超文本传输协议（HyperText Transfer Protocol），在[第 13 章](ch13.xhtml#ch13)中介绍，是在万维网上请求和提供数据的机制。本章更详细地描述了该协议，并解释了浏览器
+    JavaScript 如何访问它。
 - en: The Protocol
   id: totrans-3
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 协议
 - en: 'If you type *[eloquentjavascript.net/18_http.xhtml](http://eloquentjavascript.net/18_http.xhtml)*
     in your browser’s address bar, the browser first looks up the address of the server
     associated with *eloquent [javascript.net](http://javascript.net)* and tries to
@@ -29,6 +34,9 @@
   id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你在浏览器的地址栏中输入 *[eloquentjavascript.net/18_http.xhtml](http://eloquentjavascript.net/18_http.xhtml)*，浏览器首先查找与
+    *eloquent [javascript.net](http://javascript.net)* 关联的服务器地址，并尝试在端口 80（HTTP 流量的默认端口）上打开一个
+    TCP 连接。如果服务器存在并接受连接，浏览器可能会发送类似这样的内容：
 - en: '[PRE0]'
   id: totrans-5
   prefs: []
@@ -38,6 +46,7 @@
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后服务器通过相同的连接进行响应。
 - en: '[PRE1]'
   id: totrans-7
   prefs: []
@@ -48,11 +57,13 @@
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器获取空行后响应的部分，即它的 *主体*（不要与 HTML <body> 标签混淆），并将其显示为 HTML 文档。
 - en: 'The information sent by the client is called the *request*. It starts with
     this line:'
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端发送的信息称为 *请求*。它以这一行开始：
 - en: '[PRE2]'
   id: totrans-10
   prefs: []
@@ -66,6 +77,8 @@
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个词是请求的 *方法*。GET 意味着我们想要 *获取* 指定的资源。其他常见的方法有 DELETE 用于删除资源，PUT 用于创建或替换资源，POST
+    用于向其发送信息。请注意，服务器并不一定有义务执行它收到的每一个请求。如果你走到一个随机网站并告诉它删除其主页，它可能会拒绝。
 - en: The part after the method name is the path of the *resource* the request applies
     to. In the simplest case, a resource is simply a file on the server, but the protocol
     doesn’t require it to be. A resource may be anything that can be transferred *as
@@ -76,11 +89,15 @@
   id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 方法名称之后的部分是请求应用于的 *资源* 的路径。在最简单的情况下，资源只是服务器上的一个文件，但协议并不要求它必须是。资源可以是任何可以被转移 *好像*
+    它是一个文件的东西。许多服务器生成的响应是动态生成的。例如，如果你打开 *[https://github.com/marijnh](https://github.com/marijnh)*，服务器会在其数据库中查找名为
+    *marijnh* 的用户，如果找到了，它会为该用户生成一个个人资料页面。
 - en: After the resource path, the first line of the request mentions HTTP/1.1 to
     indicate the version of the HTTP protocol it is using.
   id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 在资源路径之后，请求的第一行提到 HTTP/1.1，以指示它使用的 HTTP 协议的版本。
 - en: In practice, many sites use HTTP version 2, which supports the same concepts
     as version 1.1 but is a lot more complicated so that it can be faster. Browsers
     will automatically switch to the appropriate protocol version when talking to
@@ -90,12 +107,15 @@
   id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，许多网站使用 HTTP 版本 2，它支持与版本 1.1 相同的概念，但更加复杂，因此可以更快。浏览器在与特定服务器交互时会自动切换到适当的协议版本，无论使用哪个版本，请求的结果都是相同的。由于版本
+    1.1 更加简单且更易于操作，我们将使用它来说明该协议。
 - en: The server’s response will start with a version as well, followed by the status
     of the response, first as a three-digit status code and then as a human-readable
     string.
   id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器的响应也会以一个版本开头，后面跟着响应的状态，首先是一个三位数的状态代码，然后是一个可读的字符串。
 - en: '[PRE3]'
   id: totrans-16
   prefs: []
@@ -109,12 +129,14 @@
   id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 以2开头的状态码表示请求成功。以4开头的代码意味着请求存在问题。最著名的HTTP状态码可能是404，表示找不到该资源。以5开头的代码表示服务器发生了错误，请求没有错。
 - en: 'The first line of a request or response may be followed by any number of *headers*.
     These are lines in the form name: value that specify extra information about the
     request or response. These headers were part of the example response:'
   id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '请求或响应的第一行后面可以跟随任意数量的*头部*。这些是形如name: value的行，指定有关请求或响应的额外信息。这些头部是示例响应的一部分：'
 - en: '[PRE4]'
   id: totrans-19
   prefs: []
@@ -126,6 +148,7 @@
   id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 这告诉我们响应文档的大小和类型。在这种情况下，它是一个87,320字节的HTML文档。它还告诉我们该文档最后一次修改的时间。
 - en: The client and server are free to decide what headers to include in their requests
     or responses. But some of them are necessary for things to work. For example,
     without a Content-Type header in the response, the browser won’t know how to display
@@ -133,6 +156,7 @@
   id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端和服务器可以自由决定在请求或响应中包含哪些头部。但其中一些对于正常工作是必要的。例如，如果响应中没有Content-Type头部，浏览器将不知道如何显示该文档。
 - en: After the headers, both requests and responses may include a blank line followed
     by a body, which contains the actual document being sent. GET and DELETE requests
     don’t send along any data, but PUT and POST requests do. Some response types,
@@ -140,28 +164,33 @@
   id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 在头部之后，请求和响应都可能包含一个空行，后面跟着一个主体，其中包含实际发送的文档。GET和DELETE请求不发送任何数据，但PUT和POST请求会发送。一些响应类型，如错误响应，也不需要主体。
 - en: Browsers and HTTP
   id: totrans-23
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 浏览器和HTTP
 - en: As we saw, a browser will make a request when we enter a URL in its address
     bar. When the resulting HTML page references other files, such as images and JavaScript
     files, it will retrieve those as well.
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们所见，当我们在地址栏中输入URL时，浏览器会发起请求。当生成的HTML页面引用其他文件，例如图像和JavaScript文件时，它也会检索这些文件。
 - en: A moderately complicated website can easily include anywhere from 10 to 200
     resources. To be able to fetch those quickly, browsers will make several GET requests
     simultaneously, rather than waiting for the responses one at a time.
   id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个中等复杂的网站可以轻松包含10到200个资源。为了能够快速获取这些资源，浏览器会同时发起多个GET请求，而不是一个个等待响应。
 - en: 'HTML pages may include *forms*, which allow the user to fill out information
     and send it to the server. This is an example of a form:'
   id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: HTML页面可以包含*表单*，允许用户填写信息并将其发送到服务器。这是一个表单的示例：
 - en: '[PRE5]'
   id: totrans-27
   prefs: []
@@ -174,12 +203,14 @@
   id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 这段代码描述了一个包含两个字段的表单：一个小字段用于输入名字，一个大字段用于写消息。当你点击发送按钮时，表单被*提交*，这意味着其字段的内容被打包成一个HTTP请求，浏览器会导航到该请求的结果。
 - en: 'When the <form> element’s method attribute is GET (or is omitted), the information
     in the form is added to the end of the action URL as a *query string*. The browser
     might make a request to this URL:'
   id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 当<form>元素的method属性为GET（或被省略）时，表单中的信息将作为*查询字符串*添加到动作URL的末尾。浏览器可能会向这个URL发起请求：
 - en: '[PRE6]'
   id: totrans-30
   prefs: []
@@ -192,6 +223,7 @@
   id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 问号表示URL路径部分的结束和查询的开始。它后面跟随名称和值的对，分别对应于表单字段元素的name属性和这些元素的内容。一个&符号用于分隔这些对。
 - en: The actual message encoded in the URL is “Yes?” but the question mark is replaced
     by a strange code. Some characters in query strings must be escaped. The question
     mark, represented as %3F, is one of those. There seems to be an unwritten rule
@@ -203,6 +235,9 @@
   id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: URL 中编码的实际消息是 “Yes?”，但问号被一个奇怪的代码替换。一些查询字符串中的字符必须被转义。问号（以 %3F 表示）就是其中之一。似乎有一种不成文的规则，即每种格式都需要自己的一种字符转义方式。这种称为
+    *URL 编码* 的方式使用一个百分号，后跟两个十六进制（基数为 16）数字来编码字符代码。在这种情况下，3F 在十进制中是 63，是问号字符的代码。JavaScript
+    提供了 encodeURIComponent 和 decodeURIComponent 函数来编码和解码这种格式。
 - en: '[PRE7]'
   id: totrans-33
   prefs: []
@@ -214,6 +249,8 @@
   id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们将之前看到的 HTML 表单的 method 属性更改为 POST，提交表单时发出的 HTTP 请求将使用 POST 方法，并将查询字符串放入请求的主体中，而不是将其添加到
+    URL 中。
 - en: '[PRE8]'
   id: totrans-35
   prefs: []
@@ -228,21 +265,26 @@
   id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: GET 请求应当用于没有副作用的请求，仅仅是请求信息。例如，创建新账户或发布消息等更改服务器内容的请求，应使用其他方法，例如 POST。客户端软件（例如浏览器）知道不应盲目发送
+    POST 请求，但通常会隐式发送 GET 请求——例如，预取用户可能很快需要的资源。
 - en: We’ll come back to forms and how to interact with them from JavaScript later
     in the chapter.
   id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们稍后将在本章中回到表单以及如何通过 JavaScript 与它们进行交互。
 - en: Fetch
   id: totrans-38
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Fetch
 - en: The interface through which browser JavaScript can make HTTP requests is called
     fetch.
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器 JavaScript 可以进行 HTTP 请求的接口称为 fetch。
 - en: '[PRE9]'
   id: totrans-40
   prefs: []
@@ -257,12 +299,16 @@
   id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用 fetch 返回一个 Promise，该 Promise 解析为一个 Response 对象，包含有关服务器响应的信息，例如其状态码和响应头。响应头被封装在一个类似
+    Map 的对象中，该对象将其键（头部名称）视为不区分大小写，因为头部名称不应区分大小写。这意味着 headers.get(“Content-Type”) 和
+    headers.get(“content-TYPE”) 将返回相同的值。
 - en: Note that the promise returned by fetch resolves successfully even if the server
     responded with an error code. It can also be rejected if there is a network error
     or if the server to which the request is addressed can’t be found.
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，即使服务器返回了错误代码，fetch 返回的 Promise 仍然会成功解决。如果发生网络错误或请求所针对的服务器无法找到，Promise 也可能被拒绝。
 - en: The first argument to fetch is the URL that should be requested. When that URL
     doesn’t start with a protocol name (such as *http:*), it is treated as *relative*,
     which means it is interpreted relative to the current document. When it starts
@@ -272,6 +318,8 @@
   id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: fetch 的第一个参数是应该请求的 URL。当该 URL 不以协议名称（例如 *http:*）开头时，它被视为 *相对* 的，这意味着它相对于当前文档进行解释。当它以斜杠（/）开头时，它将替换当前路径，即服务器名称之后的部分。当它没有斜杠时，当前路径中直到最后一个斜杠的部分将放在相对
+    URL 之前。
 - en: To get at the actual content of a response, you can use its text method. Because
     the initial promise is resolved as soon as the response’s headers have been received
     and because reading the response body might take a while longer, this again returns
@@ -279,6 +327,8 @@
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 要获取响应的实际内容，您可以使用其 text 方法。因为初始 Promise 一旦接收到响应的头部就会解决，而读取响应主体可能需要更长的时间，所以这再次返回一个
+    Promise。
 - en: '[PRE10]'
   id: totrans-45
   prefs: []
@@ -403,6 +453,7 @@
   id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种方法是围绕资源和HTTP方法的概念构建你的通信。你使用PUT请求而不是远程过程addUser，针对*/users/larry*。你不再在函数参数中编码用户的属性，而是定义一个JSON文档格式（或使用现有格式）来表示用户。然后，用于创建新资源的PUT请求的主体就是这样的文档。通过向资源的URL（例如，*/users/larry*）发出GET请求来获取资源，这又会返回表示该资源的文档。
 - en: This second approach makes it easier to use some of the features that HTTP provides,
     such as support for caching resources (keeping a copy of a resource on the client
     for fast access). The concepts used in HTTP, which are well designed, can provide
@@ -410,11 +461,13 @@
   id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种第二种方法使得使用HTTP提供的一些特性变得更加容易，比如支持资源缓存（在客户端保留资源副本以便快速访问）。HTTP中的概念设计良好，可以为设计你的服务器接口提供一套有用的原则。
 - en: Security and HTTPS
   id: totrans-64
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 安全性和HTTPS
 - en: Data traveling over the internet tends to follow a long, dangerous road. To
     get to its destination, it must hop through anything from coffee shop Wi-Fi hotspots
     to networks controlled by various companies and states. At any point along its
@@ -422,12 +475,14 @@
   id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 在互联网上传输的数据往往要经历一条漫长而危险的道路。为了到达目的地，它必须穿越从咖啡店Wi-Fi热点到各种公司和国家控制的网络。在其路线的任何点，它都可能被检查甚至被修改。
 - en: If it is important that something remain secret, such as the password to your
     email account, or that it arrive at its destination unmodified, such as the account
     number you transfer money to via your bank’s website, plain HTTP is not good enough.
   id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果某些东西保持秘密很重要，比如你的电子邮件账户密码，或者它需要在传输到目的地时不被修改，比如你通过银行网站转账的账户号码，那么普通HTTP就不够安全。
 - en: The secure HTTP protocol, used for URLs starting with *https://*, wraps HTTP
     traffic in a way that makes it harder to read and tamper with. Before exchanging
     data, the client verifies that the server is who it claims to be by asking it
@@ -437,6 +492,7 @@
   id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全HTTP协议用于以*https://*开头的URL，以一种更难以阅读和篡改的方式封装HTTP流量。在交换数据之前，客户端通过要求服务器证明其拥有浏览器识别的证书颁发机构颁发的加密证书，来验证服务器的身份。接下来，通过连接传输的所有数据都以一种应该能防止窃听和篡改的方式进行加密。
 - en: Thus, when it works right, HTTPS prevents other people from impersonating the
     website you are trying to talk to *and* from snooping on your communication. It’s
     not perfect, and there have been various incidents where HTTPS failed because
@@ -445,17 +501,20 @@
   id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，当它正常工作时，HTTPS可以防止其他人冒充你想要交流的网站*并且*监视你的通信。它并不完美，也发生过由于伪造或盗用证书和软件故障导致HTTPS失败的各种事件，但它比普通HTTP安全*得多*。
 - en: Form Fields
   id: totrans-69
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 表单字段
 - en: Forms were originally designed for the pre-JavaScript web to allow websites
     to send user-submitted information in an HTTP request. This design assumes that
     interaction with the server always happens by navigating to a new page.
   id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 表单最初是为预JavaScript网页设计的，目的是允许网站通过HTTP请求发送用户提交的信息。这个设计假设与服务器的交互总是通过导航到新页面来进行。
 - en: However, the form elements are part of the DOM, like the rest of the page, and
     the DOM elements that represent form fields support a number of properties and
     events that are not present on other elements. These make it possible to inspect
@@ -465,6 +524,7 @@
   id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，表单元素是DOM的一部分，就像页面的其余部分一样，表示表单字段的DOM元素支持许多其他元素所不具备的属性和事件。这使得使用JavaScript程序检查和控制这些输入字段成为可能，并且可以进行诸如向表单添加新功能或在JavaScript应用程序中将表单和字段作为构建块等操作。
 - en: A web form consists of any number of input fields grouped in a <form> tag. HTML
     allows several different styles of fields, ranging from simple on/off checkboxes
     to drop-down menus and fields for text input. This book won’t try to comprehensively
@@ -636,6 +696,8 @@
   id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器允许用户通过按 TAB 移动焦点到下一个可聚焦元素，按 SHIFT-TAB 返回到上一个元素。默认情况下，元素按照它们在文档中出现的顺序被访问。可以使用
+    tabindex 属性来改变这个顺序。以下示例文档将允许焦点从文本输入跳转到 OK 按钮，而不是先经过帮助链接：
 - en: '[PRE18]'
   id: totrans-100
   prefs: []
@@ -647,17 +709,20 @@
   id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，大多数类型的 HTML 元素不能被聚焦。你可以给任何元素添加 tabindex 属性使其可聚焦。tabindex 为 0 的元素可以被聚焦而不影响聚焦顺序。
 - en: Disabled Fields
   id: totrans-102
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 禁用字段
 - en: All form fields can be *disabled* through their disabled attribute. It is an
     attribute that can be specified without value—the fact that it is present at all
     disables the element.
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有表单字段都可以通过其 disabled 属性被 *禁用*。这是一个可以不带值指定的属性——只要存在，元素就会被禁用。
 - en: '[PRE19]'
   id: totrans-104
   prefs: []
@@ -668,10 +733,12 @@
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 被禁用的字段无法聚焦或更改，浏览器会使其看起来呈灰色和褪色。
 - en: '![Image](../images/f0306-01.jpg)'
   id: totrans-106
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0306-01.jpg)'
 - en: When a program is in the process of handling an action caused by some button
     or other control that might require communication with the server and thus take
     a while, it can be a good idea to disable the control until the action finishes.
@@ -680,11 +747,13 @@
   id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 当一个程序正在处理由某个按钮或其他控件引起的可能需要与服务器通信并因此耗时的操作时，禁用该控件直到操作完成是个好主意。这样，当用户不耐烦再次点击时，他们不会不小心重复他们的操作。
 - en: The Form as a Whole
   id: totrans-108
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 整个表单
 - en: When a field is contained in a <form> element, its DOM element will have a form
     property linking back to the form’s DOM element. The <form> element, in turn,
     has a property called elements that contains an array-like collection of the fields
@@ -692,6 +761,8 @@
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 当一个字段包含在 `<form>` 元素中时，其 DOM 元素将有一个 form 属性链接回该表单的 DOM 元素。反过来，`<form>` 元素有一个名为
+    elements 的属性，包含了内部字段的类似数组的集合。
 - en: The name attribute of a form field determines the way its value will be identified
     when the form is submitted. It can also be used as a property name when accessing
     the form’s elements property, which acts both as an array-like object (accessible
@@ -699,6 +770,7 @@
   id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 表单字段的 name 属性决定了在提交表单时其值的识别方式。它也可以在访问表单的 elements 属性时用作属性名称，该属性既可以作为类似数组的对象（通过数字访问），也可以作为映射（通过名称访问）。
 - en: '[PRE20]'
   id: totrans-111
   prefs: []
@@ -709,6 +781,7 @@
   id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 当一个具有提交类型属性的按钮被按下时，会导致表单被提交。在表单字段聚焦时按下 ENTER 键也会产生相同的效果。
 - en: Submitting a form normally means that the browser navigates to the page indicated
     by the form’s action attribute, using either a GET or a POST request. But before
     that happens, a “submit” event is fired. You can handle this event with JavaScript
@@ -716,6 +789,8 @@
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 正常提交表单意味着浏览器导航到由表单的 action 属性指示的页面，使用 GET 或 POST 请求。但在这之前，会触发一个 “submit” 事件。你可以用
+    JavaScript 处理这个事件，并通过在事件对象上调用 preventDefault 来阻止这种默认行为。
 - en: '[PRE21]'
   id: totrans-114
   prefs: []
@@ -729,11 +804,14 @@
   id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 JavaScript 中拦截 “submit” 事件有多种用途。我们可以编写代码来验证用户输入的值是否合理，并立即显示错误信息，而不是提交表单。或者，我们可以完全禁用常规的提交表单方式，如示例所示，让我们的程序处理输入，可能使用
+    fetch 将其发送到服务器而无需重新加载页面。
 - en: Text Fields
   id: totrans-116
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 文本字段
 - en: Fields created by <textarea> tags, or <input> tags with a type of text or password,
     share a common interface. Their DOM elements have a value property that holds
     their current content as a string value. Setting this property to another string
@@ -964,6 +1042,7 @@
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '`FileReaders` 在读取文件失败的任何原因时也会触发“错误”事件。错误对象本身将最终出现在阅读器的错误属性中。这个接口在承诺成为语言的一部分之前设计。你可以像这样将其封装在一个承诺中：'
 - en: '[PRE29]'
   id: totrans-149
   prefs: []
@@ -974,6 +1053,7 @@
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 客户端数据存储
 - en: Simple HTML pages with a bit of JavaScript can be a great format for “mini applications”—small
     helper programs that automate basic tasks. By connecting a few form fields with
     event handlers, you can do anything from converting between centimeters and inches
@@ -981,6 +1061,7 @@
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 带有一些 JavaScript 的简单 HTML 页面可以成为“迷你应用程序”的一种很好的格式——小型辅助程序，自动化基本任务。通过将几个表单字段与事件处理程序连接，你可以完成从厘米和英寸之间转换到根据主密码和网站名称计算密码的任何事情。
 - en: When such an application needs to remember something between sessions, you cannot
     use JavaScript bindings—those are thrown away every time the page is closed. You
     could set up a server, connect it to the internet, and have your application store
@@ -990,11 +1071,13 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 当这样的应用程序需要在会话之间记住某些内容时，你不能使用 JavaScript 绑定——每次关闭页面时，这些绑定都会被丢弃。你可以设置一个服务器，将其连接到互联网，并让你的应用程序在那里存储某些内容（我们将在[第20章](ch20.xhtml#ch20)中看到如何做到这一点）。但那是很多额外的工作和复杂性。有时候，仅仅将数据保存在浏览器中就足够了。
 - en: The localStorage object can be used to store data in a way that survives page
     reloads. This object allows you to file string values under names.
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: '`localStorage` 对象可以用于以在页面重载后仍然存在的方式存储数据。该对象允许你根据名称存储字符串值。'
 - en: '[PRE30]'
   id: totrans-154
   prefs: []
@@ -1005,23 +1088,27 @@
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: '`localStorage` 中的值会一直存在，直到被覆盖、使用 `removeItem` 移除，或用户清除他们的本地数据。'
 - en: Sites from different domains get different storage compartments. That means
     data stored in localStorage by a given website can, in principle, be read (and
     overwritten) only by scripts on that same site.
   id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 不同域名的网站获得不同的存储空间。这意味着由特定网站存储在 `localStorage` 中的数据，原则上只能被该网站上的脚本读取（和覆盖）。
 - en: Browsers do enforce a limit on the size of the data a site can store in localStorage.
     That restriction, along with the fact that filling up people’s hard drives with
     junk is not really profitable, prevents the feature from eating up too much space.
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器确实对网站可以在 `localStorage` 中存储的数据大小施加限制。这种限制，加上填满用户硬盘垃圾数据并不盈利的事实，防止了该功能占用过多空间。
 - en: The following code implements a crude note-taking application. It keeps a set
     of named notes and allows the user to edit notes and create new ones.
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码实现了一个粗略的记事本应用程序。它保持一组命名的笔记，并允许用户编辑笔记和创建新笔记。
 - en: '[PRE31]'
   id: totrans-159
   prefs: []
@@ -1036,12 +1123,15 @@
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 脚本从本地存储中的“Notes”值获取其初始状态，或者如果缺少该值，则创建一个只有购物清单的示例状态。从 `localStorage` 读取不存在的字段将返回
+    `null`。将 `null` 传递给 `JSON.parse` 将使其解析字符串 “null” 并返回 `null`。因此，?? 运算符可以用于在这种情况下提供默认值。
 - en: The setState method makes sure the DOM is showing a given state and stores the
     new state to localStorage. Event handlers call this function to move to a new
     state.
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: '`setState` 方法确保 DOM 显示给定状态，并将新状态存储到 `localStorage`。事件处理程序调用此函数以移动到新状态。'
 - en: The ... syntax in the example is used to create a new object that is a clone
     of the old state.notes, but with one property added or overwritten. It uses spread
     syntax to first add the properties from the old object and then set a new property.
@@ -1050,6 +1140,7 @@
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 示例中的 `...` 语法用于创建一个新的对象，该对象是旧状态 `.notes` 的克隆，但添加或覆盖了一个属性。它首先使用扩展语法添加旧对象中的属性，然后设置一个新属性。对象字面量中的方括号语法用于创建一个属性，其名称基于某个动态值。
 - en: There is another object, similar to localStorage, called sessionStorage. The
     difference between the two is that the content of sessionStorage is forgotten
     at the end of each *session*, which for most browsers means whenever the browser
@@ -1057,11 +1148,14 @@
   id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有一个对象，类似于 localStorage，称为 sessionStorage。两者之间的区别在于 sessionStorage 的内容在每个 *会话*
+    结束时会被遗忘，对于大多数浏览器而言，这意味着每当浏览器关闭时。
 - en: Summary
   id: totrans-164
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 概要
 - en: In this chapter, we discussed how the HTTP protocol works. A *client* sends
     a request, which contains a method (usually GET) and a path that identifies a
     resource. The *server* then decides what to do with the request and responds with
@@ -1070,11 +1164,14 @@
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一章中，我们讨论了 HTTP 协议的工作原理。*客户端* 发送一个请求，该请求包含一个方法（通常是 GET）和一个标识资源的路径。然后 *服务器*
+    决定如何处理该请求，并以状态码和响应体进行响应。请求和响应都可以包含提供附加信息的头。
 - en: 'The interface through which browser JavaScript can make HTTP requests is called
     fetch. Making a request looks like this:'
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器 JavaScript 进行 HTTP 请求的接口称为 fetch。发起请求的方式如下：
 - en: '[PRE32]'
   id: totrans-167
   prefs: []
@@ -1086,6 +1183,7 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器通过发起 GET 请求来获取显示网页所需的资源。页面还可以包含表单，当表单被提交时，用户输入的信息会作为新页面请求发送。
 - en: HTML can represent various types of form fields, such as text fields, checkboxes,
     multiple-choice fields, and file pickers. Such fields can be inspected and manipulated
     with JavaScript. They fire the “change” event when changed, fire the “input” event
@@ -1095,18 +1193,22 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: HTML 可以表示多种类型的表单字段，如文本字段、复选框、多选字段和文件选择器。这些字段可以通过 JavaScript 进行检查和操作。字段变化时会触发“变化”事件，输入文本时会触发“输入”事件，并在具有键盘焦点时接收键盘事件。像
+    value（对于文本和选择字段）或 checked（对于复选框和单选按钮）这样的属性用于读取或设置字段的内容。
 - en: When a form is submitted, a “submit” event is fired on it. A JavaScript handler
     can call preventDefault on that event to disable the browser’s default behavior.
     Form field elements may also occur outside of a form tag.
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 当表单被提交时，会在其上触发“提交”事件。JavaScript 处理程序可以在该事件上调用 preventDefault 来禁用浏览器的默认行为。表单字段元素也可以出现在表单标签之外。
 - en: When the user has selected a file from their local filesystem in a file picker
     field, the FileReader interface can be used to access the content of this file
     from a JavaScript program.
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 当用户在文件选择字段中从本地文件系统选择一个文件时，可以使用 FileReader 接口在 JavaScript 程序中访问该文件的内容。
 - en: The localStorage and sessionStorage objects can be used to save information
     in a way that survives page reloads. The first object saves the data forever (or
     until the user decides to clear it), and the second saves it until the browser
@@ -1114,16 +1216,19 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: localStorage 和 sessionStorage 对象可以用来以在页面重载时仍然保留信息的方式保存数据。第一个对象会永久保存数据（或者直到用户决定清除它），而第二个则在浏览器关闭之前保存数据。
 - en: Exercises
   id: totrans-173
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 练习
 - en: '*Content Negotiation*'
   id: totrans-174
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*内容协商*'
 - en: One of the things HTTP can do is called *content negotiation*. The Accept request
     header is used to tell the server what type of document the client would like
     to get. Many servers ignore this header, but when a server knows of various ways
@@ -1132,6 +1237,7 @@
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: HTTP 的一项功能称为 *内容协商*。Accept 请求头用于告诉服务器客户端希望获得哪种类型的文档。许多服务器会忽略该头，但当服务器知道有多种方式对资源进行编码时，它可以查看该头并发送客户端所偏好的格式。
 - en: The URL *[https://eloquentjavascript.net/author](https://eloquentjavascript.net/author)*
     is configured to respond with either plaintext, HTML, or JSON, depending on what
     the client asks for. These formats are identified by the standardized *media types*
@@ -1139,12 +1245,16 @@
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: URL *[https://eloquentjavascript.net/author](https://eloquentjavascript.net/author)*
+    被配置为根据客户端请求的内容返回纯文本、HTML 或 JSON。这些格式通过标准化的 *媒体类型* text/plain、text/html 和 application/json
+    来识别。
 - en: Send requests to fetch all three formats of this resource. Use the headers property
     in the options object passed to fetch to set the header named Accept to the desired
     media type.
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 发送请求以获取此资源的所有三种格式。使用传递给 fetch 的选项对象中的 headers 属性，将名为 Accept 的头设置为所需的媒体类型。
 - en: Finally, try asking for the media type application/rainbows+unicorns and see
     which status code that produces.
   id: totrans-178

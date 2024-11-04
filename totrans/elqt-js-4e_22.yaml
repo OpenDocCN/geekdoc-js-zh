@@ -1,20 +1,30 @@
 - en: PART III
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第三部分
 - en: NODE
+  id: totrans-1
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 节点
 - en: '*A student asked, “The programmers of old used only simple machines and no
     programming languages, yet they made beautiful programs. Why do we use complicated
     machines and programming languages?” Fu-Tzu replied, “The builders of old used
     only sticks and clay, yet they made beautiful huts.”*'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '*一位学生问：“古代程序员只使用简单的机器而没有编程语言，然而他们却写出了美丽的程序。我们为什么要使用复杂的机器和编程语言？”傅子回答：“古代的建筑者只用木棍和泥土，然而他们却建造出了美丽的茅屋。”*'
 - en: —Master Yuan-Ma, *The Book of Programming*
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: —元马大师，*编程之书*
 - en: '![Image](../images/f0338-01.jpg)'
+  id: totrans-4
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0338-01.jpg)'
