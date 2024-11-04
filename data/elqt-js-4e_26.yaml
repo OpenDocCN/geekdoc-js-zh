@@ -1,174 +1,248 @@
 - en: 'APPENDIX: EXERCISE HINTS'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 附录：练习提示
 - en: The hints below might help when you are stuck with one of the exercises in this
     book. They don’t give away the entire solution, but rather try to help you find
     it yourself.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下提示可能会在你遇到本书中的某个练习时帮助你。它们并没有给出完整的解决方案，而是尝试帮助你自己找到解决方案。
 - en: 'Chapter 2: Program Structure'
+  id: totrans-2
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第二章：程序结构
 - en: '*Looping a Triangle*'
+  id: totrans-3
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*循环三角形*'
 - en: You can start with a program that prints out the numbers 1 to 7, which you can
     derive by making a few modifications to the even number printing example given
     earlier in the chapter, where the for loop was introduced.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以从一个打印1到7的程序开始，你可以通过对本章前面给出的偶数打印示例进行一些修改来得到这个程序，其中介绍了for循环。
 - en: Now consider the equivalence between numbers and strings of hash characters.
     You can go from 1 to 2 by adding 1 (+= 1). You can go from “#” to “##” by adding
     a character (+= “#”). Thus, your solution can closely follow the number-printing
     program.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在考虑数字与哈希字符字符串之间的等价性。你可以通过增加1（+= 1）从1变为2。你可以通过增加一个字符（+= “#”）从“#”变为“##”。因此，你的解决方案可以紧密跟随数字打印程序。
 - en: '*FizzBuzz*'
+  id: totrans-6
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*FizzBuzz*'
 - en: Going over the numbers is clearly a looping job, and selecting what to print
     is a matter of conditional execution. Remember the trick of using the remainder
     (%) operator for checking whether a number is divisible by another number (has
     a remainder of zero).
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 遍历数字显然是一个循环任务，选择要打印的内容是条件执行的问题。记住使用余数（%）运算符来检查一个数字是否能被另一个数字整除（余数为零）的技巧。
 - en: In the first version, there are three possible outcomes for every number, so
     you’ll have to create an if/else if/else chain.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第一个版本中，每个数字有三个可能的结果，因此你需要创建一个if/else if/else链。
 - en: The second version of the program has a straightforward solution and a clever
     one. The simple solution is to add another conditional “branch” to precisely test
     the given condition. For the clever solution, build up a string containing the
     word or words to output and print either this word or the number if there is no
     word, potentially by making good use of the || operator.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 程序的第二个版本有一个直接的解决方案和一个巧妙的解决方案。简单的解决方案是添加另一个条件“分支”来精确测试给定条件。对于巧妙的解决方案，构建一个包含要输出的单词或词语的字符串，如果没有单词，则打印这个单词或数字，可能通过充分利用||运算符。
 - en: '*Chessboard*'
+  id: totrans-10
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*棋盘*'
 - en: You can build the string by starting with an empty one (”“) and repeatedly adding
     characters. A newline character is written “\n”.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过从一个空字符串（""）开始，反复添加字符来构建字符串。换行符写作“\n”。
 - en: To work with two dimensions, you will need a loop inside of a loop. Put braces
     around the bodies of both loops to make it easy to see where they start and end.
     Try to properly indent these bodies. The order of the loops must follow the order
     in which we build up the string (line by line, left to right, top to bottom).
     So the outer loop handles the lines, and the inner loop handles the characters
     on a line.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 要处理二维，您需要在一个循环内嵌套另一个循环。在两个循环的主体周围加上大括号，以便清楚地看到它们的开始和结束位置。尝试正确缩进这些主体。循环的顺序必须遵循我们构建字符串的顺序（逐行，从左到右，从上到下）。因此，外层循环处理行，内层循环处理行中的字符。
 - en: You’ll need two bindings to track your progress. To know whether to put a space
     or a hash sign at a given position, you could test whether the sum of the two
     counters is even (% 2).
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要两个绑定来跟踪你的进度。要知道在给定位置放置空格还是哈希符号，可以测试两个计数器的和是否为偶数（% 2）。
 - en: Terminating a line by adding a newline character must happen after the line
     has been built up, so do this after the inner loop but inside the outer loop.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过添加换行符来结束一行必须在这一行构建完成后进行，因此在内层循环后但在外层循环内执行此操作。
 - en: 'Chapter 3: Functions'
+  id: totrans-15
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第三章：函数
 - en: '*Minimum*'
+  id: totrans-16
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*最小值*'
 - en: If you have trouble putting braces and parentheses in the right place to get
     a valid function definition, start by copying one of the examples in this chapter
     and modifying it.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你在正确放置大括号和括号以获得有效的函数定义时遇到困难，可以先复制本章中的一个示例并进行修改。
 - en: A function may contain multiple return statements.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个函数可以包含多个返回语句。
 - en: '*Recursion*'
+  id: totrans-19
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*递归*'
 - en: Your function will likely look somewhat similar to the inner find function in
     the recursive findSolution example in this chapter, with an if/else if/else chain
     that tests which of the three cases applies. The final else, corresponding to
     the third case, makes the recursive call. Each of the branches should contain
     a return statement or in some other way arrange for a specific value to be returned.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的函数可能看起来有些类似于本章递归 `findSolution` 示例中的内部 `find` 函数，带有 if/else if/else 链条来测试三种情况中的哪一种适用。最终的
+    else 对应于第三种情况，执行递归调用。每个分支都应包含一个返回语句，或以其他方式安排返回特定值。
 - en: When given a negative number, the function will recurse again and again, passing
     itself an ever more negative number, thus getting further and further away from
     returning a result. It will eventually run out of stack space and abort.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 当给定一个负数时，函数会不断递归，传递给自己一个越来越负的数字，从而越来越远离返回结果。最终它会耗尽栈空间并中止。
 - en: '*Bean Counting*'
+  id: totrans-22
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*豆子计数*'
 - en: Your function will need a loop that looks at every character in the string.
     It can run an index from zero to one below its length (< *string*.length). If
     the character at the current position is the same as the one the function is looking
     for, it adds 1 to a counter variable. Once the loop has finished, the counter
     can be returned.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的函数需要一个循环来查看字符串中的每个字符。它可以从零运行到比其长度小一的索引（< *string*.length）。如果当前索引位置的字符与函数正在查找的字符相同，则将计数变量加
+    1。循环结束后，可以返回计数。
 - en: Take care to make all the bindings used in the function *local* to the function
     by properly declaring them with the let or const keyword.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保在函数中将所有绑定声明为 *局部* 变量，通过使用 let 或 const 关键字正确声明它们。
 - en: 'Chapter 4: Data Structures: Objects and Arrays'
+  id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第 4 章：数据结构：对象和数组
 - en: '*The Sum of a Range*'
+  id: totrans-26
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*范围的总和*'
 - en: Building up an array is most easily done by first initializing a binding to
     [] (a fresh, empty array) and repeatedly calling its push method to add a value.
     Don’t forget to return the array at the end of the function.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建数组最简单的方法是首先将绑定初始化为 []（一个新的空数组），然后重复调用其 push 方法添加值。别忘了在函数末尾返回数组。
 - en: Since the end boundary is inclusive, you’ll need to use the <= operator rather
     than < to check for the end of your loop.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于结束边界是包含的，因此你需要使用 <= 操作符而不是 < 来检查循环的结束。
 - en: The step parameter can be an optional parameter that defaults (using the = operator)
     to 1.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 步长参数可以是一个可选参数，默认（使用 = 操作符）为 1。
 - en: Having range understand negative step values is probably best done by writing
     two separate loops—one for counting up and one for counting down—because the comparison
     that checks whether the loop is finished needs to be >= rather than <= when counting
     downward.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 让范围理解负步长值最好是通过编写两个独立的循环来实现——一个用于递增计数，一个用于递减计数——因为检查循环是否完成的比较在递减计数时需要使用 >= 而不是
+    <=。
 - en: It might also be worthwhile to use a different default step, namely, –1, when
     the end of the range is smaller than the start. That way, range(5, 2) returns
     something meaningful rather than getting stuck in an infinite loop. It is possible
     to refer to previous parameters in the default value of a parameter.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 当范围的结束点小于起始点时，使用默认步长 –1 可能也值得考虑。这样，`range(5, 2)` 会返回有意义的结果，而不是陷入无限循环。可以在参数的默认值中引用先前的参数。
 - en: '*Reversing an Array*'
+  id: totrans-32
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*反转数组*'
 - en: There are two obvious ways to implement reverseArray. The first is to simply
     go over the input array from front to back and use the unshift method on the new
     array to insert each element at its start. The second is to loop over the input
     array backward and use the push method. Iterating over an array backward requires
     a (somewhat awkward) for specification, like (let i = array.length - 1; i >= 0;
     i--).
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现 `reverseArray` 有两种明显的方法。第一种是简单地从前到后遍历输入数组，并在新数组上使用 unshift 方法在其开始插入每个元素。第二种是向后遍历输入数组并使用
+    push 方法。向后遍历数组需要一个（有点尴尬的）for 循环，例如 (let i = array.length - 1; i >= 0; i--)。
 - en: Reversing the array in place is harder. You have to be careful not to overwrite
     elements that you will later need. Using reverseArray or otherwise copying the
     whole array (array.slice() is a good way to copy an array) works but is cheating.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 就地反转数组更为复杂。你必须小心不要覆盖稍后需要的元素。使用 `reverseArray` 或其他方法复制整个数组（`array.slice()` 是复制数组的好方法）有效，但这算是作弊。
 - en: The trick is to *swap* the first and last elements, then the second and second-to-last,
     and so on. You can do this by looping over half the length of the array (use Math.floor
     to round down—you don’t need to touch the middle element in an array with an odd
@@ -176,50 +250,73 @@
     array.length - 1 - i. You can use a local binding to briefly hold onto one of
     the elements, overwrite that one with its mirror image, and then put the value
     from the local binding in the place where the mirror image used to be.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 诀窍是 *交换* 第一个和最后一个元素，然后第二个和倒数第二个元素，以此类推。您可以通过循环数组长度的一半来实现（使用 Math.floor 向下取整——在具有奇数个元素的数组中，您无需触碰中间元素），并将位置
+    i 的元素与位置 array.length - 1 - i 的元素进行交换。您可以使用局部绑定暂时保存其中一个元素，将该元素覆盖为其镜像，然后将局部绑定中的值放回镜像曾在的位置。
 - en: '*A List*'
+  id: totrans-36
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*列表*'
 - en: 'Building up a list is easier when done back to front. So arrayToList could
     iterate over the array backward (see the previous exercise) and, for each element,
     add an object to the list. You can use a local binding to hold the part of the
     list that was built so far and use an assignment like list = {value: *X*, rest:
     list} to add an element.'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '从后向前构建列表更容易。因此，arrayToList 可以反向遍历数组（参见前面的练习），并为每个元素向列表中添加一个对象。您可以使用局部绑定来保持迄今为止构建的列表部分，并使用像
+    list = {value: *X*, rest: list} 的赋值来添加一个元素。'
 - en: 'To run over a list (in listToArray and nth), a for loop specification like
     this can be used:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 要遍历一个列表（在 listToArray 和 nth 中），可以使用这样的 for 循环规范：
 - en: '[PRE0]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Can you see how that works? Every iteration of the loop, node points to the
     current sublist, and the body can read its value property to get the current element.
     At the end of an iteration, node moves to the next sublist. When that is null,
     we have reached the end of the list, and the loop is finished.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 您能看出这是如何工作的？在循环的每次迭代中，node 指向当前子列表，主体可以读取其值属性以获取当前元素。在一次迭代结束时，node 移动到下一个子列表。当它为
+    null 时，我们已到达列表末尾，循环结束。
 - en: The recursive version of nth will, similarly, look at an ever smaller part of
     the “tail” of the list and at the same time count down the index until it reaches
     zero, at which point it can return the value property of the node it is looking
     at. To get the zeroth element of a list, you simply take the value property of
     its head node. To get element *N* + 1, you take the *N*th element of the list
     that’s in this list’s rest property.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: nth 的递归版本同样会查看列表“尾部”的越来越小的部分，同时将索引计数递减，直到它达到零，此时可以返回它所查看节点的值属性。要获取列表的零索引元素，只需取其头节点的值属性。要获取元素
+    *N* + 1，您需要取该列表在其 rest 属性中的第 *N* 个元素。
 - en: '*Deep Comparison*'
+  id: totrans-42
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*深比较*'
 - en: Your test for whether you are dealing with a real object will look something
     like typeof x == “object” && x != null. Be careful to compare properties only
     when *both* arguments are objects. In all other cases you can just immediately
     return the result of applying ===.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 您测试是否在处理真实对象的方法大致如下：typeof x == “object” && x != null。要小心，仅在 *两个* 参数都是对象时进行属性比较。在所有其他情况下，您可以立即返回
+    === 的结果。
 - en: Use Object.keys to go over the properties. You need to test whether both objects
     have the same set of property names and whether those properties have identical
     values. One way to do that is to ensure that both objects have the same number
@@ -228,60 +325,84 @@
     sure the other actually has a property by that name. If they have the same number
     of properties and all properties in one also exist in the other, they have the
     same set of property names.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 Object.keys 遍历属性。您需要测试两个对象是否具有相同的属性名称集合，以及这些属性是否具有相同的值。确保两个对象具有相同数量的属性（属性列表的长度相同）是一种方法。然后，在循环其中一个对象的属性以进行比较时，始终首先确保另一个对象实际上具有该名称的属性。如果它们具有相同数量的属性，并且一个中的所有属性也存在于另一个中，那么它们具有相同的属性名称集合。
 - en: Returning the correct value from the function is best done by immediately returning
     false when a mismatch is found and returning true at the end of the function.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 从函数返回正确的值，最好是在发现不匹配时立即返回 false，并在函数结束时返回 true。
 - en: 'Chapter 5: Higher-Order Functions'
+  id: totrans-46
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第 5 章：高阶函数
 - en: '*Everything*'
+  id: totrans-47
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*一切*'
 - en: Like the && operator, the every method can stop evaluating further elements
     as soon as it has found one that doesn’t match. So the loop-based version can
     jump out of the loop—with break or return—as soon as it runs into an element for
     which the predicate function returns false. If the loop runs to its end without
     finding such an element, we know that all elements matched and we should return
     true.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 与&&运算符类似，every方法可以在找到第一个不匹配的元素后停止评估后续元素。因此，基于循环的版本可以在遇到谓词函数返回false的元素时使用break或return跳出循环。如果循环在没有找到这样的元素的情况下运行到结束，我们就知道所有元素都匹配，应该返回true。
 - en: To build every on top of some, we can apply *De Morgan’s laws*, which state
     that a && b equals !(!a || !b). This can be generalized to arrays, where all elements
     in the array match if there is no element in the array that does not match.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了在某些基础上构建every，我们可以应用*德摩根定律*，该定律表明a && b等于!(!a || !b)。这可以推广到数组，在数组中，如果没有不匹配的元素，则所有元素都匹配。
 - en: '*Dominant Writing Direction*'
+  id: totrans-50
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*主导书写方向*'
 - en: Your solution might look a lot like the first half of the textScripts example.
     You again have to count characters by a criterion based on characterScript and
     then filter out the part of the result that refers to uninteresting (scriptless)
     characters.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的解决方案可能与textScripts示例的前半部分非常相似。你再次需要根据characterScript的标准来计算字符，然后过滤掉结果中与不感兴趣（无脚本）字符相关的部分。
 - en: Finding the direction with the highest character count can be done with reduce.
     If it’s not clear how, refer to the example earlier in the chapter, where reduce
     was used to find the script with the most characters.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用reduce可以找到字符计数最高的方向。如果不清楚如何做，请参考本章早些时候的示例，其中使用reduce找到字符最多的脚本。
 - en: 'Chapter 6: The Secret Life of Objects'
+  id: totrans-53
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第六章：对象的秘密生活
 - en: '*A Vector Type*'
+  id: totrans-54
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*向量类型*'
 - en: Look back to the Rabbit class example if you’re unsure how class declarations
     look.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你不确定类声明的样子，请回顾一下Rabbit类示例。
 - en: Adding a getter property to the constructor can be done by putting the word
     get before the method name. To compute the distance from (0, 0) to (*x*, *y*),
     you can use the Pythagorean theorem, which says that the square of the distance
@@ -289,203 +410,291 @@
     of the y-coordinate. Thus, ![Image](../images/f0391-01.jpg) is the number you
     want. Math.sqrt is the way you compute a square root in JavaScript and x ** 2
     can be used to square a number.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 向构造函数添加getter属性可以通过在方法名前加上get来实现。要计算从(0, 0)到(*x*, *y*)的距离，可以使用勾股定理，勾股定理表明我们所寻找的距离的平方等于x坐标的平方加上y坐标的平方。因此，![Image](../images/f0391-01.jpg)就是你想要的数字。Math.sqrt是计算平方根的方法，而x
+    ** 2可以用来求一个数的平方。
 - en: '*Groups*'
+  id: totrans-57
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*组*'
 - en: The easiest way to do this is to store an array of group members in an instance
     property. The includes or indexOf methods can be used to check whether a given
     value is in the array.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的方法是将组成员的数组存储在实例属性中。可以使用includes或indexOf方法检查给定值是否在数组中。
 - en: Your class’s constructor can set the member collection to an empty array. When
     add is called, it must check whether the given value is in the array or add it
     otherwise, possibly using push.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的类的构造函数可以将成员集合设置为空数组。当调用add时，它必须检查给定值是否在数组中，或者添加它，可能使用push。
 - en: Deleting an element from an array, in delete, is less straightforward, but you
     can use filter to create a new array without the value. Don’t forget to overwrite
     the property holding the members with the newly filtered version of the array.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 从数组中删除一个元素在delete中不太直接，但你可以使用filter创建一个不包含该值的新数组。别忘了用新过滤的数组版本覆盖保存成员的属性。
 - en: The from method can use a for/of loop to get the values out of the iterable
     object and call add to put them into a newly created group.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: from方法可以使用for/of循环从可迭代对象中提取值，并调用add将它们放入新创建的组中。
 - en: '*Iterable Groups*'
+  id: totrans-62
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*可迭代组*'
 - en: It is probably worthwhile to define a new class GroupIterator. Iterator instances
     should have a property that tracks the current position in the group. Every time
     next is called, it checks whether it is done and, if not, moves past the current
     value and returns it.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 可能值得定义一个新的类GroupIterator。迭代器实例应该有一个属性，用于跟踪当前在组中的位置。每次调用next时，它都会检查是否完成，如果没有，则跳过当前值并返回它。
 - en: The Group class itself gets a method named by Symbol.iterator that, when called,
     returns a new instance of the iterator class for that group.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: Group类本身会有一个名为Symbol.iterator的方法，当调用时，它会返回该组的迭代器类的新实例。
 - en: 'Chapter 7: Project: A Robot'
+  id: totrans-65
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第七章：项目：一个机器人
 - en: '*Measuring a Robot*'
+  id: totrans-66
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*测量机器人*'
 - en: You’ll have to write a variant of the runRobot function that, instead of logging
     the events to the console, returns the number of steps the robot took to complete
     the task.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要编写一个 runRobot 函数的变体，该函数不是将事件记录到控制台，而是返回机器人完成任务所需的步骤数。
 - en: Your measurement function can then, in a loop, generate new states and count
     the steps each of the robots takes. When it has generated enough measurements,
     it can use console.log to output the average for each robot, which is the total
     number of steps taken divided by the number of measurements.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的测量函数可以在循环中生成新状态，并计算每个机器人所需的步骤数。当它生成足够的测量值时，可以使用 console.log 输出每个机器人的平均值，即总步骤数除以测量值的数量。
 - en: '*Robot Efficiency*'
+  id: totrans-69
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*机器人效率*'
 - en: The main limitation of goalOrientedRobot is that it considers only one parcel
     at a time. It will often walk back and forth across the village because the parcel
     it happens to be looking at happens to be at the other side of the map, even if
     there are others much closer.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: goalOrientedRobot 的主要限制是它一次只考虑一个包裹。它经常会在村庄中来回走动，因为它所关注的包裹恰好在地图的另一侧，即使还有其他包裹更近。
 - en: One possible solution would be to compute routes for all packages and then take
     the shortest one. Even better results can be obtained, if there are multiple shortest
     routes, by preferring the ones that go to pick up a package instead of delivering
     a package.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种可能的解决方案是计算所有包裹的路线，然后选择最短的一条。如果有多条最短路线，优先选择那些去取包裹而不是送包裹的路线，可以获得更好的结果。
 - en: '*Persistent Group*'
+  id: totrans-72
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*持久化组*'
 - en: The most convenient way to represent the set of member values is still as an
     array, since arrays are easy to copy.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 表示成员值集合最方便的方法仍然是作为数组，因为数组易于复制。
 - en: When a value is added to the group, you can create a new group with a copy of
     the original array that has the value added (for example, using concat). When
     a value is deleted, you filter it from the array.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 当一个值被添加到组中时，你可以创建一个新组，包含添加了该值的原始数组的副本（例如，使用 concat）。当一个值被删除时，你从数组中过滤掉它。
 - en: The class’s constructor can take such an array as its argument and store it
     as the instance’s (only) property. This array is never updated.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 类的构造函数可以将这样的数组作为参数，并将其存储为实例的（唯一）属性。这个数组不会被更新。
 - en: To add the empty property to the constructor, you can declare it as a static
     property.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将空属性添加到构造函数中，可以将其声明为静态属性。
 - en: You need only one empty instance because all empty groups are the same and instances
     of the class don’t change. You can create many different groups from that single
     empty group without affecting it.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 你只需要一个空实例，因为所有空组都是相同的，类的实例不会改变。你可以从那个单一的空组中创建许多不同的组，而不影响它。
 - en: 'Chapter 8: Bugs and Errors'
+  id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第 8 章：错误和故障
 - en: '*Retry*'
+  id: totrans-79
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*重试*'
 - en: The call to primitiveMultiply should definitely happen in a try block. The corresponding
     catch block should rethrow the exception when it is not an instance of MultiplicatorUnitFailure
     and ensure the call is retried when it is.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 对原始乘法的调用应在 try 块中进行。对应的 catch 块应在异常不是 MultiplicatorUnitFailure 的实例时重新抛出异常，并确保在异常是实例时重试调用。
 - en: To do the retrying, you can either use a loop that stops only when a call succeeds—as
     in the look example earlier in this chapter—or use recursion and hope you don’t
     get a string of failures so long that it overflows the stack (which is a pretty
     safe bet).
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 要进行重试，你可以使用一个仅在调用成功时停止的循环—如本章早些时候的示例，或者使用递归并希望不会出现过长的失败字符串，以至于溢出栈（这通常是相当安全的假设）。
 - en: '*The Locked Box*'
+  id: totrans-82
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*锁定的盒子*'
 - en: This exercise calls for a finally block. Your function should first unlock the
     box and then call the argument function from inside a try body. The finally block
     after it should lock the box again.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个练习需要一个 finally 块。你的函数应首先解锁盒子，然后在 try 块内部调用参数函数。之后的 finally 块应再次锁定盒子。
 - en: To make sure we don’t lock the box when it wasn’t already locked, check its
     lock at the start of the function and unlock and lock it only when it started
     out locked.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 为确保我们不会在未锁定时锁定盒子，请在函数开始时检查其锁定状态，并仅在它最初被锁定时进行解锁和锁定。
 - en: 'Chapter 9: Regular Expressions'
+  id: totrans-85
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第 9 章：正则表达式
 - en: '*Quoting Style*'
+  id: totrans-86
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*引用风格*'
 - en: The most obvious solution is to replace only quotes with a nonletter character
     on at least one side—something like /\P{L}’|’\P{L}/u. But you also have to take
     the start and end of the line into account.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 最明显的解决方案是仅用非字母字符替换引号，至少在一侧—像这样 /\P{L}’|’\P{L}/u。但你还必须考虑行的开始和结束。
 - en: In addition, you must ensure that the replacement also includes the characters
     that were matched by the \P{L} pattern so that those are not dropped. This can
     be done by wrapping them in parentheses and including their groups in the replacement
     string ($1, $2). Groups that are not matched will be replaced by nothing.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，您还必须确保替换内容也包含由 \P{L} 模式匹配的字符，以免将其丢弃。这可以通过将它们包裹在括号中并在替换字符串中包括它们的组（$1, $2）来实现。未匹配的组将被替换为空。
 - en: '*Numbers Again*'
+  id: totrans-89
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*数字再次*'
 - en: First, do not forget the backslash in front of the period.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，不要忘记在句点前加上反斜杠。
 - en: Matching the optional sign in front of the number, as well as in front of the
     exponent, can be done with [+\-]? or (\+|-|) (plus, minus, or nothing).
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 匹配数字前的可选符号，以及指数前的符号，可以用 [+\-]? 或 (\+|-|) 来实现（加号、减号或无符号）。
 - en: The more complicated part of the exercise is the problem of matching both “5.”
     and “.5” without also matching “.” For this, a good solution is to use the | operator
     to separate the two cases—either one or more digits optionally followed by a dot
     and zero or more digits *or* a dot followed by one or more digits.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 本练习更复杂的部分是匹配“5.” 和 “.5”，而不匹配 “.”。为此，一个好的解决方案是使用 | 操作符将这两种情况分开——要么是一个或多个数字后可选跟一个点和零个或多个数字，要么是一个点后跟一个或多个数字。
 - en: Finally, to make the *e* case insensitive, either add an i option to the regular
     expression or use [eE].
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，为了使 *e* 不区分大小写，可以向正则表达式添加一个 i 选项，或者使用 [eE]。
 - en: 'Chapter 10: Modules'
+  id: totrans-94
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第十章：模块
 - en: '*A Modular Robot*'
+  id: totrans-95
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*模块化机器人*'
 - en: 'Here’s what I would have done (but again, there is no single *right* way to
     design a given module):'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我会做的事情（但再次强调，没有单一的 *正确* 方法来设计一个给定模块）：
 - en: The code used to build the road graph lives in the *graph.js* module. Because
     I’d rather use dijkstrajs from NPM than our own pathfinding code, we’ll make this
     build the kind of graph data that dijkstrajs expects. This module exports a single
     function, buildGraph. I’d have buildGraph accept an array of two-element arrays,
     rather than strings containing hyphens, to make the module less dependent on the
     input format.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于构建道路图的代码位于 *graph.js* 模块中。因为我宁愿使用 NPM 中的 dijkstrajs，而不是我们自己的路径查找代码，所以我们将构建
+    dijkstrajs 所期望的那种图数据。该模块导出一个单一的函数 `buildGraph`。我会让 `buildGraph` 接受一个由两个元素数组构成的数组，而不是包含连字符的字符串，以减少模块对输入格式的依赖。
 - en: The *roads.js* module contains the raw road data (the roads array) and the roadGraph
     binding. This module depends on *./graph.js* and exports the road graph.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: '*roads.js* 模块包含原始道路数据（道路数组）和道路图绑定。该模块依赖于 *./graph.js* 并导出道路图。'
 - en: The VillageState class lives in the *state.js* module. It depends on the *./roads.js*
     module because it needs to be able to verify that a given road exists. It also
     needs randomPick. Since that is a three-line function, we could just put it into
@@ -495,14 +704,22 @@
     solution is to just make both modules depend on that. We can add the runRobot
     function to this module as well, since it’s small and closely related to state
     management. The module exports both the VillageState class and the runRobot function.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '`VillageState` 类位于 *state.js* 模块中。它依赖于 *./roads.js* 模块，因为它需要验证给定的道路是否存在。它还需要
+    `randomPick`。由于这是一个三行函数，我们可以将其作为内部助手函数放入 *state.js* 模块中。但 `randomRobot` 也需要它。因此我们要么重复它，要么将其放入自己的模块。由于这个函数恰好存在于
+    NPM 的 random-item 包中，一个合理的解决方案是让两个模块都依赖于它。我们还可以将 `runRobot` 函数添加到这个模块中，因为它小且与状态管理密切相关。该模块导出了
+    `VillageState` 类和 `runRobot` 函数。'
 - en: Finally, the robots, along with the values they depend on, such as mailRoute,
     could go into an *example-robots.js* module, which depends on *./roads.js* and
     exports the robot functions. To make it possible for goalOrientedRobot to do route-finding,
     this module also depends on dijkstrajs.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，机器人及其依赖的值，例如 mailRoute，可以放入 *example-robots.js* 模块中，该模块依赖于 *./roads.js* 并导出机器人函数。为了使
+    `goalOrientedRobot` 能够进行路径寻找，这个模块还依赖于 dijkstrajs。
 - en: By offloading some work to NPM modules, the code became a little smaller. Each
     individual module does something rather simple and can be read on its own. Dividing
     code into modules also often suggests further improvements to the program’s design.
@@ -511,103 +728,145 @@
     to the state’s constructor and make the robots read it from the state object—this
     reduces dependencies (which is always good) and makes it possible to run simulations
     on different maps (which is even better).
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将一些工作卸载到NPM模块，代码变得稍微小了一些。每个独立模块执行的任务相对简单，并且可以单独阅读。将代码划分为模块通常还会建议对程序设计的进一步改进。在这种情况下，VillageState和机器人依赖于特定的道路图似乎有些奇怪。将图作为状态构造函数的一个参数，并让机器人从状态对象中读取，这可能是个更好的主意——这减少了依赖（这总是好的），并使得在不同地图上运行模拟成为可能（这更好）。
 - en: Is it a good idea to use NPM modules for things that we could have written ourselves?
     In principle, yes—for nontrivial things like the pathfinding function you are
     likely to make mistakes and waste time writing them yourself. For tiny functions
     like random-item, writing them yourself is easy enough. But adding them wherever
     you need them does tend to clutter your modules.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用我们本可以自己编写的NPM模块是个好主意吗？原则上是的——对于像路径寻找函数这样的非平凡事物，你很可能会犯错误并浪费时间自己编写。对于像random-item这样的小函数，自己编写是相对简单的。但在需要它们的地方添加它们确实会使模块变得杂乱。
 - en: However, you should also not underestimate the work involved in *finding* an
     appropriate NPM package. And even if you find one, it might not work well or may
     be missing some feature you need. On top of that, depending on NPM packages means
     you have to make sure they are installed, you have to distribute them with your
     program, and you might have to periodically upgrade them.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，你也不应低估*寻找*合适的NPM包所涉及的工作。即使你找到了一个，它可能也不够好，或者缺少你需要的一些功能。此外，依赖于NPM包意味着你必须确保它们已安装，必须将它们与程序一起分发，并且可能需要定期升级它们。
 - en: So again, this is a trade-off, and you can decide either way depending on how
     much a given package actually helps you.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以这又是一个权衡，你可以根据特定包对你实际帮助的程度决定是否使用。
 - en: '*Roads Module*'
+  id: totrans-105
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*道路模块*'
 - en: Since this is an ES module, you have to use import to access the graph module.
     That was described as exporting a buildGraph function, which you can pick out
     of its interface object with a destructuring const declaration.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这是一个ES模块，你必须使用import来访问图形模块。那被描述为导出一个buildGraph函数，你可以通过解构const声明从其接口对象中提取出来。
 - en: To export roadGraph, you put the keyword export before its definition. Because
     buildGraph takes a data structure that doesn’t precisely match roads, the splitting
     of the road strings must happen in your module.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导出roadGraph，你需要在其定义前加上关键字export。由于buildGraph接受的数据结构与roads并不完全匹配，因此必须在你的模块中拆分道路字符串。
 - en: '*Circular Dependencies*'
+  id: totrans-108
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*循环依赖*'
 - en: The trick is that require adds the interface object for a module to its cache
     *before* it starts loading the module. That way, if any require call made while
     it is running tries to load it, it is already known, and the current interface
     will be returned, rather than starting to load the module once more (which would
     eventually overflow the stack).
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 诀窍在于require在开始加载模块*之前*将模块的接口对象添加到其缓存中。这样，如果在其运行时发出的任何require调用尝试加载它，它已经被识别，并且将返回当前接口，而不是再次开始加载模块（这最终会导致栈溢出）。
 - en: 'Chapter 11: Asynchronous Programming'
+  id: totrans-110
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第11章：异步编程
 - en: '*Quiet Times*'
+  id: totrans-111
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*安静的时光*'
 - en: You will need to convert the content of these files to an array. The easiest
     way to do that is to use the split method on the string produced by textFile.
     Note that for the logfiles, that will still give you an array of strings, which
     you have to convert to numbers before passing them to new Date.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要将这些文件的内容转换为数组。最简单的方法是对textFile生成的字符串使用split方法。请注意，对于日志文件，这仍会给你一个字符串数组，在将它们传递给new
+    Date之前，你必须将其转换为数字。
 - en: Summarizing all the time points into a table of hours can be done by creating
     a table (array) that holds a number for each hour in the day. You can then loop
     over all the timestamps (over the logfiles and the numbers in every logfile) and
     for each one, if it happened on the correct day, take the hour it occurred in,
     and add one to the corresponding number in the table.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 将所有时间点汇总到一个小时的表中，可以通过创建一个数组来完成，该数组为一天中的每个小时保存一个数字。然后可以遍历所有时间戳（遍历日志文件及每个日志文件中的数字），对于每一个，如果它发生在正确的日期，就取出发生的小时，并将对应的数字加一。
 - en: Make sure you use await on the result of asynchronous functions before doing
     anything with it, or you’ll end up with a Promise where you expected a string.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保在对异步函数的结果进行任何操作之前使用 `await`，否则你会得到一个 Promise，而你预期的是一个字符串。
 - en: '*Real Promises*'
+  id: totrans-115
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*真实的承诺*'
 - en: The most straightforward approach to writing this function is to use a chain
     of then calls. The first promise is produced by reading the list of logfiles.
     The first callback can split this list and map textFile over it to get an array
     of promises to pass to Promise.all. It can return the object returned by Promise.all
     so that whatever that returns becomes the result of the return value of this first
     then.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写此函数的最简单方法是使用一系列的 `then` 调用。第一个承诺是通过读取日志文件列表生成的。第一个回调可以拆分此列表，并在其上映射 `textFile`，以获取一个承诺数组，传递给
+    `Promise.all`。它可以返回 `Promise.all` 返回的对象，这样无论返回什么，都会成为第一个 `then` 的返回值。
 - en: 'We now have a promise that returns an array of logfiles. We can call then again
     on that, and put the timestamp-counting logic in there. Something like this:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在有一个返回日志文件数组的承诺。我们可以再次在其上调用 `then`，并将时间戳计数逻辑放在其中。类似这样的：
 - en: '[PRE1]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Or you could, for even better work scheduling, put the analysis of each file
     inside of the Promise.all, so that that work can be started for the first file
     that comes back from disk, even before the other files come back.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，为了更好的工作调度，可以将每个文件的分析放入 `Promise.all` 中，以便可以在第一个从磁盘返回的文件上启动该工作，即使在其他文件返回之前。
 - en: '[PRE2]'
+  id: totrans-120
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: This shows that the way you structure your promises can have a real effect on
     the way the work is scheduled. A simple loop with await in it will make the process
     completely linear—it waits for each file to load before proceeding. Promise.all
@@ -616,190 +875,268 @@
     can be faster, but it also makes the order in which things will happen less predictable.
     In this case, we’re only going to be incrementing numbers in a table, which isn’t
     hard to do in a safe way. For other kinds of problems, it may be a lot more difficult.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 这表明你结构化承诺的方式确实会对工作的调度方式产生影响。一个简单的循环加上 `await` 将使过程完全线性——它在继续之前等待每个文件加载。`Promise.all`
+    使得多个任务在概念上可以同时处理，允许它们在文件仍在加载时取得进展。这可能更快，但也使得事情发生的顺序变得不那么可预测。在这种情况下，我们只是要在表中递增数字，这样做并不困难。对于其他类型的问题，这可能会更加复杂。
 - en: When a file in the list doesn’t exist, the promise returned by textFile will
     be rejected. Because Promise.all rejects if any of the promises given to it fail,
     the return value of the callback given to the first then will also be a rejected
     promise. That makes the promise returned by then fail, so the callback given to
     the second then isn’t even called, and a rejected promise is returned from the
     function.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 当列表中的某个文件不存在时，`textFile` 返回的承诺将被拒绝。因为如果给定的任何承诺失败，`Promise.all` 就会拒绝，所以传递给第一个
+    `then` 的回调的返回值也将是一个被拒绝的承诺。这使得由 `then` 返回的承诺失败，因此传递给第二个 `then` 的回调甚至不会被调用，函数返回一个被拒绝的承诺。
 - en: '*Building Promise.all*'
+  id: totrans-123
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*构建 Promise.all*'
 - en: The function passed to the Promise constructor will have to call then on each
     of the promises in the given array. When one of them succeeds, two things need
     to happen. The resulting value needs to be stored in the correct position of a
     result array, and we must check whether this was the last pending promise and
     finish our own promise if it was.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 传递给 Promise 构造函数的函数必须对给定数组中的每个承诺调用 `then`。当其中一个成功时，需要发生两件事。结果值需要存储在结果数组的正确位置，并且我们必须检查这是否是最后一个待处理的承诺，如果是的话就完成我们自己的承诺。
 - en: The latter can be done with a counter that is initialized to the length of the
     input array and from which we subtract 1 every time a promise succeeds. When it
     reaches 0, we are done. Make sure you take into account the situation where the
     input array is empty (and thus no promise will ever resolve).
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 后者可以通过一个计数器来完成，该计数器初始化为输入数组的长度，每当一个承诺成功时我们就减去1。当它达到0时，我们完成了。确保考虑输入数组为空的情况（因此没有承诺会被解析）。
 - en: Handling failure requires some thought but turns out to be extremely simple.
     Just pass the reject function of the wrapping promise to each of the promises
     in the array as a catch handler or as a second argument to then so that a failure
     in one of them triggers the rejection of the whole wrapper promise.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理失败需要一些思考，但实际上非常简单。只需将包装承诺的reject函数传递给数组中每个承诺作为catch处理程序或作为then的第二个参数，以便其中一个的失败触发整个包装承诺的拒绝。
 - en: 'Chapter 12: Project: A Programming Language'
+  id: totrans-127
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第12章：项目：一种编程语言
 - en: '*Arrays*'
+  id: totrans-128
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*数组*'
 - en: The easiest way to do this is to represent Egg arrays with JavaScript arrays.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的方法是用JavaScript数组表示Egg数组。
 - en: The values added to the top scope must be functions. By using a rest argument
     (with triple-dot notation), the definition of array can be *very* simple.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加到顶层作用域的值必须是函数。通过使用rest参数（三个点表示法），数组的定义可以是*非常*简单的。
 - en: '*Closure*'
+  id: totrans-131
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*闭包*'
 - en: Again, we are riding along on a JavaScript mechanism to get the equivalent feature
     in Egg. Special forms are passed the local scope in which they are evaluated so
     that they can evaluate their subforms in that scope. The function returned by
     fun has access to the scope argument given to its enclosing function and uses
     that to create the function’s local scope when it is called.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们再次借助JavaScript机制在Egg中获得等效功能。特殊形式被传递到它们被评估的本地作用域，以便它们能够在该作用域中评估其子表单。由fun返回的函数可以访问其封闭函数传递的作用域参数，并利用它在调用时创建函数的本地作用域。
 - en: This means that the prototype of the local scope will be the scope in which
     the function was created, which makes it possible to access bindings in that scope
     from the function. This is all there is to implementing closure (though to compile
     it in a way that is actually efficient, you’d need to do some more work).
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着本地作用域的原型将是创建函数时的作用域，这使得可以从该函数访问该作用域中的绑定。这就是实现闭包的全部内容（尽管要以实际高效的方式编译它，你需要做更多工作）。
 - en: '*Comments*'
+  id: totrans-134
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*评论*'
 - en: Make sure your solution handles multiple comments in a row, with whitespace
     potentially between or after them.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保你的解决方案能够处理连续多个注释，且可能在它们之间或之后有空格。
 - en: A regular expression is probably the easiest way to solve this. Write something
     that matches “whitespace or a comment, zero or more times.” Use the exec or match
     method and look at the length of the first element in the returned array (the
     whole match) to find out how many characters to slice off.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式可能是解决此问题的最简单方法。编写一个匹配“空格或注释，零次或多次”的表达式。使用exec或match方法，并查看返回数组中第一个元素的长度（整个匹配）以找出需要截断多少个字符。
 - en: '*Fixing Scope*'
+  id: totrans-137
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*修复作用域*'
 - en: You will have to loop through one scope at a time, using Object.getPrototypeOf
     to go to the next outer scope. For each scope, use Object.hasOwn to find out whether
     the binding, indicated by the name property of the first argument to set, exists
     in that scope. If it does, set it to the result of evaluating the second argument
     to set and then return that value.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 你必须一次循环遍历一个作用域，使用Object.getPrototypeOf转到下一个外部作用域。对于每个作用域，使用Object.hasOwn查找由set的第一个参数的名称属性指示的绑定是否存在于该作用域中。如果存在，将其设置为评估set的第二个参数的结果，然后返回该值。
 - en: If the outermost scope is reached (Object.getPrototypeOf returns null) and we
     haven’t found the binding yet, it doesn’t exist, and an error should be thrown.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果到达最外层作用域（Object.getPrototypeOf返回null）而我们仍未找到绑定，则表示该绑定不存在，应抛出错误。
 - en: 'Chapter 14: The Document Object Model'
+  id: totrans-140
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第14章：文档对象模型
 - en: '*Build a Table*'
+  id: totrans-141
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*构建表格*'
 - en: You can use document.createElement to create new element nodes, document.createTextNode
     to create text nodes, and the appendChild method to put nodes into other nodes.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以使用document.createElement创建新的元素节点，使用document.createTextNode创建文本节点，并使用appendChild方法将节点放入其他节点中。
 - en: You’ll want to loop over the key names once to fill in the top row and then
     again for each object in the array to construct the data rows. To get an array
     of key names from the first object, Object.keys will be useful.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要遍历一次键名以填充顶行，然后对数组中的每个对象再次遍历以构造数据行。要从第一个对象获取键名数组，Object.keys将会非常有用。
 - en: To add the table to the correct parent node, you can use document.getElementById
     or document.querySelector with “#mountains” to find the node.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将表格添加到正确的父节点，可以使用document.getElementById或document.querySelector与“#mountains”一起找到该节点。
 - en: '*Elements by Tag Name*'
+  id: totrans-145
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*按标签名获取元素*'
 - en: The solution is most easily expressed with a recursive function, similar to
     the talksAbout function defined earlier in this chapter.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决方案最容易用递归函数表达，类似于本章早些时候定义的talksAbout函数。
 - en: You could call byTagname itself recursively, concatenating the resulting arrays
     to produce the output. Or you could create an inner function that calls itself
     recursively and that has access to an array binding defined in the outer function,
     to which it can add the matching elements it finds. Don’t forget to call the inner
     function once from the outer function to start the process.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以递归地调用byTagname，连接结果数组以生成输出。或者，你可以创建一个内部函数，它可以递归调用自己，并且可以访问在外部函数中定义的数组绑定，以便将找到的匹配元素添加进去。别忘了从外部函数调用一次内部函数以启动这个过程。
 - en: The recursive function must check the node type. Here we are interested only
     in node type 1 (Node.ELEMENT_NODE). For such nodes, we must loop over their children
     and, for each child, see whether the child matches the query while also doing
     a recursive call on it to inspect its own children.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 递归函数必须检查节点类型。这里我们只关注节点类型1（Node.ELEMENT_NODE）。对于这样的节点，我们必须循环访问它们的子节点，并且对于每个子节点，检查它是否匹配查询，同时对其进行递归调用以检查其子节点。
 - en: '*The Cat’s Hat*'
+  id: totrans-149
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*猫的帽子*'
 - en: Math.cos and Math.sin measure angles in radians, where a full circle is 2*π*.
     For a given angle, you can get the opposite angle by adding half of this, which
     is Math.PI. This can be useful for putting the hat on the opposite side of the
     orbit.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: Math.cos和Math.sin以弧度测量角度，其中完整的圆为2*π*。对于给定的角度，你可以通过加上这个角度的一半（即Math.PI）来获取相对角度。这对于将帽子放在轨道的另一侧是很有用的。
 - en: 'Chapter 15: Handling Events'
+  id: totrans-151
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第15章：处理事件
 - en: '*Balloon*'
+  id: totrans-152
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*气球*'
 - en: You’ll want to register a handler for the “keydown” event and look at event.key
     to figure out whether the up or down arrow key was pressed.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要为“keydown”事件注册一个处理程序，并查看event.key以确定是按下了上箭头还是下箭头。
 - en: The current size can be kept in a binding so that you can base the new size
     on it. It’ll be helpful to define a function that updates the size—both the binding
     and the style of the balloon in the DOM—so that you can call it from your event
     handler, and possibly also once when starting, to set the initial size.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 当前大小可以保存在一个绑定中，以便你可以基于此大小来调整新大小。定义一个更新大小的函数——同时更新绑定和DOM中气球的样式——将是有帮助的，以便你可以从事件处理程序中调用它，并可能在开始时也调用一次，以设置初始大小。
 - en: You can change the balloon to an explosion by replacing the text node with another
     one (using replaceChild) or by setting the textContent property of its parent
     node to a new string.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过用另一个文本节点替换文本节点（使用replaceChild）或将其父节点的textContent属性设置为一个新字符串，将气球更改为爆炸效果。
 - en: '*Mouse Trail*'
+  id: totrans-156
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*鼠标轨迹*'
 - en: Creating the elements is best done with a loop. Append them to the document
     to make them show up. To be able to access them later to change their position,
     you’ll want to store the elements in an array.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建元素最好用循环来完成。将它们附加到文档中以使其显示。为了能在之后访问它们以更改其位置，你需要将元素存储在一个数组中。
 - en: Cycling through them can be done by keeping a counter variable and adding 1
     to it every time the “mousemove” event fires. The remainder operator (% *elements*.length)
     can then be used to get a valid array index to pick the element you want to position
     during a given event.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过保持一个计数变量并在“mousemove”事件触发时每次加1，可以循环访问它们。然后可以使用余数运算符（% *elements*.length）来获取有效的数组索引，以便在给定事件中选择你想要定位的元素。
 - en: Another interesting effect can be achieved by modeling a simple physics system.
     Use the “mousemove” event only to update a pair of bindings that track the mouse
     position. Then use requestAnimationFrame to simulate the trailing elements being
@@ -807,321 +1144,453 @@
     their position based on their position relative to the pointer (and, optionally,
     a speed that is stored for each element). Figuring out a good way to do this is
     up to you.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过建模一个简单的物理系统可以实现另一个有趣的效果。仅使用“mousemove”事件来更新一对跟踪鼠标位置的绑定。然后使用requestAnimationFrame来模拟后续元素被吸引到鼠标指针位置。在每个动画步骤中，根据它们相对于指针的位置（并且，选用时，基于每个元素存储的速度）更新它们的位置。找出一个好的方法来做到这一点由你决定。
 - en: '*Tabs*'
+  id: totrans-160
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*标签*'
 - en: One pitfall you might run into is that you can’t directly use the node’s childNodes
     property as a collection of tab nodes. For one thing, when you add the buttons,
     they will also become child nodes and end up in this object because it is a live
     data structure. For another, the text nodes created for the whitespace between
     the nodes are also in childNodes but should not get their own tabs. You can use
     children instead of childNodes to ignore text nodes.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能会遇到的一个陷阱是，不能直接将节点的childNodes属性作为标签节点的集合使用。首先，当你添加按钮时，它们也会成为子节点并最终进入这个对象，因为这是一个实时数据结构。其次，为节点之间的空白创建的文本节点也在childNodes中，但不应该有自己的标签。你可以使用children而不是childNodes来忽略文本节点。
 - en: You could start by building up an array of tabs so that you have easy access
     to them. To implement the styling of the buttons, you could store objects that
     contain both the tab panel and its button.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以先构建一个标签数组，以便轻松访问它们。要实现按钮的样式，你可以存储包含标签面板和其按钮的对象。
 - en: I recommend writing a separate function for changing tabs. You can either store
     the previously selected tab and change only the styles needed to hide that and
     show the new one, or you can just update the style of all tabs every time a new
     tab is selected.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 我建议为更改标签编写一个单独的函数。你可以存储之前选择的标签，并仅更改需要隐藏的样式以显示新的标签，或者每次选择新标签时更新所有标签的样式。
 - en: You might want to call this function immediately to make the interface start
     with the first tab visible.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能想立即调用这个函数，以使界面从第一个标签开始可见。
 - en: 'Chapter 16: Project: A Platform Game'
+  id: totrans-165
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第16章：项目：一个平台游戏
 - en: '*Pausing the Game*'
+  id: totrans-166
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*暂停游戏*'
 - en: An animation can be interrupted by returning false from the function given to
     runAnimation. It can be continued by calling runAnimation again.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过从传递给runAnimation的函数返回false，可以中断动画。通过再次调用runAnimation，可以继续动画。
 - en: So we need to communicate the fact that we are pausing the game to the function
     given to runAnimation. For that, you can use a binding that both the event handler
     and that function have access to.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以我们需要向runAnimation中提供的函数传达我们正在暂停游戏的事实。为此，你可以使用一个绑定，既可以被事件处理程序访问，也可以被那个函数访问。
 - en: When finding a way to unregister the handlers that were registered by trackKeys,
     remember that the *exact* same function value that was passed to addEventListener
     must be passed to removeEventListener to successfully remove a handler. Thus,
     the handler function value created in trackKeys must be available to the code
     that unregisters the handlers.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 在寻找注销由trackKeys注册的处理程序的方法时，记住必须传递与addEventListener传递的*完全相同*的函数值给removeEventListener，以成功移除处理程序。因此，在trackKeys中创建的处理程序函数值必须在注销处理程序的代码中可用。
 - en: You can add a property to the object returned by trackKeys, containing either
     that function value or a method that handles the unregistering directly.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以给trackKeys返回的对象添加一个属性，包含该函数值或一个直接处理注销的方法。
 - en: '*A Monster*'
+  id: totrans-171
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*一个怪物*'
 - en: If you want to implement a type of motion that is stateful, such as bouncing,
     make sure you store the necessary state in the actor object—include it as a constructor
     argument and add it as a property.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你想实现一种有状态的运动类型，例如弹跳，确保在演员对象中存储必要的状态——将其作为构造函数参数并添加为属性。
 - en: Remember that update returns a *new* object rather than changing the old one.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住，update返回的是一个*新的*对象，而不是更改旧的对象。
 - en: When handling collision, find the player in state.actors and compare its position
     to the monster’s position. To get the *bottom* of the player, you have to add
     its vertical size to its vertical position. The creation of an updated state will
     resemble either Coin’s collide method (removing the actor) or Lava’s (changing
     the status to “lost”), depending on the player position.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 在处理碰撞时，找到状态中的玩家`state.actors`，并将其位置与怪物的位置进行比较。要获得玩家的*底部*，你需要将其垂直尺寸加到其垂直位置上。更新状态的创建将类似于Coin的碰撞方法（移除演员）或Lava的（将状态更改为“失去”），这取决于玩家的位置。
 - en: 'Chapter 17: Drawing on Canvas'
+  id: totrans-175
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第17章：在画布上绘图
 - en: '*Shapes*'
+  id: totrans-176
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*形状*'
 - en: The trapezoid (1) is easiest to draw using a path. Pick suitable center coordinates
     and add each of the four corners around the center.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 梯形（1）的绘制最简单的方法是使用路径。选择合适的中心坐标，并在中心周围添加四个角落。
 - en: The diamond (2) can be drawn the straightforward way, with a path, or the interesting
     way, with a rotate transformation. To use rotation, you will have to apply a trick
     similar to what we did in the flipHorizontally function. Because you want to rotate
     around the center of your rectangle and not around the point (0, 0), you must
     first translate to there, then rotate, and then translate back.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 菱形（2）可以用简单的方法绘制，使用路径，或者用有趣的方法，使用旋转变换。要使用旋转，你必须应用类似于我们在`flipHorizontally`函数中所做的技巧。因为你想围绕矩形的中心旋转，而不是围绕点（0,
+    0），所以你必须先平移到那里，然后旋转，最后再平移回来。
 - en: Make sure you reset the transformation after drawing any shape that creates
     one.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保在绘制任何会产生变换的形状后重置变换。
 - en: For the zigzag (3) it becomes impractical to write a new call to lineTo for
     each line segment. Instead, you should use a loop. You can have each iteration
     draw either two line segments (right and then left again) or one, in which case
     you must use the evenness (% 2) of the loop index to determine whether to go left
     or right.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于锯齿形（3），为每个线段写一个新的`lineTo`调用变得不切实际。相反，你应该使用一个循环。你可以让每次迭代绘制两个线段（先向右，然后再向左），或者只绘制一个，在这种情况下，必须使用循环索引的偶数性（%
+    2）来确定是向左还是向右。
 - en: You’ll also need a loop for the spiral (4). If you draw a series of points,
     with each point moving farther along a circle around the spiral’s center, you
     get a circle. If, during the loop, you vary the radius of the circle on which
     you are putting the current point and go around more than once, the result is
     a spiral.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 你还需要为螺旋（4）使用一个循环。如果你绘制一系列点，每个点沿着螺旋中心周围的圆移动得更远，你将得到一个圆。如果在循环中，你改变放置当前点的圆的半径，并且转圈超过一次，结果就是一个螺旋。
 - en: The star (5) depicted is built out of quadraticCurveTo lines. You could also
     draw one with straight lines. Divide a circle into eight pieces for a star with
     eight points, or however many pieces you want. Draw lines between these points,
     making them curve toward the center of the star. With quadratic CurveTo, you can
     use the center as the control point.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 星形（5）是由`quadraticCurveTo`线条构建的。你也可以用直线画一个。将一个圆分成八个部分来绘制一个八角星，或者你想要的任何数量的部分。在这些点之间画线，使它们向星的中心弯曲。使用`quadraticCurveTo`时，可以将中心作为控制点。
 - en: '*The Pie Chart*'
+  id: totrans-183
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*饼图*'
 - en: You will need to call fillText and set the context’s textAlign and textBaseline
     properties in such a way that the text ends up where you want it.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要调用`fillText`并设置上下文的`textAlign`和`textBaseline`属性，以确保文本最终出现在你想要的位置。
 - en: A sensible way to position the labels would be to put the text on the line going
     from the center of the pie through the middle of the slice. You don’t want to
     put the text directly against the side of the pie but rather move the text out
     to the side of the pie by a given number of pixels.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 放置标签的合理方法是将文本放在从饼图中心到切片中间的直线上。你不想将文本直接放在饼图的一侧，而是要将文本向饼图的一侧移动一定数量的像素。
 - en: 'The angle of this line is currentAngle + 0.5 * sliceAngle. The following code
     finds a position on this line 120 pixels from the center:'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 这条线的角度是`currentAngle + 0.5 * sliceAngle`。以下代码找到从中心起120像素的该线上的位置：
 - en: '[PRE3]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: For textBaseline, the value “middle” is probably appropriate when using this
     approach. What to use for textAlign depends on which side of the circle we are
     on. On the left, it should be “right”, and on the right, it should be ”left”,
     so that the text is positioned away from the pie.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于`textBaseline`，在使用这种方法时，值“middle”可能是合适的。`textAlign`的使用取决于我们位于圆的哪一侧。在左侧时，它应该是“right”，在右侧时，它应该是“left”，以便文本远离饼图。
 - en: If you are not sure how to find out which side of the circle a given angle is
     on, look to the explanation of Math.cos in [Chapter 14](ch14.xhtml#ch14). The
     cosine of an angle tells us which x-coordinate it corresponds to, which in turn
     tells us exactly which side of the circle we are on.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你不确定如何找出给定角度位于圆的哪一侧，可以查看[第14章](ch14.xhtml#ch14)中Math.cos的解释。一个角度的余弦值告诉我们它对应的x坐标，从而告诉我们确切位于圆的哪一侧。
 - en: '*A Bouncing Ball*'
+  id: totrans-190
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*一个弹跳的球*'
 - en: A box is easy to draw with strokeRect. Define a binding that holds its size,
     or define two bindings if your box’s width and height differ. To create a round
     ball, start a path and call arc(x, y, radius, 0, 7), which creates an arc going
     from zero to more than a whole circle. Then fill the path.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 用`strokeRect`绘制一个矩形很简单。定义一个绑定来保持其大小，或者如果矩形的宽度和高度不同，可以定义两个绑定。要创建一个圆球，首先开始一个路径并调用`arc(x,
+    y, radius, 0, 7)`，这会创建一个从零到超过一个完整圆的弧。然后填充路径。
 - en: To model the ball’s position and speed, you can use the Vec class from [Chapter
     16](ch16.xhtml#ch16). Give it a starting speed, preferably one that is not purely
     vertical or horizontal, and for every frame multiply that speed by the amount
     of time that elapsed. When the ball gets too close to a vertical wall, invert
     the *x* component in its speed. Likewise, invert the *y* component when it hits
     a horizontal wall.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 要建模球的位置和速度，可以使用 [第 16 章](ch16.xhtml#ch16) 中的 Vec 类。给它一个起始速度，最好是非纯垂直或水平的速度，并且在每一帧中将该速度乘以经过的时间。当球靠近垂直墙壁时，反转其速度中的
+    *x* 分量。同样，当它撞到水平墙时，反转 *y* 分量。
 - en: After finding the ball’s new position and speed, use clearRect to delete the
     scene and redraw it using the new position.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 找到球的新位置和速度后，使用 clearRect 删除场景，并使用新位置重新绘制它。
 - en: '*Precomputed Mirroring*'
+  id: totrans-194
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*预计算镜像*'
 - en: The key to the solution is the fact that we can use a canvas element as a source
     image when using drawImage. It is possible to create an extra <canvas> element,
     without adding it to the document, and draw our inverted sprites to it, once.
     When drawing an actual frame, we just copy the already inverted sprites to the
     main canvas.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决方案的关键在于我们可以在使用 drawImage 时将 canvas 元素用作源图像。可以创建一个额外的 <canvas> 元素，而不将其添加到文档中，并将我们的反转精灵绘制到上面一次。在绘制实际帧时，我们只需将已反转的精灵复制到主画布上。
 - en: Some care would be required because images do not load instantly. We do the
     inverted drawing only once, and if we do it before the image loads, it won’t draw
     anything. A “load” handler on the image can be used to draw the inverted images
     to the extra canvas. This canvas can be used as a drawing source immediately (it’ll
     simply be blank until we draw the character onto it).
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要一些注意，因为图像不会立即加载。我们只进行一次反转绘制，如果在图像加载之前进行绘制，它不会绘制任何内容。图像上的“load”处理程序可以用来将反转图像绘制到额外的画布上。此画布可以立即用作绘图源（在我们将字符绘制到其上之前，它将保持空白）。
 - en: 'Chapter 18: HTTP and Forms'
+  id: totrans-197
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第 18 章：HTTP 与表单
 - en: '*Content Negotiation*'
+  id: totrans-198
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*内容协商*'
 - en: Base your code on the fetch examples earlier in the chapter.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 将你的代码基于本章之前的 fetch 示例。
 - en: Asking for a bogus media type will return a response with code 406, “Not acceptable,”
     which is the code a server should return when it can’t fulfill the Accept header.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 请求一个虚假的媒体类型将返回状态码 406，“不可接受”，这是服务器在无法满足 Accept 头时应该返回的代码。
 - en: '*A JavaScript Workbench*'
+  id: totrans-201
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*JavaScript 工作台*'
 - en: Use document.querySelector or document.getElementById to get access to the elements
     defined in your HTML. An event handler for “click” or “mousedown” events on the
     button can get the value property of the text field and call Function on it.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 document.querySelector 或 document.getElementById 来访问你在 HTML 中定义的元素。为按钮上的“click”或“mousedown”事件添加事件处理程序，可以获取文本字段的
+    value 属性并调用 Function。
 - en: Make sure you wrap both the call to Function and the call to its result in a
     try block so you can catch the exceptions it produces. In this case, we really
     don’t know what type of exception we are looking for, so catch everything.
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保将对 Function 的调用和对其结果的调用都包裹在 try 块中，以便捕获它产生的异常。在这种情况下，我们真的不知道要捕获什么类型的异常，因此要捕获所有异常。
 - en: The textContent property of the output element can be used to fill it with a
     string message. Or, if you want to keep the old content around, create a new text
     node using document.createTextNode and append it to the element. Remember to add
     a newline character to the end so that not all output appears on a single line.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出元素的 textContent 属性可用于填充字符串消息。或者，如果你想保留旧内容，可以使用 document.createTextNode 创建一个新的文本节点并将其附加到该元素上。记得在末尾添加一个换行符，以便所有输出不会出现在同一行上。
 - en: '*Conway’s Game of Life*'
+  id: totrans-205
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*康威的生命游戏*'
 - en: To solve the problem of having the changes conceptually happen at the same time,
     try to see the computation of a generation as a pure function, which takes one
     grid and produces a new grid that represents the next turn.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了解决概念上同时发生变化的问题，尝试将一代的计算视为一个纯函数，它接收一个网格并生成一个表示下一回合的新网格。
 - en: Representing the matrix can be done with a single array of width *×* height
     elements, storing values row by row, so, for example, the third element in the
     fifth row is (using zero-based indexing) stored at position 4 *× width* + 2\.
     You can count live neighbors with two nested loops, looping over adjacent coordinates
     in both dimensions. Take care not to count cells outside of the field and to ignore
     the cell in the center, whose neighbors we are counting.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 表示矩阵可以用一个宽度*×*高度元素的单一数组来完成，按行存储值，因此，例如，第五行的第三个元素（使用零基索引）存储在位置4 *×* 宽度 + 2。你可以使用两个嵌套循环来计算活邻居，循环遍历两个维度的相邻坐标。要注意不要计算场外的单元格，并且忽略中心的单元格，我们正在计算其邻居。
 - en: Ensuring that changes to checkboxes take effect on the next generation can be
     done in two ways. An event handler could notice these changes and update the current
     grid to reflect them, or you could generate a fresh grid from the values in the
     checkboxes before computing the next turn.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保复选框的更改在下一代中生效可以通过两种方式完成。事件处理程序可以注意到这些更改并更新当前网格以反映它们，或者你可以在计算下一轮之前从复选框中的值生成一个新的网格。
 - en: If you choose to go with event handlers, you might want to attach attributes
     that identify the position that each checkbox corresponds to so that it is easy
     to find out which cell to change.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你选择使用事件处理程序，可能希望附加标识每个复选框对应位置的属性，以便容易找到要更改的单元格。
 - en: To draw the grid of checkboxes, you can either use a <table> element (see [Chapter
     14](ch14.xhtml#ch14)) or simply put them all in the same element and put <br>
     (line break) elements between the rows.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 要绘制复选框的网格，你可以使用< table>元素（见[第14章](ch14.xhtml#ch14)），或者将它们全部放在同一元素中，并在行之间放置<
+    br>（换行）元素。
 - en: 'Chapter 19: Project: A Pixel Art Editor'
+  id: totrans-211
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第19章：项目：像素艺术编辑器
 - en: '*Keyboard Bindings*'
+  id: totrans-212
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*键盘绑定*'
 - en: The key property of events for letter keys will be the lowercase letter itself,
     if SHIFT isn’t being held. We’re not interested in key events with SHIFT here.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于字母键事件，关键属性将是小写字母本身，如果没有按住SHIFT。我们这里不关心按住SHIFT的键事件。
 - en: A “keydown” handler can inspect its event object to see whether it matches any
     of the shortcuts. You can automatically get the list of first letters from the
     tools object so that you don’t have to write them out.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: “keydown”处理程序可以检查其事件对象，以查看它是否匹配任何快捷键。你可以自动从工具对象中获取首字母列表，这样就不必手动写出来。
 - en: When the key event matches a shortcut, call preventDefault on it and dispatch
     the appropriate action.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 当关键事件与快捷键匹配时，调用preventDefault并派发适当的动作。
 - en: '*Efficient Drawing*'
+  id: totrans-216
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*高效绘制*'
 - en: This exercise is a good example of how immutable data structures can make code
     *faster*. Because we have both the old and the new picture, we can compare them
     and redraw only the pixels that changed color, saving more than 99 percent of
     the drawing work in most cases.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个练习是一个很好的例子，说明不可变数据结构如何使代码*更快*。因为我们同时拥有旧图像和新图像，我们可以比较它们并重新绘制仅改变颜色的像素，在大多数情况下节省超过99%的绘图工作。
 - en: You can either write a new function updatePicture or have drawPicture take an
     extra argument, which may be undefined or the previous picture. For each pixel,
     the function checks whether a previous picture was passed with the same color
     at this position and skips the pixel when that is the case.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以编写一个新函数updatePicture，或者让drawPicture接受一个额外的参数，该参数可能是未定义的或是之前的图像。对于每个像素，该函数检查在此位置是否传递了具有相同颜色的前一个图像，如果是，则跳过该像素。
 - en: Because the canvas gets cleared when we change its size, you should also avoid
     touching its width and height properties when the old picture and the new picture
     have the same size. If they are different, which will happen when a new picture
     has been loaded, you can set the binding holding the old picture to null after
     changing the canvas size because you shouldn’t skip any pixels after you’ve changed
     the canvas size.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于当我们更改画布大小时，画布会被清空，因此在旧图像和新图像大小相同时，应该避免触碰其宽度和高度属性。如果它们不同，例如在加载新图像时，会发生这种情况，你可以在更改画布大小后将绑定旧图像的变量设置为null，因为在更改画布大小后不应跳过任何像素。
 - en: '*Circles*'
+  id: totrans-220
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*圆形*'
 - en: You can take some inspiration from the rectangle tool. As with that tool, you’ll
     want to keep drawing on the *starting* picture, rather than the current picture,
     when the pointer moves.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以从矩形工具中获得一些灵感。与该工具一样，当指针移动时，你希望继续在*起始*图像上绘制，而不是当前图像。
 - en: To figure out which pixels to color, you can use the Pythagorean theorem. First
     figure out the distance between the current pointer position and the start position
     by taking the square root (Math.sqrt) of the sum of the square (x ** 2) of the
@@ -1129,15 +1598,21 @@
     Then loop over a square of pixels around the start position, whose sides are at
     least twice the radius, and color those that are within the circle’s radius, again
     using the Pythagorean formula to figure out their distance from the center.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 要确定哪些像素需要上色，你可以使用勾股定理。首先，通过对x坐标差的平方（x ** 2）与y坐标差的平方之和取平方根（Math.sqrt），计算当前指针位置和起始位置之间的距离。然后在起始位置周围的像素正方形上循环，其边长至少为半径的两倍，并对在圆的半径内的像素上色，再次使用勾股公式来计算它们与中心的距离。
 - en: Make sure you don’t try to color pixels that are outside of the picture’s boundaries.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保你不要尝试上色超出图像边界的像素。
 - en: '*Proper Lines*'
+  id: totrans-224
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*适当的线条*'
 - en: The thing about the problem of drawing a pixelated line is that it is really
     four similar but slightly different problems. Drawing a horizontal line from the
     left to the right is easy—you loop over the x-coordinates and color a pixel at
@@ -1145,186 +1620,266 @@
     radians), you can interpolate the y-coordinate along the slope. You still need
     one pixel per *x* position, with the *y* position of those pixels determined by
     the slope.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 绘制像素化线条的问题在于它实际上是四个相似但略有不同的问题。从左到右绘制一条水平线很简单——你只需循环遍历x坐标并在每一步上色一个像素。如果线条有轻微的斜率（小于45度或![Image](../images/f0404-01.jpg)弧度），你可以沿着斜率插值y坐标。你仍然需要每个*x*位置一个像素，这些像素的*y*位置由斜率决定。
 - en: But as soon as your slope goes across 45 degrees, you need to switch the way
     you treat the coordinates. You now need one pixel per *y* position, since the
     line goes up more than it goes left. And then, when you cross 135 degrees, you
     have to go back to looping over the x-coordinates, but from right to left.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是一旦你的斜率超过45度，你需要改变处理坐标的方式。现在你需要每个*y*位置一个像素，因为线条上升的幅度大于向左移动的幅度。然后，当你越过135度时，你必须回到沿x坐标循环，但从右到左。
 - en: You don’t actually have to write four loops. Since drawing a line from *A* to
     *B* is the same as drawing a line from *B* to *A*, you can swap the start and
     end positions for lines going from right to left and treat them as going left
     to right.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 你实际上不需要写四个循环。因为从*A*到*B*绘制一条线与从*B*到*A*绘制一条线是一样的，你可以交换从右到左的起始和结束位置，并将它们视为从左到右。
 - en: So you need two different loops. The first thing your line drawing function
     should do is check whether the difference between the x-coordinates is larger
     than the difference between the y-coordinates. If it is, this is a horizontalish
     line, and if not, a verticalish one.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以你需要两个不同的循环。你的线条绘制函数的第一件事应该是检查x坐标之间的差值是否大于y坐标之间的差值。如果是，这是一条水平线；如果不是，则是一条垂直线。
 - en: Make sure you compare the *absolute* values of the *x* and *y* difference, which
     you can get with Math.abs.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保你比较*x*和*y*差值的*绝对*值，你可以使用Math.abs来获得。
 - en: 'Once you know along which axis you will be looping, you can check whether the
     start point has a higher coordinate along that axis than the endpoint and swap
     them if necessary. A succinct way to swap the values of two bindings in JavaScript
     uses destructuring assignment like this:'
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦你知道将要沿哪个轴进行循环，就可以检查起点在该轴上的坐标是否高于终点，如果有必要可以交换它们。使用解构赋值在JavaScript中交换两个绑定的值可以用简洁的方式实现：
 - en: '[PRE4]'
+  id: totrans-231
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Then you can compute the slope of the line, which determines the amount the
     coordinate on the other axis changes for each step you take along your main axis.
     With that, you can run a loop along the main axis while also tracking the corresponding
     position on the other axis, and you can draw pixels on every iteration. Make sure
     you round the nonmain axis coordinates, since they are likely to be fractional
     and the draw method doesn’t respond well to fractional coordinates.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后你可以计算这条线的斜率，它决定了你在主轴上每走一步，另一个轴上的坐标变化量。有了这个，你可以沿主轴运行一个循环，同时跟踪另一个轴上对应的位置，并在每次迭代时绘制像素。确保你对非主轴坐标进行四舍五入，因为它们可能是小数，而绘制方法对小数坐标反应不佳。
 - en: 'Chapter 20: Node.js'
+  id: totrans-233
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第20章：Node.js
 - en: '*Search Tool*'
+  id: totrans-234
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*搜索工具*'
 - en: Your first command line argument, the regular expression, can be found in process.argv[2].
     The input files come after that. You can use the RegExp constructor to go from
     a string to a regular expression object.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的第一个命令行参数，即正则表达式，可以在 process.argv[2] 中找到。输入文件在之后。你可以使用 RegExp 构造函数将字符串转换为正则表达式对象。
 - en: Doing this synchronously, with readFileSync, is more straightforward, but if
     you use node:fs/promises to get promise-returning functions and write an async
     function, the code looks similar.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 以同步方式使用 readFileSync 更简单，但如果你使用 node:fs/promises 获取返回 Promise 的函数并编写异步函数，代码看起来也相似。
 - en: To figure out whether something is a directory, you can again use stat (or statSync)
     and the stats object’s isDirectory method.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 要判断某个东西是否为目录，你可以再次使用 stat（或 statSync）和 stats 对象的 isDirectory 方法。
 - en: Exploring a directory is a branching process. You can do it either by using
     a recursive function or by keeping an array of work (files that still need to
     be explored). To find the files in a directory, you can call readdir or readdirSync.
     Note the strange capitalization—Node’s filesystem function naming is loosely based
     on standard Unix functions, such as readdir, that are all lowercase, but then
     it adds Sync with a capital letter.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 探索目录是一个分支过程。你可以通过使用递归函数或保持一个待处理的文件数组来实现这一点。要查找目录中的文件，可以调用 readdir 或 readdirSync。注意这种奇怪的大小写——Node
+    的文件系统函数命名大致基于标准 Unix 函数，例如 readdir，它们都是小写的，但然后它增加了一个大写的 Sync。
 - en: To go from a filename read with readdir to a full path name, you have to combine
     it with the name of the directory, either putting sep from node:path between them
     or using the join function from that same package.
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将通过 readdir 读取的文件名转换为完整路径名，你必须将其与目录名称结合起来，可以在它们之间放置 node:path 的 sep，或者使用该包中的
+    join 函数。
 - en: '*Directory Creation*'
+  id: totrans-240
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*目录创建*'
 - en: You can use the function that implements the DELETE method as a blueprint for
     the MKCOL method. When no file is found, try to create a directory with mkdir.
     When a directory exists at that path, you can return a 204 response so that directory
     creation requests are idempotent. If a nondirectory file exists here, return an
     error code. Code 400 (“bad request”) would be appropriate.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以使用实现 DELETE 方法的函数作为 MKCOL 方法的蓝图。当未找到文件时，尝试使用 mkdir 创建一个目录。当该路径上存在一个目录时，你可以返回
+    204 响应，以确保目录创建请求是幂等的。如果这里存在一个非目录文件，则返回错误代码。代码 400（“错误请求”）将是合适的。
 - en: '*A Public Space on the Web*'
+  id: totrans-242
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*网络上的公共空间*'
 - en: You can create a <textarea> element to hold the content of the file that is
     being edited. A GET request, using fetch, can retrieve the current content of
     the file. You can use relative URLs like *index.xhtml*, instead of *http://localhost:8000/index.xhtml*,
     to refer to files on the same server as the running script.
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以创建一个 `<textarea>` 元素来保存正在编辑的文件内容。使用 fetch 的 GET 请求可以检索文件的当前内容。你可以使用相对 URL，例如
+    *index.xhtml*，而不是 *http://localhost:8000/index.xhtml*，来引用与运行脚本位于同一服务器上的文件。
 - en: Then, when the user clicks a button (you can use a <form> element and ”submit”
     event), make a PUT request to the same URL, with the content of the <textarea>
     as the request body, to save the file.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，当用户点击按钮时（你可以使用 `<form>` 元素和 “submit” 事件），向相同的 URL 发送 PUT 请求，请求体为 `<textarea>`
+    的内容，以保存文件。
 - en: You can then add a <select> element that contains all the files in the server’s
     top directory by adding <option> elements containing the lines returned by a GET
     request to the URL */*. When the user selects another file (a ”change” event on
     the field), the script must fetch and display that file. When saving a file, use
     the currently selected filename.
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，你可以添加一个 `<select>` 元素，包含服务器顶级目录中的所有文件，通过添加 `<option>` 元素，内容是通过 GET 请求到 URL
+    */* 返回的行。当用户选择另一个文件（字段上的 “change” 事件）时，脚本必须获取并显示该文件。保存文件时，使用当前选定的文件名。
 - en: 'Chapter 21: Project: Skill-Sharing Website'
+  id: totrans-246
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第 21 章：项目：技能共享网站
 - en: '*Disk Persistence*'
+  id: totrans-247
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*磁盘持久性*'
 - en: The simplest solution I can come up with is to encode the whole talks object
     as JSON and dump it to a file with writeFile. There is already a method (updated)
     that is called every time the server’s data changes. It can be extended to write
     the new data to disk.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 我能想到的最简单的解决方案是将整个 talks 对象编码为 JSON 并使用 writeFile 将其写入文件。每当服务器的数据发生变化时，都会调用一个名为
+    (updated) 的方法。它可以扩展为将新数据写入磁盘。
 - en: Pick a filename, such as *./talks.json*. When the server starts, it can try
     to read that file with readFile, and if that succeeds, the server can use the
     file’s contents as its starting data.
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择一个文件名，例如 *./talks.json*。当服务器启动时，它可以尝试使用 readFile 读取该文件，如果成功，服务器可以将文件的内容作为其起始数据。
 - en: '*Comment Field Resets*'
+  id: totrans-250
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*评论字段重置*'
 - en: The best way to do this is probably to make the talk component an object, with
     a syncState method, so that they can be updated to show a modified version of
     the talk. During normal operation, the only way a talk can be changed is by adding
     more comments, so the syncState method can be relatively simple.
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 最好的做法可能是将演讲组件定义为一个对象，并包含一个 syncState 方法，这样它们可以被更新以显示修改后的演讲版本。在正常操作中，演讲变化的唯一方式是添加更多评论，因此
+    syncState 方法可以相对简单。
 - en: The difficult part is that when a changed list of talks comes in, we have to
     reconcile the existing list of DOM components with the talks on the new list—deleting
     components whose talk was deleted and updating components whose talk changed.
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 难点在于，当一份更改后的演讲列表出现时，我们必须将现有的 DOM 组件列表与新列表中的演讲进行调和——删除那些演讲已删除的组件，更新那些演讲已更改的组件。
 - en: To do this, it might be helpful to keep a data structure that stores the talk
     components under the talk titles so that you can easily figure out whether a component
     exists for a given talk. You can then loop over the new array of talks, and for
     each of them, either synchronize an existing component or create a new one. To
     delete components for deleted talks, you’ll have to also loop over the components
     and check whether the corresponding talks still exist.
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 为此，保留一个数据结构以存储演讲标题下的演讲组件可能会很有帮助，这样你就可以轻松确定给定演讲是否存在某个组件。然后你可以遍历新的演讲数组，对于每个演讲，或者同步一个现有的组件，或者创建一个新的组件。要删除已删除演讲的组件，你还需要遍历这些组件，并检查相应的演讲是否仍然存在。
 - en: 'Chapter 22: JavaScript and Performance'
+  id: totrans-254
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 第22章：JavaScript与性能
 - en: '*Prime Numbers*'
+  id: totrans-255
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*素数*'
 - en: You can define a generator with a function* declaration, using yield in a loop
     to produce the numbers. You’ll want to keep checking ever higher numbers, skipping
     those that can be divided by a smaller number, and yielding those that can’t.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过使用 function* 声明定义一个生成器，在循环中使用 yield 来生成数字。你会想继续检查越来越大的数字，跳过那些可以被较小数字整除的数字，返回那些不能被整除的数字。
 - en: '[PRE5]'
+  id: totrans-257
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'Testing whether a number is divisible by another number can be done with the
     remainder operator: n % i == 0 is true only when n is divisible by i.'
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试一个数字是否可以被另一个数字整除可以使用余数运算符：n % i == 0 仅在 n 能被 i 整除时为真。
 - en: To run through the results of the generator in order to time it, you can either
     use a for/of loop that stops after ten thousand results or directly call the next
     method on the iterator that primes() returns.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了测试生成器的运行结果，你可以使用一个在一万条结果后停止的 for/of 循环，或者直接调用迭代器返回的 next 方法。
 - en: '*Faster Prime Numbers*'
+  id: totrans-260
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*更快的素数*'
 - en: There are two ways to recognize and avoid useless remainder tests in this function.
     The first makes use of the fact that if a number is divisible by another number,
     that divisor will be either a prime number or a multiple of a prime number because
@@ -1332,13 +1887,19 @@
     to test against nonprime numbers. If the function keeps an array of the prime
     numbers it has found so far, it only needs to check against those, as opposed
     to all numbers between 2 and the next potential prime number.
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 识别和避免这个函数中无用余数测试的方式有两种。第一种利用了这样一个事实：如果一个数字可以被另一个数字整除，那么这个因子要么是素数，要么是某个素数的倍数，因为所有的合数都是某个素数的倍数。因此，没有必要测试合数。如果函数保持一个已找到的素数数组，它只需检查这些素数，而不是检查
+    2 到下一个潜在素数之间的所有数字。
 - en: The second trick uses the observation that if a number *N* is the product of
     *A* and *B*, then the lesser of *A* and *B* is smaller or equal to the square
     root of *N*. If we test divisors starting with the smaller ones, we don’t have
     to check any numbers greater than this square root, since *if* our potential prime
     number is the product of two whole numbers, we would have noticed that when testing
     the smaller of those two.
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个技巧利用了这样的观察：如果一个数字 *N* 是 *A* 和 *B* 的乘积，那么 *A* 和 *B* 中较小的那个小于或等于 *N* 的平方根。如果我们从较小的因子开始测试，我们就不需要检查任何大于这个平方根的数字，因为
+    *如果* 我们的潜在素数是两个整数的乘积，那么在测试较小的那个时，我们就会注意到这一点。

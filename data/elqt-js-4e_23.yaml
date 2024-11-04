@@ -1,43 +1,59 @@
 - en: '20'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '20'
 - en: NODE.JS
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: NODE.JS
 - en: 'So far, we’ve used the JavaScript language in a single environment: the browser.
     This chapter and the next one will briefly introduce Node.js, a program that allows
     you to apply your JavaScript skills outside of the browser. With it, you can build
     anything from small command line tools to HTTP servers that power dynamic websites.'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们只在一个环境中使用了JavaScript语言：浏览器。本章和下一章将简要介绍Node.js，这是一个允许你在浏览器外应用JavaScript技能的程序。通过它，你可以构建从小型命令行工具到支持动态网站的HTTP服务器的各种应用。
 - en: These chapters aim to teach you the main concepts that Node.js uses and to give
     you enough information to write useful programs for it. They do not try to be
     a complete, or even a thorough, treatment of the platform.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些章节旨在教你Node.js使用的主要概念，并给你足够的信息来编写有用的程序。它们并不试图全面或深入地介绍该平台。
 - en: If you want to follow along and run the code in this chapter, you’ll need to
     install Node.js version 18 or higher. To do so, go to *[https://nodejs.org](https://nodejs.org)*
     and follow the installation instructions for your operating system. You can also
     find further documentation for Node.js there.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你想跟着本章的代码运行，你需要安装Node.js版本18或更高版本。要做到这一点，请访问*[https://nodejs.org](https://nodejs.org)*并按照你操作系统的安装说明进行操作。你还可以在那里找到Node.js的进一步文档。
 - en: Background
+  id: totrans-5
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 背景
 - en: When building systems that communicate over the network, the way you manage
     input and output—that is, the reading and writing of data to and from the network
     and hard drive—can make a big difference in how quickly a system responds to the
     user or to network requests.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在构建通过网络通信的系统时，你管理输入和输出的方式——即从网络和硬盘读取和写入数据的方式——会对系统对用户或网络请求的响应速度产生很大影响。
 - en: In such programs, asynchronous programming is often helpful. It allows the program
     to send and receive data from and to multiple devices at the same time without
     complicated thread management and synchronization.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这样的程序中，异步编程通常是有帮助的。它允许程序同时与多个设备发送和接收数据，而无需复杂的线程管理和同步。
 - en: Node was initially conceived for the purpose of making asynchronous programming
     easy and convenient. JavaScript lends itself well to a system like Node. It is
     one of the few programming languages that does not have a built-in way to do input
@@ -46,186 +62,265 @@
     interfaces. In 2009, when Node was being designed, people were already doing callback-based
     programming in the browser, so the community around the language was used to an
     asynchronous programming style.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: Node最初的构想是为了使异步编程变得简单方便。JavaScript非常适合像Node这样的系统。它是少数几种没有内置输入输出方式的编程语言之一。因此，JavaScript能够很好地适应Node对网络和文件系统编程的相当奇特的方法，而不会导致两个不一致的接口。在2009年，当Node被设计时，人们已经在浏览器中进行基于回调的编程，因此围绕该语言的社区已经习惯了异步编程风格。
 - en: The node Command
+  id: totrans-9
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: node命令
 - en: 'When Node.js is installed on a system, it provides a program called node, which
     is used to run JavaScript files. Say you have a file *hello.js*, containing this
     code:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 当Node.js安装在系统上时，它提供了一个名为node的程序，用于运行JavaScript文件。假设你有一个名为*hello.js*的文件，包含以下代码：
 - en: '[PRE0]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'You can then run node from the command line like this to execute the program:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后你可以像这样从命令行运行node以执行程序：
 - en: '[PRE1]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: The console.log method in Node does something similar to what it does in the
     browser. It prints out a piece of text. But in Node, the text will go to the process’s
     standard output stream rather than to a browser’s JavaScript console. When running
     node from the command line, that means you see the logged values in your terminal.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: Node中的console.log方法与浏览器中的作用类似。它输出一段文本。但在Node中，这段文本会发送到进程的标准输出流，而不是浏览器的JavaScript控制台。当从命令行运行node时，这意味着你会在终端中看到记录的值。
 - en: If you run node without giving it a file, it provides you with a prompt at which
     you can type JavaScript code and immediately see the result.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你运行node而不指定文件，它会给你一个提示，你可以在此输入JavaScript代码并立即看到结果。
 - en: '[PRE2]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: The process binding, just like the console binding, is available globally in
     Node. It provides various ways to inspect and manipulate the current program.
     The exit method ends the process and can be given an exit status code, which tells
     the program that started node (in this case, the command line shell) whether the
     program completed successfully (code zero) or encountered an error (any other
     code).
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 进程绑定，就像控制台绑定一样，在Node中是全局可用的。它提供了多种方式来检查和操作当前程序。exit方法结束进程，并可以指定一个退出状态代码，这告诉启动Node的程序（在此情况下为命令行shell）程序是否成功完成（代码零）或遇到错误（任何其他代码）。
 - en: 'To find the command line arguments given to your script, you can read process.argv,
     which is an array of strings. Note that it also includes the name of the node
     command and your script name, so the actual arguments start at index 2\. If *showargv.js*
     contains the statement console.log(process.argv), you could run it like this:'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 要查找传递给你脚本的命令行参数，你可以读取process.argv，它是一个字符串数组。请注意，它还包括node命令的名称和你的脚本名称，因此实际参数从索引2开始。如果*showargv.js*包含语句console.log(process.argv)，你可以这样运行它：
 - en: '[PRE3]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: All the standard JavaScript global bindings, such as Array, Math, and JSON,
     are also present in Node’s environment. Browser-related functionality, such as
     document or prompt, is not.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有标准的JavaScript全局绑定，如Array、Math和JSON，在Node的环境中也存在。与浏览器相关的功能，如document或prompt，则不存在。
 - en: Modules
+  id: totrans-21
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 模块
 - en: Beyond the bindings I mentioned, such as console and process, Node puts few
     additional bindings in the global scope. If you want to access built-in functionality,
     you have to ask the module system for it.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了我提到的绑定，如console和process，Node在全局作用域中几乎没有其他绑定。如果你想访问内置功能，你必须请求模块系统。
 - en: Node started out using the CommonJS module system, based on the require function,
     which we saw in [Chapter 10](ch10.xhtml#ch10). It will still use this system by
     default when you load a *.js* file.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: Node最初使用基于require函数的CommonJS模块系统，我们在[第10章](ch10.xhtml#ch10)中看到过。当你加载*.js*文件时，它仍然会默认使用此系统。
 - en: But today, Node also supports the more modern ES module system. When a script’s
     filename ends in *.mjs*, it is considered to be such a module, and you can use
     import and export in it (but not require). We will use ES modules in this chapter.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 但今天，Node也支持更现代的ES模块系统。当脚本的文件名以*.mjs*结尾时，它被视为这样的模块，你可以在其中使用import和export（但不能使用require）。我们将在本章中使用ES模块。
 - en: When importing a module—whether with require or import—Node has to resolve the
     given string to an actual file that it can load. Names that start with /, ./,
     or ../ are resolved as files, relative to the current module’s path. Here, . stands
     for the current directory, ../ for one directory up, and / for the root of the
     filesystem. If you ask for “./graph.mjs” from the file */tmp/ robot/robot.mjs*,
     Node will try to load the file */tmp/robot/graph.mjs*.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 当导入一个模块时——无论是使用require还是import——Node需要将给定的字符串解析为一个实际可以加载的文件。以/、./或../开头的名称将相对于当前模块的路径解析为文件。在这里，.表示当前目录，../表示上一级目录，/表示文件系统的根目录。如果你从文件*/tmp/robot/robot.mjs*请求“./graph.mjs”，Node将尝试加载文件*/tmp/robot/graph.mjs*。
 - en: When a string that does not look like a relative or absolute path is imported,
     it is assumed to refer to either a built-in module or a module installed in a
     node_modules directory. For example, importing from “node:fs” will give you Node’s
     built-in filesystem module. Importing “robot” might try to load the library found
     in *node_modules/robot/*. It’s common to install such libraries using NPM, which
     we’ll return to in a moment.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 当导入的字符串看起来不是相对路径或绝对路径时，假定它指的是内置模块或安装在node_modules目录中的模块。例如，从“node:fs”导入将为你提供Node的内置文件系统模块。导入“robot”可能会尝试加载在*node_modules/robot/*中找到的库。通常会使用NPM安装这些库，我们稍后会回到这个话题。
 - en: Let’s set up a small project consisting of two files. The first one, called
     *main.mjs*, defines a script that can be called from the command line to reverse
     a string.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们建立一个由两个文件组成的小项目。第一个文件叫做*main.mjs*，它定义了一个可以从命令行调用的脚本，用于反转字符串。
 - en: '[PRE4]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: The file *reverse.mjs* defines a library for reversing strings, which can be
     used both by this command line tool and by other scripts that need direct access
     to a string-reversing function.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 文件*reverse.mjs*定义了一个用于反转字符串的库，可以被这个命令行工具和需要直接访问字符串反转功能的其他脚本使用。
 - en: '[PRE5]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Remember that export is used to declare that a binding is part of the module’s
     interface. That allows *main.mjs* to import and use the function.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 请记住，export用于声明一个绑定是模块接口的一部分。这允许*main.mjs*导入并使用该函数。
 - en: 'We can now call our tool like this:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们可以这样调用我们的工具：
 - en: '[PRE6]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: Installing with NPM
+  id: totrans-34
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 使用NPM安装
 - en: NPM, introduced in [Chapter 10](ch10.xhtml#ch10), is an online repository of
     JavaScript modules, many of which are specifically written for Node. When you
     install Node on your computer, you also get the npm command, which you can use
     to interact with this repository.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: NPM在[第10章](ch10.xhtml#ch10)中介绍，是一个在线JavaScript模块库，其中许多模块是专门为Node编写的。当你在计算机上安装Node时，你还会得到npm命令，可以用来与这个库进行交互。
 - en: NPM’s main use is downloading packages. We saw the ini package in [Chapter 10](ch10.xhtml#ch10).
     We can use NPM to fetch and install that package on our computer.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: NPM的主要用途是下载包。我们在[第10章](ch10.xhtml#ch10)中看到了ini包。我们可以使用NPM在我们的计算机上获取并安装该包。
 - en: '[PRE7]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: After running npm install, NPM will have created a directory called *node_modules*.
     Inside that directory will be an *ini* directory that contains the library. You
     can open it and look at the code. When we import “ini”, this library is loaded,
     and we can call its parse property to parse a configuration file.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行npm install后，NPM将创建一个名为*node_modules*的目录。该目录下将包含一个*ini*目录，其中包含库。你可以打开它并查看代码。当我们导入“ini”时，该库被加载，我们可以调用它的解析属性来解析配置文件。
 - en: By default, NPM installs packages under the current directory rather than in
     a central place. If you are used to other package managers, this may seem unusual,
     but it has advantages—it puts each application in full control of the packages
     it installs and makes it easier to manage versions and clean up when removing
     an application.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，NPM会在当前目录下安装包，而不是在中心位置。如果你习惯于其他包管理器，这可能看起来不寻常，但它有其优势——它让每个应用程序完全控制其安装的包，并更容易管理版本以及在删除应用程序时进行清理。
 - en: '*Package Files*'
+  id: totrans-40
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*包文件*'
 - en: After running npm install to install some package, you will find not only a
     *node_modules* directory but also a file called *package.json* in your current
     directory. It is recommended to have such a file for each project. You can create
     it manually or run npm init. This file contains information about the project,
     such as its name and version, and lists its dependencies.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 在运行npm install安装某个包后，你会发现当前目录下不仅有一个*node_modules*目录，还有一个名为*package.json*的文件。建议每个项目都有这样的文件。你可以手动创建它，或运行npm
+    init。此文件包含关于项目的信息，例如其名称和版本，并列出其依赖项。
 - en: 'The robot simulation from [Chapter 7](ch07.xhtml#ch07), as modularized in the
     exercise in [Chapter 10](ch10.xhtml#ch10), might have a *package.json* file like
     this:'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 从[第7章](ch07.xhtml#ch07)的机器人模拟，作为[第10章](ch10.xhtml#ch10)练习中的模块化，可能会有一个这样的*package.json*文件：
 - en: '[PRE8]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: When you run npm install without naming a package to install, NPM will install
     the dependencies listed in *package.json*. When you install a specific package
     that is not already listed as a dependency, NPM will add it to *package.json*.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你运行npm install而不指定要安装的包时，NPM将安装*package.json*中列出的依赖项。当你安装一个未在依赖项中列出的特定包时，NPM会将其添加到*package.json*中。
 - en: '*Versions*'
+  id: totrans-45
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*版本*'
 - en: A *package.json* file lists both the program’s own version and versions for
     its dependencies. Versions are a way to deal with the fact that packages evolve
     separately, and code written to work with a package as it existed at one point
     may not work with a later, modified version of the package.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '*package.json*文件列出了程序自身的版本以及其依赖项的版本。版本是处理包独立演变的方式，编写的代码在某个时间点与包的版本兼容，可能在后来的修改版本中不再兼容。'
 - en: NPM demands that its packages follow a schema called *semantic versioning*,
     which encodes some information about which versions are *compatible* (don’t break
     the old interface) in the version number. A semantic version consists of three
@@ -233,41 +328,58 @@
     the middle number has to be incremented. Every time compatibility is broken, so
     that existing code that uses the package might not work with the new version,
     the first number has to be incremented.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: NPM要求其包遵循一种称为*语义版本控制*的模式，该模式在版本号中编码了一些关于哪些版本是*兼容*（不破坏旧接口）的信息。语义版本由三个用句点分隔的数字组成，例如2.3.0。每次添加新功能时，中间的数字必须增加。每当破坏兼容性时，即现有代码使用的包可能与新版本不兼容，首个数字必须增加。
 - en: A caret character (^) in front of the version number for a dependency in *package.json*
     indicates that any version compatible with the given number may be installed.
     For example, “^2.3.0” would mean that any version greater than or equal to 2.3.0
     and less than 3.0.0 is allowed.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 在*package.json*中，依赖项版本号前的插入符号（^）表示可以安装与给定数字兼容的任何版本。例如，“^2.3.0”意味着允许任何大于或等于2.3.0且小于3.0.0的版本。
 - en: The npm command is also used to publish new packages or new versions of packages.
     If you run npm publish in a directory that has a *package.json* file, it will
     publish a package with the name and version listed in the JSON file to the registry.
     Anyone can publish packages to NPM—though only under a package name that isn’t
     in use yet, since it wouldn’t be good if random people could update existing packages.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: npm 命令也用于发布新包或包的新版本。如果在包含 *package.json* 文件的目录中运行 npm publish，它将把 JSON 文件中列出的名称和版本的包发布到注册表。任何人都可以向
+    NPM 发布包——但仅限于尚未使用的包名，因为如果随机用户可以更新现有包，那就不好了。
 - en: This book won’t delve further into the details of NPM usage. Refer to *[https://www.npmjs.com](https://www.npmjs.com)*
     for further documentation and a way to search for packages.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书不会深入探讨 NPM 的使用细节。请参考 *[https://www.npmjs.com](https://www.npmjs.com)* 以获取更多文档和包搜索方法。
 - en: The Filesystem Module
+  id: totrans-51
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 文件系统模块
 - en: One of the most commonly used built-in modules in Node is the node:fs module,
     which stands for “filesystem.” It exports functions for working with files and
     directories.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: Node 中最常用的内置模块之一是 node:fs 模块，它代表“文件系统”。它导出用于处理文件和目录的函数。
 - en: For example, the function called readFile reads a file and then calls a callback
     with the file’s contents.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，名为 readFile 的函数读取一个文件，然后调用回调函数传递文件内容。
 - en: '[PRE9]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: The second argument to readFile indicates the *character encoding* used to decode
     the file into a string. There are several ways in which text can be encoded to
     binary data, but most modern systems use UTF-8\. Unless you have reasons to believe
@@ -275,127 +387,191 @@
     pass an encoding, Node will assume you are interested in the binary data and will
     give you a Buffer object instead of a string. This is an array-like object that
     contains numbers representing the bytes (8-bit chunks of data) in the files.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: readFile 的第二个参数指示用于将文件解码为字符串的 *字符编码*。文本可以以多种方式编码为二进制数据，但大多数现代系统使用 UTF-8。除非你有理由相信使用了其他编码，否则在读取文本文件时传递“utf8”。如果不传递编码，Node
+    会假设你对二进制数据感兴趣，并会返回一个 Buffer 对象，而不是字符串。这个对象类似数组，包含表示文件中字节（8 位数据块）的数字。
 - en: '[PRE10]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: A similar function, writeFile, is used to write a file to disk.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个类似的函数 writeFile 用于将文件写入磁盘。
 - en: '[PRE11]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Here it was not necessary to specify the encoding—writeFile will assume that
     when it is given a string to write, rather than a Buffer object, it should write
     it out as text using its default character encoding, which is UTF-8.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里不需要指定编码——writeFile 会假设当它接收到一个字符串而不是 Buffer 对象时，应使用其默认字符编码（UTF-8）将其作为文本写出。
 - en: 'The node:fs module contains many other useful functions: readdir will give
     you the files in a directory as an array of strings, stat will retrieve information
     about a file, rename will rename a file, unlink will remove one, and so on. See
     the documentation at *[https://nodejs.org](https://nodejs.org)* *for specifics*.'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: node:fs 模块包含许多其他有用的函数：readdir 会将目录中的文件作为字符串数组返回，stat 会检索文件信息，rename 会重命名文件，unlink
+    会删除文件，等等。有关具体信息，请查看 *[https://nodejs.org](https://nodejs.org)* 的文档。
 - en: Most of these take a callback function as the last parameter, which they call
     either with an error (the first argument) or with a successful result (the second).
     As we saw in [Chapter 11](ch11.xhtml#ch11), there are downsides to this style
     of programming—the biggest one being that error handling becomes verbose and error
     prone.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些函数中的大多数将回调函数作为最后一个参数，调用时要么带有错误（第一个参数），要么带有成功结果（第二个参数）。正如我们在 *[第 11 章](ch11.xhtml#ch11)*
+    中看到的，这种编程风格有缺点——最大的一个是错误处理变得冗长且容易出错。
 - en: The node:fs/promises module exports most of the same functions as the old node:fs
     module but uses promises rather than callback functions.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: node:fs/promises 模块导出了与旧的 node:fs 模块大部分相同的函数，但使用了 Promise 而不是回调函数。
 - en: '[PRE12]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Sometimes you don’t need asynchronicity and it just gets in the way. Many of
     the functions in node:fs also have a synchronous variant, which has the same name
     with Sync added to the end. For example, the synchronous version of readFile is
     called readFileSync.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时你并不需要异步操作，它反而会造成困扰。node:fs 中的许多函数也有同步变体，其名称后面加上 Sync。比如，readFile 的同步版本叫做 readFileSync。
 - en: '[PRE13]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: Note that while such a synchronous operation is being performed, your program
     is stopped entirely. If it should be responding to the user or to other machines
     on the network, being stuck on a synchronous action might produce annoying delays.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，在执行这样的同步操作时，程序会完全停止。如果它应该响应用户或网络上的其他机器，被阻塞在同步操作上可能会造成令人烦恼的延迟。
 - en: The HTTP Module
+  id: totrans-67
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: HTTP 模块
 - en: Another central module is called node:http. It provides functionality for running
     an HTTP server.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个核心模块叫做 node:http。它提供了运行 HTTP 服务器的功能。
 - en: 'This is all it takes to start an HTTP server:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 启动 HTTP 服务器所需的就是这些：
 - en: '[PRE14]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: If you run this script on your own machine, you can point your web browser at
     *http://localhost:8000/hello* to make a request to your server. It will respond
     with a small HTML page.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你在自己的机器上运行这个脚本，你可以将你的 Web 浏览器指向 *http://localhost:8000/hello* 以向你的服务器发出请求。它将以一个小的
+    HTML 页面响应。
 - en: The function passed as the argument to createServer is called every time a client
     connects to the server. The request and response bindings are objects representing
     the incoming and outgoing data. The first contains information about the request,
     such as its url property, which tells us to what URL the request was made.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 传递给 createServer 的函数在每次客户端连接到服务器时被调用。请求和响应绑定是表示传入和传出数据的对象。第一个包含有关请求的信息，例如它的
+    url 属性，告诉我们请求是发往哪个 URL 的。
 - en: When you open that page in your browser, it sends a request to your own computer.
     This causes the server function to run and send back a response, which you can
     then see in the browser.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你在浏览器中打开该页面时，它会向你自己的计算机发送请求。这会导致服务器函数运行并发送回响应，你随后可以在浏览器中看到。
 - en: To send something to the client, you call methods on the response object. The
     first, writeHead, will write out the response headers (see [Chapter 18](ch18.xhtml#ch18)).
     You give it the status code (200 for “OK” in this case) and an object that contains
     header values. The example sets the Content-Type header to inform the client that
     we’ll be sending back an HTML document.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 要向客户端发送内容，你需要在响应对象上调用方法。第一个是 writeHead，它将写出响应头（见 [第 18 章](ch18.xhtml#ch18)）。你需要提供状态码（在这种情况下是
+    200，表示“OK”）和一个包含头部值的对象。示例将 Content-Type 头设置为通知客户端我们将返回一个 HTML 文档。
 - en: Next, the actual response body (the document itself) is sent with response .write.
     You’re allowed to call this method multiple times if you want to send the response
     piece by piece—for example, to stream data to the client as it becomes available.
     Finally, response.end signals the end of the response.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，实际的响应主体（文档本身）通过 response.write 发送。如果你想逐块发送响应，可以多次调用此方法，例如，随着数据的可用性将数据流式传输给客户端。最后，response.end
+    表示响应结束。
 - en: The call to server.listen causes the server to start waiting for connections
     on port 8000\. This is why you have to connect to *localhost:8000* to speak to
     this server, rather than just *localhost*, which would use the default port 80.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 对 server.listen 的调用使服务器开始在 8000 端口等待连接。这就是为什么你必须连接到 *localhost:8000* 来与此服务器进行通信，而不是仅仅使用
+    *localhost*，因为那将使用默认端口 80。
 - en: When you run this script, the process just sits there and waits. When a script
     is listening for events—in this case, network connections—node will not automatically
     exit when it reaches the end of the script. To close it, press CTRL-C.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你运行这个脚本时，进程只是静静地等待。当一个脚本正在监听事件时——在这种情况下，是网络连接——node 不会在达到脚本末尾时自动退出。要关闭它，请按
+    CTRL-C。
 - en: A real web server usually does more than the one in the example—it looks at
     the request’s method (the method property) to see what action the client is trying
     to perform and looks at the request’s URL to find out on which resource this action
     is being performed. We’ll see a more advanced server later in this chapter.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个真正的 Web 服务器通常比示例中的服务器做得更多——它查看请求的方法（method 属性）以查看客户端正在尝试执行什么操作，并查看请求的 URL
+    以找出正在对哪个资源执行此操作。我们将在本章后面看到一个更高级的服务器。
 - en: The node:http module also provides a request function that can be used to make
     HTTP requests. However, it is a lot more cumbersome to use than fetch, which we
     saw in [Chapter 18](ch18.xhtml#ch18). Fortunately, fetch is also available in
     Node as a global binding. Unless you want to do something very specific, such
     as processing the response document piece by piece as the data comes in over the
     network, I recommend sticking to fetch.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: node:http 模块还提供了一个请求函数，可用于发起 HTTP 请求。然而，与我们在 [第 18 章](ch18.xhtml#ch18) 中看到的
+    fetch 相比，它使用起来要繁琐得多。幸运的是，fetch 在 Node 中也作为全局绑定可用。除非你想做一些非常具体的事情，例如在数据通过网络传入时逐块处理响应文档，否则我建议使用
+    fetch。
 - en: Streams
+  id: totrans-80
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 流
 - en: The response object that the HTTP server could write to is an example of a *writable
     stream* object, which is a widely used concept in Node. Such objects have a write
     method that can be passed a string or a Buffer object to write something to the
@@ -403,104 +579,144 @@
     to the stream before closing. Both of these methods can also be given a callback
     as an additional argument, which they will call when the writing or closing has
     finished.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: HTTP服务器可以写入的响应对象是一个*可写流*对象的示例，这是Node中广泛使用的概念。这些对象具有write方法，可以传入一个字符串或Buffer对象，以将内容写入流中。它们的end方法关闭流，并且在关闭之前可以选择性地接收一个值以写入流。这两个方法也可以接受一个回调作为额外参数，当写入或关闭完成时会调用该回调。
 - en: It is possible to create a writable stream that points at a file with the createWriteStream
     function from the node:fs module. You can then use the write method on the resulting
     object to write the file one piece at a time rather than in one shot, as with
     writeFile.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以使用来自node:fs模块的createWriteStream函数创建一个指向文件的可写流。然后，可以在生成的对象上使用write方法逐块写入文件，而不是像writeFile那样一次性写入。
 - en: '*Readable streams* are a little more involved. The request argument to the
     HTTP server’s callback is a readable stream. Reading from a stream is done using
     event handlers rather than methods.'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '*可读流*稍微复杂一些。HTTP服务器回调的请求参数是一个可读流。从流中读取是通过事件处理程序而不是方法来完成的。'
 - en: Objects that emit events in Node have a method called on that is similar to
     the addEventListener method in the browser. You give it an event name and then
     a function, and it will register that function to be called whenever the given
     event occurs.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Node中发出事件的对象有一个名为on的方法，类似于浏览器中的addEventListener方法。你给它一个事件名称和一个函数，它会注册该函数，以便在发生给定事件时调用。
 - en: Readable streams have “data” and “end” events. The first is fired every time
     data comes in, and the second is called whenever the stream is at its end. This
     model is most suited for *streaming* data that can be immediately processed, even
     when the whole document isn’t available yet. A file can be read as a readable
     stream by using the createReadStream function from node:fs.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 可读流有“data”和“end”事件。每当数据到达时，第一种事件会被触发，而第二种事件则在流结束时被调用。该模型最适合于*流式*处理数据，即使整个文档尚不可用，也能立即处理。可以通过使用node:fs中的createReadStream函数将文件作为可读流进行读取。
 - en: 'This code creates a server that reads request bodies and streams them back
     to the client as all-uppercase text:'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 这段代码创建了一个服务器，读取请求体并将其以全大写文本流回客户端：
 - en: '[PRE15]'
+  id: totrans-87
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: The chunk value passed to the data handler will be a binary Buffer. We can convert
     this to a string by decoding it as UTF-8 encoded characters with its toString
     method.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 传递给数据处理程序的chunk值将是一个二进制Buffer。我们可以通过使用其toString方法将其解码为UTF-8编码的字符，从而转换为字符串。
 - en: 'The following piece of code, when run with the uppercasing server active, will
     send a request to that server and write out the response it gets:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码在启动大写服务器时运行，将向该服务器发送请求，并输出收到的响应：
 - en: '[PRE16]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: A File Server
+  id: totrans-91
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 文件服务器
 - en: 'Let’s combine our newfound knowledge about HTTP servers and working with the
     filesystem to create a bridge between the two: an HTTP server that allows remote
     access to a filesystem. Such a server has all kinds of uses—it allows web applications
     to store and share data, or it can give a group of people shared access to a bunch
     of files.'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们结合关于HTTP服务器和文件系统操作的新知识，创建两者之间的桥梁：一个允许远程访问文件系统的HTTP服务器。这样的服务器有各种用途——它允许Web应用程序存储和共享数据，或者可以为一组人提供对一堆文件的共享访问。
 - en: When we treat files as HTTP resources, the HTTP methods GET, PUT, and DELETE
     can be used to read, write, and delete the files, respectively. We will interpret
     the path in the request as the path of the file that the request refers to.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们将文件视为HTTP资源时，HTTP方法GET、PUT和DELETE可以分别用于读取、写入和删除文件。我们将请求中的路径解释为请求所指向的文件的路径。
 - en: We probably don’t want to share our whole filesystem, so we’ll interpret these
     paths as starting in the server’s working directory, which is the directory in
     which it was started. If I ran the server from */tmp/public/* (or *C:\tmp\public\*
     on Windows), then a request for */file.txt* should refer to */tmp/ public/file.txt*
     (or *C:\tmp\public\file.txt*).
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可能不想共享整个文件系统，因此我们将这些路径解释为从服务器的工作目录开始，这就是服务器启动时所在的目录。如果我从*/tmp/public/*（或者在Windows上为*C:\tmp\public\*）运行服务器，那么对*/file.txt*的请求应该指向*/tmp/public/file.txt*（或*C:\tmp\public\file.txt*）。
 - en: We’ll build the program piece by piece, using an object called methods to store
     the functions that handle the various HTTP methods. Method handlers are async
     functions that get the request object as their argument and return a promise that
     resolves to an object that describes the response.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将逐步构建程序，使用一个名为methods的对象来存储处理各种HTTP方法的函数。方法处理程序是异步函数，它们将请求对象作为参数，并返回一个解析为描述响应的对象的承诺。
 - en: '[PRE17]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: This starts a server that just returns 405 error responses, which is the code
     used to indicate that the server refuses to handle a given method.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 这启动了一个只返回405错误响应的服务器，该代码用于指示服务器拒绝处理给定的方法。
 - en: When a request handler’s promise is rejected, the catch call translates the
     error into a response object, if it isn’t one already, so that the server can
     send back an error response to inform the client that it failed to handle the
     request.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 当请求处理程序的承诺被拒绝时，catch调用将错误转换为响应对象（如果还不是），以便服务器可以发送错误响应，通知客户端处理请求失败。
 - en: The status field of the response description may be omitted, in which case it
     defaults to 200 (OK). The content type, in the type property, can also be left
     off, in which case the response is assumed to be plaintext.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 响应描述的状态字段可以省略，在这种情况下，它默认为200（OK）。类型属性中的内容类型也可以省略，在这种情况下，响应被认为是纯文本。
 - en: When the value of body is a readable stream, it will have a pipe method that
     we can use to forward all content from a readable stream to a writable stream.
     If not, it is assumed to be either null (no body), a string, or a buffer, and
     it is passed directly to the response’s end method.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 当body的值是可读流时，它将具有一个pipe方法，我们可以用它将所有内容从可读流转发到可写流。如果不是，则假定它是null（没有主体）、字符串或缓冲区，并直接传递给响应的end方法。
 - en: To figure out which file path corresponds to a request URL, the urlPath function
     uses the built-in URL class (which also exists in the browser) to parse the URL.
     This constructor expects a full URL, not just the part starting with the slash
@@ -508,22 +724,30 @@
     extracts its pathname, which will be something like “/file.txt”, decodes that
     to get rid of the %20-style escape codes, and resolves it relative to the program’s
     working directory.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了找出哪个文件路径对应于请求URL，urlPath函数使用内置的URL类（在浏览器中也存在）来解析URL。该构造函数期望一个完整的URL，而不仅仅是以斜杠开头的部分（我们从request.url中获得），因此我们提供一个虚拟域名来填充。它提取其路径名，类似于“/file.txt”，对其进行解码以去除%20样式的转义码，并相对于程序的工作目录解析它。
 - en: '[PRE18]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: As soon as you set up a program to accept network requests, you have to start
     worrying about security. In this case, if we aren’t careful, it is likely that
     we’ll accidentally expose our whole filesystem to the network.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦你设置了一个程序来接受网络请求，就必须开始担心安全性。在这种情况下，如果我们不小心，很可能会意外地将整个文件系统暴露给网络。
 - en: File paths are strings in Node. To map such a string to an actual file, there’s
     a nontrivial amount of interpretation going on. Paths may, for example, include
     ../ to refer to a parent directory. One obvious source of problems would be requests
     for paths like */../secret_file*.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 文件路径在Node中是字符串。要将这样的字符串映射到实际文件，需要进行相当复杂的解释。例如，路径可能包含../来引用父目录。一个明显的问题来源是请求类似于*/../secret_file*的路径。
 - en: To avoid such problems, urlPath uses the resolve function from the node:path
     module, which resolves relative paths. It then verifies that the result is *below*
     the working directory. The process.cwd function (where cwd stands for “current
@@ -532,68 +756,100 @@
     and a forward slash on most other systems. When the path doesn’t start with the
     base directory, the function throws an error response object, using the HTTP status
     code indicating that access to the resource is forbidden.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了避免此类问题，urlPath使用来自node:path模块的resolve函数，该函数解析相对路径。它随后验证结果是否在工作目录*之下*。process.cwd函数（其中cwd代表“当前工作目录”）可以用来找到这个工作目录。来自node:path包的sep绑定是系统的路径分隔符——在Windows上是反斜杠，在大多数其他系统上是正斜杠。当路径不以基本目录开头时，该函数会抛出一个错误响应对象，使用HTTP状态码指示访问该资源是被禁止的。
 - en: We’ll set up the GET method to return a list of files when reading a directory
     and to return the file’s content when reading a regular file.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将设置GET方法，以便在读取目录时返回文件列表，并在读取常规文件时返回文件的内容。
 - en: One tricky question is what kind of Content-Type header we should set when returning
     a file’s content. Since these files could be anything, our server can’t simply
     return the same content type for all of them. NPM can help us again here. The
     mime-types package (content type indicators like text/plain are also called *MIME
     types*) knows the correct type for a large number of file extensions.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个棘手的问题是我们在返回文件内容时应该设置什么样的 Content-Type 头。由于这些文件可能是任何类型，我们的服务器不能简单地为它们全部返回相同的内容类型。NPM
+    在这里可以再次帮助我们。mime-types 包（像 text/plain 这样的内容类型指示符也被称为 *MIME 类型*）知道许多文件扩展名的正确类型。
 - en: 'The following npm command, in the directory where the server script lives,
     installs a specific version of mime:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 在服务器脚本所在的目录中，以下 npm 命令安装特定版本的 mime：
 - en: '[PRE19]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: When a requested file does not exist, the correct HTTP status code to return
     is 404\. We’ll use the stat function, which looks up information about a file,
     to find out both whether the file exists and whether it is a directory.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 当请求的文件不存在时，返回的正确 HTTP 状态码是 404。我们将使用 stat 函数，该函数查找有关文件的信息，以确定文件是否存在以及它是否是一个目录。
 - en: '[PRE20]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: Because it has to touch the disk and thus might take a while, stat is asynchronous.
     Since we’re using promises rather than callback style, it has to be imported from
     node:fs/promises instead of directly from node:fs.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于它必须接触磁盘，因此可能需要一些时间，stat 是异步的。因为我们使用的是 Promise 而不是回调风格，所以它必须从 node:fs/promises
+    导入，而不是直接从 node:fs 导入。
 - en: When the file does not exist, stat will throw an error object with a code property
     of “ENOENT”. These somewhat obscure, Unix-inspired codes are how you recognize
     error types in Node.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 当文件不存在时，stat 将抛出一个带有“ENOENT”代码属性的错误对象。这些有些晦涩的、受 Unix 启发的代码是识别 Node 中错误类型的方式。
 - en: The stats object returned by stat tells us a number of things about a file,
     such as its size (size property) and its modification date (mtime property). Here
     we are interested in the question of whether it is a directory or a regular file,
     which the isDirectory method tells us.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: stat 返回的 stats 对象告诉我们有关文件的许多信息，例如其大小（size 属性）和修改日期（mtime 属性）。在这里，我们关注的问题是它是一个目录还是一个普通文件，这由
+    isDirectory 方法告诉我们。
 - en: We use readdir to read the array of files in a directory and return it to the
     client. For normal files, we create a readable stream with createReadStream and
     return that as the body, along with the content type that the mime package gives
     us for the file’s name.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们使用 readdir 读取目录中的文件数组并将其返回给客户端。对于普通文件，我们使用 createReadStream 创建一个可读流，并将其作为主体返回，同时附上
+    mime 包为文件名提供的内容类型。
 - en: The code to handle DELETE requests is slightly simpler.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理 DELETE 请求的代码稍微简单一些。
 - en: '[PRE21]'
+  id: totrans-117
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: When an HTTP response does not contain any data, the status code 204 (“no content”)
     can be used to indicate this. Since the response to deletion doesn’t need to transmit
     any information beyond whether the operation succeeded, that is a sensible thing
     to return here.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 HTTP 响应不包含任何数据时，可以使用状态码 204（“无内容”）来指示这一点。由于删除的响应不需要传输除操作是否成功之外的任何信息，因此在这里返回这个是合理的。
 - en: You may be wondering why trying to delete a nonexistent file returns a success
     status code rather than an error. When the file being deleted is not there, you
     could say that the request’s objective is already fulfilled. The HTTP standard
@@ -601,156 +857,229 @@
     request multiple times produces the same result as making it once. In a way, if
     you try to delete something that’s already gone, the effect you were trying to
     create has been achieved—the thing is no longer there.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能会想，为什么尝试删除一个不存在的文件会返回成功状态码而不是错误。当要删除的文件不存在时，可以说请求的目标已经实现。HTTP 标准鼓励我们使请求*幂等*，这意味着多次发出相同请求的结果与只发出一次相同。在某种意义上，如果你尝试删除已经不存在的东西，那么你试图创造的效果已经实现——那个东西不再在那里。
 - en: 'This is the handler for PUT requests:'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是处理 PUT 请求的处理程序：
 - en: '[PRE22]'
+  id: totrans-121
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: We don’t need to check whether the file exists this time—if it does, we’ll just
     overwrite it. We again use pipe to move data from a readable stream to a writable
     one, in this case from the request to the file. But since pipe isn’t written to
     return a promise, we have to write a wrapper, pipeStream, that creates a promise
     around the outcome of calling pipe.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次我们不需要检查文件是否存在——如果存在，我们只需覆盖它。我们再次使用管道将数据从可读流移动到可写流，在这种情况下是从请求到文件。但由于管道没有返回一个
+    Promise，我们需要编写一个包装器 pipeStream，它在调用管道的结果周围创建一个 Promise。
 - en: When something goes wrong when opening the file, createWriteStream will still
     return a stream, but that stream will fire an “error” event. The stream from the
     request may also fail—for example, if the network goes down. So we wire up both
     streams’ “error” events to reject the promise. When pipe is done, it will close
     the output stream, which causes it to fire a “finish” event. That’s the point
     at which we can successfully resolve the promise (returning nothing).
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 当打开文件时出现问题时，createWriteStream 仍会返回一个流，但该流会触发一个“错误”事件。请求的流也可能失败，例如，如果网络中断。因此，我们将两个流的“错误”事件连接起来，以拒绝该
+    promise。当管道操作完成时，它会关闭输出流，这会触发一个“完成”事件。这时我们可以成功解析该 promise（不返回任何内容）。
 - en: The full script for the server is available at *[https://eloquentjavascript.net/code/file_server.mjs](https://eloquentjavascript.net/code/file_server.mjs)*.
     You can download that and, after installing its dependencies, run it with Node
     to start your own file server. And, of course, you can modify and extend it to
     solve this chapter’s exercises or to experiment.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器的完整脚本可在 *[https://eloquentjavascript.net/code/file_server.mjs](https://eloquentjavascript.net/code/file_server.mjs)*
+    上找到。你可以下载它，并在安装其依赖后，使用 Node 运行它来启动自己的文件服务器。当然，你也可以修改和扩展它，以解决本章的练习或进行实验。
 - en: The command line tool curl, widely available on Unix-like systems (such as macOS
     and Linux), can be used to make HTTP requests. The following session briefly tests
     our server. The -X option is used to set the request’s method, and -d is used
     to include a request body.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 命令行工具 curl 广泛用于类 Unix 系统（如 macOS 和 Linux），可用于发起 HTTP 请求。以下会话简要测试我们的服务器。-X 选项用于设置请求的方法，-d
+    选项用于包含请求主体。
 - en: '[PRE23]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: The first request for file.txt fails, since the file does not exist yet. The
     PUT request creates the file, and behold, the next request successfully retrieves
     it. After deleting it with a DELETE request, the file is again missing.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 对 file.txt 的第一次请求失败，因为文件尚不存在。PUT 请求创建了该文件，接着下一个请求成功检索了它。在通过 DELETE 请求删除后，文件再次消失。
 - en: Summary
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 总结
 - en: Node is a nice, small system that lets us run JavaScript in a nonbrowser context.
     It was originally designed for network tasks to play the role of a node in a network,
     but it lends itself to all kinds of scripting tasks. If writing Java-Script is
     something you enjoy, automating tasks with Node may work well for you.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: Node 是一个精巧的小系统，使我们能够在非浏览器环境中运行 JavaScript。它最初设计用于网络任务，充当网络中的一个节点，但它适用于各种脚本任务。如果编写
+    JavaScript 是你喜欢的事情，使用 Node 自动化任务可能会对你很有帮助。
 - en: NPM provides packages for everything you can think of (and quite a few things
     you’d probably never think of), and it allows you to fetch and install those packages
     with the npm program. Node comes with a number of built-in modules, including
     the node:fs module for working with the filesystem and the node:http module for
     running HTTP servers.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: NPM 提供了你能想到的所有包（还有一些你可能从未想到的包），并允许你使用 npm 程序获取和安装这些包。Node 内置了一些模块，包括用于处理文件系统的
+    node:fs 模块和用于运行 HTTP 服务器的 node:http 模块。
 - en: All input and output in Node is done asynchronously, unless you explicitly use
     a synchronous variant of a function, such as readFileSync. Node originally used
     callbacks for asynchronous functionality, but the node:fs/promises package provides
     a promise-based interface to the filesystem.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Node 中，所有的输入和输出都是异步进行的，除非你明确使用函数的同步变体，例如 readFileSync。Node 最初使用回调来实现异步功能，但
+    node:fs/promises 包提供了基于 promise 的文件系统接口。
 - en: Exercises
+  id: totrans-132
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 练习
 - en: '*Search Tool*'
+  id: totrans-133
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*搜索工具*'
 - en: On Unix systems, there is a command line tool called grep that can be used to
     quickly search files for a regular expression.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Unix 系统上，有一个名为 grep 的命令行工具，可以快速搜索文件中的正则表达式。
 - en: Write a Node script that can be run from the command line and acts somewhat
     like grep. It treats its first command line argument as a regular expression and
     treats any further arguments as files to search. It outputs the names of any file
     whose content matches the regular expression.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个可以从命令行运行的 Node 脚本，行为类似于 grep。它将第一个命令行参数视为正则表达式，后续参数视为要搜索的文件。它输出任何内容与正则表达式匹配的文件的名称。
 - en: When that works, extend it so that when one of the arguments is a directory,
     it searches through all files in that directory and its subdirectories.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 当那样工作时，扩展它，使得当其中一个参数是目录时，它会搜索该目录及其子目录中的所有文件。
 - en: Use asynchronous or synchronous filesystem functions as you see fit. Setting
     things up so that multiple asynchronous actions are requested at the same time
     might speed things up a little, but not a huge amount, since most filesystems
     can read only one thing at a time.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据需要使用异步或同步文件系统函数。设置多个异步操作同时请求可能会加快速度，但效果有限，因为大多数文件系统一次只能读取一个文件。
 - en: '*Directory Creation*'
+  id: totrans-138
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*目录创建*'
 - en: Though the DELETE method in our file server is able to delete directories (using
     rmdir), the server currently does not provide any way to *create* a directory.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管我们文件服务器的 DELETE 方法能够删除目录（使用 rmdir），但服务器目前不提供任何*创建*目录的方法。
 - en: Add support for the MKCOL method (“make collection”), which should create a
     directory by calling mkdir from the node:fs module. MKCOL is not a widely used
     HTTP method, but it does exist for this same purpose in the WebDAV standard, which
     specifies a set of conventions on top of HTTP that make it suitable for creating
     documents.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加对 MKCOL 方法（“创建集合”）的支持，该方法应通过调用 node:fs 模块中的 mkdir 来创建目录。MKCOL 不是一种广泛使用的 HTTP
+    方法，但在 WebDAV 标准中确实存在此目的，WebDAV 在 HTTP 上指定了一组约定，使其适合于创建文档。
 - en: '*A Public Space on the Web*'
+  id: totrans-141
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*网络上的公共空间*'
 - en: 'Since the file server serves up any kind of file and even includes the right
     Content-Type header, you can use it to serve a website. Given that this server
     allows everybody to delete and replace files, this would make for an interesting
     kind of website: one that can be modified, improved, and vandalized by everybody
     who takes the time to make the right HTTP request.'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于文件服务器可以提供任何类型的文件，并且还包含正确的 Content-Type 头，因此您可以用它来提供一个网站。考虑到该服务器允许所有人删除和替换文件，这将会创建一种有趣的网站：一个可以被每个花时间进行正确
+    HTTP 请求的人修改、改进和破坏的网站。
 - en: Write a basic HTML page that includes a simple JavaScript file. Put the files
     in a directory served by the file server and open them in your browser.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个基本的 HTML 页面，其中包含一个简单的 JavaScript 文件。将文件放在文件服务器提供的目录中，并在浏览器中打开它们。
 - en: Next, as an advanced exercise or even a weekend project, combine all the knowledge
     you gained from this book to build a more user-friendly interface for modifying
     the website—from *inside* the website.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，作为一个高级练习或周末项目，结合从本书中获得的所有知识，构建一个更用户友好的界面来修改网站——从网站的*内部*。
 - en: Use an HTML form to edit the content of the files that make up the website,
     allowing the user to update them on the server by using HTTP requests, as described
     in [Chapter 18](ch18.xhtml#ch18).
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 HTML 表单编辑构成网站的文件内容，允许用户通过使用 HTTP 请求在服务器上更新它们，如[第18章](ch18.xhtml#ch18)所述。
 - en: Start by making only a single file editable. Then make it so that the user can
     select which file to edit. Use the fact that our file server returns lists of
     files when reading a directory.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先只使单个文件可编辑。然后使用户可以选择要编辑的文件。利用我们的文件服务器在读取目录时返回文件列表的事实。
 - en: Don’t work directly in the code exposed by the file server, since if you make
     a mistake, you are likely to damage the files there. Instead, keep your work outside
     of the publicly accessible directory and copy it there when testing.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 不要直接在文件服务器暴露的代码中工作，因为如果出错，您可能会损坏那里的文件。相反，将您的工作保留在公共可访问目录之外，并在测试时将其复制到那里。
 - en: '*If you have knowledge, let others light their candles at it.*'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '*如果你有知识，让他人借此点燃他们的蜡烛。*'
 - en: —Margaret Fuller
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: —玛格丽特·富勒
 - en: '![Image](../images/f0354-01.jpg)'
+  id: totrans-150
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0354-01.jpg)'

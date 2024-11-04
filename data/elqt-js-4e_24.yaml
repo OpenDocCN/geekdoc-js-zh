@@ -1,83 +1,116 @@
 - en: '21'
+  id: totrans-0
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '21'
 - en: 'PROJECT: SKILL-SHARING WEBSITE'
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 项目：技能分享网站
 - en: A *skill-sharing* meeting is an event where people with a shared interest come
     together and give small, informal presentations about things they know. At a gardening
     skill-sharing meeting, someone might explain how to cultivate celery. Or in a
     programming skill-sharing group, you could drop by and tell people about Node.js.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '*技能分享*会议是一个人们聚集在一起，围绕共同兴趣进行小型非正式演讲的活动。在一次园艺技能分享会议上，有人可能会讲解如何种植芹菜。或者在一次编程技能分享小组中，你可以随意来告诉大家关于
+    Node.js 的信息。'
 - en: In this final project chapter, our goal is to set up a website for managing
     talks given at a skill-sharing meeting. Imagine a small group of people meeting
     up regularly in the office of one of the members to talk about unicycling. The
     previous organizer of the meetings moved to another town, and nobody stepped forward
     to take over this task. We want a system that will let the participants propose
     and discuss talks among themselves without an active organizer.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本项目的最后一章中，我们的目标是建立一个用于管理技能分享会议上讲座的网站。想象一下，一小群人定期在其中一位成员的办公室聚会，讨论独轮车。之前的会议组织者已搬到另一个城市，没有人主动承担这一任务。我们希望有一个系统，让参与者在没有积极组织者的情况下，自主提议和讨论讲座。
 - en: The full code for the project can be downloaded from *[https://eloquentjavascript.net/code/skillsharing.zip](https://eloquentjavascript.net/code/skillsharing.zip).*
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 项目的完整代码可以从*[https://eloquentjavascript.net/code/skillsharing.zip](https://eloquentjavascript.net/code/skillsharing.zip)*下载。
 - en: Design
+  id: totrans-5
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 设计
 - en: There is a *server* part to this project, written for Node.js, and a *client*
     part, written for the browser. The server stores the system’s data and provides
     it to the client. It also serves the files that implement the client-side system.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 该项目包含一个为 Node.js 编写的*服务器*部分和一个为浏览器编写的*客户端*部分。服务器存储系统的数据并将其提供给客户端。同时，服务器还提供实现客户端系统的文件。
 - en: The server keeps the list of talks proposed for the next meeting, and the client
     shows this list. Each talk has a presenter name, a title, a summary, and an array
     of comments associated with it. The client allows users to propose new talks (adding
     them to the list), delete talks, and comment on existing talks. Whenever the user
     makes such a change, the client makes an HTTP request to tell the server about
     it.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器保持下次会议提议的讲座列表，客户端显示此列表。每个讲座都有一个演讲者姓名、标题、摘要以及与之相关的评论数组。客户端允许用户提议新讲座（将其添加到列表中）、删除讲座并对现有讲座进行评论。每当用户进行这样的更改时，客户端会发送
+    HTTP 请求以告知服务器。
 - en: '![Image](../images/f0356-01.jpg)'
+  id: totrans-8
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0356-01.jpg)'
 - en: The application will be set up to show a *live* view of the current proposed
     talks and their comments. Whenever someone, somewhere, submits a new talk or adds
     a comment, all people who have the page open in their browsers should immediately
     see the change. This poses a bit of a challenge—there is no way for a web server
     to open a connection to a client, nor is there a good way to know which clients
     are currently looking at a given website.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 该应用程序将设置为显示当前提议的讲座及其评论的*实时*视图。每当有人在任何地方提交新讲座或添加评论时，所有在浏览器中打开该页面的人应立即看到变化。这带来了一些挑战——因为没有办法让网络服务器打开与客户端的连接，也没有好的方法来知道当前哪些客户端正在查看特定网站。
 - en: A common solution to this problem is called *long polling*, which happens to
     be one of the motivations for Node’s design.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决此问题的一个常见方法称为*长轮询*，这恰好是 Node 设计的动机之一。
 - en: Long Polling
+  id: totrans-11
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 长轮询
 - en: To be able to immediately notify a client that something changed, we need a
     connection to that client. Since web browsers do not traditionally accept connections
     and clients are often behind routers that would block such connections anyway,
     having the server initiate this connection is not practical.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了能够立即通知客户某些内容发生了变化，我们需要与该客户建立连接。由于网络浏览器通常不接受连接，并且客户常常处于会阻止此类连接的路由器后面，因此让服务器发起此连接并不实用。
 - en: 'We can arrange for the client to open the connection and keep it around so
     that the server can use it to send information when it needs to do so. But an
     HTTP request allows only a simple flow of information: the client sends a request,
     the server comes back with a single response, and that’s it. A technology called
     *WebSockets* makes it possible to open connections for arbitrary data exchange,
     but using such sockets properly is somewhat tricky.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以安排客户端打开连接并保持连接，以便服务器在需要时可以使用它发送信息。但 HTTP 请求仅允许简单的信息流：客户端发送请求，服务器返回单个响应，便结束了。一个名为
+    *WebSockets* 的技术使得可以为任意数据交换打开连接，但正确使用这些套接字有些棘手。
 - en: In this chapter, we use a simpler technique, *long polling*, where clients continuously
     ask the server for new information using regular HTTP requests and the server
     stalls its answer when it has nothing new to report.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们使用一种更简单的技术，即 *长轮询*，客户端通过常规的 HTTP 请求持续向服务器请求新信息，而服务器在没有新信息时会延迟响应。
 - en: As long as the client makes sure it constantly has a polling request open, it
     will receive information from the server quickly after it becomes available. For
     example, if Fatma has our skill-sharing application open in her browser, that
@@ -86,78 +119,118 @@
     server will notice that Fatma is waiting for updates and send a response containing
     the new talk to her pending request. Fatma’s browser will receive the data and
     update the screen to show the talk.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 只要客户端确保始终保持一个轮询请求开放，它将能够在信息可用后快速接收来自服务器的信息。例如，如果 Fatma 在浏览器中打开了我们的技能共享应用程序，那么该浏览器将已经发出更新请求，并等待对此请求的响应。当
+    Iman 提交关于极限单轮车的讨论时，服务器将注意到 Fatma 在等待更新，并将包含新讨论的响应发送给她的挂起请求。Fatma 的浏览器将接收到数据并更新屏幕以显示讨论内容。
 - en: To prevent connections from timing out (being aborted because of a lack of activity),
     long polling techniques usually set a maximum time for each request, after which
     the server will respond anyway, even though it has nothing to report. The client
     can then start a new request. Periodically restarting the request also makes the
     technique more robust, allowing clients to recover from temporary connection failures
     or server problems.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了防止连接超时（因缺乏活动而被中止），长轮询技术通常会为每个请求设置最大时间，超过该时间后，即使服务器没有任何报告，仍会做出响应。然后客户端可以启动新的请求。定期重新启动请求也使得这种技术更加稳健，使客户端能够从临时的连接故障或服务器问题中恢复。
 - en: A busy server that is using long polling may have thousands of waiting requests,
     and thus TCP connections, open. Node, which makes it easy to manage many connections
     without creating a separate thread of control for each one, is a good fit for
     such a system.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个繁忙的服务器如果使用长轮询，可能会有数千个等待请求，因此会保持许多 TCP 连接。Node.js 可以轻松管理多个连接，而无需为每个连接创建单独的控制线程，这使其非常适合这种系统。
 - en: HTTP Interface
+  id: totrans-18
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: HTTP 接口
 - en: 'Before we start designing either the server or the client, let’s think about
     the point where they touch: the HTTP interface over which they communicate.'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们开始设计服务器或客户端之前，让我们先思考它们交互的点：用于通信的 HTTP 接口。
 - en: We will use JSON as the format of our request and response body. Like in the
     file server from [Chapter 20](ch20.xhtml#ch20), we’ll try to make good use of
     HTTP methods and headers. The interface is centered around the */talks* path.
     Paths that do not start with */talks* will be used for serving static files—the
     HTML and JavaScript code for the client-side system.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将使用 JSON 作为请求和响应主体的格式。就像在 [第20章](ch20.xhtml#ch20) 的文件服务器中，我们将尽量充分利用 HTTP 方法和头部。接口围绕
+    */talks* 路径展开。以 */talks* 开头的路径将用于提供静态文件——客户端系统的 HTML 和 JavaScript 代码。
 - en: 'A GET request to */talks* returns a JSON document like this:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 对 */talks* 的 GET 请求将返回如下 JSON 文档：
 - en: '[PRE0]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Creating a new talk is done by making a PUT request to a URL like */talks/ Unituning*,
     where the part after the second slash is the title of the talk. The PUT request’s
     body should contain a JSON object that has presenter and summary properties.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建新讨论可以通过向类似 */talks/ Unituning* 的 URL 发起 PUT 请求来实现，其中第二个斜杠后的部分是讨论的标题。PUT 请求的主体应包含一个具有
+    presenter 和 summary 属性的 JSON 对象。
 - en: Since talk titles may contain spaces and other characters that may not appear
     normally in a URL, title strings must be encoded with the encodeURI Component
     function when building up such a URL.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于讨论标题可能包含空格和其他在 URL 中通常不会出现的字符，因此在构建此类 URL 时，标题字符串必须使用 encodeURI Component
+    函数进行编码。
 - en: '[PRE1]'
+  id: totrans-25
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'A request to create a talk about idling might look something like this:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建关于闲置的讲座的请求可能看起来像这样：
 - en: '[PRE2]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Such URLs also support GET requests to retrieve the JSON representation of a
     talk and DELETE requests to delete a talk.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 此类 URL 也支持 GET 请求以检索讲座的 JSON 表示和 DELETE 请求以删除讲座。
 - en: Adding a comment to a talk is done with a POST request to a URL like */talks/Unituning/comments*,
     with a JSON body that has author and message properties.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 向讲座添加评论是通过向类似 */talks/Unituning/comments* 的 URL 发送 POST 请求来完成的，JSON 正文中包含 author
+    和 message 属性。
 - en: '[PRE3]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'To support long polling, GET requests to */talks* may include extra headers
     that inform the server to delay the response if no new information is available.
     We’ll use a pair of headers normally intended to manage caching: ETag and If-None-Match.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了支持长轮询，对 */talks* 的 GET 请求可以包含额外的头部，告知服务器在没有新信息可用时延迟响应。我们将使用一对通常用于管理缓存的头部：ETag
+    和 If-None-Match。
 - en: Servers may include an ETag (“entity tag”) header in a response. Its value is
     a string that identifies the current version of the resource. Clients, when they
     later request that resource again, may make a *conditional request* by including
@@ -165,8 +238,11 @@
     changed, the server will respond with status code 304, which means “not modified,”
     telling the client that its cached version is still current. When the tag does
     not match, the server responds as normal.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器可能在响应中包含 ETag（“实体标签”）头部。其值是一个字符串，用于标识资源的当前版本。当客户端稍后再次请求该资源时，可以通过包含 If-None-Match
+    头部并将其值设置为该字符串来进行 *条件请求*。如果资源未发生变化，服务器将以状态码 304 响应，这意味着“未修改”，告知客户端其缓存版本仍然是最新的。当标签不匹配时，服务器则正常响应。
 - en: 'We need something like this, where the client can tell the server which version
     of the list of talks it has, and the server responds only when that list has changed.
     But instead of immediately returning a 304 response, the server should stall the
@@ -174,83 +250,117 @@
     time has elapsed. To distinguish long polling requests from normal conditional
     requests, we give them another header, Prefer: wait=90, which tells the server
     that the client is willing to wait up to 90 seconds for the response.'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '我们需要类似这样的功能，客户端可以告知服务器它拥有的讲座列表的版本，服务器仅在该列表发生变化时作出响应。但服务器不应立即返回 304 响应，而是应延迟响应，仅在有新信息可用或经过一定时间后才返回。为了将长轮询请求与普通条件请求区分开，我们为它们提供了另一个头部，Prefer:
+    wait=90，这告诉服务器客户端愿意等待最长 90 秒的时间以获取响应。'
 - en: 'The server will keep a version number that it updates every time the talks
     change and will use that as the ETag value. Clients can make requests like this
     to be notified when the talks change:'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器将保持一个版本号，每次讲座发生变化时更新该版本号，并将其用作 ETag 值。客户端可以发出这样的请求，以便在讲座发生变化时得到通知：
 - en: '[PRE4]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: The protocol described here doesn’t do any access control. Everybody can comment,
     modify talks, and even delete them. (Since the internet is full of hooligans,
     putting such a system online without further protection probably wouldn’t end
     well.)
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 此处描述的协议不进行任何访问控制。每个人都可以评论、修改讲座，甚至删除它们。（由于互联网上充满了流氓，将这样的系统在线放置而没有进一步的保护可能不会有好的结果。）
 - en: The Server
+  id: totrans-37
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 服务器
 - en: Let’s start by building the server-side part of the program. The code in this
     section runs on Node.js.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们开始构建程序的服务器端部分。本节中的代码在 Node.js 上运行。
 - en: '*Routing*'
+  id: totrans-39
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*路由*'
 - en: Our server will use Node’s createServer to start an HTTP server. In the function
     that handles a new request, we must distinguish between the various kinds of requests
     (as determined by the method and the path) that we support. This can be done with
     a long chain of if statements, but there’s a nicer way.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的服务器将使用 Node 的 createServer 来启动一个 HTTP 服务器。在处理新请求的函数中，我们必须区分我们支持的各种请求类型（由方法和路径决定）。这可以通过一长串
+    if 语句来完成，但还有更好的方法。
 - en: A *router* is a component that helps dispatch a request to the function that
     can handle it. You can tell the router, for example, that PUT requests with a
     path that matches the regular expression /^\/talks\/([^\/]+)$/ (*/talks/* followed
     by a talk title) can be handled by a given function. In addition, it can help
     extract the meaningful parts of the path (in this case the talk title), wrapped
     in parentheses in the regular expression, and pass them to the handler function.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '*路由器*是一个组件，帮助将请求分发到可以处理它的函数。你可以告诉路由器，例如，PUT请求的路径匹配正则表达式/^\/talks\/([^\/]+)$/（*talks/*后跟讲座标题）可以由特定函数处理。此外，它还可以帮助提取路径中的有意义部分（在此情况下为讲座标题），这些部分用正则表达式中的括号包裹，并将它们传递给处理函数。'
 - en: There are a number of good router packages on NPM, but here we’ll write one
     ourselves to illustrate the principle.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: NPM上有许多优秀的路由器包，但在这里我们将自己编写一个以说明原理。
 - en: 'This is *router.mjs*, which we will later import from our server module:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是*router.mjs*，我们稍后将从服务器模块中导入它：
 - en: '[PRE5]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The module exports the Router class. A router object allows you to register
     handlers for specific methods and URL patterns with its add method. When a request
     is resolved with the resolve method, the router calls the handler whose method
     and URL match the request and return its result.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 该模块导出了Router类。路由器对象允许你使用其add方法注册特定方法和URL模式的处理程序。当使用resolve方法解析请求时，路由器会调用与请求的方法和URL匹配的处理程序，并返回其结果。
 - en: Handler functions are called with the context value given to resolve. We will
     use this to give them access to our server state. Additionally, they receive the
     match strings for any groups they defined in their regular expression, and the
     request object. The strings have to be URL-decoded, since the raw URL may contain
     %20-style codes.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理函数在给定的上下文值下调用resolve。我们将利用这一点使它们能够访问我们的服务器状态。此外，它们接收其正则表达式中定义的任何组的匹配字符串，以及请求对象。这些字符串必须进行URL解码，因为原始URL可能包含%20样式的编码。
 - en: '*Serving Files*'
+  id: totrans-47
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*服务文件*'
 - en: When a request matches none of the request types defined in our router, the
     server must interpret it as a request for a file in the *public* directory. It
     would be possible to use the file server defined in [Chapter 20](ch20.xhtml#ch20)
     to serve such files, but we neither need nor want to support PUT and DELETE requests
     on files, and we would like to have advanced features such as support for caching.
     Let’s use a solid, well-tested static file server from NPM instead.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 当请求与我们路由器中定义的请求类型都不匹配时，服务器必须将其解释为对*public*目录中某个文件的请求。可以使用[第20章](ch20.xhtml#ch20)中定义的文件服务器来提供此类文件，但我们既不需要也不想在文件上支持PUT和DELETE请求，并且我们希望具备支持缓存等高级功能。让我们使用NPM中一个稳健且经过充分测试的静态文件服务器。
 - en: I opted for serve-static. This isn’t the only such server on NPM, but it works
     well and fits our purposes. The serve-static package exports a function that can
     be called with a root directory to produce a request handler function. The handler
@@ -258,244 +368,364 @@
     “node:http”, and a third argument, a function that it will call if no file matches
     the request. We want our server to first check for requests we should handle specially,
     as defined in the router, so we wrap it in another function.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 我选择了serve-static。这不是NPM上唯一的此类服务器，但它工作良好，符合我们的目的。serve-static包导出一个可以用根目录调用的函数，以生成请求处理函数。处理函数接受服务器从“node:http”提供的请求和响应参数，以及第三个参数，如果没有文件与请求匹配，它将调用的一个函数。我们希望我们的服务器首先检查应该特别处理的请求，如路由器中定义的那样，因此我们将其包装在另一个函数中。
 - en: '[PRE6]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: The serveFromRouter function has the same interface as fileServer, taking (request,
     response, next) arguments. We can use this to “chain” several request handlers,
     allowing each to either handle the request or pass responsibility for that on
     to the next handler. The final handler, notFound, simply responds with a “not
     found” error.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: serveFromRouter函数具有与fileServer相同的接口，接受(request, response, next)参数。我们可以利用这一点“链接”多个请求处理程序，允许每个处理程序处理请求或将责任传递给下一个处理程序。最终处理程序notFound仅仅响应一个“未找到”错误。
 - en: Our serveFromRouter function uses a similar convention to the file server from
     the previous chapter for responses—handlers in the router return promises that
     resolve to objects describing the response.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的serveFromRouter函数使用与前一章文件服务器类似的约定来处理响应——路由器中的处理程序返回的承诺解析为描述响应的对象。
 - en: '[PRE7]'
+  id: totrans-53
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '*Talks as Resources*'
+  id: totrans-54
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*讲座作为资源*'
 - en: The talks that have been proposed are stored in the talks property of the server,
     an object whose property names are the talk titles. We’ll add some handlers to
     our router that expose these as HTTP resources under */talks/<title>*.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 已提议的演讲存储在服务器的 talks 属性中，这是一个对象，其属性名称为演讲标题。我们将为我们的路由器添加一些处理程序，将其作为 HTTP 资源公开，路径为
+    */talks/<title>*。
 - en: The handler for requests that GET a single talk must look up the talk and respond
     either with the talk’s JSON data or with a 404 error response.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理 GET 单个演讲请求的处理程序必须查找该演讲，并以该演讲的 JSON 数据或 404 错误响应进行回应。
 - en: '[PRE8]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: Deleting a talk is done by removing it from the talks object.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 删除演讲是通过将其从 talks 对象中移除来完成的。
 - en: '[PRE9]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: The updated method, which we will define later, notifies waiting long polling
     requests about the change.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: updated 方法（稍后我们将定义）会通知等待的长轮询请求有关更改的信息。
 - en: One handler that needs to read request bodies is the PUT handler, which is used
     to create new talks. It has to check whether the data it was given has presenter
     and summary properties, which are strings. Any data coming from outside the system
     might be nonsense, and we don’t want to corrupt our internal data model or crash
     when bad requests come in.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要读取请求主体的一个处理程序是 PUT 处理程序，它用于创建新的演讲。它必须检查提供的数据是否具有字符串类型的 presenter 和 summary
+    属性。来自系统外部的任何数据可能都是无意义的，我们不想损坏内部数据模型或在出现错误请求时崩溃。
 - en: If the data looks valid, the handler stores an object that represents the new
     talk in the talks object, possibly overwriting an existing talk with this title,
     and again calls updated.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果数据看起来有效，处理程序将一个表示新演讲的对象存储在 talks 对象中，可能会覆盖具有相同标题的现有演讲，并再次调用 updated。
 - en: To read the body from the request stream, we will use the json function from
     “node:stream/consumers”, which collects the data in the stream and then parses
     it as JSON. There are similar exports called text (to read the content as a string)
     and buffer (to read it as binary data) in this package. Since json is a very generic
     name, the import renames it to readJSON to avoid confusion.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了从请求流中读取主体，我们将使用来自 “node:stream/consumers” 的 json 函数，该函数收集流中的数据并将其解析为 JSON。这个包中还有类似的导出，称为
+    text（用于将内容读取为字符串）和 buffer（用于将其读取为二进制数据）。由于 json 是一个非常通用的名称，因此我们将其导入重命名为 readJSON，以避免混淆。
 - en: '[PRE10]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: Adding a comment to a talk works similarly. We use readJSON to get the content
     of the request, validate the resulting data, and store it as a comment when it
     looks valid.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 向演讲添加评论的过程类似。我们使用 readJSON 获取请求的内容，验证结果数据，并在数据有效时将其存储为评论。
 - en: '[PRE11]'
+  id: totrans-66
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Trying to add a comment to a nonexistent talk returns a 404 error.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 尝试向一个不存在的演讲添加评论将返回 404 错误。
 - en: '*Long Polling Support*'
+  id: totrans-68
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*长轮询支持*'
 - en: The most interesting aspect of the server is the part that handles long polling.
     When a GET request comes in for */talks*, it may be either a regular request or
     a long polling request.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器最有趣的部分是处理长轮询的部分。当对 */talks* 发起 GET 请求时，它可能是一个常规请求或一个长轮询请求。
 - en: There will be multiple places in which we have to send an array of talks to
     the client, so we first define a helper method that builds up such an array and
     includes an ETag header in the response.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将有多个地方需要向客户端发送一个演讲数组，因此我们首先定义一个帮助方法来构建这样的数组，并在响应中包含一个 ETag 头。
 - en: '[PRE12]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: The handler itself needs to look at the request headers to see whether If-None-Match
     and Prefer headers are present. Node stores headers, whose names are specified
     to be case insensitive, under their lowercase names.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理程序本身需要查看请求头，以确认是否存在 If-None-Match 和 Prefer 头。Node 将头信息以不区分大小写的名称存储为小写形式。
 - en: '[PRE13]'
+  id: totrans-73
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: If no tag was given or a tag was given that doesn’t match the server’s current
     version, the handler responds with the list of talks. If the request is conditional
     and the talks did not change, we consult the Prefer header to see whether we should
     delay the response or respond right away.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果没有提供标签，或者提供的标签与服务器当前版本不匹配，处理程序将响应演讲列表。如果请求是条件性的且演讲没有改变，我们会查看 Prefer 头，以决定是否延迟响应或立即回应。
 - en: Callback functions for delayed requests are stored in the server’s waiting array
     so that they can be notified when something happens. The waitFor Changes method
     also immediately sets a timer to respond with a 304 status when the request has
     waited long enough.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 延迟请求的回调函数存储在服务器的等待数组中，以便在发生某些事情时能够通知它们。waitFor Changes 方法还会立即设置一个定时器，在请求等待足够长的时间后以
+    304 状态进行响应。
 - en: '[PRE14]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Registering a change with updated increases the version property and wakes up
     all waiting requests.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 updated 注册更改会增加版本属性并唤醒所有等待的请求。
 - en: '[PRE15]'
+  id: totrans-78
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: That concludes the server code. If we create an instance of SkillShare Server
     and start it on port 8000, the resulting HTTP server serves files from the *public*
     subdirectory alongside a talk-managing interface under the */talks* URL.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是服务器代码的全部内容。如果我们创建SkillShare Server的实例并在8000端口启动它，生成的HTTP服务器将从*public*子目录提供文件，并在*/talks*
+    URL下提供讲座管理界面。
 - en: '[PRE16]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: The Client
+  id: totrans-81
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 客户端
 - en: 'The client-side part of the skill-sharing website consists of three files:
     a tiny HTML page, a style sheet, and a JavaScript file.'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 技能共享网站的客户端部分由三个文件组成：一个小的HTML页面、一个样式表和一个JavaScript文件。
 - en: '*HTML*'
+  id: totrans-83
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*HTML*'
 - en: It is a widely used convention for web servers to try to serve a file named
     *index.xhtml* when a request is made directly to a path that corresponds to a
     directory. The file server module we use, serve-static, supports this convention.
     When a request is made to the path */*, the server looks for the file *./public/index.xhtml*
     (*./public* being the root we gave it) and returns that file if found.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 当直接请求与目录对应的路径时，Web 服务器通常会尝试提供名为*index.xhtml*的文件。我们使用的文件服务器模块serve-static支持这一约定。当对路径*/
+    *发出请求时，服务器会查找文件*./public/index.xhtml*（*./public*是我们指定的根目录），并在找到时返回该文件。
 - en: 'Thus, if we want a page to show up when a browser is pointed at our server,
     we should put it in *public/index.xhtml*. This is our index file:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，如果我们希望在浏览器指向我们的服务器时显示一个页面，我们应该将其放在*public/index.xhtml*中。这是我们的索引文件：
 - en: '[PRE17]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: It defines the document title and includes a style sheet, which defines a few
     styles to, among other things, make sure there is some space between talks. It
     then adds a heading at the top of the page and loads the script that contains
     the client-side application.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 它定义了文档标题，并包含一个样式表，该样式表定义了一些样式，以确保讲座之间有一些空间。然后，它在页面顶部添加了一个标题，并加载包含客户端应用程序的脚本。
 - en: '*Actions*'
+  id: totrans-88
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*操作*'
 - en: The application state consists of the list of talks and the name of the user,
     and we’ll store it in a {*talks*, *user*} object. We don’t allow the user interface
     to directly manipulate the state or send off HTTP requests. Rather, it may emit
     *actions* that describe what the user is trying to do.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用程序状态包括讲座列表和用户的名字，我们将其存储在一个{*talks*，*user*}对象中。我们不允许用户界面直接操作状态或发送HTTP请求。相反，它可以发出描述用户尝试执行的操作的*动作*。
 - en: The handleAction function takes such an action and makes it happen. Because
     our state updates are so simple, state changes are handled in the same function.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: handleAction函数接受这样的操作并使其生效。由于我们的状态更新非常简单，状态更改在同一函数中处理。
 - en: '[PRE18]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: We’ll store the user’s name in localStorage so that it can be restored when
     the page is loaded.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将用户的名字存储在localStorage中，以便在页面加载时能够恢复。
 - en: The actions that need to involve the server make network requests, using fetch,
     to the HTTP interface described earlier. We use a wrapper function, fetchOK, which
     makes sure the returned promise is rejected when the server returns an error code.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要与服务器交互的操作会使用fetch发起网络请求，访问前面描述的HTTP接口。我们使用一个包装函数fetchOK，以确保当服务器返回错误代码时，返回的Promise被拒绝。
 - en: '[PRE19]'
+  id: totrans-94
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: This helper function is used to build up a URL for a talk with a given title.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个辅助函数用于构建具有给定标题的讲座的URL。
 - en: '[PRE20]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: When the request fails, we don’t want our page to just sit there doing nothing
     without explanation. The function called reportError, which we used as the catch
     handler, shows the user a crude dialog to tell them something went wrong.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 当请求失败时，我们不希望页面就这样静止不动而没有解释。我们使用的名为reportError的函数作为捕获处理程序，向用户显示一个简单的对话框，告诉他们出了点问题。
 - en: '[PRE21]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '*Rendering Components*'
+  id: totrans-99
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*渲染组件*'
 - en: 'We’ll use an approach similar to the one we saw in [Chapter 19](ch19.xhtml#ch19),
     splitting the application into components. However, since some of the components
     either never need to update or are always fully redrawn when updated, we’ll define
     those not as classes but as functions that directly return a DOM node. For example,
     here is a component that shows the field where the user can enter their name:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将采用类似于在[第19章](ch19.xhtml#ch19)中看到的方法，将应用程序分为组件。然而，由于某些组件要么从不需要更新，要么在更新时总是完全重绘，因此我们将那些定义为函数，而不是类，直接返回一个DOM节点。例如，下面是一个显示用户可以输入其姓名的字段的组件：
 - en: '[PRE22]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: The elt function used to construct DOM elements is the one we used in [Chapter
     19](ch19.xhtml#ch19).
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: elt函数用于构建DOM元素，这是我们在[第19章](ch19.xhtml#ch19)中使用的函数。
 - en: A similar function is used to render talks, which include a list of comments
     and a form for adding a new comment.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个类似的函数用于渲染讲座，其中包括评论列表和添加新评论的表单。
 - en: '[PRE23]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: The “submit” event handler calls form.reset to clear the form’s content after
     creating a “newComment” action.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: “提交”事件处理程序在创建“newComment”操作后调用form.reset以清除表单内容。
 - en: When creating moderately complex pieces of DOM, this style of programming starts
     to look rather messy. To avoid this, people often use a *templating language*,
     which allows you to write your interface as an HTML file with some special markers
@@ -504,122 +734,181 @@
     as if they are JavaScript expressions. Both of these approaches use additional
     tools to preprocess the code before it can be run, which we will avoid in this
     chapter.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 当创建中等复杂度的DOM元素时，这种编程风格开始显得相当混乱。为避免这种情况，人们通常使用*模板语言*，它允许你将界面作为一个HTML文件编写，并使用一些特殊标记来指示动态元素的位置。或者他们使用*JSX*，这是一种非标准的JavaScript方言，允许你在程序中编写非常接近HTML标签的内容，就好像它们是JavaScript表达式。上述两种方法都使用额外的工具在运行之前预处理代码，这一章我们将避免使用这些工具。
 - en: Comments are simple to render.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 评论的渲染非常简单。
 - en: '[PRE24]'
+  id: totrans-108
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: 'Finally, the form that the user can use to create a new talk is rendered like
     this:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，用户可以用来创建新讲座的表单渲染如下：
 - en: '[PRE25]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '*Polling*'
+  id: totrans-111
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*轮询*'
 - en: To start the app, we need the current list of talks. Since the initial load
     is closely related to the long polling process—the ETag from the load must be
     used when polling—we’ll write a function that keeps polling the server for */talks*
     and calls a callback function when a new set of talks is available.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 要启动应用程序，我们需要当前的讲座列表。由于初始加载与长轮询过程密切相关——加载时的ETag必须在轮询时使用——我们将编写一个函数，该函数持续向服务器轮询*/talks*，并在有新的讲座集可用时调用回调函数。
 - en: '[PRE26]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: This is an async function so that looping and waiting for the request is easier.
     It runs an infinite loop that, on each iteration, retrieves the list of talks—either
     normally or, if this isn’t the first request, with the headers included that make
     it a long polling request.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个异步函数，以便于循环和等待请求。它运行一个无限循环，在每次迭代中检索讲座列表——要么正常检索，要么如果这不是第一次请求，则包含使其成为长轮询请求的头部信息。
 - en: When a request fails, the function waits a moment and then tries again. This
     way, if your network connection goes away for a while and then comes back, the
     application can recover and continue updating. The promise resolved via setTimeout
     is a way to force the async function to wait.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 当请求失败时，函数会等待片刻然后重试。这样，如果你的网络连接暂时中断后又恢复，应用程序可以恢复并继续更新。通过setTimeout解决的promise是一种强制异步函数等待的方法。
 - en: When the server gives back a 304 response, that means a long polling request
     timed out, so the function should just immediately start the next request. If
     the response is a normal 200 response, its body is read as JSON and passed to
     the callback, and its ETag header value is stored for the next iteration.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 当服务器返回304响应时，意味着长轮询请求超时，因此函数应立即开始下一个请求。如果响应是正常的200响应，则其主体将被读取为JSON并传递给回调函数，其ETag头部值将被存储以供下次迭代使用。
 - en: '*The Application*'
+  id: totrans-117
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*应用程序*'
 - en: 'The following component ties the whole user interface together:'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下组件将整个用户界面串联在一起：
 - en: '[PRE27]'
+  id: totrans-119
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: When the talks change, this component redraws all of them. This is simple but
     also wasteful. We’ll get back to that in the exercises.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 当讲座发生变化时，该组件会重新绘制所有讲座。这很简单，但也很浪费。我们将在练习中回到这个问题。
 - en: 'We can start the application like this:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以这样启动应用程序：
 - en: '[PRE28]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: If you run the server and open two browser windows for *http://localhost:8000*
     next to each other, you can see that the actions you perform in one window are
     immediately visible in the other.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你运行服务器并在两个浏览器窗口中打开*http://localhost:8000*，你会看到你在一个窗口中执行的操作会立即在另一个窗口中显示。
 - en: Exercises
+  id: totrans-124
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 练习
 - en: The following exercises will involve modifying the system defined in this chapter.
     To work on them, make sure you’ve downloaded the code (*[https://eloquentjavascript.net/code/skillsharing.zip](https://eloquentjavascript.net/code/skillsharing.zip)*),
     installed Node (*[https://nodejs.org](https://nodejs.org)*), and installed the
     project’s dependency with npm install.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下练习将涉及修改本章定义的系统。为了解决这些问题，请确保你已下载代码（*[https://eloquentjavascript.net/code/skillsharing.zip](https://eloquentjavascript.net/code/skillsharing.zip)*），安装了Node（*[https://nodejs.org](https://nodejs.org)*），并使用npm
+    install安装项目依赖。
 - en: '*Disk Persistence*'
+  id: totrans-126
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*磁盘持久性*'
 - en: The skill-sharing server keeps its data purely in memory. This means that when
     it crashes or is restarted for any reason, all talks and comments are lost.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 技能分享服务器将其数据完全保存在内存中。这意味着当它崩溃或因任何原因重新启动时，所有讲座和评论都将丢失。
 - en: Extend the server so that it stores the talk data to disk and automatically
     reloads the data when it is restarted. Don’t worry about efficiency—do the simplest
     thing that works.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 扩展服务器，使其将谈话数据存储到磁盘，并在重启时自动重新加载数据。不要担心效率——只需做最简单有效的事情。
 - en: '*Comment Field Resets*'
+  id: totrans-129
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '*评论字段重置*'
 - en: The wholesale redrawing of talks works pretty well because you usually can’t
     tell the difference between a DOM node and its identical replacement. But there
     are exceptions. If you start typing something in the comment field for a talk
     in one browser window and then, in another, add a comment to that talk, the field
     in the first window will be redrawn, removing both its content and its focus.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 对谈话进行全面重绘效果不错，因为通常你无法区分一个DOM节点和它的相同替代品。但也有例外。如果你在一个浏览器窗口的评论字段中开始输入内容，然后在另一个窗口中给该谈话添加评论，第一个窗口中的字段将被重绘，移除其内容和焦点。
 - en: When multiple people are adding comments at the same time, this would be annoying.
     Can you come up with a way to solve it?
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 当多个人同时添加评论时，这会很烦人。你能想出解决办法吗？
 - en: '*The big optimizations come from refining the high-level design, not the individual
     routines.*'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '*重大优化来自于对高层设计的精炼，而不是单个例程。*'
 - en: —Steve McConnell, *Code Complete*
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: —史蒂夫·麦康奈尔，*《代码大全》*
 - en: '![Image](../images/f0372-01.jpg)'
+  id: totrans-134
   prefs: []
   type: TYPE_IMG
+  zh: '![图片](../images/f0372-01.jpg)'
