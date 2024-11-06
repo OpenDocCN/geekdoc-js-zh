@@ -1,2 +1,8 @@
++   [使用 Webpack 构建你自己的应用](docs/bd-yr-app-webpack/README.md)
++   [TypeScript 手册](docs/bk-ts/README.md)
 +   [JavaScript 编程精解 中文第三版](docs/eloquent-js-3e/README.md)
 +   [JavaScript 编程精解（Eloquent）第四版](docs/elqt-js-4e/README.md)
++   [笨办法学 Python3](docs/js-primer/README.md)
++   [Rust 学习手册 🚧](docs/lrn-rust/README.md)
++   [React Native 培训手册](docs/rn-train/README.md)
++   [Rxjs 5 终极指南](docs/rxjs5-ult/README.md)
