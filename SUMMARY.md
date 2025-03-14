@@ -6,5 +6,6 @@
 +   [JavaScript 速成课](docs/js-crs-crs/README.md)
 +   [笨办法学 Python3](docs/js-primer/README.md)
 +   [Rust 学习手册 🚧](docs/lrn-rust/README.md)
++   [代码的本质](docs/ntr-cd/README.md)
 +   [React Native 培训手册](docs/rn-train/README.md)
 +   [Rxjs 5 终极指南](docs/rxjs5-ult/README.md)
