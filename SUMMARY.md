@@ -1,3 +1,4 @@
++   [WebAssembly 的艺术](docs/art-wasm/README.md)
 +   [使用 Webpack 构建你自己的应用](docs/bd-yr-app-webpack/README.md)
 +   [TypeScript 手册](docs/bk-ts/README.md)
 +   [全栈开发者指南](docs/cmpl-dev/README.md)
