@@ -3,8 +3,6 @@
 +   [Chrome 扩展及应用开发](docs/chrome-ext-appdev/README.md)
 +   [CoffeeScript Cookbook 中文版](docs/coff-cb/README.md)
 +   [D3.js 入门教程](docs/d3js-tut/README.md)
-+   [JavaScript 编程精解 中文第三版](docs/eloquent-js-3e/README.md)
-+   [JavaScript 编程精解（Eloquent）第四版](docs/elqt-js-4e/README.md)
 +   [Ember.js入门教程、博文汇总](docs/ember-tut-blog/README.md)
 +   [ECMAScript 5.1 规范](docs/es51-spec/README.md)
 +   [深入浅出 ES6](docs/es6-dd/README.md)
