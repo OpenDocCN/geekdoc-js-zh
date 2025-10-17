@@ -20,12 +20,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 注释的编写方式有两种：单行注释和多行注释。
-- en: '[](#single-line-comment)*一行コメント*'
+- en: '*一行コメント*'
   id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#single-line-comment)*单行注释*'
+  zh: '*单行注释*'
 - en: '*一行コメントは名前のとおり、一行ずつコメントを書く際に利用します。 `//` 以降から行末までがコメントとして扱われるため、プログラムとして評価されません。'
   id: totrans-5
   prefs: []
@@ -36,12 +36,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE0]'
-- en: '[](#multi-line-comment)*複数行コメント*'
+- en: '*複数行コメント*'
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#multi-line-comment)*多行注释*'
+  zh: '*多行注释*'
 - en: '*複数行コメントは名前のとおり、複数行のコメントを書く際に利用します。 一行コメントとは違い複数行をまとめて書けるので、長い説明を書く際に利用されています。'
   id: totrans-8
   prefs: []
@@ -67,12 +67,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#html-like-comment)*[ES2015] HTML-likeコメント*'
+- en: '*[ES2015] HTML-likeコメント*'
   id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#html-like-comment)*[ES2015] HTML-like注释*'
+  zh: '*[ES2015] HTML-like注释*'
 - en: '*ECMAScript 2015（ES2015）から後方互換性のための仕様として**HTML-likeコメント**が追加されています。 このHTML-likeコメントは、ブラウザの実装に合わせた後方互換性のための仕様として定義されています。'
   id: totrans-14
   prefs: []
@@ -117,12 +117,12 @@
   type: TYPE_NORMAL
   zh: '除了[历史背景](https://dev.mozilla.jp/2016/03/es6-in-depth-arrow-functions/ "ES6
     In Depth: Arrow functions | Mozilla Developer Street (modest)")之外，ECMAScript在处理向后兼容性时非常谨慎。由于ECMAScript一旦加入的规范就很少被废弃，因此基本语法中学习的内容不会失效。另一方面，随着规范的更新，新的功能不断增多，因此需要持续学习。'
-- en: '[](#conclusion)*まとめ*'
+- en: '*まとめ*'
   id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*この章では、ソースコードに説明を書けるコメントについて学びました。'
   id: totrans-23
   prefs: []

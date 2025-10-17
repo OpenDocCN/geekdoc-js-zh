@@ -15,7 +15,7 @@ console.log(obj.toString()); // "[object Object]"
 
 本章将确定内置方法的实现位置，以及为什么可以从`Object`的实例中调用。 由于详细的机制将在“类”章节中重新解释，因此本章的目的是了解大致的操作流程。
 
-## [](#object-is-origin)*`Object`是所有的起源*
+## *`Object`是所有的起源*
 
 *`Object`与其他对象（如`Array`、`String`、`Function`等）有所不同的特点在于，其他对象都继承自`Object`。
 
@@ -53,7 +53,7 @@ console.log(obj.toString()); // => "[object Object]"
 
 这种从实例引用到原型对象上定义的方法的机制称为**原型链**。 关于原型链的机制，我们将在“类”章节中进行讨论，因此在这里只需要了解从实例中调用原型方法即可。
 
-### [](#prototype-shorthand-syntax)*[专栏] 关于`Object#toString`的缩写表示*
+### *[专栏] 关于`Object#toString`的缩写表示*
 
 *在本书中，由于每次都写上`prototype`会显得冗长，因此有时会使用“Object 的`toString`方法”这样的缩写形式。 在除了本书之外的其他文本中，可能会使用`Object.prototype.toString`表示为`Object#toString`这样的形式，使用`#`代替`prototype`。
 
@@ -61,7 +61,7 @@ console.log(obj.toString()); // => "[object Object]"
 
 因此，本书不使用`Object#toString`这样的缩写形式来表示`Object.prototype.toString`，而是保持原样。
 
-### [](#same-method-name-order)*原型方法和实例方法的优先级*
+### *原型方法和实例方法的优先级*
 
 *有时，实例对象中也可能定义了与原型方法同名的方法。 在这种情况下，实例定义的方法将优先调用。
 
@@ -79,7 +79,7 @@ console.log(customObject.toString()); // => "custom value"
 
 如此一来，当实例和原型对象中有相同名称的方法时，实例的方法将优先。
 
-### [](#diff-in-operator-and-object-hasown)*`Object.hasOwn`静态方法和`in`运算符的区别*
+### *`Object.hasOwn`静态方法和`in`运算符的区别*
 
 在“对象”章节中，我们已经学习了`Object.hasOwn`静态方法和`in`运算符的行为差异。 这两种行为的差异与本章介绍的原型对象有关。
 
@@ -109,7 +109,7 @@ console.log(Object.hasOwn(obj, "toString")); // => true
 console.log("toString" in obj); // => true 
 ```
 
-### [](#create-method)*明确对象的继承源的`Object.create`方法*
+### *明确对象的继承源的`Object.create`方法*
 
 *通过使用`Object.create`方法，可以创建一个新对象，该对象继承自指定的`prototype`对象。
 
@@ -123,7 +123,7 @@ const obj = Object.create(Object.prototype);
 console.log(obj.toString === Object.prototype.toString); // => true 
 ```
 
-### [](#inherit-object)*Array 也继承自 Object*
+### *Array 也继承自 Object*
 
 *`Object`和`Object.prototype`的关系与内置对象`Array`和`Array.prototype`的关系类似。同样地，数组（`Array`）的实例也会继承`Array.prototype`。此外，由于`Array.prototype`也继承了`Object.prototype`，因此数组（`Array`）的实例也会继承`Object.prototype`。
 
@@ -165,7 +165,7 @@ const numbers = [1, 2, 3];
 console.log(numbers.toString()); // => "1,2,3" 
 ```
 
-## [](#not-inherit-object)*不继承`Object.prototype`的对象*
+## *不继承`Object.prototype`的对象*
 
 *虽然说`Object`是所有对象的父对象，但也存在例外情况。
 
@@ -217,7 +217,7 @@ console.log(Object.hasOwn(mapLike, "key")); // => false
 
 这样，不依赖于目标对象的`Object.hasOwn`静态方法修正了`hasOwnProperty`方法的缺点。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *在本章中，我们学习了有关原型对象的知识。
 

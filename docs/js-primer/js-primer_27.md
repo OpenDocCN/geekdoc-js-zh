@@ -4,7 +4,7 @@
 
 本章将学习 JavaScript 中的异常处理。
 
-## [](#try-catch)*try...catch 语句*
+## *try...catch 语句*
 
 *[try...catch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch)语句是用于标记可能发生异常的代码块，并描述异常发生时处理方式的语句。
 
@@ -47,7 +47,7 @@ try {
 // finally 節のみでは例外がキャッチされないため、この行は実行されません 
 ```
 
-## [](#throw)*throw 语句*
+## *throw 语句*
 
 *[throw](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/throw)语句可以使用户抛出异常。抛出的异常对象可以作为函数的参数在`catch`块中访问。在`catch`块中可以引用对象的标识符称为[异常标识符](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch#The_exception_identifier)。
 
@@ -63,11 +63,11 @@ try {
 } 
 ```
 
-## [](#error-object)*错误对象*
+## *错误对象*
 
 *`throw`语句可以抛出任何对象作为异常。这里将探讨使用`throw`语句抛出的错误对象。
 
-### [](#error)*Error*
+### *Error*
 
 *`Error`对象的实例可以通过`new Error("错误消息")`创建。构造函数的第一个参数是作为错误消息的字符串。传递的错误消息可以通过 Error 的`message`属性进行引用。
 
@@ -104,13 +104,13 @@ try {
 } 
 ```
 
-### [](#built-in-error)*内置错误*
+### *内置错误*
 
 *错误有几种类型，这些类型被定义为内置错误。内置错误是指 ECMAScript 规范或执行环境中预定义的错误对象。可以抛出的内置错误对象是继承自`Error`对象的实例。因此，可以像用户定义的错误一样处理异常。
 
 内置错误有多种类型，但这里将介绍一些代表性的。
 
-#### [](#reference-error)*ReferenceError*
+#### *ReferenceError*
 
 *[ReferenceError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError)是在尝试引用不存在的变量或函数等标识符时发生的错误。在下面的代码中，由于正在引用不存在的变量，因此抛出了`ReferenceError`异常。
 
@@ -125,7 +125,7 @@ try {
 } 
 ```
 
-#### [](#syntax-error)*SyntaxError*
+#### *SyntaxError*
 
 *[SyntaxError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError)是在尝试解释非法代码时发生的错误。基本上，`SyntaxError`异常是在 JavaScript 执行前的解析阶段发生的。因此，在执行前发生的`SyntaxError`异常不能在执行时的`try...catch`语句中被捕获。
 
@@ -148,7 +148,7 @@ try {
 } 
 ```
 
-#### [](#type-error)*TypeError*
+#### *TypeError*
 
 *[TypeError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/TypeError)是在值不是期望的类型时发生的错误。在下面的代码中，由于正在调用函数的对象不是函数，因此抛出了`TypeError`异常。
 
@@ -164,7 +164,7 @@ try {
 } 
 ```
 
-### [](#throw-built-in-error)*抛出内置错误*
+### *抛出内置错误*
 
 *可以创建内置错误的实例，并将该实例作为异常抛出。与普通的`Error`对象一样，可以通过`new`每个内置错误对象来创建实例。
 
@@ -189,7 +189,7 @@ try {
 } 
 ```
 
-## [](#error-and-debug)*错误和调试*
+## *错误和调试*
 
 *在 JavaScript 开发中，理解调试过程中发生的错误非常重要。通过利用错误提供的信息，可以了解源代码中发生异常的位置和类型。
 
@@ -226,7 +226,7 @@ fn();
 
 控制台显示的错误日志包含大量信息。MDN 的[JavaScript 错误参考](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Errors)详细列出了浏览器抛出的内置错误类型和消息。在开发过程中遇到内置错误时，查阅参考以寻找解决方法是一个好习惯。
 
-## [](#console.error)*`console.error`和堆栈跟踪*
+## *`console.error`和堆栈跟踪*
 
 *`console.error`方法可以将消息与堆栈跟踪一起输出到控制台。
 
@@ -249,7 +249,7 @@ fn();
 
 此外，大多数浏览器都提供了过滤`console.log`和`console.error`输出的功能。通过使用`console.log`进行普通日志输出，使用`console.error`进行与错误相关的日志输出，可以更容易区分日志的重要性。
 
-## [](#error-cause)*[ES2022] 错误原因*
+## *[ES2022] 错误原因*
 
 *通过捕获错误并重新抛出带有新消息的另一个错误，可以提供有用的调试信息。通过创建新的 Error 对象并抛出来实现。但是，这种方法会导致原始错误的堆栈跟踪丢失。
 
@@ -302,7 +302,7 @@ try {
 
 ![包含 safeParseInt 堆栈跟踪的 console.error 输出结果](img/82ca3eb6268226652f98a961bfcdbfb8.png)
 
-## [](#conclusion)*总结*
+## *总结*
 
 *本章介绍了异常处理和错误对象。
 

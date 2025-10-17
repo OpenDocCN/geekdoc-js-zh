@@ -6,7 +6,7 @@
 
 在这一节中，将实现在前一节中已标记了的 Todo 列表（`#js-todo-list`）上添加 Todo 项目的功能。
 
-## [](#add-todo-item)*添加 Todo 项目*
+## *添加 Todo 项目*
 
 *首先，我们将看看在 Todo 应用程序中，执行哪些操作会添加 Todo 项目。
 
@@ -28,7 +28,7 @@
 
 首先，从表单元素接收提交事件，并尝试在控制台日志中显示输入内容。
 
-## [](#input-to-console)*将输入内容显示在控制台中*
+## *将输入内容显示在控制台中*
 
 *当在表单元素中按下 Enter 键进行提交时，将触发`submit`事件。 可以使用 HTML 元素的`addEventListener`方法来接收此`submit`事件。
 
@@ -128,7 +128,7 @@ todoapp
 
 +   [`jsprimer.net/use-case/todoapp/form-event/prevent-event/`](https://jsprimer.net/use-case/todoapp/form-event/prevent-event/)
 
-## [](#input-to-todolist)*将输入内容显示在 Todo 列表中*
+## *将输入内容显示在 Todo 列表中*
 
 *已经了解到如何获取表单提交时的输入内容，接下来将在 Todo 列表（`#js-todo-list`）中显示这些输入内容。
 
@@ -289,13 +289,13 @@ todoapp
 
 +   [`jsprimer.net/use-case/todoapp/form-event/add-todo-item/`](https://jsprimer.net/use-case/todoapp/form-event/add-todo-item/)
 
-## [](#conclusion)*まとめ*
+## *まとめ*
 
 *このセクションではform 要素の`submit`イベントをリッスンし、入力内容を元にTodoアイテムを作成し、これをTodoリストに追加する機能を実装しました。 今回のTodoアイテムの追加のように、多くのウェブアプリは何らかのイベントをリッスンして表示を更新します。 このような、イベントが発生したことを元に処理を進める方法を**イベント駆動**（イベントドリブン）と呼びます。
 
 今回のTodoアイテムの追加では、`submit`イベントを入力にして、Todoリスト要素を**直接 HTML 要素として追加**するという方法を取っていました。 このように直接 DOMを更新するという方法はコードが短くなりますが、DOMのみにしか状態が残らないため柔軟性がなくなるという問題があります。 次のセクションでは、実際に起きる問題やそれを解決するための仕組みを見ていきます。
 
-## [](#section-checklist)*このセクションのチェックリスト*
+## *このセクションのチェックリスト*
 
 **   フォームの送信を`submit`イベントで受け取り、入力内容を確認した
 

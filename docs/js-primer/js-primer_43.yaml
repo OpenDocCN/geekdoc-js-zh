@@ -40,61 +40,61 @@
   - PREF_UL
   type: TYPE_NORMAL
   zh: 可以通过命令行参数提供转换设置选项
-- en: '[](#summary)*目录*'
+- en: '*目录*'
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#summary)*目录*'
-- en: '*### [](#helloworld)*Node.jsでHello World*'
+  zh: '*目录*'
+- en: '*### *Node.jsでHello World*'
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
-  zh: '*### [](#helloworld)*使用 Node.js 实现 Hello World*'
+  zh: '*### *使用 Node.js 实现 Hello World*'
 - en: '*通过 Hello World 应用程序学习 Node.js CLI 应用程序的基础知识。'
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
   zh: '*通过 Hello World 应用程序学习 Node.js 命令行应用程序的基础知识。'
-- en: '[](#argument-parse)*处理命令行参数*'
+- en: '*处理命令行参数*'
   id: totrans-10
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#argument-parse)*处理命令行参数*'
+  zh: '*处理命令行参数*'
 - en: '*学习如何接收命令行参数并将其解析为应用程序易于使用的形式。'
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
   zh: '*学习如何接收命令行参数并将其解析为应用程序易于使用的形式。'
-- en: '[](#read-file)*读取文件*'
+- en: '*读取文件*'
   id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#read-file)*读取文件*'
+  zh: '*读取文件*'
 - en: '*学习使用 Node.js 的`fs`模块来读取文件。'
   id: totrans-13
   prefs: []
   type: TYPE_NORMAL
   zh: '*学习使用 Node.js 的`fs`模块来读取文件。'
-- en: '[](#md-to-html)*将 Markdown 转换为 HTML*'
+- en: '*将 Markdown 转换为 HTML*'
   id: totrans-14
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#md-to-html)*将 Markdown 转换为 HTML*'
+  zh: '*将 Markdown 转换为 HTML*'
 - en: '*使用 marked 包将 Markdown 文件转换为 HTML。'
   id: totrans-15
   prefs: []
   type: TYPE_NORMAL
   zh: '*使用 marked 包将 Markdown 文件转换为 HTML。'
-- en: '[](#refactor-and-unittest)*编写单元测试*'
+- en: '*编写单元测试*'
   id: totrans-16
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#refactor-and-unittest)*编写单元测试*'
+  zh: '*编写单元测试*'
 - en: '*引入单元测试并对源代码进行重构和模块化。******'
   id: totrans-17
   prefs: []

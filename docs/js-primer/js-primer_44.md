@@ -4,7 +4,7 @@
 
 在实际创建应用程序之前，让我们通过 Hello World 应用程序来了解 Node.js CLI 应用程序的基础知识。
 
-## [](#create-project)*创建项目目录*
+## *创建项目目录*
 
 *在本次创建的 Node.js CLI 应用程序中，我们将处理 JavaScript 和 Markdown 等文件。因此，首先创建一个用于存放这些文件的目录。
 
@@ -12,7 +12,7 @@
 
 此外，此项目中创建的文件必须以**UTF-8**编码和**LF**换行符保存。
 
-## [](#hello-world)*Hello World*
+## *Hello World*
 
 *首先，让我们尝试创建一个 Node.js 的 Hello World 应用程序。具体来说，我们将编写一个 CLI 应用程序，当运行时，它将在标准输出中显示字符串`"Hello World!"`。首先要准备的是作为应用程序入口的 JavaScript 文件。在`nodecli`目录中创建一个名为`main.js`的文件，并编写如下内容。
 
@@ -36,7 +36,7 @@ Hello World!
 
 在 Node.js 中，创建一个作为入口点的 JavaScript 文件，并将该文件作为`node`命令的参数传递以执行是基本操作。此外，就像在 Web 浏览器中的 JavaScript 一样，代码将按顺序从第一行开始执行。
 
-## [](#global-objects)*Node.js 和浏览器的全局对象*
+## *Node.js 和浏览器的全局对象*
 
 *Node.js 使用了与 Web 浏览器 Chrome 相同的 V8 JavaScript 引擎。因此，基本的 ECMAScript 语法与在浏览器中的使用方式相同。然而，由于浏览器环境和 Node.js 环境具有不同的全局对象，因此在开发应用程序时必须理解这些差异。
 
@@ -64,7 +64,7 @@ ECMAScript 中定义的全局对象存在于浏览器和 Node.js 两个环境中
 
 在此基础上，让我们从下一节开始开发 CLI 应用程序。
 
-## [](#section-checklist)*本节的清单*
+## *本节的清单*
 
 **   创建了`main.js`文件
 

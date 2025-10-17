@@ -15,12 +15,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 本章将学习JavaScript中的异常处理。
-- en: '[](#try-catch)*try...catch 構文*'
+- en: '*try...catch 構文*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#try-catch)*try...catch 语句*'
+  zh: '*try...catch 语句*'
 - en: '*[try...catch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch)構文は例外が発生しうるブロックをマークし、例外が発生したときの処理を記述するための構文です。'
   id: totrans-4
   prefs: []
@@ -52,12 +52,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE1]'
-- en: '[](#throw)*throw 文*'
+- en: '*throw 文*'
   id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#throw)*throw 语句*'
+  zh: '*throw 语句*'
 - en: '*[throw](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/throw)文を使うとユーザーが例外を投げることができます。
     例外として投げられたオブジェクトは、`catch`節で関数の引数のようにアクセスできます。 `catch`節でオブジェクトを参照できる識別子を[例外識別子](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch#The_exception_identifier)と呼びます。'
   id: totrans-11
@@ -74,23 +74,23 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#error-object)*エラーオブジェクト*'
+- en: '*エラーオブジェクト*'
   id: totrans-14
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#error-object)*错误对象*'
+  zh: '*错误对象*'
 - en: '*`throw`文ではエラーオブジェクトを例外として投げることができます。 ここでは、`throw`文で例外として投げられるエラーオブジェクトについて見ていきます。'
   id: totrans-15
   prefs: []
   type: TYPE_NORMAL
   zh: '*`throw`语句可以抛出任何对象作为异常。这里将探讨使用`throw`语句抛出的错误对象。'
-- en: '[](#error)*Error*'
+- en: '*Error*'
   id: totrans-16
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#error)*Error*'
+  zh: '*Error*'
 - en: '*`Error`オブジェクトのインスタンスは`new Error("エラーメッセージ")`で作成します。 コンストラクタの第一引数には、エラーメッセージとなる文字列を渡します。
     渡したエラーメッセージはErrorの`message`プロパティで参照できます。'
   id: totrans-17
@@ -124,12 +124,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE4]'
-- en: '[](#built-in-error)*ビルトインエラー*'
+- en: '*ビルトインエラー*'
   id: totrans-23
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#built-in-error)*内置错误*'
+  zh: '*内置错误*'
 - en: '*エラーには状況に合わせたいくつかの種類があり、これらはビルトインエラーとして定義されています。 ビルトインエラーとは、ECMAScript 仕様や実行環境に組み込みで定義されているエラーオブジェクトです。
     ビルトインエラーとして投げられるエラーオブジェクトは、すべて`Error`オブジェクトを継承したオブジェクトのインスタンスです。 そのため、ユーザーが定義したエラーと同じように例外処理できます。'
   id: totrans-24
@@ -141,12 +141,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 内置错误有多种类型，但这里将介绍一些代表性的。
-- en: '[](#reference-error)*ReferenceError*'
+- en: '*ReferenceError*'
   id: totrans-26
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#reference-error)*ReferenceError*'
+  zh: '*ReferenceError*'
 - en: '*[ReferenceError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError)は存在しない変数や関数などの識別子が参照された場合のエラーです。
     次のコードでは、存在しない変数を参照しているため`ReferenceError`例外が投げられます。'
   id: totrans-27
@@ -158,12 +158,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE5]'
-- en: '[](#syntax-error)*SyntaxError*'
+- en: '*SyntaxError*'
   id: totrans-29
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#syntax-error)*SyntaxError*'
+  zh: '*SyntaxError*'
 - en: '*[SyntaxError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError)は構文的に不正なコードを解釈しようとした場合のエラーです。
     基本的に`SyntaxError`例外は、JavaScriptを実行する前のパース段階で発生します。 そのため、実行前に発生する例外である`SyntaxError`は、実行時のエラーをキャッチする`try...catch`文ではcatchできません。'
   id: totrans-30
@@ -186,12 +186,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE7]'
-- en: '[](#type-error)*TypeError*'
+- en: '*TypeError*'
   id: totrans-34
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#type-error)*TypeError*'
+  zh: '*TypeError*'
 - en: '*[TypeError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/TypeError)は値が期待される型ではない場合のエラーです。
     次のコードでは、関数ではないオブジェクトを関数呼び出ししているため、`TypeError`例外が投げられます。'
   id: totrans-35
@@ -203,12 +203,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE8]'
-- en: '[](#throw-built-in-error)*ビルトインエラーを投げる*'
+- en: '*ビルトインエラーを投げる*'
   id: totrans-37
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#throw-built-in-error)*抛出内置错误*'
+  zh: '*抛出内置错误*'
 - en: '*可以创建内置错误的实例，并将该实例作为异常抛出。与普通的`Error`对象一样，可以通过`new`每个内置错误对象来创建实例。'
   id: totrans-38
   prefs: []
@@ -224,12 +224,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE9]'
-- en: '[](#error-and-debug)*错误和调试*'
+- en: '*错误和调试*'
   id: totrans-41
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#error-and-debug)*错误和调试*'
+  zh: '*错误和调试*'
 - en: '*在 JavaScript 开发中，理解调试过程中发生的错误非常重要。通过利用错误提供的信息，可以了解源代码中发生异常的位置和类型。'
   id: totrans-42
   prefs: []
@@ -312,12 +312,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 控制台显示的错误日志包含大量信息。MDN 的[JavaScript 错误参考](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Errors)详细列出了浏览器抛出的内置错误类型和消息。在开发过程中遇到内置错误时，查阅参考以寻找解决方法是一个好习惯。
-- en: '[](#console.error)*`console.error`和堆栈跟踪*'
+- en: '*`console.error`和堆栈跟踪*'
   id: totrans-58
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#console.error)*`console.error`和堆栈跟踪*'
+  zh: '*`console.error`和堆栈跟踪*'
 - en: '*`console.error`方法可以将消息与堆栈跟踪一起输出到控制台。'
   id: totrans-59
   prefs: []
@@ -353,12 +353,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 此外，大多数浏览器都提供了过滤`console.log`和`console.error`输出的功能。通过使用`console.log`进行普通日志输出，使用`console.error`进行与错误相关的日志输出，可以更容易区分日志的重要性。
-- en: '[](#error-cause)*[ES2022] 错误原因*'
+- en: '*[ES2022] 错误原因*'
   id: totrans-66
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#error-cause)*[ES2022] 错误原因*'
+  zh: '*[ES2022] 错误原因*'
 - en: '*通过捕获错误并重新抛出带有新消息的另一个错误，可以提供有用的调试信息。通过创建新的 Error 对象并抛出来实现。但是，这种方法会导致原始错误的堆栈跟踪丢失。'
   id: totrans-67
   prefs: []
@@ -389,12 +389,12 @@
   prefs: []
   type: TYPE_IMG
   zh: '![包含 safeParseInt 堆栈跟踪的 console.error 输出结果](img/82ca3eb6268226652f98a961bfcdbfb8.png)'
-- en: '[](#conclusion)*总结*'
+- en: '*总结*'
   id: totrans-73
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*本章介绍了异常处理和错误对象。'
   id: totrans-74
   prefs: []

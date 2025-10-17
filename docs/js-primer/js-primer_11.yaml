@@ -10,12 +10,12 @@
   - PREF_BQ
   type: TYPE_NORMAL
   zh: 原文：[`jsprimer.net/basic/data-type/`](https://jsprimer.net/basic/data-type/)
-- en: '[](#data-type)*データ型*'
+- en: '*データ型*'
   id: totrans-2
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#data-type)*数据类型*'
+  zh: '*数据类型*'
 - en: '*JavaScriptは動的型付け言語に分類される言語であるため、静的型付け言語のような**変数の型**はありません。 しかし、文字列、数値、真偽値といった**値の型**は存在します。
     これらの値の型のことを**データ型**と呼びます。'
   id: totrans-3
@@ -153,12 +153,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 从这个例子中可以看出，`typeof` 操作符用于区分原始类型或对象。记住，`typeof` 操作符不能确定对象的详细类型。关于每个对象的判定方法，将在各自的章节中介绍。
-- en: '[](#literal)*リテラル*'
+- en: '*リテラル*'
   id: totrans-25
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#literal)*字面量*'
+  zh: '*字面量*'
 - en: '*プリミティブ型の値や一部のオブジェクトは、**リテラル**を使うことで簡単に定義できるようになっています。'
   id: totrans-26
   prefs: []
@@ -247,12 +247,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 关于这些字面量，首先从原始类型开始依次介绍。
-- en: '[](#boolean)*真偽値（Boolean）*'
+- en: '*真偽値（Boolean）*'
   id: totrans-42
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#boolean)*真值（Boolean）*'
+  zh: '*真值（Boolean）*'
 - en: '*真偽値には`true`と`false`のリテラルがあります。 それぞれは`true`と`false`の値を返すリテラルで、見た目どおりの意味となります。'
   id: totrans-43
   prefs: []
@@ -263,12 +263,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#number)*数値（Number）*'
+- en: '*数値（Number）*'
   id: totrans-45
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#number)*数值（Number）*'
+  zh: '*数值（Number）*'
 - en: '*数値には`42`のような整数リテラルと`3.14159`のような浮動小数点数リテラルがあります。'
   id: totrans-46
   prefs: []
@@ -282,12 +282,12 @@
   type: TYPE_NORMAL
   zh: 这些字面量表示的数值被视为 IEEE 754 的双精度浮点数。双精度浮点数使用64位来表示数值。在64位中，52位用于存储数字，11位用于小数点的位置，剩下的1位是正负符号。因此，可以精确处理的数值的最大值是
     `2⁵³-1`（2的53次方减1）。
-- en: '[](#integer-literal)*整数リテラル*'
+- en: '*整数リテラル*'
   id: totrans-48
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#integer-literal)*整数字面量*'
+  zh: '*整数字面量*'
 - en: '*整数リテラルには次の4 種類があります。'
   id: totrans-49
   prefs: []
@@ -450,12 +450,12 @@
   prefs: []
   type: TYPE_TB
   zh: '| 16進数 | 0xEEFF | 文字のコードポイント、RGB値など |'
-- en: '[](#floating-point-number-literal)*浮動小数点数リテラル*'
+- en: '*浮動小数点数リテラル*'
   id: totrans-77
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#floating-point-number-literal)*浮動小数点数リテラル*'
+  zh: '*浮動小数点数リテラル*'
 - en: '*浮動小数点数をリテラルとして書く場合には、次の2 種類の表記が利用できます。'
   id: totrans-78
   prefs: []
@@ -505,12 +505,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE9]'
-- en: '[](#bigint-literal)*[ES2020] BigInt*'
+- en: '*[ES2020] BigInt*'
   id: totrans-87
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#bigint-literal)*[ES2020] BigInt*'
+  zh: '*[ES2020] BigInt*'
 - en: '*JavaScriptでは、`1`や`3.14159`などの数値リテラルは[IEEE 754](https://ja.wikipedia.org/wiki/IEEE_754)で定義された倍精度浮動小数となります。
     倍精度浮動小数で正確に扱える数値の最大値は`2⁵³-1`（2の53 乗から1 引いた値である`9007199254740991`）です。 この数値リテラルで安全に表せる最大の数値は`Number.MAX_SAFE_INTEGER`として定義されています。'
   id: totrans-88
@@ -557,12 +557,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE12]'
-- en: '[](#numeric-separators)*[ES2021] Numeric Separators*'
+- en: '*[ES2021] Numeric Separators*'
   id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#numeric-separators)*[ES2021] Numeric Separators*'
+  zh: '*[ES2021] Numeric Separators*'
 - en: '*数値が大きくなるほど、桁数の見間違いなどが発生しやすくなります。 次のコードは、1 兆を数値リテラルで書いていますが、桁数を読み取りにくいです。'
   id: totrans-97
   prefs: []
@@ -599,12 +599,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE15]'
-- en: '[](#string)*文字列（String）*'
+- en: '*文字列（String）*'
   id: totrans-103
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#string)*文字列（String）*'
+  zh: '*文字列（String）*'
 - en: '*文字列リテラル共通のルールとして、同じ記号で囲んだ内容を文字列として扱います。 文字列リテラルとして次の3 種類のリテラルがありますが、その評価結果はすべて同じ`"文字列"`になります。'
   id: totrans-104
   prefs: []
@@ -617,12 +617,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE16]'
-- en: '[](#double-quote-and-single-quote)*ダブルクォートとシングルクォート*'
+- en: '*ダブルクォートとシングルクォート*'
   id: totrans-106
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#double-quote-and-single-quote)*ダブルクォートとシングルクォート*'
+  zh: '*ダブルクォートとシングルクォート*'
 - en: '*`"`（ダブルクォート）と`''`（シングルクォート）はまったく同じ意味となります。 PHPやRubyなどとは違い、どちらのリテラルでも評価結果は同じとなります。'
   id: totrans-107
   prefs: []
@@ -673,12 +673,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: シングルクォートとダブルクォートの文字列リテラルに改行を入れるには、エスケープシーケンスを使わないといけません。 これに対してES2015から導入されたテンプレートリテラルでは、複数行の文字列を直感的に書くことができます。
-- en: '[](#template-literal)*[ES2015] テンプレートリテラル*'
+- en: '*[ES2015] テンプレートリテラル*'
   id: totrans-117
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#template-literal)*[ES2015] Template Literals*'
+  zh: '*[ES2015] Template Literals*'
 - en: '*テンプレートリテラルは、[PRE21]で囲めば、そのまま書くことができます。'
   id: totrans-118
   prefs: []
@@ -709,12 +709,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE24]'
-- en: '[](#null-literal)*nullリテラル*'
+- en: '*nullリテラル*'
   id: totrans-124
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#null-literal)*nullリテラル*'
+  zh: '*nullリテラル*'
 - en: '*nullリテラルは`null`値を返すリテラルです。 `null`は「値がない」ということを表現する値です。'
   id: totrans-125
   prefs: []
@@ -742,12 +742,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE26]'
-- en: '[](#undefined-is-not-literal)*[专栏] undefined 不是字面量*'
+- en: '*[专栏] undefined 不是字面量*'
   id: totrans-130
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#undefined-is-not-literal)*[专栏] undefined is not a literal* '
+  zh: '*[专栏] undefined is not a literal* '
 - en: '*作为原始类型介绍的`undefined`并不是字面量。 `undefined`只是一个全局变量，它只有一个名为`undefined`的值。'
   id: totrans-131
   prefs: []
@@ -778,12 +778,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在这里，我们声明了名为`undefined`的局部变量用于解释，但是不推荐重新定义`undefined`。 因为这样只会带来不必要的混乱，所以应该避免。
-- en: '[](#object)*对象字面量*'
+- en: '*对象字面量*'
   id: totrans-137
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#object)*对象字面量*'
+  zh: '*对象字面量*'
 - en: '*在 JavaScript 中，对象是一切的基础。 创建这些对象的方法之一是使用对象字面量。 通过编写`{}`（大括号），可以创建新对象。'
   id: totrans-138
   prefs: []
@@ -839,12 +839,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 对象非常重要，因为接下来将介绍的数组和正则表达式都是基于此对象。 详细信息请参见“对象”章节。 在这里，当出现对象字面量（`{`和`}`）时，请理解为正在创建新对象。
-- en: '[](#array)*数组字面量*'
+- en: '*数组字面量*'
   id: totrans-149
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array)*数组字面量*'
+  zh: '*数组字面量*'
 - en: '*除了对象字面量之外，数组字面量也是一种常用的字面量。 数组字面量使用`[`和`]`将值括起来，用逗号分隔，创建一个具有这些值的 Array 对象。
     数组（Array 对象）是一种可以存储多个值并且具有顺序的对象。'
   id: totrans-150
@@ -872,12 +872,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 关于数组的详细信息将在“数组”章节中进行解释。
-- en: '[](#regexp-literal)*正则表达式字面量*'
+- en: '*正则表达式字面量*'
   id: totrans-155
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#regexp-literal)*正则表达式字面量*'
+  zh: '*正则表达式字面量*'
 - en: '*JavaScript 允许使用字面量编写正则表达式。 正则表达式字面量使用`/`（斜杠）将正则表达式模式字符串括起来。 在正则表达式模式中，特定字符和以`\`（反斜杠）开头的特殊字符具有特殊含义。'
   id: totrans-156
   prefs: []
@@ -903,12 +903,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 关于正则表达式对象的详细信息将在“字符串”章节中介绍。
-- en: '[](#primitive-and-wrapper-object)*原始类型和包装对象*'
+- en: '*原始类型和包装对象*'
   id: totrans-161
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#primitive-and-wrapper-object)*原始类型和包装对象*'
+  zh: '*原始类型和包装对象*'
 - en: '*原始类型通常以字面量形式表示，但是布尔值（Boolean）、数值（Number）、字符串（String）也可以作为对象来表示。 这些对象称为**包装对象**，它们包装了原始类型的值。'
   id: totrans-162
   prefs: []
@@ -949,12 +949,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 关于这种隐式类型转换到包装对象的机制将在“包装对象”章节中进行解释。 目前，只需知道即使是原始类型的数据也可以像对象一样访问属性（包括方法）即可。
-- en: '[](#data-type-summary)*摘要*'
+- en: '*摘要*'
   id: totrans-170
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#data-type-summary)*摘要*'
+  zh: '*摘要*'
 - en: '*在本章中，我们学习了有关数据类型和字面量的知识。'
   id: totrans-171
   prefs: []

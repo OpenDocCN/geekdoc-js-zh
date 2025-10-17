@@ -2,7 +2,7 @@
 
 > 原文：[`jsprimer.net/basic/data-type/`](https://jsprimer.net/basic/data-type/)
 
-## [](#data-type)*数据类型*
+## *数据类型*
 
 *JavaScript 被归类为动态类型语言，因此没有像静态类型语言那样的**变量类型**。然而，存在诸如字符串、数值、真值等**值类型**。这些值类型被称为**数据类型**。
 
@@ -59,7 +59,7 @@ console.log(typeof function() {}); // => "function"
 
 从这个例子中可以看出，`typeof` 操作符用于区分原始类型或对象。记住，`typeof` 操作符不能确定对象的详细类型。关于每个对象的判定方法，将在各自的章节中介绍。
 
-## [](#literal)*字面量*
+## *字面量*
 
 *原始类型的值或一些对象可以通过**字面量**轻松定义。
 
@@ -96,7 +96,7 @@ const str = "こんにちは";
 
 关于这些字面量，首先从原始类型开始依次介绍。
 
-### [](#boolean)*真值（Boolean）*
+### *真值（Boolean）*
 
 *真值有 `true` 和 `false` 的字面量。它们分别返回 `true` 和 `false` 的值，具有直观的含义。
 
@@ -105,13 +105,13 @@ true; // => true
 false; // => false 
 ```
 
-### [](#number)*数值（Number）*
+### *数值（Number）*
 
 *数值包括像 `42` 这样的整数字面量以及像 `3.14159` 这样的浮点数字面量。
 
 这些字面量表示的数值被视为 IEEE 754 的双精度浮点数。双精度浮点数使用 64 位来表示数值。在 64 位中，52 位用于存储数字，11 位用于小数点的位置，剩下的 1 位是正负符号。因此，可以精确处理的数值的最大值是 `2⁵³-1`（2 的 53 次方减 1）。
 
-#### [](#integer-literal)*整数字面量*
+#### *整数字面量*
 
 *整数字面量有以下 4 种。
 
@@ -184,7 +184,7 @@ console.log(0x30A2); // => 12450
 | 8 進数 | 0o777 | ファイルのパーミッションなど |
 | 16 進数 | 0xEEFF | 文字のコードポイント、RGB 値など |
 
-#### [](#floating-point-number-literal)*浮動小数点数リテラル*
+#### *浮動小数点数リテラル*
 
 *When writing a floating-point number as a literal, the following two types of notation can be used.
 
@@ -208,7 +208,7 @@ console.log(0x30A2); // => 12450
 2e8; // => 200000000 
 ```
 
-### [](#bigint-literal)*[ES2020] BigInt*
+### *[ES2020] BigInt*
 
 *JavaScriptでは、`1`や`3.14159`などの数値リテラルは[IEEE 754](https://ja.wikipedia.org/wiki/IEEE_754)で定義された倍精度浮動小数となります。 倍精度浮動小数で正確に扱える数値の最大値は`2⁵³-1`（2の53 乗から1 引いた値である`9007199254740991`）です。 この数値リテラルで安全に表せる最大の数値は`Number.MAX_SAFE_INTEGER`として定義されています。
 
@@ -234,7 +234,7 @@ BigInt is a data type that handles integers, so if it contains a decimal point, 
 1.2n; // => SyntaxError 
 ```
 
-### [](#numeric-separators)*[ES2021] Numeric Separators*
+### *[ES2021] Numeric Separators*
 
 *The more the number becomes large, the more likely it is to make mistakes in the number of digits. The following code is to write 1 billion as a number literal, but it is difficult to read the number of digits.
 
@@ -257,7 +257,7 @@ _123; // 変数として評価される
 1234n_; // => SyntaxError 
 ```
 
-### [](#string)*文字列（String）*
+### *文字列（String）*
 
 *As a common rule for string literals, the content enclosed with the same symbol is treated as a string. There are three types of literals as string literals, but their evaluation results are all the same `"string"`.
 
@@ -267,7 +267,7 @@ console.log('文字列'); // => "文字列"
 console.log(`文字列`); // => "文字列" 
 ```
 
-#### [](#double-quote-and-single-quote)*ダブルクォートとシングルクォート*
+#### *ダブルクォートとシングルクォート*
 
 *`"`（ダブルクォート）と`'`（シングルクォート）はまったく同じ意味となります。 PHPやRubyなどとは違い、どちらのリテラルでも評価結果は同じとなります。
 
@@ -299,7 +299,7 @@ console.log(`文字列`); // => "文字列"
 
 シングルクォートとダブルクォートの文字列リテラルに改行を入れるには、エスケープシーケンスを使わないといけません。 これに対してES2015から導入されたテンプレートリテラルでは、複数行の文字列を直感的に書くことができます。
 
-#### [](#template-literal)*[ES2015] Template Literals*
+#### *[ES2015] Template Literals*
 
 *テンプレートリテラルは、```（バッククォート）で囲んだ範囲を文字列とするリテラルです。 テンプレートリテラルでは、複数行の文字列を改行記号のエスケープシーケンス（`\n`）を使わずにそのまま書くことができます。
 
@@ -324,7 +324,7 @@ console.log(`これは${str}です`); // => "これは文字列です"
 `This is \`code\``;// => "This is `code`" 
 ```
 
-### [](#null-literal)*nullリテラル*
+### *nullリテラル*
 
 *nullリテラルは`null`値を返すリテラルです。 `null`は「値がない」ということを表現する値です。
 
@@ -341,7 +341,7 @@ const foo = null;
 console.log(foo); // => null 
 ```
 
-## [](#undefined-is-not-literal)*[专栏] undefined is not a literal* 
+## *[专栏] undefined is not a literal* 
 
 *作为原始类型介绍的`undefined`并不是字面量。 `undefined`只是一个全局变量，它只有一个名为`undefined`的值。
 
@@ -363,7 +363,7 @@ let null; // => SyntaxError
 
 在这里，我们声明了名为`undefined`的局部变量用于解释，但是不推荐重新定义`undefined`。 因为这样只会带来不必要的混乱，所以应该避免。
 
-### [](#object)*对象字面量*
+### *对象字面量*
 
 *在 JavaScript 中，对象是一切的基础。 创建这些对象的方法之一是使用对象字面量。 通过编写`{}`（大括号），可以创建新对象。
 
@@ -410,7 +410,7 @@ object.123
 
 对象非常重要，因为接下来将介绍的数组和正则表达式都是基于此对象。 详细信息请参见“对象”章节。 在这里，当出现对象字面量（`{`和`}`）时，请理解为正在创建新对象。
 
-### [](#array)*数组字面量*
+### *数组字面量*
 
 *除了对象字面量之外，数组字面量也是一种常用的字面量。 数组字面量使用`[`和`]`将值括起来，用逗号分隔，创建一个具有这些值的 Array 对象。 数组（Array 对象）是一种可以存储多个值并且具有顺序的对象。
 
@@ -431,7 +431,7 @@ console.log(array[1]); // => "index:1"
 
 关于数组的详细信息将在“数组”章节中进行解释。
 
-### [](#regexp-literal)*正则表达式字面量*
+### *正则表达式字面量*
 
 *JavaScript 允许使用字面量编写正则表达式。 正则表达式字面量使用`/`（斜杠）将正则表达式模式字符串括起来。 在正则表达式模式中，特定字符和以`\`（反斜杠）开头的特殊字符具有特殊含义。
 
@@ -447,7 +447,7 @@ console.log(numberRegExp.test("123")); // => true
 
 关于正则表达式对象的详细信息将在“字符串”章节中介绍。
 
-## [](#primitive-and-wrapper-object)*原始类型和包装对象*
+## *原始类型和包装对象*
 
 *原始类型通常以字面量形式表示，但是布尔值（Boolean）、数值（Number）、字符串（String）也可以作为对象来表示。 这些对象称为**包装对象**，它们包装了原始类型的值。
 
@@ -479,7 +479,7 @@ console.log(str.length); // => 3
 
 关于这种隐式类型转换到包装对象的机制将在“包装对象”章节中进行解释。 目前，只需知道即使是原始类型的数据也可以像对象一样访问属性（包括方法）即可。
 
-## [](#data-type-summary)*摘要*
+## *摘要*
 
 *在本章中，我们学习了有关数据类型和字面量的知识。
 

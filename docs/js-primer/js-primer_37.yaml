@@ -17,12 +17,12 @@
   type: TYPE_NORMAL
   zh: 到目前为止，您已经学到的 JavaScript 基本语法可以在任何执行环境中使用。但在接下来的“用例”章节中，我们将处理具体的执行环境，即网络浏览器和
     [Node.js](https://nodejs.org/)。此外，即使是浏览器中执行的应用程序，其开发也离不开 Node.js 这个工具。在本节中，我们将为学习用例所需的应用程序开发环境做准备。
-- en: '[](#install-nodejs)*Node.jsのインストール*'
+- en: '*Node.jsのインストール*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#install-nodejs)*Node.js 的安装*'
+  zh: '*Node.js 的安装*'
 - en: '*[Node.js](https://nodejs.org/)はサーバーサイドJavaScript 実行環境のひとつで、次のような特徴があります。'
   id: totrans-4
   prefs: []
@@ -110,12 +110,12 @@
   type: TYPE_NORMAL
   zh: Node.js 的库几乎都可以通过 npm 进行安装。有关 npm 或 `npm` 命令的详细信息，请参阅 [npm 的官方文档](https://docs.npmjs.com/)
     或 [npm 的 GitHub 仓库](https://github.com/npm/cli)。实际上，在“用例”章节中，我们将使用 npm 安装库并使用它。
-- en: '[](#npx-execution)*npxコマンドによるnpmパッケージの実行*'
+- en: '*npxコマンドによるnpmパッケージの実行*'
   id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#npx-execution)*通过 npx 命令执行 npm 包*'
+  zh: '*通过 npx 命令执行 npm 包*'
 - en: '*Node.jsを使ったコマンドラインツールは数多く公開されており、npmでインストールすることによりコマンドとして実行できるようになります。 ところで、Node.jsのインストールにより、[npx](https://docs.npmjs.com/cli/v8/commands/npx/)というコマンドも使えるようになっています。
     `npx`コマンドを使うと、npmで公開されている実行可能なパッケージのインストールと実行をまとめてできます。 この後のユースケースでも`npx`コマンドでツールを利用するため、ここでツールの実行を試してみましょう。'
   id: totrans-19
@@ -151,12 +151,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样，通过使用 `npx` 命令，可以轻松地执行 npm 公开的命令行工具。
-- en: '[](#command-line-tools-installation)*[コラム] コマンドラインツールのインストールと実行*'
+- en: '*[コラム] コマンドラインツールのインストールと実行*'
   id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#command-line-tools-installation)*[专栏] 命令行工具的安装与执行*'
+  zh: '*[专栏] 命令行工具的安装与执行*'
 - en: '*npmで公開されているコマンドラインツールを実行する方法は`npx`コマンドだけではありません。 `npm install`コマンドを使ってパッケージをインストールし、インストールされたパッケージのコマンドを実行する方法があります。
     通常の`npm install`コマンドは実行したカレントディレクトリにパッケージをインストールしますが、`--global`フラグを加えるとパッケージをグローバルインストールします。
     グローバルインストールされたパッケージのコマンドは、`node`コマンドや`npm`コマンドと同じように、任意の場所から実行できます。'
@@ -176,12 +176,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE4]'
-- en: '[](#local-server)*本地服务器的设置*'
+- en: '*本地服务器的设置*'
   id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#local-server)*本地服务器的设置*'
+  zh: '*本地服务器的设置*'
 - en: '*在“值的评估和显示”章节中，创建了名为`index.html`和`index.js`的文件并在浏览器中显���。 当直接在浏览器中加载本地创建的 HTML
     文件时，浏览器的地址栏将显示以`file:///`开头的 URL。 使用`file`模式时，由于[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)的安全限制，应用程序在许多情况下将无法正常运行。'
   id: totrans-30
@@ -201,12 +201,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在这里，我们将看到如何设置用于开发的本地服务器。
-- en: '[](#preparing-html)*准备 HTML 文件*'
+- en: '*准备 HTML 文件*'
   id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#preparing-html)*准备 HTML 文件*'
+  zh: '*准备 HTML 文件*'
 - en: '*首先，让我们创建一个只放置最基本元素的 HTML 文件。 在这里，我们创建了名为`index.html`的文件，并在 HTML 文件中编写如下内容。
     在这个 HTML 文件中，使用`script`元素加载名为`index.js`的 JavaScript 文件。'
   id: totrans-34
@@ -239,12 +239,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE6]'
-- en: '[](#open-js-primer-local-server)*启动本地服务器*'
+- en: '*启动本地服务器*'
   id: totrans-40
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#open-js-primer-local-server)*启动本地服务器*'
+  zh: '*启动本地服务器*'
 - en: '*在与刚刚创建的`index.html`相同的目录中，启动本地服务器。 使用以下命令，可以下载并执行为本书创建的本地服务器模块[@js-primer/local-server](https://github.com/js-primer/local-server)。
     该本地服务器模块具有提供在执行目录中的文件的功能，以便通过`http`模式的 URL 访问本地文件。'
   id: totrans-41
@@ -300,12 +300,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 有关详细信息，请参阅“[浏览器的开发者工具是什么？](https://developer.mozilla.org/ja/docs/Learn/Common_questions/What_are_browser_developer_tools)”。
-- en: '[](#close-js-primer-local-server)*关闭本地服务器*'
+- en: '*关闭本地服务器*'
   id: totrans-50
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#close-js-primer-local-server)*关闭本地服务器*'
+  zh: '*关闭本地服务器*'
 - en: '*最后，关闭启动的本地服务器。 可以通过在启动本地服务器的命令行中按下`Ctrl+C`来关闭。'
   id: totrans-51
   prefs: []
@@ -333,12 +333,12 @@
   type: TYPE_NORMAL
   zh: 本书将在默认端口号 3000 上使用`@js-primer/local-server`进行操作。 因此，通过按下`Ctrl+C`关闭不再使用的本地服务器，可以确保可以继续使用与书中相同的
     URL（端口号）。
-- en: '[](#conclusion)*结论*'
+- en: '*结论*'
   id: totrans-56
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*结论*'
+  zh: '*结论*'
 - en: '*在本章中，我们准备好了接下来用例章节所需的环境。'
   id: totrans-57
   prefs: []

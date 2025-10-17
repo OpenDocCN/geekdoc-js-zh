@@ -15,12 +15,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: この章では、JavaScriptと密接な関係にあるJSONというデータフォーマットについて見ていきます。
-- en: '[](#what-is-json)*JSONとは*'
+- en: '*JSONとは*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#what-is-json)*JSONとは*'
+  zh: '*JSONとは*'
 - en: '*JSONはJavaScript Object Notationの略で、JavaScriptのオブジェクトリテラルをベースに作られた軽量なデータフォーマットです。
     JSONの仕様は[ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/)として標準化されています。
     JSONは、人間にとって読み書きが容易で、マシンにとっても簡単にパースや生成を行える形式になっています。 そのため、多くのプログラミング言語がJSONを扱う機能を備えています。'
@@ -49,12 +49,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: JSONの細かい仕様に関しては[json.orgの日本語ドキュメント](https://www.json.org/json-ja.html)にわかりやすくまとまっているので、参考にするとよいでしょう。
-- en: '[](#json-object)*`JSON`オブジェクト*'
+- en: '*`JSON`オブジェクト*'
   id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#json-object)*`JSON`オブジェクト*'
+  zh: '*`JSON`オブジェクト*'
 - en: '*JavaScriptでJSONを扱うには、ビルトインオブジェクトである[JSONオブジェクト](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON)を利用します。
     `JSON`オブジェクトはJSON 形式の文字列とJavaScriptのオブジェクトを相互に変換するための`parse`メソッドと`stringify`メソッドを提供します。'
   id: totrans-9
@@ -62,12 +62,12 @@
   type: TYPE_NORMAL
   zh: '*JavaScriptでJSONを扱うには、ビルトインオブジェクトである[JSONオブジェクト](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON)を利用します。
     `JSON`オブジェクトはJSON 形式の文字列とJavaScriptのオブジェクトを相互に変換するための`parse`メソッドと`stringify`メソッドを提供します。*'
-- en: '[](#json-parse)*JSON 文字列をオブジェクトに変換する*'
+- en: '*JSON 文字列をオブジェクトに変換する*'
   id: totrans-10
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#json-parse)*JSON 文字列をオブジェクトに変換する*'
+  zh: '*JSON 文字列をオブジェクトに変換する*'
 - en: '*[JSON.parseメソッド](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)は引数に与えられた文字列をJSONとしてパースし、その結果をJavaScriptのオブジェクトとして返す関数です。
     次のコードは簡単なJSON 形式の文字列をJavaScriptのオブジェクトに変換する例です。'
   id: totrans-11
@@ -102,12 +102,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE3]'
-- en: '[](#json-format)*オブジェクトをJSON 文字列に変換する*'
+- en: '*オブジェクトをJSON 文字列に変換する*'
   id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#json-format)*オブジェクトをJSON 文字列に変換する*'
+  zh: '*オブジェクトをJSON 文字列に変換する*'
 - en: '*[JSON.stringifyメソッド](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)は第一引数に与えられたオブジェクトをJSON
     形式の文字列に変換して返す関数です。 HTTP 通信でサーバーにデータを送信するときや、 アプリケーションが保持している状態を外部に保存するときなどに必要になります。
     次のコードはJavaScriptのオブジェクトをJSON 形式の文字列に変換する例です。'
@@ -168,12 +168,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE8]'
-- en: '[](#not-serialization-object)*JSONにシリアライズできないオブジェクト*'
+- en: '*JSONにシリアライズできないオブジェクト*'
   id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#not-serialization-object)*JSONにシリアライズできないオブジェクト*'
+  zh: '*JSONにシリアライズできないオブジェクト*'
 - en: '*`JSON.stringify`メソッドはJSONで表現可能な値だけをシリアライズします。 そのため、値が関数や`Symbol`、あるいは`undefined`であるプロパティなどは変換されません。
     ただし、配列の値としてそれらが見つかったときには例外的に`null`に置き換えられます。 またキーが`Symbol`である場合にもシリアライズの対象外になります。
     代表的な変換の例を次の表とサンプルコードに示します。'
@@ -263,12 +263,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE10]'
-- en: '[](#serialization-by-toJSON)*使用`toJSON`方法进行序列化*'
+- en: '*使用`toJSON`方法进行序列化*'
   id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#serialization-by-toJSON)*使用`toJSON`方法进行序列化*'
+  zh: '*使用`toJSON`方法进行序列化*'
 - en: '*如果对象具有`toJSON`方法，则`JSON.stringify`方法将使用`toJSON`方法的返回值，而不是默认的字符串转换。就像下面的例子一样，它将递归地处理作为参数直接传递以及作为参数属性出现的情况。*'
   id: totrans-47
   prefs: []
@@ -284,12 +284,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: '`toJSON`方法被用于将自定义类以特殊格式进行序列化。'
-- en: '[](#conclusion)*总结*'
+- en: '*总结*'
   id: totrans-50
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*在本章中，我们学习了关于 JSON 的知识。'
   id: totrans-51
   prefs: []

@@ -22,7 +22,7 @@
   id: totrans-4
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#javascript-ecmascript)*JavaScript 与 ECMAScript*'
+- en: '*JavaScript 与 ECMAScript*'
   id: totrans-5
   prefs:
   - PREF_H2
@@ -60,7 +60,7 @@
   id: totrans-13
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#about-javascript)*JavaScript 是什么语言？*'
+- en: '*JavaScript 是什么语言？*'
   id: totrans-14
   prefs:
   - PREF_H2
@@ -81,7 +81,7 @@
   id: totrans-18
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#case-sensitive)*区分大小写*'
+- en: '*区分大小写*'
   id: totrans-19
   prefs:
   - PREF_H3
@@ -99,7 +99,7 @@
   id: totrans-22
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#reserved-keyword)*具有保留字*'
+- en: '*具有保留字*'
   id: totrans-23
   prefs:
   - PREF_H3
@@ -108,7 +108,7 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#statement-semicolon)*语句用分号分隔*'
+- en: '*语句用分号分隔*'
   id: totrans-25
   prefs:
   - PREF_H3
@@ -134,7 +134,7 @@
   id: totrans-30
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#strict-mode)*严格模式*'
+- en: '*严格模式*'
   id: totrans-31
   prefs:
   - PREF_H3
@@ -173,7 +173,7 @@
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#script-module)*执行上下文: Script 和 Module*'
+- en: '*执行上下文: Script 和 Module*'
   id: totrans-40
   prefs:
   - PREF_H3
@@ -191,12 +191,12 @@
   id: totrans-43
   prefs: []
   type: TYPE_NORMAL
-- en: '[](#ecmascript-updates)*JavaScript 的规范每年都在更新*'
+- en: '*JavaScript 的规范每年都在更新*'
   id: totrans-44
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#ecmascript-updates)*JavaScript 的规范每年都在更新*'
+  zh: '*JavaScript 的规范每年都在更新*'
 - en: '*最后，ECMAScript 作为 JavaScript 的规范每年都在更新，JavaScript 也在不断增加新的语法和功能。因此，学完本书后仍会有更多未知的内容。'
   id: totrans-45
   prefs: []

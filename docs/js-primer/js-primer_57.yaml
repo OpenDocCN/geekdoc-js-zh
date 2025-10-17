@@ -104,17 +104,17 @@
   - PREF_UL
   type: TYPE_NORMAL
   zh: 项目结构
-- en: '[](#language-feature)*语言功能*'
+- en: '*语言功能*'
   id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#language-feature)*语言功能*'
-- en: '*### [](#comments)*评论*'
+  zh: '*语言功能*'
+- en: '*### *评论*'
   id: totrans-17
   prefs: []
   type: TYPE_NORMAL
-  zh: '*### [](#comments)*评论*'
+  zh: '*### *评论*'
 - en: '*关于评论的写法。'
   id: totrans-18
   prefs: []
@@ -149,12 +149,12 @@
   prefs: []
   type: TYPE_TB
   zh: '| `<!-- xxx -->` | [ES2015] 类似 HTML 的评论 | 评论 |   |'
-- en: '[](#data-structures)*数据结构*'
+- en: '*数据结构*'
   id: totrans-24
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#data-structures)*数据结构*'
+  zh: '*数据结构*'
 - en: '*変数宣言について。'
   id: totrans-25
   prefs: []
@@ -191,12 +191,12 @@
   type: TYPE_TB
   zh: '| `var x` | **变量声明**。传统的变量声明方法 | 变量和声明 | [var](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/var)
     |'
-- en: '[](#literal)*文字*'
+- en: '*文字*'
   id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#literal)*文字*'
+  zh: '*文字*'
 - en: '*关于表示数据结构的文字。'
   id: totrans-32
   prefs: []
@@ -296,12 +296,12 @@
   type: TYPE_TB
   zh: '| `null` | `null`值 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#null_%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
-- en: '[](#string)*字符串*'
+- en: '*字符串*'
   id: totrans-47
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#string)*字符串*'
+  zh: '*字符串*'
 - en: '*文字列について。'
   id: totrans-48
   prefs: []
@@ -345,12 +345,12 @@
   type: TYPE_TB
   zh: '| *``${x}``* | [ES2015] 展开模板字符串文字中变量`x`的值 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals)
     |'
-- en: '[](#data-access)*数据访问*'
+- en: '*数据访问*'
   id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#data-access)*数据访问*'
+  zh: '*数据访问*'
 - en: '*数据访问。'
   id: totrans-56
   prefs: []
@@ -422,12 +422,12 @@
   type: TYPE_TB
   zh: '| `f({ ...obj })` | [ES2018] 使用**扩展语法**扩展对象 | 对象 | [展开语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
     |'
-- en: '[](#operator)*操作符*'
+- en: '*操作符*'
   id: totrans-67
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#operator)*操作符*'
+  zh: '*操作符*'
 - en: '*关于操作符。*'
   id: totrans-68
   prefs: []
@@ -639,12 +639,12 @@
   type: TYPE_TB
   zh: '| `x, y` | 逗号运算符 | 运算符 | [逗号运算符 (,)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Comma_Operator)
     |'
-- en: '[](#function-behavior)*関数と挙動*'
+- en: '*関数と挙動*'
   id: totrans-99
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#function-behavior)*函数与行为*'
+  zh: '*函数与行为*'
 - en: '*関数の定義と挙動について。'
   id: totrans-100
   prefs: []
@@ -843,12 +843,12 @@
   type: TYPE_TB
   zh: '| `new X()` | 使用`new`运算符从类（具有构造函数的对象）创建实例 | 类 | [new 运算符](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/new)
     |'
-- en: '[](#control-flow)*控制流*'
+- en: '*控制流*'
   id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#control-flow)*控制流*'
+  zh: '*控制流*'
 - en: '*控制流的控制结构。'
   id: totrans-129
   prefs: []
@@ -960,12 +960,12 @@
   type: TYPE_TB
   zh: '| `throw new Error("xxx")` | `throw`语句 | 异常处理 | [throw](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/throw)
     |'
-- en: '[](#module)*模块*'
+- en: '*模块*'
   id: totrans-144
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#module)*模块*'
+  zh: '*模块*'
 - en: '*关于 ECMAScript 模块。'
   id: totrans-145
   prefs: []
@@ -1064,12 +1064,12 @@
   zh: '| `export * as ns from "./x.js"` | [ES2020] **导入所有命名导出**，并以`ns`的名称**重新导出**
     | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
     |'
-- en: '[](#miscellaneous)*其他*'
+- en: '*其他*'
   id: totrans-159
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#miscellaneous)*其他*'
+  zh: '*其他*'
 - en: '*| 代码示例 | 描述 | 解释 | MDN |'
   id: totrans-160
   prefs: []
@@ -1099,17 +1099,17 @@
   type: TYPE_TB
   zh: '| `{ }` | 代码块 | 语句和表达式 | [块](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/block)
     |'
-- en: '[](#guide)*指南*'
+- en: '*指南*'
   id: totrans-165
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#guide)*指南*'
-- en: '*### [](#project-anatomy)*项目结构*'
+  zh: '*指南*'
+- en: '*### *项目结构*'
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
-  zh: '*### [](#project-anatomy)*项目结构*'
+  zh: '*### *项目结构*'
 - en: '*关于 JavaScript 基本项目布局、文件、文件夹结构的内容。'
   id: totrans-167
   prefs: []

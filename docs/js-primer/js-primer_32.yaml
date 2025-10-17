@@ -15,12 +15,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 本章将介绍 JavaScript 中提供数学常数和函数的内置对象[Math](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math)。
-- en: '[](#math-object)*Math 对象*'
+- en: '*Math 对象*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#math-object)*Math 对象*'
+  zh: '*Math 对象*'
 - en: '*`Math`对象是内置对象，但不是构造函数。换句话说，`Math`对象不会创建实例，所有常数和函数都作为`Math`对象的静态属性和方法提供。例如，`Math.PI`属性表示圆周率π，`Math.sin`方法计算正弦值。下面的例子计算了
     90 度的正弦值。90 度的正弦值为 1，因此`sin90`变量将返回 1。'
   id: totrans-4
@@ -38,12 +38,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 三角函数等许多函数和常数都是通过`Math`对象提供的。本章将介绍其中一些常用的，并附带使用案例。更详尽的解释请参考[MDN 参考文档](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math)。
-- en: '[](#create-random-number)*生成随机数*'
+- en: '*生成随机数*'
   id: totrans-7
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#create-random-number)*生成随机数*'
+  zh: '*生成随机数*'
 - en: '*`Math`对象的主要用途之一是通过[Math.random](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/random)方法生成随机数。`Math.random`方法在
     0 到 1 之间返回伪随机浮点数。'
   id: totrans-8
@@ -66,12 +66,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#compare-number)*比较数字大小*'
+- en: '*比较数字大小*'
   id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#compare-number)*比较数字大小*'
+  zh: '*比较数字大小*'
 - en: '*[Math.max](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/max)方法会返回传入的多个数字中的最大值。同样，[Math.min](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/min)方法会返回传入的多个数字中的最小值。'
   id: totrans-13
   prefs: []
@@ -92,12 +92,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE4]'
-- en: '[](#convert-to-integer)*转换为整数*'
+- en: '*转换为整数*'
   id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#convert-to-integer)*转换为整数*'
+  zh: '*转换为整数*'
 - en: '*`Math`对象有几种方法可用于将数字舍入为整数。其中常见的有向下取整的`Math.floor`方法、向上取整的`Math.ceil`方法，以及四舍五入的`Math.round`方法。'
   id: totrans-18
   prefs: []
@@ -133,12 +133,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE6]'
-- en: '[](#conclusion)*总结*'
+- en: '*总结*'
   id: totrans-25
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*本章介绍了`Math`对象。所介绍的方法只是`Math`对象的一部分，还有其他方法可供使用。'
   id: totrans-26
   prefs: []

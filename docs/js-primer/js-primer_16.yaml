@@ -15,12 +15,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: この章ではif 文やswitch 文を使った条件分岐について学んでいきます。 条件分岐を使うことで、特定の条件を満たすかどうかで行う処理を変更できます。
-- en: '[](#if-statement)*if 文*'
+- en: '*if 文*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#if-statement)*if 文*'
+  zh: '*if 文*'
 - en: '*if 文を使うことで、プログラム内に条件分岐を書けます。'
   id: totrans-4
   prefs: []
@@ -145,12 +145,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE5]'
-- en: '[](#else-if-statement)*else if 文*'
+- en: '*else if 文*'
   id: totrans-27
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#else-if-statement)*else if 文*'
+  zh: '*else if 文*'
 - en: '*複数の条件分岐を書く場合は、if 文に続けてelse if 文を使うことで書けます。 たとえば、次の3つの条件分岐するプログラムを考えます。'
   id: totrans-28
   prefs: []
@@ -186,12 +186,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE6]'
-- en: '[](#else-statement)*else 文*'
+- en: '*else 文*'
   id: totrans-34
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#else-statement)*else 文*'
+  zh: '*else 文*'
 - en: '*if 文とelse if 文では、条件に一致した場合の処理をブロック内に書いていました。 一方で条件に一致しなかった場合の処理は、else 文を使うことで書けます。'
   id: totrans-35
   prefs: []
@@ -207,12 +207,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE7]'
-- en: '[](#nested-if-statement)*ネストしたif 文*'
+- en: '*ネストしたif 文*'
   id: totrans-38
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#nested-if-statement)*ネストしたif 文*'
+  zh: '*ネストしたif 文*'
 - en: '*if 文、else if 文、else 文はネストして書けます。 次のように複数の条件を満たすかどうかをif 文のネストとして表現できます。'
   id: totrans-39
   prefs: []
@@ -276,12 +276,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE10]'
-- en: '[](#switch-statement)*switch 文*'
+- en: '*switch 文*'
   id: totrans-51
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#switch-statement)*switch 文*'
+  zh: '*switch 文*'
 - en: '*switch 文は、次のような構文で`式`の評価結果が指定した値である場合に行う処理を並べて書きます。'
   id: totrans-52
   prefs: []
@@ -336,12 +336,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE15]'
-- en: '[](#break-statement)*break 文*'
+- en: '*break 文*'
   id: totrans-62
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#break-statement)*break 文*'
+  zh: '*break 文*'
 - en: '*switch 文のcase 節では基本的に`break;`を使ってswitch 文を抜けるようにします。 この`break;`は省略が可能ですが、省略した場合、後ろに続くcase
     節が条件に関係なく実行されます。'
   id: totrans-63
@@ -371,12 +371,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE17]'
-- en: '[](#conclusion)*まとめ*'
+- en: '*まとめ*'
   id: totrans-68
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*まとめ*'
+  zh: '*まとめ*'
 - en: '*この章では条件分岐について学びました。'
   id: totrans-69
   prefs: []

@@ -20,12 +20,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: JavaScript由**语句**（Statement）和**表达式**（Expression）组成。
-- en: '[](#expression)*式*'
+- en: '*式*'
   id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#expression)*表达式*'
+  zh: '*表达式*'
 - en: '***式**（Expression）を簡潔に述べると、値を生成し、変数に代入できるものを言います。'
   id: totrans-5
   prefs: []
@@ -51,12 +51,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE0]'
-- en: '[](#statement)*文*'
+- en: '*文*'
   id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#statement)*语句*'
+  zh: '*语句*'
 - en: '***文**（Statement）を簡潔に述べると、処理する1ステップが1つの文と言えます。 JavaScriptでは、文の末尾にセミコロン(`;`)を置くことで文と文に区切りをつけます。'
   id: totrans-11
   prefs: []
@@ -97,12 +97,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE3]'
-- en: '[](#expression-statement)*式文*'
+- en: '*式文*'
   id: totrans-19
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#expression-statement)*表达式语句*'
+  zh: '*表达式语句*'
 - en: '*一方で、**式**（Expression）は**文**（Statement）になれます。文となった式のことを**式文**と呼びます。 基本的に文が書ける場所には式を書けます。'
   id: totrans-20
   prefs: []
@@ -123,12 +123,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 表达式可以变成语句，但像之前的if语句那样，语句不能变成表达式。
-- en: '[](#block-statement)*ブロック文*'
+- en: '*ブロック文*'
   id: totrans-24
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#block-statement)*块语句*'
+  zh: '*块语句*'
 - en: '*次のような、文を`{`と`}`で囲んだ部分を**ブロック**と言います。 ブロックには、複数の**文**が書けます。'
   id: totrans-25
   prefs: []
@@ -160,12 +160,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE7]'
-- en: '[](#isolate-block-statement)*[コラム] 単独のブロック文の活用*'
+- en: '*[コラム] 単独のブロック文の活用*'
   id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#isolate-block-statement)*[专栏] 单独的块语句的应用*'
+  zh: '*[专栏] 单独的块语句的应用*'
 - en: '*アプリケーションのソースコードにif 文などと組み合わせない単独のブロック文を書くことはほとんどありません。 しかし、REPLで同じコードの一部を変更して実行を繰り返している場合には、単独のブロック文が役に立つ機会もあります。'
   id: totrans-32
   prefs: []
@@ -197,12 +197,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这是由块作用域这种机制造成的，但具体的机制将在“函数与作用域”章节中解释。现在，只要知道使用块语句可以使REPL中的试错变得容易就可以了。
-- en: '[](#function-statement-and-function-expression)*関数宣言（文）と関数式*'
+- en: '*関数宣言（文）と関数式*'
   id: totrans-38
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#function-statement-and-function-expression)*函数声明（文）与函数表达式*'
+  zh: '*函数声明（文）与函数表达式*'
 - en: '*「関数と宣言」の章において、関数を定義する方法を学びました。 functionキーワードから文を開始する**関数宣言**と、変数へ**関数式**を代入する方法があります。'
   id: totrans-39
   prefs: []
@@ -248,12 +248,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE11]'
-- en: '[](#statement-expression-summary)*まとめ*'
+- en: '*まとめ*'
   id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#statement-expression-summary)*总结*'
+  zh: '*总结*'
 - en: '*この章では次のことについて学びました。'
   id: totrans-49
   prefs: []

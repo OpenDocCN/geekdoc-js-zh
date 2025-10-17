@@ -20,12 +20,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在 Web 应用程序中，HTML 文档始终是入口点。 在 Web 浏览器加载 HTML 文档后，将执行在 HTML 文档中加载的 JavaScript。
-- en: '[](#create-project-directory)*创建项目目录*'
+- en: '*创建项目目录*'
   id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#create-project-directory)*创建项目目录*'
+  zh: '*创建项目目录*'
 - en: '*今次创建的应用程序需要多个文件，包括 HTML 和 JavaScript。 因此，首先要创建一个用于放置这些文件的目录。'
   id: totrans-5
   prefs: []
@@ -41,12 +41,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 此项目中创建的文件必须保存为 **UTF-8** 编码，并使用 **LF** 作为换行符。
-- en: '[](#preparing-html)*准备 HTML 文件*'
+- en: '*准备 HTML 文件*'
   id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#preparing-html)*准备 HTML 文件*'
+  zh: '*准备 HTML 文件*'
 - en: '*作为入口点，首先创建一个名为 `index.html` 的文件，其中仅包含最基本的元素。 在 `body` 元素的底部加载的 `index.js`
     是负责处理本次应用程序逻辑的 JavaScript 文件。'
   id: totrans-9
@@ -94,12 +94,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 接下来，打开浏览器查看 `index.html`，并确保控制台输出日志。
-- en: '[](#local-server)*在本地服务器上查看 HTML*'
+- en: '*在本地服务器上查看 HTML*'
   id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#local-server)*在本地服务器上查看 HTML*'
+  zh: '*在本地服务器上查看 HTML*'
 - en: '*在打开 `index.html` 之前，请准备开发用的本地服务器。 虽然可以直接打开 HTML 文件而不启动本地服务器，但在这种情况下，URL 将以
     `file:///` 开头。 使用 `file` 协议时，由于[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)的安全限制，应用程序在许多情况下将无法正常工作。
     本章假定您已经启动了本地服务器，并使用 `http` 协议的 URL 进行访问。'
@@ -152,12 +152,12 @@
   prefs: []
   type: TYPE_IMG
   zh: '![显示日志的 Web 控制台](img/8422a59c0fa0d809c5c9b29911172b6d.png)'
-- en: '[](#web-browsers-and-dom)*Web 浏览器和 DOM*'
+- en: '*Web 浏览器和 DOM*'
   id: totrans-27
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#web-browsers-and-dom)*Web 浏览器和 DOM*'
+  zh: '*Web 浏览器和 DOM*'
 - en: '*在加载 HTML 文档到浏览器时，会生成一种称为 DOM（[文档对象模型](https://developer.mozilla.org/ja/docs/Web/API/Document_Object_Model/Introduction)）的编程数据表示。
     **DOM（文档对象模型）** 是一种可以从 JavaScript 中操作 HTML 文档内容和结构的对象。 DOM 使用树结构表示 HTML 文档中标签的嵌套关系，因此
     DOM 表示的 HTML 标签树结构被称为 **DOM 树**。'
@@ -193,12 +193,12 @@
   type: TYPE_NORMAL
   zh: 但是，DOM 不是语言功能（ECMAScript），而是浏览器实现的 API。 因此，在没有 DOM 的执行环境（如 Node.js）中无法使用，需要注意的是，像
     `document` 这样的全局对象也不存在。
-- en: '[](#section-checklist)*本节的检查清单*'
+- en: '*本节的检查清单*'
   id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#section-checklist)*本节的检查清单*'
+  zh: '*本节的检查清单*'
 - en: '*このセクションでは、エントリーポイントとなるHTMLを作成し、JavaScriptモジュールのエントリーポイントとなるJavaScriptファイルを読み込むところまでを実装しました。'
   id: totrans-34
   prefs: []

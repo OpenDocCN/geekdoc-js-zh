@@ -10,7 +10,7 @@
 
 首先实现“更新 Todo 项目”，然后再实现“删除 Todo 项目”。
 
-## [](#todo-item-update)*更新 Todo 项目*
+## *更新 Todo 项目*
 
 *目前，Todo 项目的完成状态尚未显示。 因此，首先需要显示 Todo 项目是否已完成。 使用 HTML 的[`<input type="checkbox">`](https://developer.mozilla.org/ja/docs/Web/HTML/Element/Input/checkbox)元素显示复选框，并表示每个 Todo 项目的完成状态。
 
@@ -82,7 +82,7 @@ inputCheckboxElement.addEventListener("change", () => {
 
 现在，让我们开始在`todoapp`项目中实现 Todo 项目的更新。
 
-### [](#TodoListModel-updateTodo)*向`TodoListModel`添加更新指定的 Todo 项目的处理*
+### *向`TodoListModel`添加更新指定的 Todo 项目的处理*
 
 *首先，在`TodoListModel`中添加一个名为`updateTodo`的方法来更新指定的 Todo 项目。 TodoListModel 的`updateTodo`方法用于更新与指定 id 匹配的 Todo 项目的完成状态（`completed`属性）。
 
@@ -108,7 +108,7 @@ inputCheckboxElement.addEventListener("change", () => {
 } 
 ```
 
-### [](#onChange-update-model)*当复选框的`change`事件发生时，更新 Todo 项目的完成状态*
+### *当复选框的`change`事件发生时，更新 Todo 项目的完成状态*
 
 *接下来，在`input`元素的`change`事件的监听函数中，更新 Todo 项目的完成状态。
 
@@ -147,13 +147,13 @@ this.#todoListModel.onChange(() => {
 
 这样显示和模型就同步了，实现了“Todo 项目的更新处理”。
 
-## [](#delete)*删除功能*
+## *删除功能*
 
 *接下来将实现“Todo 项目的删除功能”。
 
 基本流程与“Todo 项目的更新功能”相同。 在`TodoListModel`中添加删除 Todo 项目的处理过程。 然后在显示中添加删除按钮，并在单击删除按钮时调用删除指定 Todo 项目的处理过程。
 
-### [](#TodoListModel-deleteTodo)*添加删除指定 Todo 项目的处理过程到`TodoListModel`*
+### *添加删除指定 Todo 项目的处理过程到`TodoListModel`*
 
 *首先，将删除指定 Todo 项目的`deleteTodo`方法添加到`TodoListModel`中。 `TodoListModel`的`deleteTodo`方法将删除与指定 id 匹配的 Todo 项目。
 
@@ -179,7 +179,7 @@ this.#todoListModel.onChange(() => {
 } 
 ```
 
-### [](#onChange-update-model)*当点击删除按钮时，删除 Todo 项目*
+### *当点击删除按钮时，删除 Todo 项目*
 
 *接下来添加删除按钮，并在单击按钮时调用删除 Todo 项目的处理过程(`deleteTodo`)的实现添加到`App.js`中。
 
@@ -228,7 +228,7 @@ this.#todoListModel.onChange(() => {
 
 这样就实现了“Todo 项目的删除功能”。
 
-## [](#section-checklist)*本节的检查清单*
+## *本节的检查清单*
 
 **   添加了一个用于表示 Todo 项目完成状态的`<input type="checkbox">`。
 

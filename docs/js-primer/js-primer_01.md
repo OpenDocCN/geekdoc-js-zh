@@ -2,7 +2,7 @@
 
 > 原文：[`jsprimer.net/intro/`](https://jsprimer.net/intro/)
 
-## [](#do)*本书的目的*
+## *本书的目的*
 
 *本书的目的是学习 JavaScript 这门编程语言。 通过从头开始阅读，您可以学习 JavaScript 的语法和功能。
 
@@ -10,7 +10,7 @@
 
 JavaScript 是一种不断变化的语言，语言本身以及周围的开发环境也在不断变化。 本书的目的是为了掌握能够适应围绕 JavaScript 的变化的基础知识。 因此，我们将重点放在为什么不起作用以及如何解决问题上，而不仅仅是学习语法。
 
-## [](#do-not)*本书的目的不在于*
+## *本书的目的不在于*
 
 *无法通过一本书学会 JavaScript 的所有内容。 这是因为 JavaScript 的应用范围非常广泛。 因此，我们将明确列出本书不涉及的内容（非目的）。
 
@@ -36,7 +36,7 @@ JavaScript 是一种不断变化的语言，语言本身以及周围的开发环
 
 虽然不会详细解释具体机制，但会帮助您意识到这些机制的存在并理解。
 
-## [](#who-read)*谁应该阅读本书*
+## *谁应该阅读本书*
 
 *本书旨在让有编程经验的人学习 JavaScript 这门语言。 因此，对于第一次学习编程语言的人来说，可能会有一些困难。 但是，由于书中实际上是通过运行程序来学习的，因此即使是编程新手也可以尝试挑战。
 
@@ -44,7 +44,7 @@ JavaScript 是一种不断变化的语言，语言本身以及周围的开发环
 
 本书认真对待 JavaScript 的规范。 尽管这是一本入门书，但我们避免极端简化和不准确的内容。 因此，即使是 JavaScript 专家，阅读本书也应该有所发现。
 
-## [](#features)*本书的特点*
+## *本书的特点*
 
 *简要介绍本书的特点*
 
@@ -60,13 +60,13 @@ JavaScript 是一种不断变化的语言，语言本身以及周围的开发环
 
 由于书籍内容在 Web 上公开，因此在需要共享书籍内容时可以提供 URL。 此外，书籍内容和示例代码在以下许可范围内可自由使用。
 
-## [](#license)*许可*
+## *许可*
 
 *本书中的所有源代码均以[MIT 许可证](https://github.com/asciidwango/js-primer/blob/master/LICENSE-MIT)提供为基础的开源软件。 此外，本书的文本以[知识共享署名 4.0](https://github.com/asciidwango/js-primer/blob/master/LICENSE-CC-BY)（CC BY 4.0）许可证提供。 只要遵循版权声明，您就可以在一定程度上自由使用这两种许可证。
 
 有关详细信息，请参阅[许可证信息](https://github.com/asciidwango/js-primer/blob/master/README.md#license)。
 
-## [](#print-version)*关于书籍版*
+## *关于书籍版*
 
 *这本书由[AsciiDwango](https://asciidwango.jp/)出版。 您可以从以下页面购买书籍版。
 
@@ -74,7 +74,7 @@ JavaScript 是一种不断变化的语言，语言本身以及周围的开发环
 
 +   PDF 和 epub: [JavaScript Primer 迷你入门书【委托】 - 達人出版会](https://tatsu-zine.com/books/javascript-primer) （截至 2023 年 06 月 03 日仍为初版）
 
-## [](#diff-with-print-version)*网页版和书籍版的区别*
+## *网页版和书籍版的区别*
 
 *书籍版的内容与[JavaScript Primer v4.0.0](https://github.com/asciidwango/js-primer/releases/tag/v4.0.0-publish)相同。
 
@@ -90,7 +90,7 @@ JavaScript 是一种不断变化的语言，语言本身以及周围的开发环
 
 这本书是按顺序阅读的。因此，作为阅读材料，书籍版更易于阅读。由于网页版内置了搜索功能和可执行示例代码的功能，因此请根据需要同时使用。
 
-## [](#sponsors)*关于对书籍的支持*
+## *关于对书籍的支持*
 
 *JavaScript Primer 会持续更新以跟进 ECMAScript 的更新，反映实际使用情况。 为了持续更新，我们随时欢迎对书籍的支持。
 
@@ -120,7 +120,7 @@ Discussions 的指南已整理在以下主题中。
 
 +   [发现错误？请告诉我们 · JavaScript Primer #jsprimer](https://jsprimer.net/intro/feedback/)
 
-## [](#thanks)*致谢*
+## *致谢*
 
 *在初版中，我们征求了以下人员的审阅意见。
 
@@ -160,7 +160,7 @@ Discussions 的指南已整理在以下主题中。
 
 此外，这本书是在 GitHub 上公开的状态下编写的。因此，感谢所有为这本书做出贡献的人。
 
-## [](#changelog)*变更点*
+## *变更点*
 
 *网页版会持续更新以支持最新的 ECMAScript。 在支持每个新的 ECMAScript 版本时，我们会制作变更摘要的发布说明。
 

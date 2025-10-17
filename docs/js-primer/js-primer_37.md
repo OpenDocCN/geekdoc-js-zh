@@ -4,7 +4,7 @@
 
 到目前为止，您已经学到的 JavaScript 基本语法可以在任何执行环境中使用。但在接下来的“用例”章节中，我们将处理具体的执行环境，即网络浏览器和 [Node.js](https://nodejs.org/)。此外，即使是浏览器中执行的应用程序，其开发也离不开 Node.js 这个工具。在本节中，我们将为学习用例所需的应用程序开发环境做准备。
 
-## [](#install-nodejs)*Node.js 的安装*
+## *Node.js 的安装*
 
 *[Node.js](https://nodejs.org/) 是一种服务器端 JavaScript 执行环境，具有以下特点。
 
@@ -40,7 +40,7 @@ Node.js 和 npm 的版本号采用 `{major}.{minor}.{patch}` 的结构，如果�
 
 Node.js 的库几乎都可以通过 npm 进行安装。有关 npm 或 `npm` 命令的详细信息，请参阅 [npm 的官方文档](https://docs.npmjs.com/) 或 [npm 的 GitHub 仓库](https://github.com/npm/cli)。实际上，在“用例”章节中，我们将使用 npm 安装库并使用它。
 
-## [](#npx-execution)*通过 npx 命令执行 npm 包*
+## *通过 npx 命令执行 npm 包*
 
 *Node.js 的命令行工具有很多公开，通过 npm 安装后可以作为命令执行。顺便说一句，通过 Node.js 的安装，您还可以使用 [npx](https://docs.npmjs.com/cli/v8/commands/npx/) 这个命令。使用 `npx` 命令可以将 npm 公开的可执行包的安装和执行合并。在接下来的用例中，我们将使用 `npx` 命令来使用工具，所以在这里尝试执行工具。
 
@@ -67,7 +67,7 @@ Hello World!
 
 这样，通过使用 `npx` 命令，可以轻松地执行 npm 公开的命令行工具。
 
-### [](#command-line-tools-installation)*[专栏] 命令行工具的安装与执行*
+### *[专栏] 命令行工具的安装与执行*
 
 *执行 npm 公开的可执行命令的方法不仅仅是 `npx` 命令。您可以使用 `npm install` 命令安装包，并执行已安装包的命令。通常的 `npm install` 命令会将包安装到当前目录，但添加 `--global` 标志可以将包全局安装。全局安装的包的命令可以像 `node` 命令或 `npm` 命令一样，从任意位置执行。
 
@@ -79,7 +79,7 @@ $ js-primer-hello-world
 Hello World! 
 ```
 
-## [](#local-server)*本地服务器的设置*
+## *本地服务器的设置*
 
 *在“值的评估和显示”章节中，创建了名为`index.html`和`index.js`的文件并在浏览器中显���。 当直接在浏览器中加载本地创建的 HTML 文件时，浏览器的地址栏将显示以`file:///`开头的 URL。 使用`file`模式时，由于[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)的安全限制，应用程序在许多情况下将无法正常运行。
 
@@ -87,7 +87,7 @@ Hello World!
 
 在这里，我们将看到如何设置用于开发的本地服务器。
 
-### [](#preparing-html)*准备 HTML 文件*
+### *准备 HTML 文件*
 
 *首先，让我们创建一个只放置最基本元素的 HTML 文件。 在这里，我们创建了名为`index.html`的文件，并在 HTML 文件中编写如下内容。 在这个 HTML 文件中，使用`script`元素加载名为`index.js`的 JavaScript 文件。
 
@@ -115,7 +115,7 @@ index.js
 console.log("index.js: loaded"); 
 ```
 
-### [](#open-js-primer-local-server)*启动本地服务器*
+### *启动本地服务器*
 
 *在与刚刚创建的`index.html`相同的目录中，启动本地服务器。 使用以下命令，可以下载并执行为本书创建的本地服务器模块[@js-primer/local-server](https://github.com/js-primer/local-server)。 该本地服务器模块具有提供在执行目录中的文件的功能，以便通过`http`模式的 URL 访问本地文件。
 
@@ -147,7 +147,7 @@ js-primerのローカルサーバーを起動しました。
 
 有关详细信息，请参阅“[浏览器的开发者工具是什么？](https://developer.mozilla.org/ja/docs/Learn/Common_questions/What_are_browser_developer_tools)”。
 
-### [](#close-js-primer-local-server)*关闭本地服务器*
+### *关闭本地服务器*
 
 *最后，关闭启动的本地服务器。 可以通过在启动本地服务器的命令行中按下`Ctrl+C`来关闭。
 
@@ -161,7 +161,7 @@ $ npx --yes @js-primer/local-server --port 8000
 
 本书将在默认端口号 3000 上使用`@js-primer/local-server`进行操作。 因此，通过按下`Ctrl+C`关闭不再使用的本地服务器，可以确保可以继续使用与书中相同的 URL（端口号）。
 
-## [](#conclusion)*结论*
+## *结论*
 
 *在本章中，我们准备好了接下来用例章节所需的环境。
 

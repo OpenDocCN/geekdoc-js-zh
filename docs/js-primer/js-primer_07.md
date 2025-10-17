@@ -21,7 +21,7 @@ const NAME = "azu";
 mistypedVariable = 42; // => ReferenceError 
 ```
 
-### [](#ecmascript-updates)*JavaScript 的规范每年都在更新*
+### *JavaScript 的规范每年都在更新*
 
 *最后，ECMAScript 作为 JavaScript 的规范每年都在更新，JavaScript 也在不断增加新的语法和功能。因此，学完本书后仍会有更多未知的内容。
 

@@ -4,7 +4,7 @@
 
 在前面的章节中，我们已经能够从命令行参数中获取文件路径并加以利用。在本节中，我们将基于提供的文件路径读取 Markdown 文件，并将其内容输出到标准输出。
 
-## [](#read-file-by-fs)*使用`fs`模块读取文件*
+## *使用`fs`模块读取文件*
 
 *利用前一节获取的文件路径，读取文件。要在 Node.js 中进行文件读写，可以使用标准模块[`fs`模块](https://nodejs.org/api/fs.html)。首先创建要读取的文件。将其命名为`sample.md`，并放置在与`main.js`相同的`nodecli`目录中。
 
@@ -14,7 +14,7 @@ sample.md
 # sample 
 ```
 
-### [](#fs-module)*`fs`模块*
+### *`fs`模块*
 
 *`fs`模块提供了 Node.js 中进行文件读写的基本函数。
 
@@ -66,7 +66,7 @@ try {
 
 Node.js 是单线程的，因此通常选择不阻塞其他处理的异步形式 API。除了`fs/promises`模块外，Node.js 还提供了许多其他异步 API，因此要熟悉异步处理。
 
-### [](#use-readFile)*使用 readFile 函数*
+### *使用 readFile 函数*
 
 *现在让我们使用`fs/promises`模块的`readFile`方法来读取`sample.md`文件。修改`main.js`如下，并基于从命令行参数获取的文件路径来读取文件并将其输出到控制台。
 
@@ -118,7 +118,7 @@ $ node main.js sample.md
 # sample 
 ```
 
-### [](#error-handling)*错误处理*
+### *错误处理*
 
 *由于文件的存在与否、权限和文件系统的差异等原因，文件读写操作容易引发异常，因此务必编写错误处理代码。
 
@@ -152,7 +152,7 @@ ENOENT: no such file or directory, open 'notfound.md'
 
 现在，我们已经可以读取并输出通过命令行参数指定的文件。在下一节中，我们将添加将读取的 Markdown 文件转换为 HTML 的功能。
 
-## [](#node-error-first-callbak)*[专栏] Node.js 的错误优先回调*
+## *[专栏] Node.js 的错误优先回调*
 
 *我们介绍了`fs`模块提供同步和异步 API 的事实。出于历史原因，在 Node.js 中存在提供 Promise 和错误优先回调两种类型的异步 API 的情况。
 
@@ -179,7 +179,7 @@ fs.readFile("sample.md", (err, file) => {
 
 由于历史原因，Node.js 可能同时提供错误优先回调和 Promise 的 API。然而，如果两者都提供，则应使用 Promise 的 API。处理 Promise 的 API 具有许多优点，如易于与其他处理 Promise 的操作协作、对 Async Function 的语法支持、简洁的错误处理等。
 
-## [](#section-checklist)*本节的检查清单*
+## *本节的检查清单*
 
 **   使用`fs/promises`模块的`readFile`函数读取文件
 

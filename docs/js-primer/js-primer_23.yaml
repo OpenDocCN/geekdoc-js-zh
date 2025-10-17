@@ -36,12 +36,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 本章将解释为什么原始类型的值可以调用对象的函数。
-- en: '[](#primitive-type-and-wrapper-object)*プリミティブ型とラッパーオブジェクト*'
+- en: '*プリミティブ型とラッパーオブジェクト*'
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#primitive-type-and-wrapper-object)*原始类型与包装对象*'
+  zh: '*原始类型与包装对象*'
 - en: '*プリミティブ型のデータのうち、真偽値（Boolean）、数値（Number） 、BigInt、文字列（String）、シンボル（Symbol）にはそれぞれ対応するオブジェクトが存在します。たとえば、文字列に対応するオブジェクトとして、`String`オブジェクトがあります。'
   id: totrans-8
   prefs: []
@@ -117,12 +117,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#convert-primitive-to-wrapper)*プリミティブ型の値からラッパーオブジェクトへの自動変換*'
+- en: '*プリミティブ型の値からラッパーオブジェクトへの自動変換*'
   id: totrans-23
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#convert-primitive-to-wrapper)*从原始类型值到包装对象的自动转换*'
+  zh: '*从原始类型值到包装对象的自动转换*'
 - en: '*JavaScriptでは、プリミティブ型の値に対してプロパティアクセスするとき、自動で対応するラッパーオブジェクトに変換されます。 たとえば`"string"`という文字列は、自動的に`new
     String("string")`のようなラッパーオブジェクトへ変換されています。 これにより、プリミティブ型の値である文字列が`String`のインスタンスメソッドを呼び出せるようになります。'
   id: totrans-24
@@ -189,12 +189,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE5]'
-- en: '[](#wrapper-object-summary)*まとめ*'
+- en: '*まとめ*'
   id: totrans-36
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#wrapper-object-summary)*总结*'
+  zh: '*总结*'
 - en: '*この章では、プリミティブ型の値がなぜメソッド呼び出しできるのかについて解説しました。 その仕組みの背景にはプリミティブ型に対応したラッパーオブジェクトの存在があります。
     プリミティブ型の値のプロパティへアクセスする際に、自動的にラッパーオブジェクトへ変換されることでメソッド呼び出しなどが可能となっています。'
   id: totrans-37

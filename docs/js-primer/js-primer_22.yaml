@@ -36,12 +36,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 如果想要了解 Unicode 的历史以及字符编码本身的更多信息，请参考“[程序员必备的文字编码技术入门](https://gihyo.jp/book/2019/978-4-297-10291-3)”或“[文字编码「超」研究](https://www.rutles.net/products/detail.php?product_id=298)”等。
-- en: '[](#code-point)*Code Point*'
+- en: '*Code Point*'
   id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#code-point)*代码点*'
+  zh: '*代码点*'
 - en: '*Unicode 是为所有字符（包括不可见字符等）定义 ID 的规范。 对于这些“字符”的“唯一 ID”，我们称之为**Code Point**（代码点）。'
   id: totrans-7
   prefs: []
@@ -88,12 +88,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#code-point-is-not-code-unit)*Code Point 和 Code Unit 的区别*'
+- en: '*Code Point 和 Code Unit 的区别*'
   id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#code-point-is-not-code-unit)*代码点与代码单元的区别*'
+  zh: '*代码点与代码单元的区别*'
 - en: '*我们介绍了 Code Point（代码点），但 JavaScript 字符串的构成元素是经过 UTF-16 转换的 Code Unit（代码单元）（详细信息请参考“字符串”章节）。
     对于某些范围的字符串，Code Point（代码点）和 Code Unit（代码单元）的值最终会相同。'
   id: totrans-16
@@ -168,12 +168,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在这种情况下，UTF-16 使用两个代码单元的组合（总计4个字节）来表示一个字符（一个代码点）。这种机制被称为**代理对**。
-- en: '[](#surrogate-pair)*代理对*'
+- en: '*代理对*'
   id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#surrogate-pair)*代理对*'
+  zh: '*代理对*'
 - en: '*サロゲートペアでは、2つのCode Unitの組み合わせ（合計 4バイト）で1つの文字（1つのCode Point）を表現します。UTF-16では、次の範囲をサロゲートペアに利用する領域としています。'
   id: totrans-30
   prefs: []
@@ -255,12 +255,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在这种情况下，需要考虑按Code Point处理字符串。
-- en: '[](#handle-code-point)*Code Pointを扱う*'
+- en: '*Code Pointを扱う*'
   id: totrans-45
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#handle-code-point)*处理Code Point*'
+  zh: '*处理Code Point*'
 - en: '*文字列をCode Pointが順番に並んだものとして扱うには、Code Pointに対応したメソッドなどを利用する必要があります。'
   id: totrans-46
   prefs: []
@@ -294,12 +294,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 我们将查看处理这些Code Point的具体方法和用法。
-- en: '[](#regexp-unicode)*正規表現の`.`とUnicode*'
+- en: '*正規表現の`.`とUnicode*'
   id: totrans-52
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#regexp-unicode)*正则表达式的`.`和Unicode*'
+  zh: '*正则表达式的`.`和Unicode*'
 - en: '*ES2015では、正規表現に`u`（Unicode）フラグが追加されました。この`u`フラグをつけた正規表現は、文字列をCode Pointが順番に並んだものと���て扱います。'
   id: totrans-53
   prefs: []
@@ -353,12 +353,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 基本上，添加了`u`标志的正则表达式应该很少出现问题。这是因为很少需要编写只匹配替代对中一个部分的正则表达式。
-- en: '[](#count-of-code-points)*Code Pointの数を数える*'
+- en: '*Code Pointの数を数える*'
   id: totrans-63
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#count-of-code-points)*计算Code Point的数量*'
+  zh: '*计算Code Point的数量*'
 - en: '*Stringの`length`プロパティは、文字列を構成するCode Unitの個数を表すプロパティです。そのためサロゲートペアを含む文字列では、`length`の結果が見た目より大きな値となる場合があります。'
   id: totrans-64
   prefs: []
@@ -397,12 +397,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 然而，在计算Code Point的数量时，有时也可能得到不直观的结果。这是因为Code Point中定义了诸如控制字符等视觉上不可见的字符。因此，在需要计算视觉上的**字符串长度**时，需要额外的技巧。
-- en: '[](#loop-each-code-point)*Code Pointごとに反復処理をする*'
+- en: '*Code Pointごとに反復処理をする*'
   id: totrans-71
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#loop-each-code-point)*按Code Point进行循环处理*'
+  zh: '*按Code Point进行循环处理*'
 - en: '*先ほど紹介した`Array.from`メソッドを使えば、文字列をCode Pointで区切った文字の配列へと変換できます。配列にすれば、あとは「ループと反復処理」の章で学んだ方法を使って、Code
     Pointごとに反復処理ができます。'
   id: totrans-72
@@ -436,12 +436,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE14]'
-- en: '[](#conclusion)*结论*'
+- en: '*结论*'
   id: totrans-78
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*结论*'
+  zh: '*结论*'
 - en: '*本章简要介绍了字符串和 Unicode 之间的关系。Unicode 还有一些未在本章介绍的方面。此外，JavaScript 并非总是提供处理 Unicode
     的完美 API。'
   id: totrans-79

@@ -4,7 +4,7 @@
 
 在前面的章节中，我们使用 Fetch API 从 GitHub API 获取了用户信息。在本节中，我们将对获取的数据进行 HTML 格式化，并在应用程序中显示用户信息。
 
-## [](#markup-html)*构建 HTML*
+## *构建 HTML*
 
 *在生成 HTML 字符串时使用模板字符串。模板字符串允许在字符串中包含换行，因此可以表示 HTML 的缩进，从而提高可读性。此外，它还允许轻松嵌入变量，因此非常适合动态地将数据应用于 HTML 模板。
 
@@ -36,7 +36,7 @@ const view = `
 </dl> 
 ```
 
-## [](#html-to-dom)*将 HTML 字符串添加到 DOM 中*
+## *将 HTML 字符串添加到 DOM 中*
 
 *接下来，将生成的 HTML 字符串添加到 DOM 树中并显示。首先，为了动态设置 HTML，需要在`index.html`中添加一个标记元素。这次，我们添加了一个具有`result` id 的 div 元素（以下称为`div#result`元素）。 
 
@@ -70,7 +70,7 @@ result.innerHTML = view;
 
 使用 JavaScript 将 HTML 元素添加到 DOM 中的方法主要有两种。一种是将 HTML 字符串设置为 Element 的`innerHTML`属性，就像这次这样。另一种是生成 Element 对象，然后[逐步构建树结构](https://developer.mozilla.org/ja/docs/Web/API/Node/appendChild)。后者在安全性方面更安全，但代码会更冗长。这次，我们将使用 Element 的`innerHTML`属性，同时进行安全性的转义处理。
 
-## [](#escape-html)*转义 HTML 字符串*
+## *转义 HTML 字符串*
 
 *将字符串设置到 Element 的`innerHTML`属性中时，该字符串将被解释为 HTML。例如，如果 GitHub 的用户名中包含`<`或`>`符号，则可能会产生意外的 HTML 结构。为了避免这种情况，在设置字符串之前，需要将特定的符号替换为安全的表示。这个过程通常被称为 HTML 转义。
 
@@ -203,7 +203,7 @@ index.html
 
 ![用户信息显示](img/ce2fbff4fda4c97207376b67af18ae7d.png)
 
-## [](#section-checklist)*本节的检查清单*
+## *本节的检查清单*
 
 **   使用模板字符串来构建 HTML 字符串**
 

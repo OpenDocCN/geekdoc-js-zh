@@ -30,9 +30,9 @@
 
     +   项目结构
 
-## [](#language-feature)*语言功能*
+## *语言功能*
 
-*### [](#comments)*评论*
+*### *评论*
 
 *关于评论的写法。
 
@@ -42,7 +42,7 @@
 | `/* xxx */` | 多行评论 | 评论 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88) |
 | `<!-- xxx -->` | [ES2015] 类似 HTML 的评论 | 评论 |   |
 
-### [](#data-structures)*数据结构*
+### *数据结构*
 
 *変数宣言について。
 
@@ -52,7 +52,7 @@
 | `let x` | [ES2015] **变量声明**。类似`const`，但`x`可以重新赋值 | 变量和声明 | [let](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/let) |
 | `var x` | **变量声明**。传统的变量声明方法 | 变量和声明 | [var](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/var) |
 
-### [](#literal)*文字*
+### *文字*
 
 *关于表示数据结构的文字。
 
@@ -71,7 +71,7 @@
 | `/pattern/` | 创建具有`pattern`的**正则表达式对象** | 字符串 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB) |
 | `null` | `null`值 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#null_%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB) |
 
-### [](#string)*字符串*
+### *字符串*
 
 *文字列について。
 
@@ -82,7 +82,7 @@
 | ``xxx`` | [ES2015] 模板字符串文字。可以包含换行符 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals) |
 | *``${x}``* | [ES2015] 展开模板字符串文字中变量`x`的值 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals) |
 
-### [](#data-access)*数据访问*
+### *数据访问*
 
 *数据访问。
 
@@ -97,7 +97,7 @@
 | `f(...array)` | [ES2015] 使用**扩展语法**扩展数组 | 数组 | [展开语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Spread_syntax) |
 | `f({ ...obj })` | [ES2018] 使用**扩展语法**扩展对象 | 对象 | [展开语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Spread_syntax) |
 
-### [](#operator)*操作符*
+### *操作符*
 
 *关于操作符。*
 
@@ -132,7 +132,7 @@
 | `(x)` | 组合运算符 | 运算符 | [组合化运算符 ( )](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Grouping) |
 | `x, y` | 逗号运算符 | 运算符 | [逗号运算符 (,)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Comma_Operator) |
 
-### [](#function-behavior)*函数与行为*
+### *函数与行为*
 
 *函数的定义与行为。
 
@@ -164,7 +164,7 @@
 | `fn`xxx`` | [ES2015] 标签函数调用 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals#%E3%82%BF%E3%82%B0%E4%BB%98%E3%81%8D%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88) |
 | `new X()` | 使用`new`运算符从类（具有构造函数的对象）创建实例 | 类 | [new 运算符](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/new) |
 
-### [](#control-flow)*控制流*
+### *控制流*
 
 *控制流的控制结构。
 
@@ -183,7 +183,7 @@
 | `try{}catch(e){}finally{}` | `try...catch`语法 | 异常处理 | [try...catch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch) |
 | `throw new Error("xxx")` | `throw`语句 | 异常处理 | [throw](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/throw) |
 
-### [](#module)*模块*
+### *模块*
 
 *关于 ECMAScript 模块。
 
@@ -201,7 +201,7 @@
 | `export * from "./x.js"` | [ES2015] **重新导出**所有命名导出 | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export) |
 | `export * as ns from "./x.js"` | [ES2020] **导入所有命名导出**，并以`ns`的名称**重新导出** | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export) |
 
-### [](#miscellaneous)*其他*
+### *其他*
 
 *| 代码示例 | 描述 | 解释 | MDN |
 
@@ -210,9 +210,9 @@
 | `x;` | **语句** | 语句和表达式 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E8%87%AA%E5%8B%95%E3%82%BB%E3%83%9F%E3%82%B3%E3%83%AD%E3%83%B3%E6%8C%BF%E5%85%A5) |
 | `{ }` | 代码块 | 语句和表达式 | [块](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/block) |
 
-## [](#guide)*指南*
+## *指南*
 
-*### [](#project-anatomy)*项目结构*
+*### *项目结构*
 
 *关于 JavaScript 基本项目布局、文件、文件夹结构的内容。
 

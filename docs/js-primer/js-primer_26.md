@@ -12,7 +12,7 @@ ES2015 引入了用于表示类的`class`语法，但用`class`语法定义的�
 
 本章将学习`class`语法中的类定义、继承和类的性质。
 
-## [](#class-declaration)*类的定义*
+## *类的定义*
 
 *定义类可以使用`class`语法。类的定义方法有类声明和类表达式两种。
 
@@ -56,7 +56,7 @@ class MyClassB {
 } 
 ```
 
-## [](#class-instance)*类的实例化*
+## *类的实例化*
 
 *类可以使用`new`运算符创建实例对象。用`class`语法定义的类创建实例的过程称为**实例化**。要判断一个实例是否是由指定的类创建的，可以使用`instanceof`运算符。
 
@@ -144,7 +144,7 @@ console.log(point); // => { x: 3, y: 4 }
 console.log(point instanceof Point); // => false 
 ```
 
-### [](#class-name-start-upper-case)*[注意] 类名以大写字母开头*
+### *[注意] 类名以大写字母开头*
 
 *在 JavaScript 中，习惯上类名以大写字母开头。这与变量名使用驼峰式命名的习惯相同，名称本身没有特别的规则。将类名大写，其实例以小写开头，这样可以避免名称冲突，这是被广泛接受的理由。
 
@@ -153,7 +153,7 @@ class Thing {}
 const thing = new Thing(); 
 ```
 
-### [](#class-vs-function)*[专栏] `class`语法与函数的区别*
+### *[专栏] `class`语法与函数的区别*
 
 *在 ES2015 之前，这些类不是用`class`语法，而是用函数来表示的。这种表示方法因人而异，这也是引入`class`语法统一记法的理由之一。
 
@@ -189,7 +189,7 @@ MyClass(); // => TypeError: class constructors must be invoked with |new|
 
 这样，用函数实现类似类的东西时，会出现可以像函数一样调用的一个问题。为了避免这种问题，类使用`class`语法来实现。
 
-## [](#class-prototype-method-definition)*类的原型方法定义*
+## *类的原型方法定义*
 
 *类的行为可以通过方法来定义。`constructor`方法是在初始化时调用的特殊方法，但在`class`结构中，可以自由地为类定义方法。这个类中定义的方法是创建的实例所具有的行为。
 
@@ -272,7 +272,7 @@ class クラス {
 } 
 ```
 
-## [](#class-accessor-property)*定义类的访问器属性*
+## *定义类的访问器属性*
 
 *可以为类定义方法。但是，方法需要像`实例名.方法名()`这样调用。在类中，可以定义在引用属性或向属性赋值时调用的特殊方法。这个方法像属性一样表现，因此被称为**访问器属性**。
 
@@ -322,7 +322,7 @@ numberWrapper.value = 42;
 console.log(numberWrapper.value); // => 42 
 ```
 
-### [](#underbar-private-property)*[专栏] 以下划线（_）开头的属性名*
+### *[专栏] 以下划线（_）开头的属性名*
 
 *在 NumberWrapper 的`value`的访问器属性中实际读写的是`_value`属性。这样，将不需要直接读写的外部属性命名为以下划线（_）开头，只是习惯问题，并没有语法上的意义。
 
@@ -330,7 +330,7 @@ console.log(numberWrapper.value); // => 42
 
 关于私有类字段结构，将在后面进行说明。
 
-### [](#array-like-length)*使用访问器属性再现`Array.prototype.length`*
+### *使用访问器属性再现`Array.prototype.length`*
 
 *不使用 getter 或 setter 实现起来比较困难的是`Array.prototype.length`属性。当向`Array`的`length`属性赋值时，其后的元素会自动删除。*
 
@@ -394,7 +394,7 @@ console.log(arrayLike.items.join(", ")); // => "1, 2, , , "
 
 这样，访问器属性虽然像属性一样，但在实际访问时可以实现与其他属性联动的行为。
 
-## [](#public-class-fields)*[ES2022] 公共类字段*
+## *[ES2022] 公共类字段*
 
 *在类中，我们在`constructor`方法中介绍了如何初始化类状态，即实例的属性。在之前介绍的`Counter`类中，我们在`constructor`方法中将`count`属性的初始值定义为`0`。
 
@@ -468,7 +468,7 @@ console.log(ownClass.publicField); // => 2
 
 就像`publicField`属性这样，可以在类外部访问的属性被定义为**公共类字段**。
 
-### [](#declare-class-fields)*使用类字段声明属性的存在*
+### *使用类字段声明属性的存在*
 
 *在类字段中，属性的初始值是可选的。因此，可以像下面这样定义省略了初始值的公共类字段。
 
@@ -504,7 +504,7 @@ class Loader {
 
 然而，如果这样实现，使用`Loader`类的用户可能不知道`loadedContent`属性的存在，除非在`load`方法中读取。为此，可以使用类字段显式地表达“`Loader`类拥有`loadedContent`属性”这一事实。通过显式地定义属性，可以实现代码补全或使代码更易于阅读等好处。
 
-### [](#this-in-class-fields)*类字段中的`this`表示类的实例*
+### *类字段中的`this`表示类的实例*
 
 *类字段的初始值可以写任意表达式，也可以使用`this`。在类字段中，`this`引用的是该类的实例。
 
@@ -550,7 +550,7 @@ const increment = counter.increment;
 increment(); // Error: Uncaught TypeError: this is undefined 
 ```
 
-### [](#difference-between-class-fields-and-instance-property)*[专栏] 类字段与实例属性的区别*
+### *[专栏] 类字段与实例属性的区别*
 
 在类字段中定义的属性或方法将被定义为类的实例属性。因此，类字段在`constructor`中为`this`添加属性时，在意义上几乎相同，并且可以将其视为一种使结构更易于理解的语法。
 
@@ -593,7 +593,7 @@ const example = new ExampleClass();
 
 即使是相同的属性定义，由于属性定义的方式略有不同，因此存在这种行为差异。然而，为了避免编写需要意识到这种差异的代码，最好是避免这样做。实际上，从外观上很难意识到这种差异，而且编写旨在引起注意的代码会使复杂性增加。
 
-## [](#private-class-fields)*[ES2022] 私有类字段*
+## *[ES2022] 私有类字段*
 
 *使用类字段结构如下所示，定义的属性在类实例化后也可以从外部访问。因此，被称为**公共类字段**。
 
@@ -689,7 +689,7 @@ class PrivateLoader {
 } 
 ```
 
-## [](#static-method)*静态方法*
+## *静态方法*
 
 *实例方法是通过实例化类来使用的。另一方面，也有可以不实例化类就使用的静态方法（类方法）。
 
@@ -756,7 +756,7 @@ console.log(arrayWrapper.length); // => 3
 
 这样，静态方法中的 `this` 指向的是类自身，因此无法引用类的实例。因此，静态方法用于编写创建类实例的处理或与类相关的处理。
 
-### [](#static-class-fields)*[ES2022] 静态类字段*
+### *[ES2022] 静态类字段*
 
 *ES2022 中添加的类字段中，可以使用静态类字段来在类本身上定义，而不是在实例上定义。
 
@@ -785,7 +785,7 @@ class MyClass {
 MyClass.outputPrivate(); 
 ```
 
-## [](#two-instance-method-definition)*在原型中定义的方法与在实例中定义的方法的区别*
+## *在原型中定义的方法与在实例中定义的方法的区别*
 
 到目前为止，我们已经看到了两种方法：在原型对象中定义的方法和通过类字段定义的实例方法。原型方法的定义方法是将方法定义在特殊对象原型对象中。另一方面，通过类字段定义的方法是为类的实例定义方法。
 
@@ -862,7 +862,7 @@ conflict.method(); // "プロトタイプメソッド"
 
 在下一节中，我们将探讨 **原型对象** 和 **原型链** 的机制。
 
-## [](#prototype)*原型对象*
+## *原型对象*
 
 ***原型方法**和**实例对象的方法**可以同时定义，但它们的方法不会相互覆盖。因为原型方法定义在**原型对象**上，而实例对象的方法定义在**实例对象**上。
 
@@ -900,7 +900,7 @@ console.log(MyClass.prototype.constructor === MyClass); // => true
 
 正如这样，原型方法是在原型对象上定义的，与实例对象的`method`属性是不同的对象定义的。因此，即使使用不同的方法定义方法，也不会发生覆盖。
 
-## [](#prototype-chain)*原型链*
+## *原型链*
 
 *使用`class`语法定义的原型方法是定义在原型对象上的。即使实例（对象）上没有定义方法，也可以从实例调用类的原型方法。
 
@@ -920,7 +920,7 @@ instance.method(); // "プロトタイプのメソッド"
 
 +   当从实例引用属性（或方法）时，会进行到`[[Prototype]]`内部属性为止的探索处理
 
-### [](#write-prototype-chain)*实例创建与原型链*
+### *实例创建与原型链*
 
 *在通过`new`运算符创建实例时，实例会保存对类原型对象的引用。这时，实例对类原型对象的引用是保存在实例对象的`[[Prototype]]`这个内部属性中的。
 
@@ -944,13 +944,13 @@ console.log(MyClassPrototype === MyClass.prototype); // => true
 
 这里重要的是，实例知道它是由哪个类创建的，以及它知道其类的原型对象。
 
-#### [](#inner-property)*[注意] `[[Prototype]]`内部属性读写*
+#### *[注意] `[[Prototype]]`内部属性读写*
 
 *可以通过`Object.getPrototypeOf(对象)`读取`对象`的`[[Prototype]]`。另一方面，可以通过`Object.setPrototypeOf(对象, 原型对象)`将`对象`的`[[Prototype]]`设置为`原型对象`。此外，存在一个特殊的访问器属性`__proto__`，可以像普通属性一样处理`[[Prototype]]`内部属性。
 
 然而，通常不会直接读写这些`[[Prototype]]`内部属性。此外，由于它们可以改变现有内置对象的操作，因此不应该随意处理。
 
-### [](#read-prototype-chain)*属性的引用与原型链*
+### *属性的引用与原型链*
 
 *查看原型对象的属性是如何从实例引用的。
 
@@ -1012,11 +1012,11 @@ if (Object.hasOwn(instance, "method")) {
 
 普通情况下，无需关注原型对象或原型链等机制。 `class`语法是为了让我们在不关注这些原型的情况下使用类而引入的语法。 但是，在基于原型的 JavaScript 中，了解类是如何通过原型来表示是有好处的。
 
-## [](#extends)*继承*
+## *继承*
 
 *通过使用`extends`关键字，您可以继承现有的类。 继承是指定义一个新类，该类继承了父类的**结构**和**功能**。
 
-### [](#class-extends)*继承的类定义*
+### *继承的类定义*
 
 *通过使用`extends`关键字来定义继承自父类（基类）的**子类**（派生类）。 通过在`class`语法的右侧使用`extends`关键字指定要继承的**父类**（基类），可以定义继承自父类的**子类**（派生类）。
 
@@ -1035,7 +1035,7 @@ class Child extends Parent {
 const instance = new Child(); 
 ```
 
-### [](#class-super)*`super`*
+### *`super`*
 
 *要从使用`extends`定义的子类引用父类，需要使用名为`super`的关键字。 我们将看到使用最简单的`super`的示例，以查看构造函数的处理。
 
@@ -1083,7 +1083,7 @@ class Child extends Parent {
 } 
 ```
 
-### [](#constructor-order)*构造函数的处理顺序是从父类到子类*
+### *构造函数的处理顺序是从父类到子类*
 
 *构造函数的处理顺序是从父类到子类。
 
@@ -1112,7 +1112,7 @@ const child = new Child();
 console.log(child.name); // => "Child" 
 ```
 
-### [](#class-fields-inheritance)*类字段继承*
+### *类字段继承*
 
 *Public 类字段与构造函数的处理顺序相同，即在初始化父类字段之后初始化子类字段。 Public 类字段是一种定义实例对象属性的语法。 因此，父类中定义的字段也会被定义为实际实例化的对象的属性。
 
@@ -1167,7 +1167,7 @@ instance.dump();
 
 另一方面，允许子类访问或允许类外部访问的 Private 称为 soft private。 在 JavaScript 中，soft private 需要用户自己使用 WeakMap 或 WeakSet 来实现（请参考“Map/Set”章节）。
 
-### [](#prototype-inheritance)*原型继承*
+### *原型继承*
 
 *在下面的代码中，我们使用`extends`关键字定义了继承自`Parent`类的`Child`类。 由于`Parent`类定义了`method`，因此可以从继承该方法的`Child`类的实例中调用。
 
@@ -1202,7 +1202,7 @@ instance.method(); // "Parent.prototype.method"
 
 通过 JavaScript 的`class`语法和`extends`关键字，可以继承类的**功能**。`class`语法通过引用原型对象来实现继承。因此，这种继承机制被称为**原型继承**。
 
-### [](#static-inheritance)*静态方法的继承*
+### *静态方法的继承*
 
 *在实例与类的原型对象之间存在原型链。类本身（类的构造函数）也与其父类本身（父类的构造函数）之间存在原型链。
 
@@ -1228,7 +1228,7 @@ console.log(Child.hello()); // => "Hello"
 
 由于类的构造函数之间也存在原型链的机制，子类可以调用父类的静态方法。
 
-### [](#super-property)*`super`属性*
+### *`super`属性*
 
 *子类调用父类构造函数的处理需要使用`super()`。同样地，从子类的原型方法中，可以通过`super.属性名`来引用父类的原型方法。
 
@@ -1278,7 +1278,7 @@ Child.method();
 // "Parent.method" 
 ```
 
-### [](#instanceof)*继承的判定*
+### *继承的判定*
 
 *通过使用`instanceof`运算符，可以确定一个类是否继承了指定的类。
 
@@ -1300,7 +1300,7 @@ console.log(child instanceof Child); // => true
 
 更具体的继承用法将在"使用案例:Todo 应用"章节中介绍。
 
-## [](#extends-built-in)*内置对象的继承*
+## *内置对象的继承*
 
 *到目前为止，我们已经学习了如何继承自己定义的类，但是内置对象的构造函数也可以继承。内置对象包括`Array`、`String`、`Object`、`Number`、`Error`、`Date`等。这些内置对象的构造函数可以通过`class`语法进行继承。
 
@@ -1327,7 +1327,7 @@ console.log(array.last); // => 5
 
 继承自`Array`的`MyArray`可以使用`Array`原先具有的`length`属性和`Array.from`方法等。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *在本章中，我们学习了有关类的内容。
 

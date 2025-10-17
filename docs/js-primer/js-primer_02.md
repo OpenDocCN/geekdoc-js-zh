@@ -2,7 +2,7 @@
 
 > 原文：[`jsprimer.net/intro/authors/`](https://jsprimer.net/intro/authors/)
 
-## [](#author-azu)*azu*
+## *azu*
 
 *![azu](img/13cfbc5cd819e00ddb04aaa42f494b49.png)
 
@@ -12,7 +12,7 @@ ISO/IEC JTC 1/SC 22/ECMAScript Ad Hoc 委員会专家，涉及 ECMAScript 和 JS
 
 +   GitHub: [`github.com/azu`](https://github.com/azu)
 
-## [](#author-suguru-inatomi)*Suguru Inatomi*
+## *Suguru Inatomi*
 
 *![lacolaco](img/21f4e44e2079d43d6b9214afb0ad4f43.png)
 

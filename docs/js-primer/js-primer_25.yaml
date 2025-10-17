@@ -56,12 +56,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: この章では、さまざまな条件下で変わる`this`の参照先と関数やArrow Functionとの関係を見ていきます。また、実際にどのような状況で問題が発生するかを知り、`this`の動きを予測可能にするにはどのようにするかを見ていきます。
-- en: '[](#execution-context-this)*実行コンテキストと`this`*'
+- en: '*実行コンテキストと`this`*'
   id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#execution-context-this)*実行コンテキストと`this`*'
+  zh: '*実行コンテキストと`this`*'
 - en: '*最初に「JavaScriptとは」の章において、JavaScriptには実行コンテキストとして"Script"と"Module"があるという話をしました。
     どの実行コンテキストでJavaScriptのコードを評価するかは、��行環境によってやり方が異なります。 この章では、ブラウザの`script`要素と`type`属性を使い、それぞれの実行コンテキストを明示しながら`this`の動きを見ていきます。'
   id: totrans-11
@@ -74,12 +74,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: トップレベル（もっとも外側のスコープ）にある`this`は、実行コンテキストによって値が異なります。実行コンテキストの違いは意識しにくい部分であり、トップレベルで`this`を使うと混乱を生むことになります。そのため、コードのトップレベルにおいては`this`を使うべきではありませんが、それぞれの実行コンテキストにおける動作を紹介します。
-- en: '[](#script-this)*スクリプトにおける`this`*'
+- en: '*スクリプトにおける`this`*'
   id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#script-this)*スクリプトにおける`this`*'
+  zh: '*スクリプトにおける`this`*'
 - en: '*実行コンテキストが"Script"である場合、トップレベルのスコープに書かれた`this`はグローバルオブジェクトを参照します。 グローバルオブジェクトは、実行環境ごとに異なるものが定義されています。
     ブラウザのグローバルオブジェクトは`window`オブジェクト、Node.jsのグローバルオブジェクトは`global`オブジェクトとなります。'
   id: totrans-14
@@ -96,12 +96,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE0]'
-- en: '[](#module-this)*モジュールにおける`this`*'
+- en: '*モジュールにおける`this`*'
   id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#module-this)*モジュールにおける`this`*'
+  zh: '*モジュールにおける`this`*'
 - en: '*実行コンテキストが"Module"である場合、そのトップレベルのスコープに書かれた`this`は常に`undefined`となります。'
   id: totrans-18
   prefs: []
@@ -138,12 +138,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#function-and-method-this)*関数とメソッドにおける`this`*'
+- en: '*関数とメソッドにおける`this`*'
   id: totrans-25
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#function-and-method-this)*関数とメソッドにおける`this`*'
+  zh: '*関数とメソッドにおける`this`*'
 - en: '***関数**を定義する方法として、`function`キーワードによる関数宣言と関数式、Arrow Functionなどがあります。 `this`が参照先を決めるルールは、Arrow
     Functionとそれ以外の関数定義の方法で異なります。'
   id: totrans-26
@@ -156,12 +156,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: そのため、まずは関数定義の種類について振り返ってから、それぞれの`this`について見ていきます。
-- en: '[](#type-of-function)*関数の種類*'
+- en: '*関数の種類*'
   id: totrans-28
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#type-of-function)*関数の種類*'
+  zh: '*関数の種類*'
 - en: '*「関数と宣言」の章で詳しく紹介していますが、関数の定義方法と呼び出し方について改めて振り返ってみましょう。 **関数**を定義する場合には、次の3つの方法を利用します。'
   id: totrans-29
   prefs: []
@@ -182,12 +182,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE4]'
-- en: '[](#type-of-method)*メソッドの種類*'
+- en: '*メソッドの種類*'
   id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#type-of-method)*メソッドの種類*'
+  zh: '*メソッドの種類*'
 - en: '*JavaScriptではオブジェクトのプロパティが関数である場合にそれを**メソッド**と呼びます。 一般的にはメソッドも含めたものを**関数**と言い、関数宣言などとプロパティである関数を区別する場合に**メソッド**と呼びます。'
   id: totrans-34
   prefs: []
@@ -265,12 +265,12 @@
   type: TYPE_NORMAL
   zh: 最初に書いたように`this`の挙動は、Arrow Functionの関数定義とそれ以外（`function`キーワードやメソッドの短縮記法）の関数定義で異なります。そのため、まずは**Arrow
     Function 以外**の関数やメソッドにおける`this`を見ていきます。
-- en: '[](#function-without-arrow-function-this)*Arrow Function 以外の関数における`this`*'
+- en: '*Arrow Function 以外の関数における`this`*'
   id: totrans-49
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#function-without-arrow-function-this)*非箭头函数中的`this`*'
+  zh: '*非箭头函数中的`this`*'
 - en: '*Arrow Function 以外の関数（メソッドも含む）における`this`は、実行時に決まる値となります。 言い方を変えると`this`は関数に渡される暗黙的な引数のようなもので、その渡される値は関数を実行するときに決まります。'
   id: totrans-50
   prefs: []
@@ -310,12 +310,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: '`this`的值不是在函数定义时确定的，而是在调用时确定的。这是在后面将要介绍的“`this`引起的问题模式”中详细介绍的内容。在非箭头函数中，仅从函数定义来看无法确定`this`的值。'
-- en: '[](#function-declaration-expression-this)*関数宣言や関数式における`this`*'
+- en: '*関数宣言や関数式における`this`*'
   id: totrans-57
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#function-declaration-expression-this)*函数声明或函数表达式中的`this`*'
+  zh: '*函数声明或函数表达式中的`this`*'
 - en: '*まずは、関数宣言や関数式の場合を見ていきます。'
   id: totrans-58
   prefs: []
@@ -355,12 +355,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: strict mode是为了防止这种难以预料的行为而引入的。然而，strict mode之外的其他函数中的`this`将变为`undefined`，因此没有用途。因此，不需要在方法之外使用`this`。
-- en: '[](#method-this)*メソッド呼び出しにおける`this`*'
+- en: '*メソッド呼び出しにおける`this`*'
   id: totrans-65
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#method-this)*方法调用中的`this`*'
+  zh: '*方法调用中的`this`*'
 - en: '*次に、メソッドの場合を見ていきます。 メソッドの場合は、そのメソッドが何かしらのオブジェクトに所属しています。 なぜなら、JavaScriptではオブジェクトのプロパティとして指定される関数のことをメソッドと呼ぶためです。'
   id: totrans-66
   prefs: []
@@ -406,12 +406,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE14]'
-- en: '[](#this-problem)*`this`が問題となるパターン*'
+- en: '*`this`が問題となるパターン*'
   id: totrans-75
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#this-problem)*`this`引起的问题模式*'
+  zh: '*`this`引起的问题模式*'
 - en: '*`this`はその関数（メソッドも含む）呼び出しのベースオブジェクトを参照することがわかりました。 `this`は所属するオブジェクトを直接書く代わりとして利用できますが、一方`this`にはいろいろな問題があります。'
   id: totrans-76
   prefs: []
@@ -422,12 +422,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这个问题的原因在于`this`引用的值在函数调用时确定。下面将详细介绍导致问题的两种主要模式的示例和各自的解决方案。
-- en: '[](#assign-this-function)*問題: `this`を含むメソッドを変数に代入した場合*'
+- en: '*問題: `this`を含むメソッドを変数に代入した場合*'
   id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#assign-this-function)*问题：将包含`this`的函数代入变量时*'
+  zh: '*问题：将包含`this`的函数代入变量时*'
 - en: '*JavaScriptではメソッドとして定義したものが、後からただの関数として呼び出されることがあります。 なぜなら、メソッドは関数を値に持つプロパティのことで、プロパティは変数に代入し直すことができるためです。'
   id: totrans-79
   prefs: []
@@ -480,12 +480,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 另一种方法是，通过指定`this`值来调用函数的方法来执行函数。
-- en: '[](#call-apply-bind)*解决方法：call、apply、bind 方法*'
+- en: '*解决方法：call、apply、bind 方法*'
   id: totrans-89
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#call-apply-bind)*解决方法：call、apply、bind 方法*'
+  zh: '*解决方法：call、apply、bind 方法*'
 - en: '*还有一种方法可以显式指定函数或方法的`this`并执行函数。 `Function`（函数对象）提供了`call`、`apply`、`bind`等方法，用于显式指定`this`并执行函数。*'
   id: totrans-90
   prefs: []
@@ -578,12 +578,12 @@
   type: TYPE_NORMAL
   zh: 通过使用`call`、`apply`、`bind`方法，可以在明确指定`this`的情况下调用函数。 但是，每次调用函数时都使用这些方法会导致需要为调用函数而调用函数，这样会变得繁琐。
     因此，基本上最好的方法是“将作为方法定义的函数作为方法调用”。 在其中，如果确实需要固定`this`，则可以使用`call`、`apply`、`bind`方法。
-- en: '[](#callback-and-this)*问题：回调函数和`this`*'
+- en: '*问题：回调函数和`this`*'
   id: totrans-108
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#callback-and-this)*问题：回调函数和`this`*'
+  zh: '*问题：回调函数和`this`*'
 - en: '*在回调函数中引用`this`可能会导致问题。 这个问题在处理 Array 的`map`方法等回调函数时很容易发生。*'
   id: totrans-109
   prefs: []
@@ -631,12 +631,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE27]'
-- en: '[](#substitute-this)*解决方法：将`this`赋值给临时变量*'
+- en: '*解决方法：将`this`赋值给临时变量*'
   id: totrans-118
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#substitute-this)*解决方法：将`this`赋值给临时变量*'
+  zh: '*解决方法：将`this`赋值给临时变量*'
 - en: '*回调函数内的`this`引用会发生变化的问题的解决方法是将`this`赋值给另一个变量，以保持其引用。*'
   id: totrans-119
   prefs: []
@@ -678,12 +678,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 但是，这些解决方法需要意识到回调函数中`this`的变化。 问题的根源在于方法调用及其中的回调函数中的`this`发生了变化。 在 ES2015 中，引入了箭头函数作为一种不改变`this`的回调函数定义方法。
-- en: '[](#arrow-function-callback)*対処法: Arrow Functionでコールバック関数を扱う*'
+- en: '*対処法: Arrow Functionでコールバック関数を扱う*'
   id: totrans-126
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#arrow-function-callback)*対処法: Arrow Functionでコールバック関数を扱う*'
+  zh: '*対処法: Arrow Functionでコールバック関数を扱う*'
 - en: '*通常の関数やメソッドは呼び出し時に暗黙的に`this`の値を受け取り、関数内の`this`はその値を参照します。 一方、Arrow Functionはこの暗黙的な`this`の値を受け取りません。
     そのためArrow Function 内の`this`は、スコープチェーンの仕組みと同様に外側の関数（この場合は`prefixArray`メソッド）を探索します。
     これにより、Arrow Functionで定義したコールバック関数は呼び出し方には関係なく、常に外側の関数の`this`をそのまま利用します。'
@@ -715,12 +715,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: このArrow Functionと`this`の関係についてより詳しく見ていきます。
-- en: '[](#arrow-function-this)*Arrow Functionと`this`*'
+- en: '*Arrow Functionと`this`*'
   id: totrans-132
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#arrow-function-this)*Arrow Functionと`this`*'
+  zh: '*Arrow Functionと`this`*'
 - en: '*Arrow Functionで定義された関数やメソッドにおける`this`がどの値を参照するかは関数の定義時（静的）に決まります。 一方、Arrow
     Functionではない関数においては、`this`は呼び出し元に依存するため関数の実行時（動的）に決まります。'
   id: totrans-133
@@ -799,12 +799,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE34]'
-- en: '[](#method-callback-arrow-function)*メソッドとコールバック関数とArrow Function*'
+- en: '*メソッドとコールバック関数とArrow Function*'
   id: totrans-147
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#method-callback-arrow-function)*方法和回调函数与Arrow Function*'
+  zh: '*方法和回调函数与Arrow Function*'
 - en: '*メソッド内におけるコールバック関数はArrow Functionをより活用できるパターンです。 `function`キーワードでコールバック関数を定義すると、`this`の値はコールバック関数の呼ばれ方を意識する必要があります。
     なぜなら、`function`キーワードで定義した関数における`this`は呼び出し方によって変わるためです。'
   id: totrans-148
@@ -842,12 +842,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE37]'
-- en: '[](#not-bind-arrow-function)*Arrow Functionは`this`をbindできない*'
+- en: '*Arrow Functionは`this`をbindできない*'
   id: totrans-155
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#not-bind-arrow-function)*Arrow Function不能绑定`this`*'
+  zh: '*Arrow Function不能绑定`this`*'
 - en: '*Arrow Functionで定義した関数では`call`、`apply`、`bind`を使った`this`の指定は単に無視されます。 これは、Arrow
     Functionは`this`を持てないためです。'
   id: totrans-156
@@ -881,12 +881,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE39]'
-- en: '[](#conclusion)*总结*'
+- en: '*总结*'
   id: totrans-162
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*介绍了`this`是一个根据情况引用不同值的关键字。 总结`this`的评估结果如下表所示。'
   id: totrans-163
   prefs: []

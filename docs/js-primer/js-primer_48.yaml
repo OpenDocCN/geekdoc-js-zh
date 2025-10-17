@@ -21,12 +21,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 到目前为止，所有处理都在一个JavaScript文件中描述。为了进行单元测试，测试目标必须作为模块分割。在本应用程序中，将命令行参数处理部分和Markdown到HTML转换部分分割。
-- en: '[](#split-script)*アプリケーションをモジュールに分割する*'
+- en: '*アプリケーションをモジュールに分割する*'
   id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#split-script)将应用程序分割成模块'
+  zh: '将应用程序分割成模块'
 - en: '*実際にアプリケーションのモジュール化をする前に、ECMAScriptモジュールにおけるエクスポートについて簡単に振り返ります。'
   id: totrans-5
   prefs: []
@@ -103,12 +103,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: marked包及其选项的描述被隐藏在一个`md2html`函数中，`main.js`变得简单。然后，`md2html.js`被作为一个独立的模块从应用程序中切分出来，使得单元测试成为可能。
-- en: '[](#create-env)*ユニットテスト実行環境を作る*'
+- en: '*ユニットテスト実行環境を作る*'
   id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#create-env)创建单元测试执行环境'
+  zh: '创建单元测试执行环境'
 - en: '*ユニットテストの実行にはさまざまな方法があります。 このセクションではテスティングフレームワークとして[Mocha](https://mochajs.org/)を使って、ユニットテストの実行環境を作成します。
     Mochaが提供するテスト実行環境では、グローバルに`it`や`describe`などの関数が定義されます。 `it`関数はその内部でエラーが発生したとき、そのテストを失敗として扱います。
     つまり、期待する結果と異なるならエラーを投げ、期待どおりならエラーを投げないというテストコードを書くことになります。'
@@ -160,12 +160,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE6]'
-- en: '[](#write-unit-test)*��ニットテストを記述する*'
+- en: '*��ニットテストを記述する*'
   id: totrans-30
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#write-unit-test)编写单元测试'
+  zh: '编写单元测试'
 - en: '*テストの実行環境ができたので、実際にユニットテストを記述します。 Mochaのユニットテストは`test`ディレクトリの中にJavaScriptファイルを配置して記述します。
     `test/md2html-test.js`ファイルを作成し、`md2html.js`に対するユニットテストを次のように記述します。'
   id: totrans-31
@@ -284,12 +284,12 @@
   type: TYPE_NORMAL
   zh: 在这个测试结果中，可以看到标题为`converts Markdown to HTML (GFM=true)`的测试失败了一个。此外，在`+ actual
     - expected`中，显示的是使用`assert.strictEqual`比较结果不一致的部分。在这种情况下，测试失败的原因是expected（期望的结果）的末尾多了一个不必要的字符串`;;;`。因此，通过检查`expected-gfm.html`文件并删除不必要的`;;;`字符串，测试应该可以通过。
-- en: '[](#reason-for-unit-test)*なぜユニットテストを行うのか*'
+- en: '*なぜユニットテストを行うのか*'
   id: totrans-53
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#reason-for-unit-test)*为什么进行单元测试*'
+  zh: '*为什么进行单元测试*'
 - en: '*ユニットテストを実施することには多くの利点があります。 早期にバグが発見できることや、安心してリファクタリングを行えるようになるのはもちろんですが、
     ユニットテストが可能な状態を保つこと自体に意味があります。 実際にテストを行わなくてもテストしやすいコードになるよう心がけることが、アプリケーションを適切にモジュール化する指針になります。'
   id: totrans-54
@@ -307,24 +307,24 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 虽然单元测试的编写可能看起来很费时，但在中长期的维护中，它是不可或缺的。而且，为了编写好的测试，重要的是要养成日常编写测试的习惯。
-- en: '[](#unit-test-summary)*まとめ*'
+- en: '*まとめ*'
   id: totrans-57
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#unit-test-summary)*总结*'
+  zh: '*总结*'
 - en: '*このユースケースの目標であるNode.jsを使ったCLIアプリケーションの作成と、ユニットテストの導入ができました。 npmを使ったパッケージ管理や外部モジュールの利用、`fs`モジュールを使ったファイル操作など、多くの要素が登場しました。
     これらはNode.jsアプリケーション開発においてほとんどのユースケースで応用されるものなので、よく理解しておきましょう。'
   id: totrans-58
   prefs: []
   type: TYPE_NORMAL
   zh: '*我们已经完成了Node.js CLI应用程序的创建和单元测试的引入，这个用例的目标。npm包管理、外部模块的利用、使用`fs`模块进行文件操作等许多元素都出现了。这些在Node.js应用程序开发中的大多数用例中都会用到，所以请务必理解。*'
-- en: '[](#section-checklist)*このセクションのチェックリスト*'
+- en: '*このセクションのチェックリスト*'
   id: totrans-59
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#section-checklist)*本节检查清单*'
+  zh: '*本节检查清单*'
 - en: '**   Markdownの変換処理をECMAScriptモジュールとして`md2html.js`に切り出し、`main.js`から読み込んだ'
   id: totrans-60
   prefs: []

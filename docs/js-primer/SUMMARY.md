@@ -5,7 +5,7 @@
 +   [読みはじめる前の事前準備](js-primer_04.md)
 +   [发现文中错误时](js-primer_05.md)
 +   [第一部分：基本语法](js-primer_06.md)
-+   [[](#ecmascript-updates)*JavaScript 的规范每年都在更新*](js-primer_07.md)
++   [*JavaScript 的规范每年都在更新*](js-primer_07.md)
 +   [注释](js-primer_08.md)
 +   [变量与声明](js-primer_09.md)
 +   [值的评估与显示](js-primer_10.md)

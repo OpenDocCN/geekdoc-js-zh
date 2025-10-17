@@ -162,7 +162,7 @@ import { key } from "./lib.cjs";
 
 另一方面，不支持从 CommonJS 模块导入 ECMAScript 模块的双向互操作性。 如果来自现有库的模块是 ECMAScript 模块，则使用该库的应用程序也必须是 ECMAScript 模块。 在开发 Node.js 应用程序时使用多个包时，需要注意互操作性。
 
-### [](#get-file-path)*从命令行参数获取文件路径*
+### *从命令行参数获取文件路径*
 
 *使用刚刚安装的`commander`包，获取通过命令行参数传递的文件路径。 在这个 CLI 应用程序中，将以以下命令格式接收要处理的文件路径。
 
@@ -206,7 +206,7 @@ $ node main.js ./sample.md
 
 通过使用类似 commander 的库来声明性地定义和处理命令行参数，而不是直接处理`process.argv`数组，可以更好地处理命令行参数。 在下一节中，将添加处理基于命令行参数获取的文件路径的过程。
 
-#### [](#syntax-error-import-statement)*[错误示例] SyntaxError: Cannot use import statement outside a module*
+#### *[错误示例] SyntaxError: Cannot use import statement outside a module*
 
 *如果出现“无法在模块外部使用 import 语句”的错误，则表示 Node.js 无法识别`main.js`文件为 ECMAScript 模块。
 
@@ -219,7 +219,7 @@ SyntaxError: Cannot use import statement outside a module
 
 如使用 ECMAScript 模块所述，将`package.json`的`type`字段设置为`module`。
 
-## [](#section-checklist)*本节的检查清单*
+## *本节的检查清单*
 
 **   确认`process.argv`数组中包含`node`命令的命令行参数
 

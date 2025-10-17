@@ -22,12 +22,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 本章将从异步处理是什么开始，探讨异步处理中的异常处理和异步处理的方法。
-- en: '[](#sync-processing)*同期処理*'
+- en: '*同期処理*'
   id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#sync-processing)*同步处理*'
+  zh: '*同步处理*'
 - en: '*多くのプログラミング言語にはコードの評価の仕方として、**同期処理**（sync）と**非同期処理**（async）という大きな分類があります。'
   id: totrans-5
   prefs: []
@@ -71,12 +71,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在之前的例子中，处理被阻塞了1秒钟，因此会导致1秒钟内的滚动等操作无法执行。
-- en: '[](#async-processing)*非同期処理*'
+- en: '*非同期処理*'
   id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#async-processing)*异步处理*'
+  zh: '*异步处理*'
 - en: '*非同期処理はコードを順番に処理していきますが、ひとつの非同期処理が終わるのを待たずに次の処理を評価します。 つまり、非同期処理では同時に実行している処理が複数あります。'
   id: totrans-14
   prefs: []
@@ -114,12 +114,12 @@
   prefs: []
   type: TYPE_IMG
   zh: '![异步处理与计时器](img/7c4cf9a7c958c70e85a0602203d1afc1.png)'
-- en: '[](#async-and-main-thread)*非同期処理はメインスレッドで実行される*'
+- en: '*非同期処理はメインスレッドで実行される*'
   id: totrans-21
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#async-and-main-thread)*异步处理是在主线程中执行的*'
+  zh: '*异步处理是在主线程中执行的*'
 - en: '*メインスレッドはUIスレッドとも呼ばれ、重たいJavaScriptの同期処理はメインスレッドで実行する他の処理（画面の更新など）をブロックする問題につい���紹介しました。
     これは非同期処理においても同様の問題があります。なぜならJavaScriptにおける非同期処理の大部分はメインスレッドで実行されるためです。'
   id: totrans-22
@@ -188,12 +188,12 @@
   type: TYPE_NORMAL
   zh: 这样，不能一概而论所有非同步处理，但了解基本非同步处理（如定时器等）是在主线程中执行的这一性质是很重要的。 JavaScript的大部分**非同步处理**都是**非同步执行的处理**。
     本书介绍的非同步处理大多数是在主线程中切换处理而执行的**并行处理（Concurrent）**。
-- en: '[](#async-processing-and-error-handling)*非同期処理と例外処理*'
+- en: '*非同期処理と例外処理*'
   id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#async-processing-and-error-handling)*非同步处理与异常处理*'
+  zh: '*非同步处理与异常处理*'
 - en: '*非同期処理は処理の流れが同期処理とは異なることについて紹介しました。 これは非同期処理における**例外処理**においても大きな影響を与えます。'
   id: totrans-34
   prefs: []
@@ -258,12 +258,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: Async Function是建立在Promise之上的语法结构。 因此，理解两者都很重要，而不是只理解其中之一。
-- en: '[](#promise)*[ES2015] Promise*'
+- en: '*[ES2015] Promise*'
   id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#promise)*[ES2015] Promise*'
+  zh: '*[ES2015] Promise*'
 - en: '*[Promise](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise)はES2015で導入された非同期処理の状態や結果を表現するビルトインオブジェクトです。
     非同期処理はPromiseのインスタンスを返し、そのPromiseインスタンスには状態変化をした際に呼び出されるコールバック関数を登録できます。'
   id: totrans-47
@@ -312,12 +312,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 实际上，让我们看看`Promise`的使用方法。
-- en: '[](#promise-instance)*`Promise`インスタンスの作成*'
+- en: '*`Promise`インスタンスの作成*'
   id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-instance)*`Promise`实例的创建*'
+  zh: '*`Promise`实例的创建*'
 - en: '*Promiseは`new`演算子で`Promise`のインスタンスを作成して利用します。 このときのコンストラクタには`resolve`と`reject`の2つの引数を取る`executor`と呼ばれる関数を渡します。
     `executor`関数の中で非同期処理を行い、非同期処理が成功した場合は`resolve`関数を呼び、失敗した場合は`reject`関数を呼び出します。'
   id: totrans-56
@@ -371,12 +371,12 @@
   - PREF_UL
   type: TYPE_NORMAL
   zh: 将调用`onRejected`
-- en: '[](#promise-then-and-catch)*`Promise.prototype.then` and `Promise.prototype.catch`*'
+- en: '*`Promise.prototype.then` and `Promise.prototype.catch`*'
   id: totrans-65
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-then-and-catch)*`Promise.prototype.then` 和 `Promise.prototype.catch`*'
+  zh: '*`Promise.prototype.then` 和 `Promise.prototype.catch`*'
 - en: '*因为以前没有像 Promise 这样将函数传递给构造函数的模式，所以我们将介绍具体的`then`方法用法示例。 同时，我们还将研究作为`then`方法别名的`catch`方法。'
   id: totrans-66
   prefs: []
@@ -429,12 +429,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE12]'
-- en: '[](#promise-exception)*Promise and Exceptions*'
+- en: '*Promise and Exceptions*'
   id: totrans-76
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-exception)*Promise 和异常*'
+  zh: '*Promise 和异常*'
 - en: '*如果在构造函数中发生异常，则会自动捕获异常。 发生异常的`Promise`实例将被视为失败，就像调用`reject`函数一样。 因此，如果 Promise
     内部发生异常，则将调用`then`方法的第二个参数或`catch`方法中注册的错误处理回调函数。'
   id: totrans-77
@@ -452,12 +452,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 因此，在 Promise 处理中，无需使用`try...catch`语法，自动捕获异常。
-- en: '[](#promise-status)*Promise 的状态*'
+- en: '*Promise 的状态*'
   id: totrans-80
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-status)*Promise 的状态*'
+  zh: '*Promise 的状态*'
 - en: '*现在我们已经了解了 Promise 的`then`方法和`catch`方法的处理方式，接下来我们将整理一下`Promise`实例的状态。'
   id: totrans-81
   prefs: []
@@ -566,12 +566,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 具体来说，我们将与已更改状态的`Promise`实例一起查看`Promise.resolve`和`Promise.reject`方法的结果。
-- en: '[](#promise-resolve)*`Promise.resolve`*'
+- en: '*`Promise.resolve`*'
   id: totrans-100
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-resolve)*`Promise.resolve`*'
+  zh: '*`Promise.resolve`*'
 - en: '*`Promise.resolve`メソッドは**Fulfilled**の状態となった`Promise`インスタンスを作成します。'
   id: totrans-101
   prefs: []
@@ -635,12 +635,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 执行此代码时，首先执行`Promise`的构造函数，然后执行同步处理，最后通过`then`方法异步调用之前注册的回调函数。
-- en: '[](#promise-reject)*`Promise.reject`*'
+- en: '*`Promise.reject`*'
   id: totrans-113
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-reject)*`Promise.reject`*'
+  zh: '*`Promise.reject`*'
 - en: '*`Promise.reject`メソッドは **Rejected**の状態となった`Promise`インスタンスを作成します。'
   id: totrans-114
   prefs: []
@@ -678,12 +678,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: '`Promise.resolve`或`Promise.reject`可以简写，因此在测试代码等情况下经常被使用。 此外，`Promise.reject`在接下来要解释的Promise链中用于操作Promise的状态。'
-- en: '[](#promise-chain)*Promiseチェーン*'
+- en: '*Promiseチェーン*'
   id: totrans-121
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-chain)*Promise链*'
+  zh: '*Promise链*'
 - en: '*Promiseは非同期処理における統一的なインターフェースを提供するビルトインオブジェクトです。 Promiseによる統一的な処理方法は複数の非同期処理を扱う場合に特に効力を発揮します。
     これまでは、1つの`Promise`インスタンスに対して`then`や`catch`メソッドで1 組のコールバック処理を登録するだけでした。'
   id: totrans-122
@@ -805,12 +805,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 就这样，通过`then`方法或`catch`方法链接，编写成功或失败的处理被称为 Promise 链。
-- en: '[](#promise-chain-value)*在 Promise 链中返回值*'
+- en: '*在 Promise 链中返回值*'
   id: totrans-143
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#promise-chain-value)*在 Promise 链中返回值*'
+  zh: '*在 Promise 链中返回值*'
 - en: '*在 Promise 链中，可以通过回调返回的值将其传递给下一个回调函数。'
   id: totrans-144
   prefs: []
@@ -838,12 +838,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE31]'
-- en: '[](#promise-then-return-promise)*通过回调函数返回`Promise`实例*'
+- en: '*通过回调函数返回`Promise`实例*'
   id: totrans-149
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#promise-then-return-promise)*通过回调函数返回`Promise`实例*'
+  zh: '*通过回调函数返回`Promise`实例*'
 - en: '*一旦在 Promise 链中捕获一次，下一步调用的是成功处理（`then`方法）。 这是因为，当回调函数返回任意值时，将创建一个以该值解析为**Fulfilled**状态的`Promise`实例。
     但是，如果回调函数返回`Promise`实例，则情况就会有所不同。'
   id: totrans-150
@@ -893,12 +893,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE33]'
-- en: '[](#promise-finally)*[ES2018] 在 Promise 链的最后写入处理*'
+- en: '*[ES2018] 在 Promise 链的最后写入处理*'
   id: totrans-159
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#promise-finally)*[ES2018] 在 Promise 链的最后写入处理*'
+  zh: '*[ES2018] 在 Promise 链的最后写入处理*'
 - en: '*Promise 的`finally`方法允许注册一个回调函数，在成功或失败时都会被调用。 这类似于`try...catch...finally`结构中的`finally`块。'
   id: totrans-160
   prefs: []
@@ -921,12 +921,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE35]'
-- en: '[](#promise-sequential)*在 Promise 链中进行顺序处理*'
+- en: '*在 Promise 链中进行顺序处理*'
   id: totrans-164
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-sequential)*在 Promise 链中进行顺序处理*'
+  zh: '*在 Promise 链中进行顺序处理*'
 - en: '*Promise 链中编写异步处理流程的一个主要优点是，它可以适应异步处理的各种模式。'
   id: totrans-165
   prefs: []
@@ -947,12 +947,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE36]'
-- en: '[](#promise-all)*使用`Promise.all`将多个 Promise 组合在一起*'
+- en: '*使用`Promise.all`将多个 Promise 组合在一起*'
   id: totrans-169
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-all)*使用`Promise.all`将多个 Promise 组合在一起*'
+  zh: '*使用`Promise.all`将多个 Promise 组合在一起*'
 - en: '*通过使用`Promise.all`，可以将多个 Promise 作为一个 Promise 处理。'
   id: totrans-170
   prefs: []
@@ -1004,12 +1004,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE39]'
-- en: '[](#promise-race)*`Promise.race`*'
+- en: '*`Promise.race`*'
   id: totrans-179
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise-race)*`Promise.race`*'
+  zh: '*`Promise.race`*'
 - en: '*`Promise.all`方法等待多个 Promise 全部完成。`Promise.race`方法接收��个 Promise，但只要有一个 Promise
     完成（变为 Settled 状态），就会执行下一步操作。'
   id: totrans-180
@@ -1098,12 +1098,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在 ES2017 中，为了解决 Promise 链的不雅外观，引入了名为 Async Function 的语法结构。
-- en: '[](#async-function)*[ES2017] 异步函数*'
+- en: '*[ES2017] 异步函数*'
   id: totrans-196
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#async-function)*[ES2017] 异步函数*'
+  zh: '*[ES2017] 异步函数*'
 - en: '*ES2017 引入了一种称为 Async Function 的语法，用于定义执行异步操作的函数。 Async Function 与普通函数不同，它定义了一个必须返回`Promise`实例的函数。'
   id: totrans-197
   prefs: []
@@ -1147,12 +1147,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 本节将介绍 Async Function 和 `await` 表达式。
-- en: '[](#declare-async-function)*Async Functionの定義*'
+- en: '*Async Functionの定義*'
   id: totrans-205
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#declare-async-function)*Async Function 的定义*'
+  zh: '*Async Function 的定义*'
 - en: '*Async Functionは関数の定義に`async`キーワードをつけることで定義できます。 JavaScriptの関数定義には関数宣言や関数式、Arrow
     Function、メソッドの短縮記法などがあります。 どの定義方法でも`async`キーワードを前につけるだけでAsync Functionとして定義できます。'
   id: totrans-206
@@ -1182,12 +1182,12 @@
   - PREF_UL
   type: TYPE_NORMAL
   zh: Async Function 内部可以使用 `await` 表达式
-- en: '[](#async-function-return-promise)*Async FunctionはPromiseを返す*'
+- en: '*Async FunctionはPromiseを返す*'
   id: totrans-211
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#async-function-return-promise)*Async Function 返回 Promise*'
+  zh: '*Async Function 返回 Promise*'
 - en: '*Async Functionとして定義した関数は必ず`Promise`インスタンスを返します。 具体的にはAsync Functionが返す値は次の3つのケースが考えられます。'
   id: totrans-212
   prefs: []
@@ -1228,12 +1228,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在任何情况下，Async Function 都会返回一个 Promise。从调用者的角度来看，Async Function 与返回 Promise 的普通函数没有区别。
-- en: '[](#await-expression)*`await`式*'
+- en: '*`await`式*'
   id: totrans-219
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#await-expression)*`await` 表达式*'
+  zh: '*`await` 表达式*'
 - en: '*`await`式は次の箇所で利用できる式です。 次の箇所以外では`await`式は構文エラーとなるため、利用できません。'
   id: totrans-220
   prefs: []
@@ -1353,7 +1353,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样使用`await`表达式，就可以像使用`try...catch`结构一样处理异步处理，而且代码的视觉效果也像同步处理一样，直到当前行（当前语句）的处理完成，才会评估下一行。
-- en: '[](#promise-chain-to-async-function)*Promiseチェーンを`await`式で表現する*'
+- en: '*Promiseチェーンを`await`式で表現する*'
   id: totrans-241
   prefs:
   - PREF_H3
@@ -1391,7 +1391,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 如果使用Promise链编写`fetchAB`函数，那么在回调中处理可能会变得复杂。另一方面，使用Async Function和`await`式编写时，只需按顺序执行获取和添加即可，没有嵌套，外观简单。
-- en: '[](#async-function-combination)*Async Functionと組み合わせ*'
+- en: '*Async Functionと組み合わせ*'
   id: totrans-248
   prefs:
   - PREF_H2
@@ -1402,7 +1402,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: '*到目前为止，我们已经了解了基本的Async Function的工作方式，接下来让我们看看与其他结构或Promise API结合使用的Async Function的使用方法。'
-- en: '[](#async-function-array)*Async Functionと反復処理*'
+- en: '*Async Functionと反復処理*'
   id: totrans-250
   prefs:
   - PREF_H3
@@ -1429,7 +1429,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在Async Function中，可以轻松地将for循环等现有结构与非同步处理结合使用。如果只有Promise，则需要使用Promise链和回调函数来实现循环处理。
-- en: '[](#relationship-promise-async-function)*Promise APIとAsync Functionを組み合わせる*'
+- en: '*Promise APIとAsync Functionを組み合わせる*'
   id: totrans-255
   prefs:
   - PREF_H3
@@ -1474,7 +1474,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 如此，Async Function和`await`表达式可以与现有的Promise API结合使用。由于Async Function内部也使用Promise的机制，因此它们不是对立关系，而是共存关系。
-- en: '[](#await-in-async-function)*`await`式はAsync Functionの直下でのみ利用可能*'
+- en: '*`await`式はAsync Functionの直下でのみ利用可能*'
   id: totrans-263
   prefs:
   - PREF_H3
@@ -1589,12 +1589,12 @@
   type: TYPE_NORMAL
   zh: 为了解决这个问题，可以像第一个`fetchResources`関数那样，通过结合使用 for 循环和`await`表达式而无需使用回调函数。 另外，还可以通过将多个异步处理组合到一个
     Promise 中来避免在循环中使用`await`表达式，例如`fetchAllResources`関数。
-- en: '[](#top-level-await-in-module)*[ES2022] Module 直下での`await`式*'
+- en: '*[ES2022] Module 直下での`await`式*'
   id: totrans-283
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#top-level-await-in-module)*[ES2022] Module 直下での`await`式*'
+  zh: '*[ES2022] Module 直下での`await`式*'
 - en: '*之前已经介绍过，ES2021 中`await`表达式只能在 Async Function 的直接作用域中使用。 在 ES2022 中，除了这一点之外，在
     Module 的直接作用域中也可以使用`await`表达式。'
   id: totrans-284
@@ -1644,12 +1644,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 然而，由于 ES2022 中引入了顶层`await`，因此在"Module"中，此类即时执行函数是不必要的。
-- en: '[](#error-first-callback)*[专栏] 错误优先回调*'
+- en: '*[专栏] 错误优先回调*'
   id: totrans-293
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#error-first-callback)*[专栏] 错误优先回调*'
+  zh: '*[专栏] 错误优先回调*'
 - en: '*在 ECMAScript 2015（ES2015）之前，没有规范处理异步处理中的异常。 因此，在 ES2015 之前，人们普遍使用**错误优先回调**这种方式来处理异步处理中的异常。'
   id: totrans-294
   prefs: []
@@ -1738,12 +1738,12 @@
   type: TYPE_NORMAL
   zh: 自从 Promise 标准化以来，许多异步 API 都以 Promise 为基础提供。这也适用于 Node.js 的核心模块，目前（Node.js v20.11.1）提供了基于
     Promise 的 API。因此，在新代码中使用错误优先回调的情况相当有限。
-- en: '[](#conclusion)*まとめ*'
+- en: '*まとめ*'
   id: totrans-310
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*在本章中，我们学习了关于 Promise 和 Async Function 的异步处理。'
   id: totrans-311
   prefs: []

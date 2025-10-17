@@ -17,12 +17,12 @@
   type: TYPE_NORMAL
   zh: ローカルサーバーでアプリケーションが実行できるようになったので、次はGitHubのAPIを呼び出す処理を実装していきます。 GitHubのAPIを呼び出すためにはHTTP
     通信をする必要があります。 ウェブブラウザ上でJavaScriptからHTTP 通信するために、[Fetch API](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API)という機能を使います。
-- en: '[](#fetch-api)*Fetch API*'
+- en: '*Fetch API*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#fetch-api)*Fetch API*'
+  zh: '*Fetch API*'
 - en: '***Fetch API**はHTTP 通信を行ってリソースを取得するためのAPIです。 Fetch APIを使うことで、ページ全体を再読み込みすることなく指定したURLからデータを取得できます。
     Fetch APIは同じくHTTP 通信を扱う[XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest)と似たAPIですが、より強力で柔軟な操作が可能です。'
   id: totrans-4
@@ -52,12 +52,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE0]'
-- en: '[](#receive-response)*レスポンスの受け取り*'
+- en: '*レスポンスの受け取り*'
   id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#receive-response)*レスポンスの受け取り*'
+  zh: '*レスポンスの受け取り*'
 - en: '*GitHubのAPIに対してHTTPリクエストを送信しましたが、まだレスポンスを受け取る処理を書いていません。 次はサーバーから返却されたレスポンスのログをコンソールに出力する処理を実装します。'
   id: totrans-10
   prefs: []
@@ -82,12 +82,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE1]'
-- en: '[](#error-handling)*エラーハンドリング*'
+- en: '*エラーハンドリング*'
   id: totrans-14
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#error-handling)*エラーハンドリング*'
+  zh: '*エラーハンドリング*'
 - en: '*HTTP 通信にはエラーがつきものです。 そのためFetch APIを使った通信においても、エラーをハンドリングする必要があります。 たとえば、サーバーとの通信に際してネットワークエラーが発生した場合は、ネットワークエラーを表す`NetworkError`オブジェクトでrejectされた`Promise`が返されます。
     すなわち、`then`メソッドの第二引数か`catch`メソッドのコールバック関数が呼び出されます。'
   id: totrans-15
@@ -164,12 +164,12 @@
   prefs: []
   type: TYPE_IMG
   zh: '![開発者ツールでHTTP 通信の記録を確認する](img/b10d033108210bd45e985650a174f69d.png)'
-- en: '[](#xhr)*[コラム] XMLHttpRequest*'
+- en: '*[コラム] XMLHttpRequest*'
   id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#xhr)*[コラム] XMLHttpRequest*'
+  zh: '*[コラム] XMLHttpRequest*'
 - en: '*[XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest)（**XHR**）はFetch
     APIと同じくHTTP 通信を行うためのAPIです。 Fetch APIが標準化される以��は、ブラウザとサーバーの間で通信するにはXHRを使うのが一般的でした。
     このセクションで扱ったFetch APIによる`fetchUserInfo`関数は、XHRを使うと次のように書けます。'
@@ -191,12 +191,12 @@
   type: TYPE_NORMAL
   zh: Fetch API 是为了取代 XHR 而创建的，大多数情况下不再需要使用 XHR。 另外，由于旧浏览器不支持 Fetch API，为了保持浏览器兼容性，有时会继续使用
     XHR。 有关 XHR 的详细用法，请参考[XHR 的使用文档](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest)。
-- en: '[](#section-checklist)*本节的检查清单*'
+- en: '*本节的检查清单*'
   id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#section-checklist)*本节的检查清单*'
+  zh: '*本节的检查清单*'
 - en: '**使用[Fetch API](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API)发送
     HTTP 请求'
   id: totrans-34

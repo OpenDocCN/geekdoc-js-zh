@@ -55,12 +55,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: この章では、**ECMAScriptモジュール（ESモジュール、JavaScriptモジュールとも呼ばれる）**について見ていきます。ECMAScriptモジュールは、ES2015で導入されたJavaScriptファイルをモジュール化する言語標準の機能です。
-- en: '[](#es-module-syntax)*ECMAScriptモジュールの構文*'
+- en: '*ECMAScriptモジュールの構文*'
   id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#es-module-syntax)*ECMAScriptモジュールの構文*'
+  zh: '*ECMAScriptモジュールの構文*'
 - en: '*ECMAScriptモジュールは、[export 文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)によって変数や関数などをエクスポートできます。
     また、[import 文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)を使って別のモジュールからエクスポートされたものをインポートできます。
     インポートとエクスポートはそれぞれに **名前つき** と **デフォルト** という2 種類の方法があります。'
@@ -75,12 +75,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: まずは名前つきエクスポート／インポート文について見ていきましょう。
-- en: '[](#named-export-import)*名前つきエクスポート／インポート*'
+- en: '*名前つきエクスポート／インポート*'
   id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#named-export-import)*名前つきエクスポート／インポート*'
+  zh: '*名前つきエクスポート／インポート*'
 - en: '***名前つきエクスポート**は、モジュールごとに複数の変数や関数などをエクスポートできます。 次の例では、`foo`変数と`bar`関数をそれぞれ名前つきエクスポートしています。
     `export`文のあとに続けて`{}`を書き、その中にエクスポートする変数を入れることで、宣言済みの変数を名前つきエクスポートできます。'
   id: totrans-14
@@ -138,12 +138,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE3]'
-- en: '[](#named-export-import-alias)*名前つきエクスポート／インポートのエイリアス*'
+- en: '*名前つきエクスポート／インポートのエイリアス*'
   id: totrans-25
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#named-export-import-alias)*名前つきエクスポート／インポートのエイリアス*'
+  zh: '*名前つきエクスポート／インポートのエイリアス*'
 - en: '*名前つきエクスポート／インポートには**エイリアス**の仕組みがあります。 エイリアスを使うと、宣言済みの変数を違う名前で名前つきエクスポートできます。
     エイリアスをつけるには、次のように`as`のあとにエクスポートしたい名前を記述します。'
   id: totrans-26
@@ -175,12 +175,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE5]'
-- en: '[](#default-export-import)*デフォルトエクスポート／インポート*'
+- en: '*デフォルトエクスポート／インポート*'
   id: totrans-32
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#default-export-import)*デフォルトエクスポート／インポート*'
+  zh: '*デフォルトエクスポート／インポート*'
 - en: '*次に、デフォルトエクスポート／インポートについて見ていきましょう。 **デフォルトエクスポート**は、モジュールごとに1つしかエクスポートできない特殊なエクスポートです。
     次の例は、すでに宣言されている変数をデフォルトエクスポートしています。 `export default`文で、後に続く式の評価結果をデフォルトエクスポートします。'
   id: totrans-33
@@ -298,23 +298,23 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在 ECMAScript 模块中，未导出的内容无法被导入。这是因为在 JavaScript 的解析阶段解析 ECMAScript 模块时，如果无法解析出要导入的内容，则会导致解析错误。默认导入要求导入目标模块导出默认导出。类似地，命名导入要求导入目标模块导出指定的命名导出。*
-- en: '[](#other-syntax)*其他语法*'
+- en: '*其他语法*'
   id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#other-syntax)*其他语法*'
+  zh: '*其他语法*'
 - en: '*ECMAScript 模块还具有除了命名导入和默认导入之外的其他一些语法。*'
   id: totrans-56
   prefs: []
   type: TYPE_NORMAL
   zh: '*ECMAScript 模块还具有除了命名导入和默认导入之外的其他一些语法。*'
-- en: '[](#re-export)*再导出*'
+- en: '*再导出*'
   id: totrans-57
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#re-export)*再导出*'
+  zh: '*再导出*'
 - en: '*再导出是指，重新从另一个模块导入的内容，再次从自身导出。它通常用于创建包含从多个模块导出的内容的模块。*'
   id: totrans-58
   prefs: []
@@ -330,12 +330,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE14]'
-- en: '[](#namespace-import)*导入所有内容*'
+- en: '*导入所有内容*'
   id: totrans-61
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#namespace-import)*导入所有内容*'
+  zh: '*导入所有内容*'
 - en: '*`import * as`语法会导入所有命名导出。使用这种方法，你声明了一个对象，该对象成为了模块的 **命名空间** 。要访问导出的变量或函数等，您需要使用该命名空间对象的属性。此外，正如前文所述，使用名为
     `default` 的关键字，您还可以访问默认导出。*'
   id: totrans-62
@@ -363,12 +363,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE16]'
-- en: '[](#import-for-side-effect)*用于副作用的导入*'
+- en: '*用于副作用的导入*'
   id: totrans-67
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#import-for-side-effect)*用于副作用的导入*'
+  zh: '*用于副作用的导入*'
 - en: '*有些模块仅执行全局代码，而不导出任何内容。例如，用于操作全局变量的模块等。*'
   id: totrans-68
   prefs: []
@@ -394,12 +394,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE18]'
-- en: '[](#run-es-modules)*执行 ECMAScript 模块*'
+- en: '*执行 ECMAScript 模块*'
   id: totrans-73
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#run-es-modules)*执行 ECMAScript 模块*'
+  zh: '*执行 ECMAScript 模块*'
 - en: '*要执行创建的 ECMAScript 模块，您需要将起始 JavaScript 文件作为 ECMAScript 模块加载到 Web 浏览器中。Web
     浏览器会使用`script`元素加载和执行 JavaScript 文件。通过为`script`元素添加`type="module"`属性，Web 浏览器会将
     JavaScript 文件视为 ECMAScript 模块加载。*'

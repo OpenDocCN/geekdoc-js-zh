@@ -15,12 +15,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在实际创建应用程序之前，让我们通过 Hello World 应用程序来了解 Node.js CLI 应用程序的基础知识。
-- en: '[](#create-project)*创建项目目录*'
+- en: '*创建项目目录*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#create-project)*创建项目目录*'
+  zh: '*创建项目目录*'
 - en: '*在本次创建的 Node.js CLI 应用程序中，我们将处理 JavaScript 和 Markdown 等文件。因此，首先创建一个用于存放这些文件的目录。'
   id: totrans-4
   prefs: []
@@ -36,12 +36,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 此外，此项目中创建的文件必须以**UTF-8**编码和**LF**换行符保存。
-- en: '[](#hello-world)*Hello World*'
+- en: '*Hello World*'
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#hello-world)*Hello World*'
+  zh: '*Hello World*'
 - en: '*首先，让我们尝试创建一个 Node.js 的 Hello World 应用程序。具体来说，我们将编写一个 CLI 应用程序，当运行时，它将在标准输出中显示字符串`"Hello
     World!"`。首先要准备的是作为应用程序入口的 JavaScript 文件。在`nodecli`目录中创建一个名为`main.js`的文件，并编写如下内容。'
   id: totrans-8
@@ -85,12 +85,12 @@
   type: TYPE_NORMAL
   zh: 在 Node.js 中，创建一个作为入口点的 JavaScript 文件，并将该文件作为`node`命令的参数传递以执行是基本操作。此外，就像在 Web
     浏览器中的 JavaScript 一样，代码将按顺序从第一行开始执行。
-- en: '[](#global-objects)*Node.js 和浏览器的全局对象*'
+- en: '*Node.js 和浏览器的全局对象*'
   id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#global-objects)*Node.js 和浏览器的全局对象*'
+  zh: '*Node.js 和浏览器的全局对象*'
 - en: '*Node.js 使用了与 Web 浏览器 Chrome 相同的 V8 JavaScript 引擎。因此，基本的 ECMAScript 语法与在浏览器中的使用方式相同。然而，由于浏览器环境和
     Node.js 环境具有不同的全局对象，因此在开发应用程序时必须理解这些差异。'
   id: totrans-16
@@ -164,12 +164,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在此基础上，让我们从下一节开始开发 CLI 应用程序。
-- en: '[](#section-checklist)*本节的清单*'
+- en: '*本节的清单*'
   id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#section-checklist)*本节的清单*'
+  zh: '*本节的清单*'
 - en: '**   创建了`main.js`文件'
   id: totrans-30
   prefs: []

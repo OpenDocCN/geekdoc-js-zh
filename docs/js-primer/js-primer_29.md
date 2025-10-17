@@ -229,7 +229,7 @@ function onLoginFormSubmit(event) {
 } 
 ```
 
-### [](#weakmap)*WeakMap*
+### *WeakMap*
 
 *[WeakMap](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)与`Map`一样，是用于处理映射的内置对象。与`Map`的不同之处在于，它使用**弱引用**（Weak Reference）来持有键。
 
@@ -300,7 +300,7 @@ function getHeight(element) {
 } 
 ```
 
-### [](#key-and-nan)*[专栏] 键的等价性与 NaN*
+### *[专栏] 键的等价性与 NaN*
 
 *`Map`中设置值时可以使用任何对象作为键。在这种情况下，该映射是否已经包含特定的键，即插入和覆盖的判断基本上与`===`运算符相同。
 
@@ -318,11 +318,11 @@ console.log(map.has(NaN)); // => true
 console.log(map.get(NaN)); // => "value" 
 ```
 
-## [](#set)*Set*
+## *Set*
 
 *[Set](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Set)是用于处理集合的内置对象。集合是指不包含重复值的集合。`Set`可以列举添加的值，因此它类似于不包含重复值的数组，常用于保证值的唯一性。然而，与数组不同，集合没有顺序，也不能通过索引访问元素。
 
-### [](#set-new)*创建和初始化集合*
+### *创建和初始化集合*
 
 *通过`new`创建`Set`对象可以创建一个新的集合。创建的集合一开始没有任何内容。因此，返回集合中元素数量的`size`属性将返回 0。
 
@@ -342,7 +342,7 @@ const set = new Set(["value1", "value2", "value2"]);
 console.log(set.size); // => 2 
 ```
 
-### [](#set-read-and-write)**值的添加和提取**
+### **值的添加和提取**
 
 *要向创建的集合中添加值，可以使用`add`方法。正如之前所述，集合保证不包含重复的值。因此，当将已存在于集合中的值传递给`add`方法时，它将被忽略。
 
@@ -374,7 +374,7 @@ set.clear();
 console.log(set.size); // => 0 
 ```
 
-### [](#set-iteration)**集合的遍历**
+### **集合的遍历**
 
 *要遍历集合中的值，可以使用`forEach`方法。`forEach`方法会按照集合的插入顺序遍历集合中所有的元素。
 
@@ -417,13 +417,13 @@ for (const value of set) {
 console.log(results); // => ["a","b"] 
 ```
 
-### [](#weakset)**WeakSet**
+### **WeakSet**
 
 *[WeakSet](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)*是一个包含有值引用的集合。`WeakSet`与`Set`类似，但它不是可迭代的，因此不能遍历添加的值。换句话说，`WeakSet`只能进行值的添加和删除、存在性检查等操作。可以说它是一个专注于检查数据唯一性的集合。
 
 此外，由于**WeakSet**的特性是只包含有值的引用，因此可以作为其值的只能是引用类型的对象和**Symbol**(es2023)。
 
-## [](#conclusion)**总结**
+## **总结**
 
 本章我们学习了**Map**和**Set**。
 

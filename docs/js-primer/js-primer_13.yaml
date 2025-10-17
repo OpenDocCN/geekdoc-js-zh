@@ -91,12 +91,12 @@
   - PREF_UL
   type: TYPE_NORMAL
   zh: 仅显式转换无法解决问题
-- en: '[](#what-is-implicit-coercion)*暗黙的な型変換とは*'
+- en: '*暗黙的な型変換とは*'
   id: totrans-17
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#what-is-implicit-coercion)*隐式类型转换是什么*'
+  zh: '*隐式类型转换是什么*'
 - en: '*暗黙的な型変換とは次のことを言います。'
   id: totrans-18
   prefs: []
@@ -113,12 +113,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 隐式类型转换是在运算符的运算或函数的处理过程中进行的。在这里，我们将主要关注运算符中的隐式类型转换。
-- en: '[](#implicit-coercion-of-equal-operator)*等価演算子の暗黙的な型変換*'
+- en: '*等価演算子の暗黙的な型変換*'
   id: totrans-21
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#implicit-coercion-of-equal-operator)*等价运算符的隐式类型转换*'
+  zh: '*等价运算符的隐式类型转换*'
 - en: '*もっとも有名な暗黙的な型変換は、先ほども出てきた等価演算子（`==`）です。 等価演算子は、オペランド同士が同じ型となるように暗黙的な型変換をしてから、比較します。'
   id: totrans-22
   prefs: []
@@ -164,12 +164,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 使用严格的等价运算符（`===`）可以避免意外的比较结果。因此，建议在比较时使用严格的等价运算符（`===`）而不是等价运算符（`==`）。
-- en: '[](#various-implicit-coercion)*さまざまな暗黙的な型変換*'
+- en: '*さまざまな暗黙的な型変換*'
   id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#various-implicit-coercion)*各种隐式类型转换*'
+  zh: '*各种隐式类型转换*'
 - en: '*他の演算子についても、具体的な例を見てみましょう。'
   id: totrans-32
   prefs: []
@@ -227,23 +227,23 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在隐式类型转换中，结果的类型依赖于操作数的类型。为了避免这种情况，需要使用非隐式转换，即显式类型转换。
-- en: '[](#explicit-coercion)*明示的な型変換*'
+- en: '*明示的な型変換*'
   id: totrans-43
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#explicit-coercion)*显式类型转换*'
+  zh: '*显式类型转换*'
 - en: '*プリミティブ型へ明示的な型変換をする方法を見ていきます。'
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
   zh: '*查看将原始类型转换为显式类型的方法。'
-- en: '[](#any-to-boolean)*任意の値 → 真偽値*'
+- en: '*任意の値 → 真偽値*'
   id: totrans-45
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#any-to-boolean)*任意值 → 布尔值*'
+  zh: '*任意值 → 布尔值*'
 - en: '*JavaScriptでは`Boolean`コンストラクタ関数を使うことで、任意の値を`true`または`false`の真偽値に変換できます。'
   id: totrans-46
   prefs: []
@@ -326,12 +326,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE10]'
-- en: '[](#number-to-string)*数値 → 文字列*'
+- en: '*数値 → 文字列*'
   id: totrans-61
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#number-to-string)*数值 → 字符串*'
+  zh: '*数值 → 字符串*'
 - en: '*要明确从数字转换为字符串，可以使用`String`构造函数。'
   id: totrans-62
   prefs: []
@@ -364,12 +364,12 @@
   type: TYPE_NORMAL
   zh: 另一方面，对于对象，返回的字符串通常没有太多意义。 这是因为对于对象，存在比`String`构造函数更适合的方法。 对于数组，有`join`方法，对于对象，有`JSON.stringify`方法等。
     因此，`String`构造函数的转换应仅限于原始类型。
-- en: '[](#symbol-to-string)*符号 → 字符串*'
+- en: '*符号 → 字符串*'
   id: totrans-68
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#symbol-to-string)*符号 → 字符串*'
+  zh: '*符号 → 字符串*'
 - en: '*当将加法运算符用于字符串时，优先考虑字符串连接。 您可能会想：“如果其中一个是字符串，那么结果就是字符串，而不管另一个操作数是什么？”。'
   id: totrans-69
   prefs: []
@@ -405,12 +405,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE15]'
-- en: '[](#string-to-number)*字符串 → 数值*'
+- en: '*字符串 → 数值*'
   id: totrans-76
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#string-to-number)*字符串 → 数值*'
+  zh: '*字符串 → 数值*'
 - en: '*将字符串转换为数字的典型案例是接收用户输入的数字。 用户输入始终以字符串形式接收，因此必须先将其转换为数字才能使用。'
   id: totrans-77
   prefs: []
@@ -458,12 +458,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE19]'
-- en: '[](#nan-is-number-type)*`NaN`是非数字但是属于 Number 类型*'
+- en: '*`NaN`是非数字但是属于 Number 类型*'
   id: totrans-86
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#nan-is-number-type)*`NaN`是非数字但是属于 Number 类型*'
+  zh: '*`NaN`是非数字但是属于 Number 类型*'
 - en: '*在这里，我们将更详细地了解频繁出现的值`NaN`的情况。 `NaN`是 Not a Number 的缩写，是一种具有特殊性质的 Number 类型的数据。'
   id: totrans-87
   prefs: []
@@ -620,12 +620,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: JavaScript 对于类型错误非常宽容，例如会进行隐式类型转换，因此，在编写大型应用程序时，编写能够发现这些难以检测到的错误的代码非常重要。
-- en: '[](#unsolved-problem)*即使是显式转换也无法解决的问题*'
+- en: '*即使是显式转换也无法解决的问题*'
   id: totrans-117
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#unsolved-problem)*即使是显式转换也无法解决的问题*'
+  zh: '*即使是显式转换也无法解决的问题*'
 - en: '*正如前面的例子所示，不是所有情况都可以通过显式转换来解决。将不兼容于 Number 类型的值转换为数字，结果将会是`NaN`。一旦出现`NaN`，就只能通过`Number.isNaN(x)`来判断并结束处理。'
   id: totrans-118
   prefs: []
@@ -636,12 +636,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: JavaScript 的类型转换基本上是向信息减少的方向进行的。因此，在进行显式转换之前，首先需要考虑是否需要转换。
-- en: '[](#judge-empty-string)*判断是否为空字符串*'
+- en: '*判断是否为空字符串*'
   id: totrans-120
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#judge-empty-string)*判断是否为空字符串*'
+  zh: '*判断是否为空字符串*'
 - en: '*例如，假设我们想要判断字符串是否为空字符串。 `""`（空字符串）是 falsy 值，因此可以通过显式使用`Boolean`构造函数将其转换为布尔值。
     但是，虽然 falsy 值不仅限于空字符串，但通过显式转换并不意味着只能判断空字符串。'
   id: totrans-121
@@ -679,12 +679,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 使用`Boolean`进行类型转换是为了方便，但并不是获取准确布尔值的方法。因此，在进行类型转换之前，首先考虑是否可以通过其他方式解决问题也很重要。
-- en: '[](#conclusion)*总结*'
+- en: '*总结*'
   id: totrans-128
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*本章我们学习了隐式类型转换和显式类型转换。'
   id: totrans-129
   prefs: []

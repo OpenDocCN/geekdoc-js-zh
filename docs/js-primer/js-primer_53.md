@@ -6,7 +6,7 @@
 
 在本节中，我们首先探讨在哪些方面容易出现灵活性问题。然后，为了解决灵活性和标识符的问题，引入“模型”这一概念，并对“添加 Todo 项”的功能进行重构。
 
-## [](#direct-dom-modification-issue)*直接更新 DOM 的问题*
+## *直接更新 DOM 的问题*
 
 *在“实现 Todo 项添加”中，对于操作结果发生的事件输入，直接更新 DOM（显示）。因此，Todo 列表中 Todo 项的数量以及具体有哪些项的状态仅存在于 DOM 上。
 
@@ -30,7 +30,7 @@
 
 +   随着对操作更新显示区域的增加，显示的处理会变得更加复杂。
 
-## [](#introduce-model)*引入模型*
+## *引入模型*
 
 *为了避免这个问题，我们将 Todo 项信息以 JavaScript 类的方式模型化。这里的模型是指定义了 Todo 项或 Todo 列表等**对象的状态和操作方法**的对象。在类中，操作方法以方法的形式实现，状态以实例属性管理。因此，这次我们用类来表示模型。
 
@@ -60,7 +60,7 @@
 
 因此，显示端需要知道`TodoListModel`的状态何时发生变化。这里再次出现的是事件。
 
-## [](#model-and-event)*传递模型变化的事件*
+## *传递模型变化的事件*
 
 *当提交表单时，会触发来自 form 元素的`submit`事件。 类似地，当`TodoListModel`的状态发生变化时，会向自身分发`change`事件。 显示端只需监听该事件，当事件发生时更新显示即可。
 
@@ -72,7 +72,7 @@
 
 虽然听起来很困难，但是通过使用之前学到的类和回调函数等内容，可以实现这一点。
 
-## [](#event-emitter)*EventEmitter*
+## *EventEmitter*
 
 *事件机制是由“分发事件的一方”和“监听事件的一方”两个方面组成。 有时会自己分发事件并自己监听事件。
 
@@ -172,7 +172,7 @@ event.emit("test-event");
 // "Two!" 
 ```
 
-## [](#event-emitter-todolist-model)*继承自 EventEmitter 的 TodoList 模型*
+## *继承自 EventEmitter 的 TodoList 模型*
 
 *接下来，我们将创建继承自创建的`EventEmitter`类的`TodoListModel`类。 创建一个新的`src/model/`目录，并在该目录中创建实现每个模型类的文件。
 
@@ -320,7 +320,7 @@ console.log(todoListModel.getTotalCount()); // => 1
 
 现在每个所需的模型类都已经创建好了。接下来让我们使用这些模型来更新显示。
 
-## [](#model-update-view)*使用模型更新视图*
+## *使用模型更新视图*
 
 *使用先前创建的`TodoListModel`和`TodoItemModel`类，重新编写“添加 Todo 项目”的功能。
 
@@ -375,7 +375,7 @@ export class App {
 
 修改后的`App.js`主要有三个部分进行了更改，让我们逐个来看。
 
-### [](#app-todolist-initialize)*1\. 初始化 TodoListModel*
+### *1\. 初始化 TodoListModel*
 
 *导入了创建的`TodoListModel`和`TodoItemModel`。
 
@@ -397,7 +397,7 @@ export class App {
 } 
 ```
 
-### [](#app-todolist-onchange)*2\. 当 TodoListModel 的状态更新时更新显示*
+### *2\. 当 TodoListModel 的状态更新时更新显示*
 
 *在`mount`方法中实现了当`TodoListModel`更新时更新显示的逻辑。通过`TodoListModel`的`onChange`方法注册的监听器函数会在`TodoListModel`的状态更新时被调用。
 
@@ -436,19 +436,19 @@ export class App {
 } 
 ```
 
-### [](#app-add-new-todoitem)*3\. 提交表单后，添加新的 TodoItem*
+### *3\. 提交表单后，添加新的 TodoItem*
 
 *在上一次的代码中，提交表单（`submit`）时会直接向 DOM 添加元素。而在本次代码中，`TodoListModel`的状态更新后会更新显示的机制已经建立好了。
 
 因此，在`submit`事件的监听器函数中，只需向`TodoListModel`添加新的`TodoItemModel`，显示就会更新。只需将直接向 DOM 添加`appendChild`的部分替换为使用`TodoListModel`的`addTodo`方法来更新模型即可。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *在本节中，我们使用模型和事件机制对上一节的“实现添加 Todo 项目”进行了重构。虽然代码量增加了，但下一步要实现的“更新 Todo 项目”和“删除 Todo 项目”也可以使用类似的机制来实现。与上一节直接更新 DOM 的操作不同，虽然添加很容易，但更新或删除现有元素需要指定元素，这就变得困难了。
 
 下一节将实现剩余功能，如“更新 Todo 项目”和“删除 Todo 项目”。
 
-## [](#section-checklist)*本节的检查清单*
+## *本节的检查清单*
 
 **   理解了直接更新 DOM 的问题**
 

@@ -4,7 +4,7 @@
 
 この章では、JavaScriptと密接な関係にあるJSONというデータフォーマットについて見ていきます。
 
-## [](#what-is-json)*JSONとは*
+## *JSONとは*
 
 *JSONはJavaScript Object Notationの略で、JavaScriptのオブジェクトリテラルをベースに作られた軽量なデータフォーマットです。 JSONの仕様は[ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/)として標準化されています。 JSONは、人間にとって読み書きが容易で、マシンにとっても簡単にパースや生成を行える形式になっています。 そのため、多くのプログラミング言語がJSONを扱う機能を備えています。*
 
@@ -24,11 +24,11 @@ JSONはJavaScriptのオブジェクトリテラル、配列リテラル、各種
 
 JSONの細かい仕様に関しては[json.orgの日本語ドキュメント](https://www.json.org/json-ja.html)にわかりやすくまとまっているので、参考にするとよいでしょう。
 
-## [](#json-object)*`JSON`オブジェクト*
+## *`JSON`オブジェクト*
 
 *JavaScriptでJSONを扱うには、ビルトインオブジェクトである[JSONオブジェクト](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON)を利用します。 `JSON`オブジェクトはJSON 形式の文字列とJavaScriptのオブジェクトを相互に変換するための`parse`メソッドと`stringify`メソッドを提供します。*
 
-### [](#json-parse)*JSON 文字列をオブジェクトに変換する*
+### *JSON 文字列をオブジェクトに変換する*
 
 *[JSON.parseメソッド](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)は引数に与えられた文字列をJSONとしてパースし、その結果をJavaScriptのオブジェクトとして返す関数です。 次のコードは簡単なJSON 形式の文字列をJavaScriptのオブジェクトに変換する例です。*
 
@@ -58,7 +58,7 @@ try {
 } 
 ```
 
-### [](#json-format)*オブジェクトをJSON 文字列に変換する*
+### *オブジェクトをJSON 文字列に変換する*
 
 *[JSON.stringifyメソッド](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)は第一引数に与えられたオブジェクトをJSON 形式の文字列に変換して返す関数です。 HTTP 通信でサーバーにデータを送信するときや、 アプリケーションが保持している状態を外部に保存するときなどに必要になります。 次のコードはJavaScriptのオブジェクトをJSON 形式の文字列に変換する例です。*
 
@@ -115,7 +115,7 @@ console.log(JSON.stringify(obj, null, "\t"));
 */ 
 ```
 
-## [](#not-serialization-object)*JSONにシリアライズできないオブジェクト*
+## *JSONにシリアライズできないオブジェクト*
 
 *`JSON.stringify`メソッドはJSONで表現可能な値だけをシリアライズします。 そのため、値が関数や`Symbol`、あるいは`undefined`であるプロパティなどは変換されません。 ただし、配列の値としてそれらが見つかったときには例外的に`null`に置き換えられます。 またキーが`Symbol`である場合にもシリアライズの対象外になります。 代表的な変換の例を次の表とサンプルコードに示します。*
 
@@ -165,7 +165,7 @@ try {
 } 
 ```
 
-## [](#serialization-by-toJSON)*使用`toJSON`方法进行序列化*
+## *使用`toJSON`方法进行序列化*
 
 *如果对象具有`toJSON`方法，则`JSON.stringify`方法将使用`toJSON`方法的返回值，而不是默认的字符串转换。就像下面的例子一样，它将递归地处理作为参数直接传递以及作为参数属性出现的情况。*
 
@@ -182,7 +182,7 @@ console.log(JSON.stringify({ x: obj })); // => '{"x":"bar"}'
 
 `toJSON`方法被用于将自定义类以特殊格式进行序列化。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *在本章中，我们学习了关于 JSON 的知识。
 

@@ -4,7 +4,7 @@
 
 本章将介绍 JavaScript 中提供数学常数和函数的内置对象[Math](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math)。
 
-## [](#math-object)*Math 对象*
+## *Math 对象*
 
 *`Math`对象是内置对象，但不是构造函数。换句话说，`Math`对象不会创建实例，所有常数和函数都作为`Math`对象的静态属性和方法提供。例如，`Math.PI`属性表示圆周率π，`Math.sin`方法计算正弦值。下面的例子计算了 90 度的正弦值。90 度的正弦值为 1，因此`sin90`变量将返回 1。
 
@@ -16,7 +16,7 @@ console.log(sin90); // => 1
 
 三角函数等许多函数和常数都是通过`Math`对象提供的。本章将介绍其中一些常用的，并附带使用案例。更详尽的解释请参考[MDN 参考文档](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math)。
 
-### [](#create-random-number)*生成随机数*
+### *生成随机数*
 
 *`Math`对象的主要用途之一是通过[Math.random](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/random)方法生成随机数。`Math.random`方法在 0 到 1 之间返回伪随机浮点数。
 
@@ -38,7 +38,7 @@ function getRandom(min, max) {
 console.log(getRandom(1, 5)); 
 ```
 
-### [](#compare-number)*比较数字大小*
+### *比较数字大小*
 
 *[Math.max](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/max)方法会返回传入的多个数字中的最大值。同样，[Math.min](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math/min)方法会返回传入的多个数字中的最小值。
 
@@ -55,7 +55,7 @@ console.log(Math.max(...numbers)); // => 5
 console.log(Math.min(...numbers)); // => 1 
 ```
 
-### [](#convert-to-integer)*转换为整数*
+### *转换为整数*
 
 *`Math`对象有几种方法可用于将数字舍入为整数。其中常见的有向下取整的`Math.floor`方法、向上取整的`Math.ceil`方法，以及四舍五入的`Math.round`方法。
 
@@ -86,7 +86,7 @@ console.log(Math.trunc(1.3)); // => 1
 console.log(Math.trunc(-1.3)); // => -1 
 ```
 
-## [](#conclusion)*总结*
+## *总结*
 
 *本章介绍了`Math`对象。所介绍的方法只是`Math`对象的一部分，还有其他方法可供使用。
 

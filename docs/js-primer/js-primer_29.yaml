@@ -15,7 +15,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: JavaScriptでデータの集まり（コレクション）を扱うビルトインオブジェクトは、ObjectやArrayだけではありません。 この章では、ES2015で導入されたマップ型のコレクションである`Map`と、セット型のコレクションである`Set`について学びます。
-- en: '[](#map)*Map*'
+- en: '*Map*'
   id: totrans-3
   prefs:
   - PREF_H2
@@ -28,7 +28,7 @@
   type: TYPE_NORMAL
   zh: '*[Map](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Map)はマップ型のコレクションを扱うためのビルトインオブジェクトです。
     マップとは、キーと値の組み合わせからなる抽象データ型です。 他のプログラミング言語の文脈では辞書やハッシュマップ、連想配列などと呼ばれることもあります。'
-- en: '[](#map-new)*マップの作成と初期化*'
+- en: '*マップの作成と初期化*'
   id: totrans-5
   prefs:
   - PREF_H3
@@ -61,7 +61,7 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE1]'
-- en: '[](#map-read-and-write)*要素の追加と取り出し*'
+- en: '*要素の追加と取り出し*'
   id: totrans-11
   prefs:
   - PREF_H3
@@ -97,7 +97,7 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE3]'
-- en: '[](#map-iteration)*マップの反復処理*'
+- en: '*マップの反復処理*'
   id: totrans-18
   prefs:
   - PREF_H3
@@ -156,7 +156,7 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE7]'
-- en: '[](#object-and-map)*マップとしてのObjectとMap*'
+- en: '*マップとしてのObjectとMap*'
   id: totrans-28
   prefs:
   - PREF_H3
@@ -280,12 +280,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE10]'
-- en: '[](#weakmap)*WeakMap*'
+- en: '*WeakMap*'
   id: totrans-49
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#weakmap)*WeakMap*'
+  zh: '*WeakMap*'
 - en: '*[WeakMap](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)は、`Map`と同じくマップを扱うためのビルトインオブジェクトです。
     `Map`と違う点は、キーを**弱い参照**（Weak Reference）で持つことです。'
   id: totrans-50
@@ -354,12 +354,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE13]'
-- en: '[](#key-and-nan)*[コラム] キーの等価性とNaN*'
+- en: '*[コラム] キーの等価性とNaN*'
   id: totrans-62
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#key-and-nan)*[专栏] 键的等价性与NaN*'
+  zh: '*[专栏] 键的等价性与NaN*'
 - en: '*`Map`に値をセットする際のキーにはあらゆるオブジェクトが使えます。 このときのマップが特定のキーをすでに持っているか、つまり挿入と上書きの判定は基本的に`===`演算子と同じです。'
   id: totrans-63
   prefs: []
@@ -380,12 +380,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE14]'
-- en: '[](#set)*Set*'
+- en: '*Set*'
   id: totrans-67
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#set)*Set*'
+  zh: '*Set*'
 - en: '*[Set](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Set)はセット型のコレクションを扱うためのビルトインオブジェクトです。
     セットとは、重複する値がないことを保証したコレクションのことを言います。 `Set`は追加した値を列挙できるので、値が重複しないことを保証する配列のようなものとしてよく使われます。
     ただし、配列と違って要素は順序を持たず、インデックスによるアクセスはできません。'
@@ -393,12 +393,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: '*[Set](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Set)是用于处理集合的内置对象。集合是指不包含重复值的集合。`Set`可以列举添加的值，因此它类似于不包含重复值的数组，常用于保证值的唯一性。然而，与数组不同，集合没有顺序，也不能通过索引访问元素。'
-- en: '[](#set-new)*セットの作成と初期化*'
+- en: '*セットの作成と初期化*'
   id: totrans-69
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#set-new)*创建和初始化集合*'
+  zh: '*创建和初始化集合*'
 - en: '*`Set`オブジェクトを`new`することで、新しいセットを作れます。 作成されたばかりのセットは何も持っていません。 そのため、セットが持つ要素の数を返す`size`プロパティは0を返します。'
   id: totrans-70
   prefs: []
@@ -424,12 +424,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE16]'
-- en: '[](#set-read-and-write)**値の追加と取り出し**'
+- en: '**値の追加と取り出し**'
   id: totrans-75
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#set-read-and-write)**值的添加和提取**'
+  zh: '**值的添加和提取**'
 - en: '*作成したセットに値を追加するには、`add`メソッドを使います。 先述のとおり、セットは重複する値を持たないことが保証されます。 そのため、すでにセットが持っている値を`add`メソッドに渡した際は無視されます。'
   id: totrans-76
   prefs: []
@@ -455,12 +455,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE18]'
-- en: '[](#set-iteration)**セットの反復処理**'
+- en: '**セットの反復処理**'
   id: totrans-81
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#set-iteration)**集合的遍历**'
+  zh: '**集合的遍历**'
 - en: '*セットが持つ値を反復処理するには、`forEach`メソッドが利用できます。 `forEach`メソッドではセットが持つすべての要素を、セットへの挿入順に反復します。'
   id: totrans-82
   prefs: []
@@ -495,12 +495,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE21]'
-- en: '[](#weakset)**WeakSet**'
+- en: '**WeakSet**'
   id: totrans-88
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#weakset)**WeakSet**'
+  zh: '**WeakSet**'
 - en: '*[WeakSet](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)*は弱い参照で値を持つセットです。
     `WeakSet`は`Set`と似ていますが、iterableではないので追加した値を反復処理できません。 つまり、`WeakSet`は値の追加と削除、存在確認以外のことができません。
     データの格納ではなく、データの一意性を確認することに特化したセットと言えるでしょう。'
@@ -513,12 +513,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 此外，由于**WeakSet**的特性是只包含有值的引用，因此可以作为其值的只能是引用类型的对象和**Symbol**(es2023)。
-- en: '[](#conclusion)**まとめ**'
+- en: '**まとめ**'
   id: totrans-91
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)**总结**'
+  zh: '**总结**'
 - en: この章では**Map**と**Set**について学びました。
   id: totrans-92
   prefs: []

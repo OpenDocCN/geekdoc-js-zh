@@ -8,7 +8,7 @@
 
 本章将介绍对象的创建和操作方法，以及内置对象`Object`。
 
-## [](#create-object)*创建对象*
+## *创建对象*
 
 *创建对象时，可以使用对象字面量（`{}`）。
 
@@ -90,7 +90,7 @@ console.log(obj); // => { name: "名前" }
 
 这种省略语法在模块或分割赋值中也是通用的。因此，当在`{}`中单独书写属性名时，请注意这是在利用这种省略语法。
 
-### [](#object-instance-object)*`{}`是`Object`的实例对象*
+### *`{}`是`Object`的实例对象*
 
 *`Object`是 JavaScript 的内置对象。对象字面量（`{}`）是创建基于此内置对象`Object`的新对象的语法。
 
@@ -109,7 +109,7 @@ console.log(obj); // => {}
 
 应注意对象字面量是从`Object`创建新的实例对象。
 
-## [](#property-access)*属性访问*
+## *属性访问*
 
 *访问对象属性的方法有两种：**点记法**（`.`）和**方括号记法**（`[]`）。使用这两种记法指定属性名时，可以引用具有该名称的属性的值。
 
@@ -164,7 +164,7 @@ console.log(languages[myLang]); // => "日本語"
 
 在点记法中，不能使用变量作为属性名，因此如果需要指定变量作为属性名，则应使用方括号记法。基本上，可以使用简洁的点记法（`.`），如果点记法无法使用，则可以使用方括号记法（`[]`）。
 
-## [](#object-destructuring)*[ES2015] 对象与分割赋值*
+## *[ES2015] 对象与分割赋值*
 
 *在需要多次访问同一对象的属性时，多次书写`对象.属性名`会显得冗长。因此，有时会重新定义一个短名称的变量来引用该属性。
 
@@ -197,7 +197,7 @@ console.log(ja); // => "日本語"
 console.log(en); // => "英語" 
 ```
 
-## [](#add-property)*添加属性*
+## *添加属性*
 
 *对象具有可变（可修改）的特性，即使创建后也可以更改其值。因此，可以在创建后向对象添加属性。
 
@@ -516,7 +516,7 @@ console.log(languages?.[langJapanese]?.[messageKey]); // => "こんにちは！"
 console.log(languages?.[langKorean]?.[messageKey]); // => undefined 
 ```
 
-## [](#toString-method)*`toString`方法*
+## *`toString`方法*
 
 *对象的`toString`方法是一种将对象本身转换为字符串的方法。 也可以使用`String`构造函数来执行此操作。 那么这两者有什么区别呢？（关于`String`构造函数，请参阅“隐式强制类型转换”）*
 
@@ -541,7 +541,7 @@ const customObject = {
 console.log(String(customObject)); // => "custom value" 
 ```
 
-## [](#object-property-is-to-string)*[专栏] 对象属性名会被转换为字符串*
+## *[专栏] 对象属性名会被转换为字符串*
 
 *在访问对象的属性时，指定的属性名会被隐式转换为字符串。 使用方括号表示法时，可以将对象作为属性名指定，但这并不会按预期工作。 这是因为将对象转换为字符串会得到`"[object Object]"`这样的字符串。
 
@@ -572,7 +572,7 @@ console.log(obj[symbolKey2]); // => "2"
 
 通常，应该记住对象的属性名被视为字符串。 此外，内置对象`Map`可以将对象用作键（详细信息请参阅“Map/Set”章节）。 因此，如果要将对象用作键，则应使用`Map`。
 
-## [](#static-method)*对象的静态方法*
+## *对象的静态方法*
 
 *最后，让我们看一下作为内置对象的`Object`的静态方法。 **静态方法**是可以从实例对象的基础对象调用的方法。
 
@@ -580,7 +580,7 @@ console.log(obj[symbolKey2]); // => "2"
 
 这里介绍了一些在对象处理中常用的**静态方法**。
 
-### [](#enumeration)*对象的枚举*
+### *对象的枚举*
 
 *正如之前提到的，对象是属性的集合。 有三种静态方法可用于枚举对象的属性。
 
@@ -624,7 +624,7 @@ keys.forEach(key => {
 // "three" 
 ```
 
-### [](#copy-and-merge)*对象的合并和复制*
+### *对象的合并和复制*
 
 *`Object.assign`方法^([ES2015])可以将一个对象分配给另一个对象。 使用此方法可以复制对象或合并对象。
 
@@ -634,7 +634,7 @@ keys.forEach(key => {
 const obj = Object.assign(target, ...sources); 
 ```
 
-#### [](#merge)*对象的合并*
+#### *对象的合并*
 
 *让我们看一些具体的对象合并示例。
 
@@ -674,7 +674,7 @@ const merged = Object.assign({}, objectA, objectB);
 console.log(merged); // => { version: "b" } 
 ```
 
-#### [](#object-spread-syntax)*[ES2018] 对象的 spread 構文合并*
+#### *[ES2018] 对象的 spread 構文合并*
 
 *在 ES2018 中，引入了对象的合并操作符`...`（spread 構文）。 在 ES2015 中，数组元素的展开操作符`...`（spread 構文）已经被支持，而在 ES2018 中也支持了对象。 对象的 spread 構文可以展开指定对象的属性到对象字面量中。
 
@@ -707,7 +707,7 @@ const merged = {
 console.log(merged); // => { version: "b", other: "other" } 
 ```
 
-#### [](#copy)*对象的复制*
+#### *对象的复制*
 
 *JavaScript 中没有提供复制对象的函数。 但是，通过创建一个新的空对象，并将现有对象的属性复制到其中，可以实现对象的复制。 使用`Object.assign`方法可以复制对象。
 
@@ -771,7 +771,7 @@ console.log(cloneObj.nest === obj.nest); // => false
 
 JavaScript 作为语言规范最低限度地定义了功能，因此有很多由用户创建的小型功能库来补充它。这些库通过名为 npm 的 JavaScript 包管理工具进行发布，构建了 JavaScript 生态系统。有关使用库的信息，请参阅“用例：在 Node.js 中创建 CLI 应用程序”章节。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *本章介绍了对象。*
 

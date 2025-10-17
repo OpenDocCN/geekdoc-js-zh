@@ -18,13 +18,13 @@
 
 この章では、さまざまな条件下で変わる`this`の参照先と関数やArrow Functionとの関係を見ていきます。また、実際にどのような状況で問題が発生するかを知り、`this`の動きを予測可能にするにはどのようにするかを見ていきます。
 
-## [](#execution-context-this)*実行コンテキストと`this`*
+## *実行コンテキストと`this`*
 
 *最初に「JavaScriptとは」の章において、JavaScriptには実行コンテキストとして"Script"と"Module"があるという話をしました。どの実行コンテキストでJavaScriptのコードを評価するかは、実行環境によってやり方が異なります。この章では、ブラウザの`script`要素と`type`属性を使い、それぞれの実行コンテキストを明示しながら`this`の動きを見ていきます。
 
 トップレベル（もっとも外側のスコープ）にある`this`は、実行コンテキストによって値が異なります。実行コンテキストの違いは意識しにくい部分であり、トップレベルで`this`を使うと混乱を生むことになります。そのため、コードのトップレベルにおいては`this`を使うべきではありませんが、それぞれの実行コンテキストにおける動作を紹介します。
 
-### [](#script-this)*スクリプトにおける`this`*
+### *スクリプトにおける`this`*
 
 *実行コンテキストが"Script"である場合、トップレベルのスコープに書かれた`this`はグローバルオブジェクトを参照します。グローバルオブジェクトは、実行環境ごとに異なるものが定義されています。ブラウザのグローバルオブジェクトは`window`オブジェクト、Node.jsのグローバルオブジェクトは`global`オブジェクトとなります。
 
@@ -35,7 +35,7 @@
 console.log(this); // => window </script> 
 ```
 
-### [](#module-this)*モジュールにおける`this`*
+### *モジュールにおける`this`*
 
 *実行コンテキストが"Module"である場合、そのトップレベルのスコープに書かれた`this`は常に`undefined`となります。
 
@@ -57,13 +57,13 @@ console.log(this); // => undefined </script>
 console.log(globalThis); 
 ```
 
-## [](#function-and-method-this)*関数とメソッドにおける`this`*
+## *関数とメソッドにおける`this`*
 
 ***関数**を定義する方法として、`function`キーワードによる関数宣言と関数式、Arrow Functionなどがあります。`this`が参照先を決めるルールは、Arrow Functionとそれ以外の関数定義の方法で異なります。
 
 そのため、まずは関数定義の種類について振り返ってから、それぞれの`this`について見ていきます。
 
-### [](#type-of-function)*関数の種類*
+### *関数の種類*
 
 *「関数と宣言」の章で詳しく紹介していますが、関数の定義方法と呼び出し方について改めて振り返ってみましょう。**関数**を定義する場合には、次の3つの方法を利用します。
 
@@ -85,7 +85,7 @@ function fn() {}
 fn(); 
 ```
 
-### [](#type-of-method)*メソッドの種類*
+### *メソッドの種類*
 
 *JavaScriptではオブジェクトのプロパティが関数である場合にそれを**メソッド**と呼びます。一般的にはメソッドも含めたものを**関数**と言い、関数宣言などとプロパティである関数を区別する場合に**メソッド**と呼びます。
 
@@ -135,7 +135,7 @@ obj.method();
 
 最初に書いたように`this`の挙動は、Arrow Functionの関数定義とそれ以外（`function`キーワードやメソッドの短縮記法）の関数定義で異なります。そのため、まずは**Arrow Function 以外**の関数やメソッドにおける`this`を見ていきます。
 
-## [](#function-without-arrow-function-this)*非箭头函数中的`this`*
+## *非箭头函数中的`this`*
 
 *非箭头函数（包括方法）中的`this`在执行时确定其值。换句话说，`this`就像是一个传递给函数的隐含参数，其传递的值在函数执行时确定。
 
@@ -168,7 +168,7 @@ obj1["obj2"]["method"]();
 
 `this`的值不是在函数定义时确定的，而是在调用时确定的。这是在后面将要介绍的“`this`引起的问题模式”中详细介绍的内容。在非箭头函数中，仅从函数定义来看无法确定`this`的值。
 
-### [](#function-declaration-expression-this)*函数声明或函数表达式中的`this`*
+### *函数声明或函数表达式中的`this`*
 
 *首先，让我们看看函数声明或函数表达式的情况。
 
@@ -210,7 +210,7 @@ outer();
 
 strict mode 是为了防止这种难以预料的行为而引入的。然而，strict mode 之外的其他函数中的`this`将变为`undefined`，因此没有用途。因此，不需要在方法之外使用`this`。
 
-### [](#method-this)*方法调用中的`this`*
+### *方法调用中的`this`*
 
 *接下来，让我们看看方法的情况。在方法的情况下，该方法属于某个对象。这是因为，在 JavaScript 中，将作为对象属性指定的函数称为方法。
 
@@ -267,13 +267,13 @@ const obj1 = {
 console.log(obj1.obj2.obj3.method() === obj1.obj2.obj3); // => true 
 ```
 
-## [](#this-problem)*`this`引起的问题模式*
+## *`this`引起的问题模式*
 
 *我们已经了解了`this`可以引用函数（包括方法）的调用基础对象。`this`可以作为直接写入所属对象的替代品来使用，但`this`也有各种问题。
 
 这个问题的原因在于`this`引用的值在函数调用时确定。下面将详细介绍导致问题的两种主要模式的示例和各自的解决方案。
 
-### [](#assign-this-function)*问题：将包含`this`的函数代入变量时*
+### *问题：将包含`this`的函数代入变量时*
 
 *在 JavaScript 中，作为方法定义的函数有时会被当作普通函数调用。这是因为方法是将函数作为值持有的属性，属性可以被重新赋值给变量。
 
@@ -321,7 +321,7 @@ say(); // => TypeError: Cannot read property 'fullName' of undefined
 
 另一种方法是，通过指定`this`值来调用函数的方法来执行函数。
 
-#### [](#call-apply-bind)*解决方法：call、apply、bind 方法*
+#### *解决方法：call、apply、bind 方法*
 
 *还有一种方法可以显式指定函数或方法的`this`并执行函数。 `Function`（函数对象）提供了`call`、`apply`、`bind`等方法，用于显式指定`this`并执行函数。*
 
@@ -420,7 +420,7 @@ console.log(sayPerson()); // => "こんにちは Brendan Eich！"
 
 通过使用`call`、`apply`、`bind`方法，可以在明确指定`this`的情况下调用函数。 但是，每次调用函数时都使用这些方法会导致需要为调用函数而调用函数，这样会变得繁琐。 因此，基本上最好的方法是“将作为方法定义的函数作为方法调用”。 在其中，如果确实需要固定`this`，则可以使用`call`、`apply`、`bind`方法。
 
-### [](#callback-and-this)*问题：回调函数和`this`*
+### *问题：回调函数和`this`*
 
 *在回调函数中引用`this`可能会导致问题。 这个问题在处理 Array 的`map`方法等回调函数时很容易发生。*
 
@@ -483,7 +483,7 @@ const Prefixer = {
 Prefixer.prefixArray(["a", "b", "c"]); // => TypeError: Cannot read property 'prefix' of undefined 
 ```
 
-#### [](#substitute-this)*解决方法：将`this`赋值给临时变量*
+#### *解决方法：将`this`赋值给临时变量*
 
 *回调函数内的`this`引用会发生变化的问题的解决方法是将`this`赋值给另一个变量，以保持其引用。*
 
@@ -532,7 +532,7 @@ console.log(prefixedStrings); // => ["pre-a", "pre-b", "pre-c"]
 
 但是，这些解决方法需要意识到回调函数中`this`的变化。 问题的根源在于方法调用及其中的回调函数中的`this`发生了变化。 在 ES2015 中，引入了箭头函数作为一种不改变`this`的回调函数定义方法。
 
-#### [](#arrow-function-callback)*対処法: Arrow Functionでコールバック関数を扱う*
+#### *対処法: Arrow Functionでコールバック関数を扱う*
 
 *通常の関数やメソッドは呼び出し時に暗黙的に`this`の値を受け取り、関数内の`this`はその値を参照します。 一方、Arrow Functionはこの暗黙的な`this`の値を受け取りません。 そのためArrow Function 内の`this`は、スコープチェーンの仕組みと同様に外側の関数（この場合は`prefixArray`メソッド）を探索します。 これにより、Arrow Functionで定義したコールバック関数は呼び出し方には関係なく、常に外側の関数の`this`をそのまま利用します。
 
@@ -561,7 +561,7 @@ console.log(prefixedStrings); // => ["pre-a", "pre-b", "pre-c"]
 
 このArrow Functionと`this`の関係についてより詳しく見ていきます。
 
-## [](#arrow-function-this)*Arrow Functionと`this`*
+## *Arrow Functionと`this`*
 
 *Arrow Functionで定義された関数やメソッドにおける`this`がどの値を参照するかは関数の定義時（静的）に決まります。 一方、Arrow Functionではない関数においては、`this`は呼び出し元に依存するため関数の実行時（動的）に決まります。
 
@@ -630,7 +630,7 @@ const innerArrowFunction = outer();
 console.log(innerArrowFunction()); // => undefined 
 ```
 
-### [](#method-callback-arrow-function)*方法和回调函数与 Arrow Function*
+### *方法和回调函数与 Arrow Function*
 
 *在方法内使用回调函数是更有效地使用 Arrow Function 的模式。使用`function`关键字定义回调函数时，需要考虑回调函数的调用方式，因为使用`function`关键字定义的函数中的`this`值会根据调用方式而变化。
 
@@ -688,7 +688,7 @@ const prefixedStrings = Prefixer.prefixArray(["a", "b", "c"]);
 console.log(prefixedStrings); // => ["pre-a", "pre-b", "pre-c"] 
 ```
 
-### [](#not-bind-arrow-function)*Arrow Function 不能绑定`this`*
+### *Arrow Function 不能绑定`this`*
 
 *在 Arrow Function 定义的函数中，使用`call`、`apply`、`bind`指定`this`的行为会被忽略。这是因为 Arrow Function 没有`this`。
 
@@ -723,7 +723,7 @@ console.log(obj.method()); // => obj
 console.log(obj.method.call("THAT")); // => "THAT" 
 ```
 
-## [](#conclusion)*总结*
+## *总结*
 
 *介绍了`this`是一个根据情况引用不同值的关键字。以下是对`this`评估结果的总结。
 

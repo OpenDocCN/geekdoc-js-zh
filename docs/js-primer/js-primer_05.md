@@ -34,7 +34,7 @@ GitHub Discussions（讨论区）的使用方法已总结在下面的帖子中�
 
 [`goo.gl/forms/lOx4ckFyb0fB9cBM2`](https://goo.gl/forms/lOx4ckFyb0fB9cBM2)
 
-## [](#pull-request)*修复问题*
+## *修复问题*
 
 *这本书的所有文字和示例源代码都在 GitHub 上公开。
 
@@ -48,7 +48,7 @@ GitHub Discussions（讨论区）的使用方法已总结在下面的帖子中�
 
 从修复一个拼写错误到修复技术性错误，无论您做何种修正，我们都表示感谢。如果您发现了问题，请尝试修复它。
 
-## [](#reference)*参考*
+## *参考*
 
 **[专业书籍也会有错误：柴田 芳樹 (Yoshiki Shibata)：So-net 博客](https://yshibata.blog.ss-blog.jp/2015-12-23)**
 

@@ -6,7 +6,7 @@
 
 ECMAScript 是由 [Ecma International](https://www.ecma-international.org/ "Ecma International") 这个组织标准化的一种规范。Ecma International 还在标准化 ECMAScript 以外的 C# 或 Dart 等语言。其中的技术委员会 39（TC39）是核心，负责讨论 ECMAScript 规范。这个技术委员会由 Microsoft、Mozilla、Google、Apple 等浏览器供应商和 ECMAScript 相关的企业组成。
 
-## [](#history)*ECMAScript 的版本历史*
+## *ECMAScript 的版本历史*
 
 *在这里，简单回顾一下 ECMAScript 的版本历史。
 
@@ -25,7 +25,7 @@ ECMAScript 是由 [Ecma International](https://www.ecma-international.org/ "Ecma
 
 从 ES5.1 到 ES2015 需要 4 年的时间，而 ES2015 以后每年都有发布。能够实现每年稳定发布，是因为 ES2015 以后进行了规范制定过程的变化。
 
-## [](#living-standard)*成为 Living Standard 的 ECMAScript*
+## *成为 Living Standard 的 ECMAScript*
 
 *目前，ECMAScript 规范草案由 GitHub 上的 [tc39/ecma262](https://github.com/tc39/ecma262 "tc39/ecma262: Status, process, and documents for ECMA262") 管理，并持续更新。因此，真正的最新 ECMAScript 规范是位于 `tc39.es/ecma262/`。这种不按版本号更新，而是始终发布最新版本的规范被称为 **Living Standard**。
 
@@ -33,7 +33,7 @@ ECMAScript 是 Living Standard，但除此之外，还公开了像 ECMAScript 20
 
 在将 JavaScript 实际实现到浏览器等时，会参考 Living Standard 的 ECMAScript。这是因为浏览器本身也在不断更新，与只在固定时间点发布的带版本号的版本相比，Living Standard 更为合适。
 
-## [](#specification-process)*规范制定过程*
+## *规范制定过程*
 
 *ES2015 以前，所有规范都需要经过长时间的讨论，直到达成一致，然后才能发布。因此，ES2015 的发布需要很长时间，语言的进化也停滞不前。为了解决这个问题，TC39 改变了 ECMAScript 的制定过程，改为每年发布。
 
@@ -59,7 +59,7 @@ ECMAScript 是 Living Standard，但除此之外，还公开了像 ECMAScript 20
 
 ES2016 以降的制定过程中，并不是所有提案都会被纳入规范。⁴ 当出现其他替代提案或无法保持向后兼容性时，可能会中断提案的制定。但即便如此，由于提案作为一个单位，制定工作的浪费也将被最小化。这种模块化的提案也易于替换。
 
-## [](#try-proposal)*尝试提案的功能*
+## *尝试提案的功能*
 
 *ECMAScript 的制定过程中，阶段 4 有一项标准是“存在两个以上的实现”。因此，浏览器的 JavaScript 引擎可能已经实现了正在制定中的提案。在大多数情况下，这些实现是通过实验性的标志来实现的，可以通过启用该标志来尝试使用。
 
@@ -71,7 +71,7 @@ Polyfill 是一种提供新功能或方法等规范实现的库。例如，ES201
 
 请注意，Transpiler 和 Polyfill 只是试图使用现有功能来复制新功能的工具。因此，无法使用 Transpiler 或 Polyfill 来复制无法使用现有功能复制的提案（功能）。此外，由于可能无法完全复制，因此不应该使用 Transpiler 或 Polyfill 来学习新功能。
 
-## [](#meaning-specification-process)*了解规范及其制定过程的意义*
+## *了解规范及其制定过程的意义*
 
 *知道 ECMAScript 这种规范及其制定过程的意义是什么？主要有以下几个原因。
 
@@ -81,13 +81,13 @@ Polyfill 是一种提供新功能或方法等规范实现的库。例如，ES201
 
 +   为了查找正确的信息状态
 
-### [](#to-learn)*学习语言*
+### *学习语言*
 
 *最简单的原因是为了学习 JavaScript 这种语言本身。如果想要了解语言的细节，可以参考 ECMAScript 规范。
 
 但是，关于 JavaScript 语言功能，有优秀的参考文档网站，比如[MDN Web Docs](https://developer.mozilla.org/ja/ "MDN Web Docs")。因此，在想要学习如何使用时，可能不太需要参考 ECMAScript 规范本身。
 
-### [](#to-progress)*因为语言正在不断发展*
+### *因为语言正在不断发展*
 
 *ECMAScript 是一种 Living Standard，每天都在更新。这意味着语言规范正在不断添加新功能和修复。
 
@@ -97,7 +97,7 @@ ECMAScript 的提案（功能）是为了解决问题而提出的。当提案被
 
 当你想要了解这个规范为什么会变成现在这样时，拥有查找功能是很重要的。特别是自 ES2015 以来，制定过程变得更加开放，使用 GitHub，并且历史记录也更容易找到。
 
-### [](#to-search)*为了查找正确的信息状态*
+### *为了查找正确的信息状态*
 
 *JavaScript 是一种广泛使用的语言，因此世界上存在大量的信息。然而，通过搜索找到的信息中可能包含正确的和错误的信息。
 
@@ -107,7 +107,7 @@ ECMAScript 的提案（功能）是为了解决问题而提出的。当提案被
 
 这不仅适用于 ECMAScript，对于 Web 和浏览器的信息也同样适用。关于浏览器，存在着 HTML、DOM API、CSS 等开放规范及其各自的制定过程。
 
-### [](#ecmascript-summary)*总结*
+### *总结*
 
 *JavaScript 涵盖了 ECMAScript、Web 浏览器、Node.js、WebAssembly、WebGL、WebRTC 等广泛领域。 没有必要了解所有内容，甚至可能没有人了解所有内容。 在这种情况下，比起知识本身，更重要的是拥有在想了解某事时如何查找的方法。
 

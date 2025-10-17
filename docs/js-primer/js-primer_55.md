@@ -8,7 +8,7 @@
 
 在这个部分，为了将`App`类专注于作为事件管理者的角色，我们将`App`类中负责创建 HTML 元素的过程提取到另一个类中进行重构。
 
-## [](#component)*View 组件*
+## *View 组件*
 
 *`App`类中占据大部分的是创建与`TodoItemModel`数组对应的 Todo 列表的 HTML 元素的过程。 我们将这样的显示处理分解为各个模块，并将`App`类中创建的模块用作重构的形式。 在这里，我们将处理显示的类称为 View 组件，并通过在文件名末尾添加`View`来区分。
 
@@ -24,7 +24,7 @@ Todo 列表的显示由以下两个部件（View 组件）组成。
 
 +   `TodoListView`: Todo 列表视图组件
 
-### [](#TodoItemView)*创建 TodoItemView*
+### *创建 TodoItemView*
 
 *首先，从与 Todo 项目对应的`TodoItemView`开始创建。
 
@@ -106,7 +106,7 @@ const todoItemElement = todoItemView.createElement(todoItemModel, {
 render(todoItemElement, document.body); // <li>要素をdocument.bodyへレンダリング 
 ```
 
-### [](#TodoListView)*创建 TodoListView*
+### *创建 TodoListView*
 
 *接下来创建与 Todo 列表对应的`TodoListView`。
 
@@ -144,7 +144,7 @@ export class TodoListView {
 
 TodoListView 的`createElement`方法使用`TodoItemView`创建 Todo 项目的 HTML 元素，并将其添加到`todoListElement`中。 这个 TodoListView 的`createElement`方法也接收`onUpdateTodo`和`onDeleteTodo`的监听器函数。 但是，`TodoListView`直接将这些监听器函数传递给`TodoItemView`。 这是因为具体触发 DOM 事件的元素是在`TodoItemView`内部创建的。
 
-## [](#app-refactoring)*重构 App*
+## *重构 App*
 
 *最后，使用最近创建的`TodoItemView`类和`TodoListView`类来重构`App`类。
 
@@ -201,7 +201,7 @@ export class App {
 
 现在`App`类中的 HTML 元素创建处理已经移动到 View 类中，`App`类只负责管理 Model 和 View 之间的事件。
 
-### [](#app-event-listener)*整理 App 的事件监听器*
+### *整理 App 的事件监听器*
 
 *查看`App`类中注册的事件监听器函数，共有以下 4 种类型。
 
@@ -283,7 +283,7 @@ export class App {
 
 将监听器函数作为`App`类的方法排列，使待办事项应用的功能在代码中更加清晰可见。
 
-## [](#section-conclusion)*本节总结*
+## *本节总结*
 
 *本节内容包括以下：*
 
@@ -325,7 +325,7 @@ window.addEventListener("unload", () => {
 
 +   [`jsprimer.net/use-case/todoapp/final/more/`](https://jsprimer.net/use-case/todoapp/final/more/)
 
-## [](#todo-conclusion)*待办事项应用总结*
+## *待办事项应用总结*
 
 *本次我们将待办事项应用划分为模型和视图两个模块。通过划分模块，我们提高了代码的可读性，并使待办事项应用更容易添加新功能。关于模块划分等设计方面并没有唯一正确的答案，有各种不同的观点。*
 

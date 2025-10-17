@@ -4,7 +4,7 @@
 
 在之前的部分中，我们使用 Fetch API 进行了 Ajax 通信，并且可以显示从服务器获取的数据。最后，通过利用 Fetch API 的返回值，也就是**Promise**，我们可以整理代码并严格进行错误处理。
 
-## [](#split-function)*函数的分割*
+## *函数的分割*
 
 *首先，让我们整理一下过大的`fetchUserInfo`函数。在该函数中，我们进行了数据获取、HTML 字符串的构建以及构建的 HTML 的显示。因此，我们将创建一个用于构建 HTML 字符串的`createView`函数和一个用于显示 HTML 的`displayView`函数，并将处理过程分割开来。*
 
@@ -76,7 +76,7 @@ index.html
 </html> 
 ```
 
-## [](#error-handling)*Promise 的错误处理*
+## *Promise 的错误处理*
 
 *接下来，我们将修改`fetchUserInfo`函数，并使其返回 Fetch API 的返回值，即 Promise 对象。通过这种修改，我们可以在调用`fetchUserInfo`函数的`main`函数中处理异步处理的结果。通过 Promise 链抛出的错误可以通过 Promise 的`catch`方法在一个地方处理。*
 
@@ -113,7 +113,7 @@ function fetchUserInfo(userId) {
 } 
 ```
 
-### [](#refactor-promise-chain)*Promise 链的重构*
+### *Promise 链的重构*
 
 *当前的`fetchUserInfo`函数除了获取数据外，还进行了 HTML 的构建（`createView`）和显示（`displayView`）。由于`fetchUserInfo`函数集中了处理，可读性不佳，因此我们将其修改为仅进行数据获取的函数。同时，在`main`函数中，我们将数据获取（`fetchUserInfo`）、HTML 的构建（`createView`）和显示（`displayView`）这一系列流程改为使用 Promise 链进行。*
 
@@ -152,7 +152,7 @@ function fetchUserInfo(userId) {
 } 
 ```
 
-### [](#rewrite-to-async-function)*重写为 Async Function*
+### *重写为 Async Function*
 
 *通过 Promise 链，我们可以以与 Promise 的异步处理相同的方式编写同步处理。此外，使用 Async Function，可以以与同步处理相同的方式编写 Promise 的异步处理。不再需要 Promise 的`then`方法中嵌套的回调函数，代码更加过程化和可读性更高。此外，错误处理与同步处理一样，也可以使用`try...catch`语法。*
 
@@ -172,7 +172,7 @@ async function main() {
 } 
 ```
 
-## [](#changeable-userid)*可以更改用户 ID*
+## *可以更改用户 ID*
 
 *作为最后一步，让我们修改之前在`js-primer-example`中固定的用户 ID。 在 index.html 中添加`<input>`标签，并为从 JavaScript 中获取值而赋予一个名为`userId`的 ID。
 
@@ -272,7 +272,7 @@ function escapeHTML(strings, ...values) {
 
 ![完成的应用程序](img/15c5ac161b62092e5c6077e19e7195b1.png)
 
-## [](#section-checklist)*本节的检查清单*
+## *本节的检查清单*
 
 **将 HTML 的构建和显示逻辑分离到`createView`函数和`displayView`函数中**
 

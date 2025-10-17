@@ -31,12 +31,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 本章将学习数组的基本操作以及处理数组时的模式。
-- en: '[](#create-and-access)*配列の作成とアクセス*'
+- en: '*配列の作成とアクセス*'
   id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#create-and-access)*数组的创建与访问*'
+  zh: '*数组的创建与访问*'
 - en: '*配列の作成と要素へのアクセス方法は「データ型とリテラル」の章ですでに紹介していますが、 もう一度振り返ってみましょう。'
   id: totrans-7
   prefs: []
@@ -116,12 +116,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE6]'
-- en: '[](#array-at)*[ES2022] `Array.prototype.at`*'
+- en: '*[ES2022] `Array.prototype.at`*'
   id: totrans-22
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array-at)*[ES2022] `Array.prototype.at`*'
+  zh: '*[ES2022] `Array.prototype.at`*'
 - en: '*配列の要素にアクセスするには`配列[インデックス]`という構文を使うことを紹介しました。 その際に、配列の末尾の要素へアクセスするには、`array[array.length
     - 1]`という`length`プロパティを使う必要があります。 `array`を2 回書く必要があるなど、末尾の要素へのアクセスは少し手間が必要になっていました。'
   id: totrans-23
@@ -151,12 +151,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE8]'
-- en: '[](#detect-array)*オブジェクトが配列かどうかを判定する*'
+- en: '*オブジェクトが配列かどうかを判定する*'
   id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#detect-array)*判断对象是否为数组*'
+  zh: '*判断对象是否为数组*'
 - en: '*あるオブジェクトが配列かどうかを判定するには`Array.isArray`メソッドを利用します。 `Array.isArray`メソッドは引数が配列ならば`true`を返します。'
   id: totrans-29
   prefs: []
@@ -177,12 +177,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE10]'
-- en: '[](#typed-array)*[コラム] [ES2015] TypedArray*'
+- en: '*[コラム] [ES2015] TypedArray*'
   id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#typed-array)*[专栏] [ES2015] TypedArray*'
+  zh: '*[专栏] [ES2015] TypedArray*'
 - en: '*JavaScriptの配列は可変長のみですが、`TypedArray`という固定長でかつ型つきの配列を扱う別のオブジェクトが存在します。 `TypedArray`はバイナリデータのバッファを示すために使われるデータ型で、WebGLやバイナリを扱う場面で利用されます。
     文字列や数値などのプリミティブ型の値を直接は利用できないため、通常の配列とは用途や使い勝手が異なります。'
   id: totrans-34
@@ -204,12 +204,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 因此，在JavaScript中提到数组时，应使用`Array`。
-- en: '[](#array-destructuring)*[ES2015] 配列と分割代入*'
+- en: '*[ES2015] 配列と分割代入*'
   id: totrans-38
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#array-destructuring)*[ES2015] 数组与解构赋值*'
+  zh: '*[ES2015] 数组与解构赋值*'
 - en: '*配列の指定したインデックスの値を変数として定義し直す場合には、分割代入（Destructuring assignment）が利用できます。'
   id: totrans-39
   prefs: []
@@ -230,12 +230,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE12]'
-- en: '[](#diff-undefined-and-no-element)*[コラム] undefinedの要素と未定義の要素の違い*'
+- en: '*[コラム] undefinedの要素と未定義の要素の違い*'
   id: totrans-43
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#diff-undefined-and-no-element)*[专栏] undefined的元素与未定义的元素的区别*'
+  zh: '*[专栏] undefined的元素与未定义的元素的区别*'
 - en: '*疎な配列で該当するインデックスに要素がない場合は`undefined`を返します。 しかし、`undefined`という値も存在するため、配列に`undefined`という値がある場合に区別できません。'
   id: totrans-44
   prefs: []
@@ -261,12 +261,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE14]'
-- en: '[](#search-element)*从数组中搜索元素*'
+- en: '*从数组中搜索元素*'
   id: totrans-49
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#search-element)*从数组中搜索元素*'
+  zh: '*从数组中搜索元素*'
 - en: '*主要有以下三种目的来搜索数组中的元素。'
   id: totrans-50
   prefs: []
@@ -295,12 +295,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 由于数组提供了相应的方法，因此可以按目的查看。
-- en: '[](#indexof)*获取索引*'
+- en: '*获取索引*'
   id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#indexof)*获取索引*'
+  zh: '*获取索引*'
 - en: '*如果想知道指定元素在数组中的位置，可以使用 Array 的`indexOf`方法或`findIndex`方法^([ES2015])。 位置的概念称为**索引**（`index`），因此方法名称中也包含`index`。'
   id: totrans-56
   prefs: []
@@ -354,12 +354,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE18]'
-- en: '[](#find)*获取匹配条件的元素*'
+- en: '*获取匹配条件的元素*'
   id: totrans-65
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#find)*获取匹配条件的元素*'
+  zh: '*获取匹配条件的元素*'
 - en: '*作为从数组中获取元素的方法，也可以使用索引。 只需使用`findIndex`方法获取索引，然后使用该索引访问数组即可。'
   id: totrans-66
   prefs: []
@@ -390,12 +390,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE20]'
-- en: '[](#slice)*获取指定范围的元素*'
+- en: '*获取指定范围的元素*'
   id: totrans-72
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#slice)*获取指定范围的元素*'
+  zh: '*获取指定范围的元素*'
 - en: '*作为从数组中获取指定范围元素的方法，可以使用 Array 的`slice`方法。 `slice`方法从第一个参数的起始位置到第二个参数的结束位置（不包括结束位置的元素）提取一个新数组。
     第二个参数是可选的，如果省略，则返回包含从数组末尾到末尾的元素的新数组。'
   id: totrans-73
@@ -418,12 +418,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE22]'
-- en: '[](#get-boolean)*获取布尔值*'
+- en: '*获取布尔值*'
   id: totrans-77
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#get-boolean)*获取布尔值*'
+  zh: '*获取布尔值*'
 - en: '*最后，让我们看看如何知道指定的元素是否包含在数组中。 如果可以获取索引或元素，则可以知道该元素是否包含在数组中。'
   id: totrans-78
   prefs: []
@@ -475,12 +475,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE25]'
-- en: '[](#add-and-delete)*添加和删除*'
+- en: '*添加和删除*'
   id: totrans-87
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#add-and-delete)*添加和删除*'
+  zh: '*添加和删除*'
 - en: '*由于数组是可变长度的，因此可以添加或删除元素到创建后的数组。'
   id: totrans-88
   prefs: []
@@ -506,12 +506,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE27]'
-- en: '[](#concat)*配列同士を結合*'
+- en: '*配列同士を結合*'
   id: totrans-93
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#concat)*配列同士を結合*'
+  zh: '*配列同士を結合*'
 - en: '*Arrayの`concat`メソッドを使うことで配列と配列を結合した新しい配列を作成できます。'
   id: totrans-94
   prefs: []
@@ -532,12 +532,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE29]'
-- en: '[](#spread)*[ES2015] 配列の展開*'
+- en: '*[ES2015] 配列の展開*'
   id: totrans-98
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#spread)*[ES2015] 配列の展開*'
+  zh: '*[ES2015] 配列の展開*'
 - en: '*`...`（Spread 構文）を使うことで、配列リテラル中に既存の配列を展開できます。'
   id: totrans-99
   prefs: []
@@ -563,12 +563,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE31]'
-- en: '[](#flat)*[ES2019] 配列をフラット化*'
+- en: '*[ES2019] 配列をフラット化*'
   id: totrans-104
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#flat)*[ES2019] 配列をフラット化*'
+  zh: '*[ES2019] 配列をフラット化*'
 - en: '*Arrayの`flat`メソッド^([ES2019])を使うことで、多次元配列をフラットな配列に変換できます。 引数を指定しなかった場合は1 段階のみのフラット化ですが、引数に渡す数値でフラット化する深さを指定できます。
     配列をすべてフラット化する場合には、無限を意味する`Infinity`を値として渡すことで実現できます。'
   id: totrans-105
@@ -591,17 +591,17 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE33]'
-- en: '[](#delete-element)*配列から要素を削除*'
+- en: '*配列から要素を削除*'
   id: totrans-109
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#delete-element)*配列から要素を削除*'
-- en: '*### [](#splice)*`Array.prototype.splice`*'
+  zh: '*配列から要素を削除*'
+- en: '*### *`Array.prototype.splice`*'
   id: totrans-110
   prefs: []
   type: TYPE_NORMAL
-  zh: '*### [](#splice)*`Array.prototype.splice`*'
+  zh: '*### *`Array.prototype.splice`*'
 - en: '*配列の先頭や末尾の要素を削除する場合はArrayの`shift`メソッドや`pop`メソッドで行えます。 しかし、配列の任意のインデックスの要素を削除できません。
     配列の任意のインデックスの要素を削除するにはArrayの`splice`メソッドを利用できます。'
   id: totrans-111
@@ -628,12 +628,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE35]'
-- en: '[](#assign-to-length)*`length`プロパティへの代入*'
+- en: '*`length`プロパティへの代入*'
   id: totrans-116
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#assign-to-length)*`length`属性赋值*'
+  zh: '*`length`属性赋值*'
 - en: '*配列のすべての要素を削除することはArrayの`splice`で行えますが、 配列の`length`プロパティへの代入を利用した方法もあります。'
   id: totrans-117
   prefs: []
@@ -649,12 +649,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 将`length`属性赋值为元素数时，数组会被截断到该元素数。也就是说，将`length`属性赋值为`0`时，索引为`0`及以上的所有元素都会被删除。
-- en: '[](#assign-empty-array)*空の配列を代入*'
+- en: '*空の配列を代入*'
   id: totrans-120
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#assign-empty-array)*空数组赋值*'
+  zh: '*空数组赋值*'
 - en: '*最後に、その配列の要素を削除するのではなく、新しい空の配列を変数へ代入する方法です。 次のコードでは、`array`変数に空の配列を代入することで、`array`に空の配列を参照させられます。'
   id: totrans-121
   prefs: []
@@ -680,12 +680,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE38]'
-- en: '[](#mutable-immutable)*破壊的なメソッドと非破壊的なメソッド*'
+- en: '*破壊的なメソッドと非破壊的なメソッド*'
   id: totrans-126
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#mutable-immutable)*破坏性方法与非破坏性方法*'
+  zh: '*破坏性方法与非破坏性方法*'
 - en: '*これまで紹介してきた配列を変更するメソッドには、破壊的なメソッドと非破壊的メソッドがあります。 この破壊的なメソッドと非破壊的メソッドの違いを知ることは、意図しない結果を避けるために重要です。'
   id: totrans-127
   prefs: []
@@ -993,12 +993,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 因此，首先考虑使用非破坏性方法，如果不行的话，可以考虑使用破坏性方法。
-- en: '[](#array-iterate)*数组迭代方法*'
+- en: '*数组迭代方法*'
   id: totrans-178
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#array-iterate)*数组迭代方法*'
+  zh: '*数组迭代方法*'
 - en: '*在“Loop and Iteration”章节中，我们部分介绍了对数组进行迭代处理的方法，现在让我们重新看一下相关的 Array 方法。 `forEach`、`map`、`filter`、`reduce`方法是迭代处理中经常使用的。
     这些方法都需要一个回调函数作为参数，因此被称为高阶函数。'
   id: totrans-179
@@ -1006,12 +1006,12 @@
   type: TYPE_NORMAL
   zh: '*在“循环与迭代”章节中，我们部分介绍了对数组进行迭代处理的方法，现在让我们重新看一下相关的 Array 方法。 `forEach`、`map`、`filter`、`reduce`方法是迭代处理中经常使用的。
     这些方法都需要一个回调函数作为参数，因此被称为高阶函数。*'
-- en: '[](#array-foreach)*`Array.prototype.forEach`*'
+- en: '*`Array.prototype.forEach`*'
   id: totrans-180
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array-foreach)*`Array.prototype.forEach`*'
+  zh: '*`Array.prototype.forEach`*'
 - en: '*Array 的`forEach`方法会按顺序将数组元素传递给回调函数，进行迭代处理的方法。*'
   id: totrans-181
   prefs: []
@@ -1027,12 +1027,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE48]'
-- en: '[](#array-map)*`Array.prototype.map`*'
+- en: '*`Array.prototype.map`*'
   id: totrans-184
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array-map)*`Array.prototype.map`*'
+  zh: '*`Array.prototype.map`*'
 - en: '*Array 的`map`方法会按顺序将数组元素传递给回调函数，并返回一个新数组，其中包含回调函数返回的值。 这是一个非破坏性方法，用于处理数组的每个元素。'
   id: totrans-185
   prefs: []
@@ -1048,12 +1048,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE49]'
-- en: '[](#array-filter)*`Array.prototype.filter`*'
+- en: '*`Array.prototype.filter`*'
   id: totrans-188
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array-filter)*`Array.prototype.filter`*'
+  zh: '*`Array.prototype.filter`*'
 - en: '*Array 的`filter`方法会按顺序将数组元素传递给回调函数，返回回调函数返回`true`的元素组成的新数组。 这是一个非破坏性方法，用于创建一个新数组，其中包含从数组中删除不需要的元素。'
   id: totrans-189
   prefs: []
@@ -1069,12 +1069,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE50]'
-- en: '[](#array-reduce)*`Array.prototype.reduce`*'
+- en: '*`Array.prototype.reduce`*'
   id: totrans-192
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array-reduce)*`Array.prototype.reduce`*'
+  zh: '*`Array.prototype.reduce`*'
 - en: '*Array 的`reduce`方法会累加器和数组元素依次传递给回调函数，并返回一个累加器。 当你想要从数组中创建一个不包含数组的任意值时，可以使用它。'
   id: totrans-193
   prefs: []
@@ -1159,12 +1159,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE53]'
-- en: '[](#array-like)*[专栏] 类似数组对象*'
+- en: '*[专栏] 类似数组对象*'
   id: totrans-209
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#array-like)*[专栏] 类似数组对象*'
+  zh: '*[专栏] 类似数组对象*'
 - en: '*类似数组的对象称为**Array-like 对象**。Array-like 对象可以像数组一样通过索引进行访问，并且像数组一样具有`length`属性。但是，它不是数组的实例，因此指的是不具有数组原型方法的对象。'
   id: totrans-210
   prefs: []
@@ -1227,12 +1227,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE56]'
-- en: '[](#method-chain-and-high-order-function)*方法链与高阶函数*'
+- en: '*方法链与高阶函数*'
   id: totrans-222
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#method-chain-and-high-order-function)*方法链与高阶函数*'
+  zh: '*方法链与高阶函数*'
 - en: '*数组经常使用方法链的模式。 方法链是指对调用方法的返回值进行进一步的方法调用的模式。'
   id: totrans-223
   prefs: []
@@ -1292,12 +1292,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 使用方法链可以将由多个处理组成的处理看作一个整体处理。 过长的方法链会导致函数过长，难以阅读，但适度的方法链可以使处理过程更清晰。
-- en: '[](#conclusion)*总结*'
+- en: '*总结*'
   id: totrans-234
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*本章介绍了数组相关内容。'
   id: totrans-235
   prefs: []

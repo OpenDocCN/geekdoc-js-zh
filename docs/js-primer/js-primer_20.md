@@ -10,7 +10,7 @@
 
 本章将学习数组的基本操作以及处理数组时的模式。
 
-## [](#create-and-access)*数组的创建与访问*
+## *数组的创建与访问*
 
 *虽然数组的创建和访问方法已在“数据类型与字面量”章节中介绍，但让我们再次回顾一下。
 
@@ -85,7 +85,7 @@ console.log(sparseArray.length); // => 3
 console.log(sparseArray[1]); // => undefined 
 ```
 
-### [](#array-at)*[ES2022] `Array.prototype.at`*
+### *[ES2022] `Array.prototype.at`*
 
 *在介绍访问数组元素时，我们提到了使用`数组[索引]`这种结构。在这种情况下，要访问数组的最后一个元素，需要使用`array[array.length - 1]`，这需要使用`length`属性。访问最后一个元素稍微有些麻烦，因为需要两次写入`array`。
 
@@ -109,7 +109,7 @@ const array = ["a", "b", "c"];
 console.log(array[-1]); // => undefined 
 ```
 
-## [](#detect-array)*判断对象是否为数组*
+## *判断对象是否为数组*
 
 *要判断一个对象是否为数组，可以使用`Array.isArray`方法。`Array.isArray`方法如果参数是数组，则返回`true`。
 
@@ -127,7 +127,7 @@ const array = [];
 console.log(typeof array); // => "object" 
 ```
 
-### [](#typed-array)*[专栏] [ES2015] TypedArray*
+### *[专栏] [ES2015] TypedArray*
 
 *JavaScript 的数组是可变长的，但存在另一种名为`TypedArray`的对象，它具有固定长度和类型。`TypedArray`是用于表示二进制数据缓冲区的数据类型，在 WebGL 或处理二进制数据时使用。它不能直接使用字符串或数值等原始类型值，因此与普通数组的用途和易用性不同。
 
@@ -141,7 +141,7 @@ console.log(Array.isArray(typedArray)); // => false
 
 因此，在 JavaScript 中提到数组时，应使用`Array`。
 
-## [](#array-destructuring)*[ES2015] 数组与解构赋值*
+## *[ES2015] 数组与解构赋值*
 
 *在重新定义指定索引的值时，可以使用解构赋值（Destructuring assignment）。
 
@@ -157,7 +157,7 @@ console.log(second); // => "two"
 console.log(third);  // => "three" 
 ```
 
-## [](#diff-undefined-and-no-element)*[专栏] undefined 的元素与未定义的元素的区别*
+## *[专栏] undefined 的元素与未定义的元素的区别*
 
 *在稀疏数组中，如果对应的索引没有元素，则返回`undefined`。但是，也存在`undefined`这个值，因此当数组中存在`undefined`值时，无法区分。
 
@@ -183,7 +183,7 @@ console.log(Object.hasOwn(denseArray, 1)); // => true
 console.log(Object.hasOwn(sparseArray, 1)); // => false 
 ```
 
-## [](#search-element)*从数组中搜索元素*
+## *从数组中搜索元素*
 
 *主要有以下三种目的来搜索数组中的元素。
 
@@ -195,7 +195,7 @@ console.log(Object.hasOwn(sparseArray, 1)); // => false
 
 由于数组提供了相应的方法，因此可以按目的查看。
 
-### [](#indexof)*获取索引*
+### *获取索引*
 
 *如果想知道指定元素在数组中的位置，可以使用 Array 的`indexOf`方法或`findIndex`方法^([ES2015])。 位置的概念称为**索引**（`index`），因此方法名称中也包含`index`。
 
@@ -270,7 +270,7 @@ console.log(lastRecordIndex); // => 3
 console.log(records[lastRecordIndex]); // => { date: "2020/12/4", count: 12 } 
 ```
 
-### [](#find)*获取匹配条件的元素*
+### *获取匹配条件的元素*
 
 *作为从数组中获取元素的方法，也可以使用索引。 只需使用`findIndex`方法获取索引，然后使用该索引访问数组即可。
 
@@ -320,7 +320,7 @@ console.log(firstRecord); // => { date: "2020/12/2", count: 11 }
 console.log(lastRecord); // => { date: "2020/12/4", count: 12 } 
 ```
 
-### [](#slice)*获取指定范围的元素*
+### *获取指定范围的元素*
 
 *作为从数组中获取指定范围元素的方法，可以使用 Array 的`slice`方法。 `slice`方法从第一个参数的起始位置到第二个参数的结束位置（不包括结束位置的元素）提取一个新数组。 第二个参数是可选的，如果省略，则返回包含从数组末尾到末尾的元素的新数组。
 
@@ -348,7 +348,7 @@ console.log(array.slice(4, 1)); // => []
 -5    -4    -3    -2    -1 
 ```
 
-### [](#get-boolean)*获取布尔值*
+### *获取布尔值*
 
 *最后，让我们看看如何知道指定的元素是否包含在数组中。 如果可以获取索引或元素，则可以知道该元素是否包含在数组中。
 
@@ -395,7 +395,7 @@ const isIncludedBlueColor = colors.some((obj) => {
 console.log(isIncludedBlueColor); // => true 
 ```
 
-## [](#add-and-delete)*添加和删除*
+## *添加和删除*
 
 *由于数组是可变长度的，因此可以添加或删除元素到创建后的数组。
 
@@ -421,7 +421,7 @@ console.log(shiftedItem); // => "S"
 console.log(array); // => ["A", "B", "C"] 
 ```
 
-## [](#concat)*配列同士を結合*
+## *配列同士を結合*
 
 *Arrayの`concat`メソッドを使うことで配列と配列を結合した新しい配列を作成できます。
 
@@ -439,7 +439,7 @@ const newArray = array.concat("新しい要素");
 console.log(newArray); // => ["A", "B", "C", "新しい要素"] 
 ```
 
-## [](#spread)*[ES2015] 配列の展開*
+## *[ES2015] 配列の展開*
 
 *`...`（Spread 構文）を使うことで、配列リテラル中に既存の配列を展開できます。
 
@@ -463,7 +463,7 @@ const newArray = ["X", ...array, "Z"];
 console.log(newArray); // => ["X", "A", "B", "C", "Z"] 
 ```
 
-## [](#flat)*[ES2019] 配列をフラット化*
+## *[ES2019] 配列をフラット化*
 
 *Arrayの`flat`メソッド^([ES2019])を使うことで、多次元配列をフラットな配列に変換できます。 引数を指定しなかった場合は1 段階のみのフラット化ですが、引数に渡す数値でフラット化する深さを指定できます。 配列をすべてフラット化する場合には、無限を意味する`Infinity`を値として渡すことで実現できます。
 
@@ -484,9 +484,9 @@ const array = ["A", "B", "C"];
 console.log(array.flat()); // => ["A", "B", "C"] 
 ```
 
-## [](#delete-element)*配列から要素を削除*
+## *配列から要素を削除*
 
-*### [](#splice)*`Array.prototype.splice`*
+*### *`Array.prototype.splice`*
 
 *要删除数组的开头或结尾元素，可以使用 Array 的`shift`方法或`pop`方法。但是，无法删除任意索引处的元素。要删除任意索引处的元素，请使用 Array 的`splice`方法。*
 
@@ -513,7 +513,7 @@ array.splice(0, array.length);
 console.log(array.length); // => 0 
 ```
 
-### [](#assign-to-length)*`length`属性赋值*
+### *`length`属性赋值*
 
 *可以通过 Array 的`splice`方法删除所有元素，也可以通过将`length`属性赋值为元素数的方法来实现。*
 
@@ -525,7 +525,7 @@ console.log(array); // => []
 
 将`length`属性赋值为元素数时，数组会被截断到该元素数。也就是说，将`length`属性赋值为`0`时，索引为`0`及以上的所有元素都会被删除。
 
-### [](#assign-empty-array)*空数组赋值*
+### *空数组赋值*
 
 *最后，不是删除数组的元素，而是将新的空数组赋值给变量。下面的代码中，通过将空数组赋值给`array`变量，使`array`引用空数组。*
 
@@ -548,7 +548,7 @@ console.log(array.length); // => 3
 array = []; // TypeError: invalid assignment to const `array' が発生 
 ```
 
-## [](#mutable-immutable)*破坏性方法与非破坏性方法*
+## *破坏性方法与非破坏性方法*
 
 *介绍过的修改数组的方法有破坏性方法和非破坏性方法。了解这两种方法的区别对于避免意外结果非常重要。*
 
@@ -711,11 +711,11 @@ console.log(newArray); // => ["A", "B2", "C"]
 
 因此，首先考虑使用非破坏性方法，如果不行的话，可以考虑使用破坏性方法。
 
-## [](#array-iterate)*数组迭代方法*
+## *数组迭代方法*
 
 *在“循环与迭代”章节中，我们部分介绍了对数组进行迭代处理的方法，现在让我们重新看一下相关的 Array 方法。 `forEach`、`map`、`filter`、`reduce`方法是迭代处理中经常使用的。 这些方法都需要一个回调函数作为参数，因此被称为高阶函数。*
 
-### [](#array-foreach)*`Array.prototype.forEach`*
+### *`Array.prototype.forEach`*
 
 *Array 的`forEach`方法会按顺序将数组元素传递给回调函数，进行迭代处理的方法。*
 
@@ -732,7 +732,7 @@ array.forEach((currentValue, index, array) => {
 // 3, 2, [1, 2, 3] 
 ```
 
-### [](#array-map)*`Array.prototype.map`*
+### *`Array.prototype.map`*
 
 *Array 的`map`方法会按顺序将数组元素传递给回调函数，并返回一个新数组，其中包含回调函数返回的值。 这是一个非破坏性方法，用于处理数组的每个元素。*
 
@@ -749,7 +749,7 @@ console.log(newArray); // => [10, 20, 30]
 console.log(array === newArray); // => false 
 ```
 
-### [](#array-filter)*`Array.prototype.filter`*
+### *`Array.prototype.filter`*
 
 *Array 的`filter`方法会按顺序将数组元素传递给回调函数，返回回调函数返回`true`的元素组成的新数组。 这是一个非破坏性方法，用于创建一个新数组，其中包含从数组中删除不需要的元素。*
 
@@ -766,7 +766,7 @@ console.log(newArray); // => [1, 3]
 console.log(array === newArray); // => false 
 ```
 
-### [](#array-reduce)*`Array.prototype.reduce`*
+### *`Array.prototype.reduce`*
 
 *Array 的`reduce`方法会累加器和数组元素依次传递给回调函数，并返回一个累加器。 当你想要从数组中创建一个不包含数组的任意值时，可以使用它。*
 
@@ -821,7 +821,7 @@ function sum(array) {
 console.log(sum(array)); // => 6 
 ```
 
-## [](#array-like)*[专栏] 类似数组对象*
+## *[专栏] 类似数组对象*
 
 *类似数组的对象称为**Array-like 对象**。Array-like 对象可以像数组一样通过索引进行访问，并且像数组一样具有`length`属性。但是，它不是数组的实例，因此指的是不具有数组原型方法的对象。*
 
@@ -869,7 +869,7 @@ function myFunc() {
 myFunc("a", "b", "c"); 
 ```
 
-## [](#method-chain-and-high-order-function)*方法链与高阶函数*
+## *方法链与高阶函数*
 
 *数组经常使用方法链的模式。 方法链是指对调用方法的返回值进行进一步的方法调用的模式。*
 
@@ -922,7 +922,7 @@ console.log(versionNames); // => ["ECMAScript 1", "ECMAScript 2", "ECMAScript 3"
 
 使用方法链可以将由多个处理组成的处理看作一个整体处理。 过长的方法链会导致函数过长，难以阅读，但适度的方法链可以使处理过程更清晰。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *本章介绍了数组相关内容。
 

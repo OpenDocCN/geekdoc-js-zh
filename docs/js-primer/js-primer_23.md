@@ -15,7 +15,7 @@ JavaScript 的数据类型可以分为原始类型和对象（详细信息请参
 
 本章将解释为什么原始类型的值可以调用对象的函数。
 
-## [](#primitive-type-and-wrapper-object)*原始类型与包装对象*
+## *原始类型与包装对象*
 
 *在原始类型数据中，真值（Boolean）、数值（Number）、BigInt、字符串（String）和符号（Symbol）各自都有对应的对象。例如，对于字符串，有`String`对象。
 
@@ -53,7 +53,7 @@ const stringWrapper = new String("文字列");
 console.log(typeof stringWrapper); // => "object" 
 ```
 
-## [](#convert-primitive-to-wrapper)*从原始类型值到包装对象的自动转换*
+## *从原始类型值到包装对象的自动转换*
 
 *在 JavaScript 中，当对原始类型的值进行属性访问时，会自动将其转换为对应的包装对象。例如，字符串`"string"`会自动转换为类似`new String("string")`的包装对象。这使得原始类型的字符串可以调用`String`的实例方法。
 
@@ -96,7 +96,7 @@ const str = "文字列";
 const stringWrapper = new String("文字列"); 
 ```
 
-## [](#wrapper-object-summary)*总结*
+## *总结*
 
 *本章解释了为什么原始类型的值可以调用方法。其背后的机制是存在针对原始类型的包装对象。在访问原始类型的属性时，会自动转换为包装对象，从而使得方法调用等操作成为可能。
 

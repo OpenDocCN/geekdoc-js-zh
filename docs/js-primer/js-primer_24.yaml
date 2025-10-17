@@ -30,12 +30,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 然而，为了理解现有代码，您还需要了解 ES2015 之前确定的旧机制。因为现有代码有时会使用旧机制编写。此外，在 JavaScript 中，可以混合使用旧机制和新机制编写代码。由于旧机制的作用域存在许多不直观的行为，因此我们也会补充介绍旧机制。
-- en: '[](#what-is-scope)*作用域是什么*'
+- en: '*作用域是什么*'
   id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#what-is-scope)*作用域是什么*'
+  zh: '*作用域是什么*'
 - en: '*作用域决定了变量名或函数等可被引用的范围。在作用域中定义的变量只能在该作用域内部引用，外部无法引用。'
   id: totrans-7
   prefs: []
@@ -101,12 +101,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 由于作用域不同，因此可以在不同作用域中定义相同名称的变量。作用域的存在使得可以在每个作用域中定义相同名称的变量，因此作用域的作用非常重要。
-- en: '[](#block-scope)*块级作用域*'
+- en: '*块级作用域*'
   id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#block-scope)*块级作用域*'
+  zh: '*块级作用域*'
 - en: '*用`{`和`}`括起来的范围称为块（请参阅“语句和表达式”章节）。块也会创建作用域。在块内声明的变量只能在作用域内部引用，外部无法引用。'
   id: totrans-21
   prefs: []
@@ -142,12 +142,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE6]'
-- en: '[](#scope-chain)*作用域链*'
+- en: '*作用域链*'
   id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#scope-chain)*作用域链*'
+  zh: '*作用域链*'
 - en: '*函数和块可以嵌套编写，同样，作用域也可以嵌套。在下面的代码中，我们在一个块内部编写了另一个块。在这种情况下，我们将外部块级作用域称为`OUTER`，内部块级作用域称为`INNER`。'
   id: totrans-29
   prefs: []
@@ -240,12 +240,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 作用域是层级结构的，当引用变量时，可以通过作用域链来解决哪些变量是可访问的。
-- en: '[](#global-scope)*全局作用域*'
+- en: '*全局作用域*'
   id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#global-scope)*全局作用域*'
+  zh: '*全局作用域*'
 - en: '*以前我们将代码写在程序的顶层，但是这里也存在一个称为**全局作用域**的隐式作用域。全局作用域就像其名称一样，是最外层的作用域，在程序执行时会隐式创建。'
   id: totrans-47
   prefs: []
@@ -313,12 +313,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 避免与内置对象相同的名称是困难的。这是因为内置对象在每个执行环境（如浏览器或 Node.js 等）中都有许多独立定义的对象。通过利用函数等将程序重点放在小范围的作用域中编写，即使存在与内置对象相同名称的变量，也可以限定影响范围。
-- en: '[](#reduce-scope)*[专栏] 减小变量的作用域*'
+- en: '*[专栏] 减小变量的作用域*'
   id: totrans-60
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#reduce-scope)*[专栏] 减小变量的作用域*'
+  zh: '*[专栏] 减小变量的作用域*'
 - en: '*不仅仅是全局变量，减小特定变量的作用域是一件好事。因为有时候会意外地引用全局变量而不是当前作用域的变量，反之亦然。如果所有变量都在全局作用域中，那么就无法了解变量在哪里被引用。避免这种情况的简单方法是尽可能在使用的作用域内定义变量。'
   id: totrans-61
   prefs: []
@@ -354,12 +354,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 随着代码量的增加，人们一次能够理解的量也有限制。因此，有必要将处理组织到人们一次能够理解的范围内。为了减小变量的作用域，将处理封装为函数是一种常用的方法来解决这个问题。
-- en: '[](#hoisting-var)*函数作用域和 var 的提升*'
+- en: '*函数作用域和 var 的提升*'
   id: totrans-68
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#hoisting-var)*函数作用域和 var 的提升*'
+  zh: '*函数作用域和 var 的提升*'
 - en: '*变量声明可以使用`var`、`let`、`const`。正如在“变量和声明”章节中所介绍的，“`let`是改进版的`var`”，`let`是为了改进`var`而引入的语法。`const`除了不能重新赋值之外，与`let`的行为相同。因此，在可以使用`let`的情况下，没有理由使用`var`，但是由于现有代码或现有库中仍然使用`var`，因此需要理解`var`的行为。'
   id: totrans-69
   prefs: []
@@ -458,12 +458,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样，`var`与`let`、`const`有不同的行为。`var`通过变量提升来忽略块级作用域，自动将声明部分移动到函数作用域的顶部，这带来了一些难以预测的问题。避免这个问题的最简单方法是不使用`var`，但在包含`var`的代码中需要注意这种行为。
-- en: '[](#function-declaration-hoisting)*函数声明和变量提升*'
+- en: '*函数声明和变量提升*'
   id: totrans-88
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#function-declaration-hoisting)*函数声明和变量提升*'
+  zh: '*函数声明和变量提升*'
 - en: '*使用`function`关键字进行函数声明也会像`var`一样被提升到最近的函数或全局作用域的顶部。 在下面的代码中，您可以在实际声明`hello`函数的行之前调用函数。'
   id: totrans-89
   prefs: []
@@ -499,12 +499,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE25]'
-- en: '[](#immediate-function)*[专栏] 立即执行函数*'
+- en: '*[专栏] 立即执行函数*'
   id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#immediate-function)*[专栏] 立即执行函数*'
+  zh: '*[专栏] 立即执行函数*'
 - en: '*立即执行函数（**IIFE**，*Immediately-Invoked Function Expression*）是为了避免全局作用域污染而产生的习惯用法。'
   id: totrans-97
   prefs: []
@@ -547,12 +547,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE28]'
-- en: '[](#closure)*闭包*'
+- en: '*闭包*'
   id: totrans-105
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#closure)*闭包*'
+  zh: '*闭包*'
 - en: '*最后，在本章中我们将探讨与函数和作用域相关的特性，称为闭包。 闭包是指函数具有的一种性质，即“可以保持对外部作用域中变量的引用”。'
   id: totrans-106
   prefs: []
@@ -585,12 +585,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这种机制使得函数好像具有状态（在这里是逐渐增加的`count`值）一样，背后的原理是闭包。由于闭包很难直观理解，因此首先需要了解“静态作用域”和“内存管理机制”来理解闭包。
-- en: '[](#static-scope)*静的スコープ*'
+- en: '*静的スコープ*'
   id: totrans-112
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#static-scope)*静态范围*'
+  zh: '*静态范围*'
 - en: '*クロージャーを理解するために、今まで意識してこなかったスコープの性質について見ていきます。 JavaScriptのスコープには、どの識別子がどの変数を参照するかが静的に決定されるという性質があります。
     つまり、コードを実行する前にどの識別子がどの変数を参照しているかがわかるということです。'
   id: totrans-113
@@ -647,12 +647,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这种静态范围的机制是使用`function`关键字声明的函数声明、方法、Arrow Function等所有函数共有的特性。
-- en: '[](#dynamic-scope)*[コラム] 動的スコープ*'
+- en: '*[コラム] 動的スコープ*'
   id: totrans-123
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#dynamic-scope)*[专栏] 动态范围*'
+  zh: '*[专栏] 动态范围*'
 - en: '*JavaScriptは静的スコープです。 しかし、動的スコープという呼び出し元により識別子がどの変数を参照するかが変わる仕組みを持つ言語もあります。'
   id: totrans-124
   prefs: []
@@ -679,12 +679,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: JavaScript是静态范围，变量或函数的引用是由静态范围决定的，因此它不是上述的动态范围。然而，JavaScript中也有`this`这个特殊关键字，它的引用会根据调用源而动态变化。关于`this`这个关键字将在下一章中解释。
-- en: '[](#memory-management)*メモリ管理の仕組み*'
+- en: '*メモリ管理の仕組み*'
   id: totrans-129
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#memory-management)*内存管理机制*'
+  zh: '*内存管理机制*'
 - en: '*プログラミング言語は、使わなくなった変数やデータを解放する仕組みを持っています。 なぜなら、変数や関数を定義すると定義されたデータはメモリ上に確保されますが、ハードウェアのメモリは有限だからです。
     そのため、メモリからデータがあふれないように、必要なタイミングで不要なデータをメモリから解放する必要があります。'
   id: totrans-130
@@ -775,12 +775,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: つまり、関数の実行が終了したことと関数内で定義したデータの解放のタイミングは直接関係ないことがわかります。 そのデータがメモリ上から解放されるかどうかはあくまで、そのデータが参照されているかによって決定されます。
-- en: '[](#why-closure-work)*クロージャーがなぜ動くのか*'
+- en: '*クロージャーがなぜ動くのか*'
   id: totrans-146
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#why-closure-work)*クロージャーがなぜ動くのか*'
+  zh: '*クロージャーがなぜ動くのか*'
 - en: '*ここまでで「静的スコープ」と「メモリ管理の仕組み」について説明してきました。'
   id: totrans-147
   prefs: []
@@ -876,12 +876,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE36]'
-- en: '[](#closure-usecase)*闭包的用途*'
+- en: '*闭包的用途*'
   id: totrans-164
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#closure-usecase)*闭包的用途*'
+  zh: '*闭包的用途*'
 - en: '*闭包可用于各种用途，但经常用于以下情况：'
   id: totrans-165
   prefs: []
@@ -948,12 +948,12 @@
   type: TYPE_NORMAL
   zh: JavaScript 提供了便于使用闭包的环境，例如可以通过 Arrow Function 或高阶函数如 Array 的`forEach`方法来定义函数。
     在理解函数时，理解闭包是很重要的。
-- en: '[](#closure-vs-function-object)*[专栏] 具有状态的函数对象*'
+- en: '*[专栏] 具有状态的函数对象*'
   id: totrans-177
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#closure-vs-function-object)*[专栏] 具有状态的函数对象*'
+  zh: '*[专栏] 具有状态的函数对象*'
 - en: '*在 JavaScript 中，函数是一种对象。 作为对象，函数可以直接分配值给属性。 因此，即使不使用闭包，也可以通过以下方式为函数设置属性并保持状态。'
   id: totrans-178
   prefs: []
@@ -974,12 +974,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE40]'
-- en: '[](#conclusion)*总结*'
+- en: '*总结*'
   id: totrans-182
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*本章主要学习了关于函数的作用域。'
   id: totrans-183
   prefs: []

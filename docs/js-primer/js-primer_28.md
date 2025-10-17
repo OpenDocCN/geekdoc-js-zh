@@ -6,7 +6,7 @@
 
 本章将从异步处理是什么开始，探讨异步处理中的异常处理和异步处理的方法。
 
-## [](#sync-processing)*同步处理*
+## *同步处理*
 
 *许多编程语言将代码的评估方式分为**同步处理（sync）**和**异步处理（async）**两大类。
 
@@ -46,7 +46,7 @@ taskB();
 
 在之前的例子中，处理被阻塞了 1 秒钟，因此会导致 1 秒钟内的滚动等操作无法执行。
 
-## [](#async-processing)*异步处理*
+## *异步处理*
 
 *异步处理按顺序处理代码，但不会等待一个异步处理完成就评估下一个处理。也就是说，在异步处理中，同时执行的处理有多个。
 
@@ -80,7 +80,7 @@ taskB();
 
 ![异步处理与计时器](img/7c4cf9a7c958c70e85a0602203d1afc1.png)
 
-## [](#async-and-main-thread)*异步处理是在主线程中执行的*
+## *异步处理是在主线程中执行的*
 
 *正如之前所介绍的，主线程（也称为 UI 线程）是执行重型的 JavaScript 同步处理，这会阻塞其他处理（如屏幕更新）的问题。在异步处理中也有类似的问题。这是因为 JavaScript 中的大部分异步处理都是在主线程中执行的。
 
@@ -135,7 +135,7 @@ Web Worker 在主线程之外的不同 Worker 线程中执行，因此即使在 
 
 这样，不能一概而论所有非同步处理，但了解基本非同步处理（如定时器等）是在主线程中执行的这一性质是很重要的。 JavaScript 的大部分**非同步处理**都是**非同步执行的处理**。 本书介绍的非同步处理大多数是在主线程中切换处理而执行的**并行处理（Concurrent）**。
 
-## [](#async-processing-and-error-handling)*非同步处理与异常处理*
+## *非同步处理与异常处理*
 
 *介绍了非同步处理与同步处理流程的不同之处。 这对非同步处理中的**异常处理**也有很大的影响。
 
@@ -188,7 +188,7 @@ console.log("この行は実行されます");
 
 Async Function 是建立在 Promise 之上的语法结构。 因此，理解两者都很重要，而不是只理解其中之一。
 
-## [](#promise)*[ES2015] Promise*
+## *[ES2015] Promise*
 
 *[Promise](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise)是 ES2015 中引入的用于表示异步处理状态或结果的内置对象。 异步处理返回 Promise 实例，可以在 Promise 实例上注册状态变化时调用的回调函数。
 
@@ -221,7 +221,7 @@ Promise 看起来可能有些复杂，但它是用于封装异步处理的状态
 
 实际上，让我们看看`Promise`的使用方法。
 
-### [](#promise-instance)*`Promise`实例的创建*
+### *`Promise`实例的创建*
 
 *使用`new`运算符创建`Promise`实例，此时需要传递一个名为`executor`的函数作为参数，该函数接受`resolve`和`reject`两个参数。 在`executor`函数中执行非同步处理，如果非同步处理成功，则调用`resolve`函数，如果失败，则调用`reject`函数。
 
@@ -261,7 +261,7 @@ promise.then(onFulfilled, onRejected);
 
     +   将调用`onRejected`
 
-### [](#promise-then-and-catch)*`Promise.prototype.then` 和 `Promise.prototype.catch`*
+### *`Promise.prototype.then` 和 `Promise.prototype.catch`*
 
 *因为以前没有像 Promise 这样将函数传递给构造函数的模式，所以我们将介绍具体的`then`方法用法示例。 同时，我们还将研究作为`then`方法别名的`catch`方法。
 
@@ -339,7 +339,7 @@ errorPromise("catchでエラーハンドリング").catch(error => {
 }); 
 ```
 
-### [](#promise-exception)*Promise 和异常*
+### *Promise 和异常*
 
 *如果在构造函数中发生异常，则会自动捕获异常。 发生异常的`Promise`实例将被视为失败，就像调用`reject`函数一样。 因此，如果 Promise 内部发生异常，则将调用`then`方法的第二个参数或`catch`方法中注册的错误处理回调函数。
 
@@ -359,7 +359,7 @@ throwPromise().catch(error => {
 
 因此，在 Promise 处理中，无需使用`try...catch`语法，自动捕获异常。
 
-### [](#promise-status)*Promise 的状态*
+### *Promise 的状态*
 
 *现在我们已经了解了 Promise 的`then`方法和`catch`方法的处理方式，接下来我们将整理一下`Promise`实例的状态。
 
@@ -425,7 +425,7 @@ promise.then(() => {
 
 具体来说，我们将与已更改状态的`Promise`实例一起查看`Promise.resolve`和`Promise.reject`方法的结果。
 
-### [](#promise-resolve)*`Promise.resolve`*
+### *`Promise.resolve`*
 
 *`Promise.resolve`方法是将状态变为**已解决**的`Promise`实例。
 
@@ -479,7 +479,7 @@ console.log("2\. 同期的な処理が実行されました");
 
 执行此代码时，首先执行`Promise`的构造函数，然后执行同步处理，最后通过`then`方法异步调用之前注册的回调函数。
 
-### [](#promise-reject)*`Promise.reject`*
+### *`Promise.reject`*
 
 *`Promise.reject`方法创建一个**Rejected**状态的`Promise`实例。
 
@@ -506,7 +506,7 @@ console.log("1\. 同期的な処理が実行されました");
 
 `Promise.resolve`或`Promise.reject`可以简写，因此在测试代码等情况下经常被使用。 此外，`Promise.reject`在接下来要解释的 Promise 链中用于操作 Promise 的状态。
 
-### [](#promise-chain)*Promise 链*
+### *Promise 链*
 
 *Promise 是提供非同步处理统一接口的内置对象。 使用 Promise 的统一处理方法在处理多个非同步处理时特别有效。 之前，我们只是对单个`Promise`实例使用`then`或`catch`方法注册一组回调处理。
 
@@ -615,7 +615,7 @@ Promise.reject(new Error("エラー")).catch(error => {
 
 就这样，通过`then`方法或`catch`方法链接，编写成功或失败的处理被称为 Promise 链。
 
-#### [](#promise-chain-value)*在 Promise 链中返回值*
+#### *在 Promise 链中返回值*
 
 在 Promise 链中，可以通过回调返回的值将其传递给下一个回调函数。
 
@@ -650,7 +650,7 @@ Promise.reject(new Error("失敗")).catch(error => {
 }); 
 ```
 
-#### [](#promise-then-return-promise)*通过回调函数返回`Promise`实例*
+#### *通过回调函数返回`Promise`实例*
 
 *一旦在 Promise 链中捕获一次，下一步调用的是成功处理（`then`方法）。 这是因为，当回调函数返回任意值时，将创建一个以该值解析为**Fulfilled**状态的`Promise`实例。 但是，如果回调函数返回`Promise`实例，则情况就会有所不同。
 
@@ -695,7 +695,7 @@ main().catch(error => {
 }); 
 ```
 
-#### [](#promise-finally)*[ES2018] 在 Promise 链的最后写入处理*
+#### *[ES2018] 在 Promise 链的最后写入处理*
 
 *Promise 的`finally`方法允许注册一个回调函数，在成功或失败时都会被调用。 这类似于`try...catch...finally`结构中的`finally`块。
 
@@ -738,7 +738,7 @@ dummyFetch("/resource/A").then(response => {
 }); 
 ```
 
-### [](#promise-sequential)*在 Promise 链中进行顺序处理*
+### *在 Promise 链中进行顺序处理*
 
 *Promise 链中编写异步处理流程的一个主要优点是，它可以适应异步处理的各种模式。
 
@@ -772,7 +772,7 @@ dummyFetch("/resource/A").then(response => {
 }); 
 ```
 
-### [](#promise-all)*使用`Promise.all`将多个 Promise 组合在一起*
+### *使用`Promise.all`将多个 Promise 组合在一起*
 
 *通过使用`Promise.all`，可以将多个 Promise 作为一个 Promise 处理。
 
@@ -852,7 +852,7 @@ fetchedPromise.then(([responseA, responseB]) => {
 }); 
 ```
 
-### [](#promise-race)*`Promise.race`*
+### *`Promise.race`*
 
 *`Promise.all`方法等待多个 Promise 全部完成。`Promise.race`方法接收一个 Promise，但只要有一个 Promise 完成（变为 Settled 状态），就会执行下一步操作。
 
@@ -935,7 +935,7 @@ Promise.race([
 
 在 ES2017 中，为了解决 Promise 链的不雅外观，引入了名为 Async Function 的语法结构。
 
-## [](#async-function)*[ES2017] 异步函数*
+## *[ES2017] 异步函数*
 
 *ES2017 引入了一种称为 Async Function 的语法，用于定义执行异步操作的函数。Async Function 与普通函数不同，它定义了一个必须返回 `Promise` 实例的函数。
 
@@ -969,7 +969,7 @@ doAsync().then(value => {
 
 本节将介绍 Async Function 和 `await` 表达式。
 
-## [](#declare-async-function)*Async Function 的定义*
+## *Async Function 的定义*
 
 *Async Function 是通过在函数定义中添加 `async` 关键字来定义的。JavaScript 的函数定义可以是函数声明、函数表达式、箭头函数、方法简写等。无论哪种定义方法，只要在前面加上 `async` 关键字，就可以将其定义为 Async Function。
 
@@ -990,7 +990,7 @@ const obj = { async method() {} };
 
 +   Async Function 内部可以使用 `await` 表达式
 
-## [](#async-function-return-promise)*Async Function 返回 Promise*
+## *Async Function 返回 Promise*
 
 *定义了 Async Function 的函数必定返回 `Promise` 实例。具体来说，Async Function 返回的值可以考虑以下三种情况。
 
@@ -1036,7 +1036,7 @@ exceptionFn().catch(error => {
 
 在任何情况下，Async Function 都会返回一个 Promise。从调用者的角度来看，Async Function 与返回 Promise 的普通函数没有区别。
 
-## [](#await-expression)*`await` 表达式*
+## *`await` 表达式*
 
 *`await` 表达式是以下位置可用的表达式。在以下位置之外，`await` 表达式会导致语法错误，因此无法使用。
 
@@ -1430,7 +1430,7 @@ fetchResources(resources).then((results) => {
 
 为了解决这个问题，可以像第一个`fetchResources`関数那样，通过结合使用 for 循环和`await`表达式而无需使用回调函数。 另外，还可以通过将多个异步处理组合到一个 Promise 中来避免在循环中使用`await`表达式，例如`fetchAllResources`関数。
 
-### [](#top-level-await-in-module)*[ES2022] Module 直下での`await`式*
+### *[ES2022] Module 直下での`await`式*
 
 *之前已经介绍过，ES2021 中`await`表达式只能在 Async Function 的直接作用域中使用。 在 ES2022 中，除了这一点之外，在 Module 的直接作用域中也可以使用`await`表达式。
 
@@ -1464,7 +1464,7 @@ console.log(`実行終了: ${Date.now() - startTime}ms 経過しました`);
 
 然而，由于 ES2022 中引入了顶层`await`，因此在"Module"中，此类即时执行函数是不必要的。
 
-## [](#error-first-callback)*[专栏] 错误优先回调*
+## *[专栏] 错误优先回调*
 
 *在 ECMAScript 2015（ES2015）之前，没有规范处理异步处理中的异常。 因此，在 ES2015 之前，人们普遍使用**错误优先回调**这种方式来处理异步处理中的异常。
 
@@ -1538,7 +1538,7 @@ dummyFetch("/failure/data", (error, response) => {
 
 自从 Promise 标准化以来，许多异步 API 都以 Promise 为基础提供。这也适用于 Node.js 的核心模块，目前（Node.js v20.11.1）提供了基于 Promise 的 API。因此，在新代码中使用错误优先回调的情况相当有限。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *在本章中，我们学习了关于 Promise 和 Async Function 的异步处理。
 

@@ -25,12 +25,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: また、for 文などのような構文だけではなく、配列のメソッドを利用して反復処理を行う方法もあります。 配列のメソッドを使った反復処理もよく利用されるため、合わせて見ていきます。
-- en: '[](#while-statement)*while 文*'
+- en: '*while 文*'
   id: totrans-5
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#while-statement)*while 文*'
+  zh: '*while 文*'
 - en: '*while 文は`条件式`が`true`であるならば、反復処理を行います。'
   id: totrans-6
   prefs: []
@@ -86,12 +86,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 安易にwhile 文を使うよりも、ほかの書き方で解決できないかを考えてからでも遅くはないでしょう。
-- en: '[](#infinite-loop)*[コラム] 無限ループ*'
+- en: '*[コラム] 無限ループ*'
   id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#infinite-loop)*[コラム] 無限ループ*'
+  zh: '*[コラム] 無限ループ*'
 - en: '*反復処理を扱う際に、コードの書き間違いや条件式のミスなどから無限ループを引き起こしてしまう場合があります。 たとえば、次のコードは条件式の評価結果が常に`true`となってしまうため、無限ループが発生してしまいます。'
   id: totrans-17
   prefs: []
@@ -119,12 +119,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 無限ループが発生する原因のほとんどは条件式に関連する実装ミスです。 まずは条件式の確認をしてみることで問題を解決できるはずです。
-- en: '[](#do-while-statement)*do-while 文*'
+- en: '*do-while 文*'
   id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#do-while-statement)*do-while 文*'
+  zh: '*do-while 文*'
 - en: '*do-while 文はwhile 文とほとんど同じですが実行順序が異なります。'
   id: totrans-23
   prefs: []
@@ -178,12 +178,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: この仕組みをうまく利用し、ループの開始前とループ中の処理をまとめて書くことができます。 しかし、while 文と同じくほかの書き方で解決できないかを考えてからでも遅くはないでしょう。
-- en: '[](#for-statement)*for 文*'
+- en: '*for 文*'
   id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#for-statement)*for 文*'
+  zh: '*for 文*'
 - en: '*for 文は繰り返す範囲を指定した反復処理を書くことができます。'
   id: totrans-34
   prefs: []
@@ -259,12 +259,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: JavaScriptの配列である`Array`オブジェクトには、反復処理のためのメソッドが備わっています。 そのため、配列のメソッドを使った反復処理も合わせて見ていきます。
-- en: '[](#array-foreach)*配列の`forEach`メソッド*'
+- en: '*配列の`forEach`メソッド*'
   id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#array-foreach)*配列の`forEach`メソッド*'
+  zh: '*配列の`forEach`メソッド*'
 - en: '*配列には`forEach`メソッドというfor 文と同じように反復処理を行うメソッドがあります。'
   id: totrans-49
   prefs: []
@@ -320,12 +320,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: '`forEach`はfor 文の`条件式`に相当するものはなく、必ず配列のすべての要素を反復処理します。 変数`i`といった一時的な値を定義する必要がないため、シンプルに反復処理を書けます。'
-- en: '[](#break-statement)*break 文*'
+- en: '*break 文*'
   id: totrans-60
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#break-statement)*break 文*'
+  zh: '*break 文*'
 - en: '*break 文は処理中の文から抜けて次の文へ移行する制御文です。 while、do-while、forの中で使い、処理中のループを抜けて次の文へ制御を移します。'
   id: totrans-61
   prefs: []
@@ -381,12 +381,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 当找到偶数时立即返回，这样就不需要临时变量，代码也更简洁。
-- en: '[](#array-some)*配列の`some`メソッド*'
+- en: '*配列の`some`メソッド*'
   id: totrans-72
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array-some)*数组的`some`方法*'
+  zh: '*数组的`some`方法*'
 - en: '*先ほどの`isEvenIncluded`関数は、偶数を見つけたら `true` を返す関数でした。 配列では`some`メソッドで同様のことが行えます。'
   id: totrans-73
   prefs: []
@@ -412,12 +412,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE17]'
-- en: '[](#continue-statement)*continue 文*'
+- en: '*continue 文*'
   id: totrans-78
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#continue-statement)*continue语句*'
+  zh: '*continue语句*'
 - en: '*continue 文は現在の反復処理を終了して、次の反復処理を行います。 continue 文は、while、do-while、forの中で使うことができます。'
   id: totrans-79
   prefs: []
@@ -458,12 +458,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在这种情况下，当条件变得复杂时，代码的嵌套会变得很深，代码的可读性会降低。因此，为了避免复杂的代码，我会在尽可能早的阶段停止进一步的执行。
-- en: '[](#array-filter)*配列の`filter`メソッド*'
+- en: '*配列の`filter`メソッド*'
   id: totrans-87
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#array-filter)*数组的`filter`方法*'
+  zh: '*数组的`filter`方法*'
 - en: '*配列から特定の値だけを集めた新しい配列を作るには`filter`メソッドを利用できます。'
   id: totrans-88
   prefs: []
@@ -489,12 +489,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE22]'
-- en: '[](#for-in-statement)*for...in 文*'
+- en: '*for...in 文*'
   id: totrans-93
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#for-in-statement)*for...in语句*'
+  zh: '*for...in语句*'
 - en: '*for...in 文はオブジェクトのプロパティに対して、反復処理を行います。^(1)'
   id: totrans-94
   prefs: []
@@ -569,12 +569,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样，for...in语句处理起来比较困难，但有很多替代方法。因此，最好避免使用for...in语句，而是使用`Object.keys`方法等将数组作为迭代处理。
-- en: '[](#for-of-statement)*[ES2015] for...of 文*'
+- en: '*[ES2015] for...of 文*'
   id: totrans-108
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#for-of-statement)*[ES2015] for...of语句*'
+  zh: '*[ES2015] for...of语句*'
 - en: '*最後にfor...of 文についてです。'
   id: totrans-109
   prefs: []
@@ -627,12 +627,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 此外，还有`TypedArray`、`Map`、`Set`、DOM NodeList等实现了`Symbol.iterator`的对象。for...of语句可以在这些iterable对象上用于迭代处理。
-- en: '[](#conclusion)*まとめ*'
+- en: '*まとめ*'
   id: totrans-119
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#conclusion)*总结*'
+  zh: '*总结*'
 - en: '*在这一章中，我们比较了使用循环结构（如 for 循环）和使用数组方法进行迭代处理的方式。在循环结构（如 for 循环）中，可以使用 continue
     语句和 break 语句，但在数组方法中无法使用它们。另一方面，数组方法的不同之处在于不需要管理临时变量，并且可以将处理写成回调函数。'
   id: totrans-120

@@ -15,7 +15,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 此使用案例中创建的 CLI 应用程序的目标是将给定的 Markdown 文件转换为 HTML。本节将介绍如何在使用`node`命令执行脚本时传递参数并解析命令行参数。
-- en: '[](#process-object-and-commandline-args)*`process`对象和命令行参数*'
+- en: '*`process`对象和命令行参数*'
   id: totrans-3
   prefs:
   - PREF_H2
@@ -68,7 +68,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 第 1 个和第 2 个元素始终是`node`命令和执行的脚本文件路径。换句话说，应用程序使用的是第 3 个元素及以后的元素作为命令行参数。
-- en: '[](#parse-args)*解析命令行参数*'
+- en: '*解析命令行参数*'
   id: totrans-13
   prefs:
   - PREF_H2
@@ -84,7 +84,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在本例中，我们将使用名为[commander](https://github.com/tj/commander.js/)的库来解析命令行参数。虽然您可以手动进行字符串处理，但对于此类常见操作，使用现有库会更加简单。
-- en: '[](#install-commander)*安装`commander`包*'
+- en: '*安装`commander`包*'
   id: totrans-16
   prefs:
   - PREF_H3
@@ -165,7 +165,7 @@
   zh: 此外，执行`npm install`时会同时生成`package-lock.json`文件。该文件记录了 npm 安装的包的实际版本。虽然我们将 commander
     的版本设置为`9.0`，但实际安装的将是与`9.0.x`匹配的最新版本。`package-lock.json`文件记录了实际安装的版本，这样再次执行`npm
     install`时就可以防止安装不同的版本。
-- en: '[](#esmodule)*使用 ECMAScript 模块*'
+- en: '*使用 ECMAScript 模块*'
   id: totrans-30
   prefs:
   - PREF_H3
@@ -221,7 +221,7 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE9]'
-- en: '[](#commonjs-module)*[专栏] CommonJS 模块*'
+- en: '*[专栏] CommonJS 模块*'
   id: totrans-39
   prefs:
   - PREF_H4
@@ -260,12 +260,12 @@
   type: TYPE_NORMAL
   zh: 另一方面，不支持从 CommonJS 模块导入 ECMAScript 模块的双向互操作性。 如果来自现有库的模块是 ECMAScript 模块，则使用该库的应用程序也必须是
     ECMAScript 模块。 在开发 Node.js 应用程序时使用多个包时，需要注意互操作性。
-- en: '[](#get-file-path)*从命令行参数获取文件路径*'
+- en: '*从命令行参数获取文件路径*'
   id: totrans-45
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#get-file-path)*从命令行参数获取文件路径*'
+  zh: '*从命令行参数获取文件路径*'
 - en: '*使用刚刚安装的`commander`包，获取通过命令行参数传递的文件路径。 在这个 CLI 应用程序中，将以以下命令格式接收要处理的文件路径。'
   id: totrans-46
   prefs: []
@@ -323,13 +323,13 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 通过使用类似 commander 的库来声明性地定义和处理命令行参数，而不是直接处理`process.argv`数组，可以更好地处理命令行参数。 在下一节中，将添加处理基于命令行参数获取的文件路径的过程。
-- en: '[](#syntax-error-import-statement)*[错误示例] SyntaxError: Cannot use import statement
+- en: '*[错误示例] SyntaxError: Cannot use import statement
     outside a module*'
   id: totrans-57
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
-  zh: '[](#syntax-error-import-statement)*[错误示例] SyntaxError: Cannot use import statement
+  zh: '*[错误示例] SyntaxError: Cannot use import statement
     outside a module*'
 - en: '*如果出现“无法在模块外部使用 import 语��”的错误，则表示 Node.js 无法识别`main.js`文件为 ECMAScript 模块。'
   id: totrans-58
@@ -346,12 +346,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 如使用 ECMAScript 模块所述，将`package.json`的`type`字段设置为`module`。
-- en: '[](#section-checklist)*本节的检查清单*'
+- en: '*本节的检查清单*'
   id: totrans-61
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#section-checklist)*本节的检查清单*'
+  zh: '*本节的检查清单*'
 - en: '**   确认`process.argv`数组中包含`node`命令的命令行参数'
   id: totrans-62
   prefs: []

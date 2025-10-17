@@ -30,12 +30,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 首先实现“更新 Todo 项目”，然后再实现“删除 Todo 项目”。
-- en: '[](#todo-item-update)*更新 Todo 项目*'
+- en: '*更新 Todo 项目*'
   id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#todo-item-update)*更新 Todo 项目*'
+  zh: '*更新 Todo 项目*'
 - en: '*目前，Todo 项目的完成状态尚未显示。 因此，首先需要显示 Todo 项目是否已完成。 使用 HTML 的[`<input type="checkbox">`](https://developer.mozilla.org/ja/docs/Web/HTML/Element/Input/checkbox)元素显示复选框，并表示每个
     Todo 项目的完成状态。'
   id: totrans-7
@@ -169,12 +169,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 现在，让我们开始在`todoapp`项目中实现 Todo 项目的更新。
-- en: '[](#TodoListModel-updateTodo)*向`TodoListModel`添加更新指定的 Todo 项目的处理*'
+- en: '*向`TodoListModel`添加更新指定的 Todo 项目的处理*'
   id: totrans-30
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#TodoListModel-updateTodo)*向`TodoListModel`添加更新指定的 Todo 项目的处理*'
+  zh: '*向`TodoListModel`添加更新指定的 Todo 项目的处理*'
 - en: '*首先，在`TodoListModel`中添加一个名为`updateTodo`的方法来更新指定的 Todo 项目。 TodoListModel 的`updateTodo`方法用于更新与指定
     id 匹配的 Todo 项目的完成状态（`completed`属性）。'
   id: totrans-31
@@ -192,12 +192,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE2]'
-- en: '[](#onChange-update-model)*当复选框的`change`事件发生时，更新 Todo 项目的完成状态*'
+- en: '*当复选框的`change`事件发生时，更新 Todo 项目的完成状态*'
   id: totrans-34
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#onChange-update-model)*当复选框的`change`事件发生时，更新 Todo 项目的完成状态*'
+  zh: '*当复选框的`change`事件发生时，更新 Todo 项目的完成状态*'
 - en: '*接下来，在`input`元素的`change`事件的监听函数中，更新 Todo 项目的完成状态。'
   id: totrans-35
   prefs: []
@@ -237,12 +237,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样显示和模型就同步了，实现了“Todo 项目的更新处理”。
-- en: '[](#delete)*删除功能*'
+- en: '*删除功能*'
   id: totrans-42
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#delete)*删除功能*'
+  zh: '*删除功能*'
 - en: '*接下来将实现“Todo 项目的删除功能”。'
   id: totrans-43
   prefs: []
@@ -255,12 +255,12 @@
   type: TYPE_NORMAL
   zh: 基本流程与“Todo 项目的更新功能”相同。 在`TodoListModel`中添加删除 Todo 项目的处理过程。 然后在显示中添加删除按钮，并在单击删除按钮时调用删除指定
     Todo 项目的处理过程。
-- en: '[](#TodoListModel-deleteTodo)*添加删除指定 Todo 项目的处理过程到`TodoListModel`*'
+- en: '*添加删除指定 Todo 项目的处理过程到`TodoListModel`*'
   id: totrans-45
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#TodoListModel-deleteTodo)*添加删除指定 Todo 项目的处理过程到`TodoListModel`*'
+  zh: '*添加删除指定 Todo 项目的处理过程到`TodoListModel`*'
 - en: '*首先，将删除指定 Todo 项目的`deleteTodo`方法添加到`TodoListModel`中。 `TodoListModel`的`deleteTodo`方法将删除与指定
     id 匹配的 Todo 项目。'
   id: totrans-46
@@ -283,12 +283,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE4]'
-- en: '[](#onChange-update-model)*当点击删除按钮时，删除 Todo 项目*'
+- en: '*当点击删除按钮时，删除 Todo 项目*'
   id: totrans-50
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#onChange-update-model)*当点击删除按钮时，删除 Todo 项目*'
+  zh: '*当点击删除按钮时，删除 Todo 项目*'
 - en: '*接下来添加删除按钮，并在单击按钮时调用删除 Todo 项目的处理过程(`deleteTodo`)的实现添加到`App.js`中。'
   id: totrans-51
   prefs: []
@@ -325,12 +325,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样就实现了“Todo 项目的删除功能”。
-- en: '[](#section-checklist)*本节的检查清单*'
+- en: '*本节的检查清单*'
   id: totrans-57
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#section-checklist)*本节的检查清单*'
+  zh: '*本节的检查清单*'
 - en: '**   添加了一个用于表示 Todo 项目完成状态的`<input type="checkbox">`。'
   id: totrans-58
   prefs: []

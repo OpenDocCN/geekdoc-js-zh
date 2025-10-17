@@ -16,7 +16,7 @@ Todo 应用程序将实现以下功能。 添加、更新、删除 Todo 项目�
 
 此外，要称之为应用程序，外观也必须稍微精心设计。 在本节中，首先我们将了解构成 Web 应用程序的 HTML、CSS 和 JavaScript 的角色。 在本节中，我们将完成一个只有外观没有功能的 Todo 应用程序，然后从下一节开始，我们将使用 JavaScript 实际实现 Todo 应用程序的功能。
 
-## [](#html-css-javascript)*HTML、CSS 和 JavaScript*
+## *HTML、CSS 和 JavaScript*
 
 *Todo 应用程序将作为在浏览器中运行的应用程序创建，但是要创建 Web 应用程序，需要结合 HTML、CSS 和 JavaScript 进行编写。 由于这次是一个仅在客户端解决的 Web 应用程序，不涉及 HTTP 通信等，因此不涉及服务器端语言。
 
@@ -32,7 +32,7 @@ Todo 应用程序将实现以下功能。 添加、更新、删除 Todo 项目�
 
 本次 Todo 应用程序将直接使用原始的 HTML、CSS 和 JavaScript 进行编写，而不使用特殊的 UI 框架。
 
-## [](#todo-html)*使用 HTML 定义 Todo 应用程序的结构*
+## *使用 HTML 定义 Todo 应用程序的结构*
 
 *首先定义了要创建的 Todo 应用程序的 HTML 结构。 此处定义的 HTML 和 CSS 将在整个过程中保持不变。 从下一部分开始，将仅更改 JavaScript。
 
@@ -85,7 +85,7 @@ index.html
 
 让我们逐步查看实际更改的 HTML。
 
-### [](#comment-css-file-load)*1. 加载 CSS 文件*
+### *1. 加载 CSS 文件*
 
 *在`head`元素中使用`link`标签，加载外部 CSS 文件。 此次加载的 CSS 文件包含了实现 Todo 应用程序外观所需的 CSS 定义。
 
@@ -93,7 +93,7 @@ index.html
 
 由于此 CSS 对操作没有影响，因此在本用例中仅导入外部文件而省略解释。 要正确应用定义的样式，`class`属性或 HTML 元素的结构必须匹配。 如果显示出现问题，请检查`class`属性是否正确，HTML 结构是否相同。
 
-### [](#comment-class-for-css)*2. 为 CSS 指定 class 属性*
+### *2. 为 CSS 指定 class 属性*
 
 *`div`标签的`class`属性设置为`todoapp`。 `class`属性基本上用作 CSS 装饰的标志。 此外，在同一页面中，可以为多个元素设置相同的类名。 需要注意的是，HTML 的`class`属性与 JavaScript 的`class`语法无关。
 
@@ -115,7 +115,7 @@ CSS 选择器还可以指定标签名称、`id`属性和结构等。 例如，�
 } 
 ```
 
-### [](#comment-id-for-js)*3. 为 JavaScript 指定 id 属性*
+### *3. 为 JavaScript 指定 id 属性*
 
 *`id`属性用于为该元素指定页面内唯一的标识符。 `id`属性用于 CSS、JavaScript、链接锚点等各种用途。 此外，在同一页面中，不能为多个元素设置相同的 id 属性名。
 
@@ -130,21 +130,21 @@ const form = document.querySelector("#js-form");
 
 因此，为了 JavaScript 能够引用这些元素，我们给元素添加了`id`属性作为标识。 为了更好地理解，我们约定 JavaScript 处理的 id 属性以`js-`开头命名。
 
-### [](#comment-todo-list)*4. 待办事项应用的主要待办事项列表*
+### *4. 待办事项应用的主要待办事项列表*
 
 *带有`id`属性`js-todo-list`的`div`元素是本次待办事项应用的主要待办事项列表。 由于这个`div`元素的内容会在 JavaScript 中动态更新，因此在 HTML 中我们添加了一个标识性的`id`属性。
 
 初次显示时，待办事项列表还是空的，因此没有任何内容显示。 同时，被`<!--`和`-->`包围的部分是 HTML 注释，不会被显示。
 
-### [](#comment-todo-count)*5. 显示待办事项数*
+### *5. 显示待办事项数*
 
 *带有`id`属性`js-todo-count`的`span`元素用于显示当前待办事项的数量。 初次显示时，由于待办事项列表为空，数量为 0，但在添加或删除待办事项时需要相应更新。
 
-## [](#conclusion)*总结*
+## *总结*
 
 *在这一部分中，我们使用 HTML 定义了应用的结构，用 CSS 定义了应用的样式。 在接下来的部分中，我们将创建 JavaScript 模块，并更新当前为空的待办事项列表。
 
-## [](#section-checklist)*本节的检查清单*
+## *本节的检查清单*
 
 **   理解了要实现的待办事项应用的组成要素
 

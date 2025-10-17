@@ -30,12 +30,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 本章将按顺序介绍`const`、`let`、`var`，分别探讨使用这些方法声明的变量的不同之处。
-- en: '[](#const)*[ES2015] `const`*'
+- en: '*[ES2015] `const`*'
   id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#const)*[ES2015] `const`*'
+  zh: '*[ES2015] `const`*'
 - en: '*`const`キーワードでは、再代入できない変数の宣言とその変数が参照する値（初期値）を定義できます。'
   id: totrans-7
   prefs: []
@@ -112,12 +112,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在需要值重赋的变量场景中，例如在循环等重复处理过程中，可能需要改变特定变量所引用的值。在这种情况下，可以使用可以值重赋的`let`关键字。
-- en: '[](#let)*[ES2015] `let`*'
+- en: '*[ES2015] `let`*'
   id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#let)*[ES2015] `let`*'
+  zh: '*[ES2015] `let`*'
 - en: '*`let`キーワードでは、値の再代入が可能な変数を宣言できます。 `let`の使い方は`const`とほとんど同じです。'
   id: totrans-23
   prefs: []
@@ -170,12 +170,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE8]'
-- en: '[](#var)*`var`*'
+- en: '*`var`*'
   id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#var)*`var`*'
+  zh: '*`var`*'
 - en: '*`var`キーワードでは、値の再代入が可能な変数を宣言できます。 `var`の使い方は`let`とほとんど同じです。'
   id: totrans-34
   prefs: []
@@ -196,12 +196,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE10]'
-- en: '[](#var-issues)*`var`の問題*'
+- en: '*`var`の問題*'
   id: totrans-38
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#var-issues)*`var`的问题*'
+  zh: '*`var`的问题*'
 - en: '*`var`は`let`とよく似ていますが、`var`キーワードには同じ名前の変数を再定義できてしまう問題があります。'
   id: totrans-39
   prefs: []
@@ -238,12 +238,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样，`var`存在许多问题。而且，在几乎所有情况下，都可以用`const`或`let`替换`var`。因此，对于将要编写的代码，最好避免使用`var`。
-- en: '[](#why-add-let-and-const)*[コラム] なぜ`let`や`const`は追加されたのか？*'
+- en: '*[コラム] なぜ`let`や`const`は追加されたのか？*'
   id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#why-add-let-and-const)*[专栏] 为什么会添加`let`和`const`？*'
+  zh: '*[专栏] 为什么会添加`let`和`const`？*'
 - en: '*ECMAScript 2015では、`var`そのものを改善するのではなく、新しく`const`と`let`というキーワードを追加することで、`var`の問題を回避できるようにしました。`var`自体の動作を変更しなかったのは、後方互換性のためです。'
   id: totrans-47
   prefs: []
@@ -262,12 +262,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 这样，ECMAScript在添加新功能时也重视向后兼容性，因此没有改变`var`本身的动作。
-- en: '[](#variable-name)*変数名に使える名前のルール*'
+- en: '*変数名に使える名前のルール*'
   id: totrans-50
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#variable-name)*变量名可以使用规则*'
+  zh: '*变量名可以使用规则*'
 - en: '*到目前为止，我们已经了解了`const`、`let`、`var`关键字以及它们各自的变量声明特性。 在任何关键字中，可用于声明变量的名称规则都是相同的。
     此外，此规则适用于 JavaScript 标识符，如变量名和函数名。'
   id: totrans-51
@@ -335,12 +335,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE15]'
-- en: '[](#const-is-not-constant)*[专栏] `const`并非常量*'
+- en: '*[专栏] `const`并非常量*'
   id: totrans-63
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#const-is-not-constant)*[专栏] `const`并非常量*'
+  zh: '*[专栏] `const`并非常量*'
 - en: '*`const`是定义“不能重新赋值的变量”的变量声明，并不一定定义常量。常量是指一旦定义的名称（变量名）始终表示相同值的东西。'
   id: totrans-64
   prefs: []
@@ -376,12 +376,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 此外，`const`没有变量命名规则，也没有赋值限制。因此，最好理解`const`声明的特性是定义“不能重新赋值的变量”。
-- en: '[](#summary)*总结*'
+- en: '*总结*'
   id: totrans-71
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#summary)*总结*'
+  zh: '*总结*'
 - en: '*本章介绍了 JavaScript 中用于声明变量的关键字`const`、`let`、`var`。'
   id: totrans-72
   prefs: []

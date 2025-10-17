@@ -38,50 +38,50 @@
   - PREF_UL
   type: TYPE_NORMAL
   zh: 在应用程序中显示获取的用户信息
-- en: '[](#summary)*目录*'
+- en: '*目录*'
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#summary)*目录*'
-- en: '*### [](#entrypoint)*入口点*'
+  zh: '*目录*'
+- en: '*### *入口点*'
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
-  zh: '*### [](#entrypoint)*入口点*'
+  zh: '*### *入口点*'
 - en: '*创建应用程序中最先调用的入口点。'
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
   zh: '*创建应用程序中最先调用的入口点。'
-- en: '[](#http-communication)*HTTP 通信*'
+- en: '*HTTP 通信*'
   id: totrans-10
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#http-communication)*HTTP 通信*'
+  zh: '*HTTP 通信*'
 - en: '*使用 Web 标准的 Fetch API 进行 HTTP 通信，并调用 GitHub 的 API。'
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
   zh: '*使用 Web 标准的 Fetch API 进行 HTTP 通信，并调用 GitHub 的 API。'
-- en: '[](#display)*显示数据*'
+- en: '*显示数据*'
   id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#display)*显示数据*'
+  zh: '*显示数据*'
 - en: '*使用 Fetch API 获取数据，构建 HTML 并在浏览器上显示。'
   id: totrans-13
   prefs: []
   type: TYPE_NORMAL
   zh: '*使用 Fetch API 获取数据，构建 HTML 并在浏览器上显示。'
-- en: '[](#promise)*利用 Promise*'
+- en: '*利用 Promise*'
   id: totrans-14
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
-  zh: '[](#promise)*利用 Promise*'
+  zh: '*利用 Promise*'
 - en: '*利用 Promise，整理源代码并处理错误。*****'
   id: totrans-15
   prefs: []

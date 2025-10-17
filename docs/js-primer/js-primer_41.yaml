@@ -15,12 +15,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 在前面的章节中，我们使用Fetch API从GitHub API获取了用户信息。在本节中，我们将对获取的数据进行HTML格式化，并在应用程序中显示用户信息。
-- en: '[](#markup-html)*HTMLを組み立てる*'
+- en: '*HTMLを組み立てる*'
   id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#markup-html)*构建HTML*'
+  zh: '*构建HTML*'
 - en: '*HTML 文字列の生成にはテンプレートリテラルを使います。 テンプレートリテラルは文字列中の改行が可能なため、HTMLのインデントを表現できて見通しが良くなります。
     また、変数の埋め込みも簡単なため、HTMLのテンプレートに対して動的なデータをあてはめるのに適しています。'
   id: totrans-4
@@ -47,12 +47,12 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE1]'
-- en: '[](#html-to-dom)*HTML 文字列をDOMに追加する*'
+- en: '*HTML 文字列をDOMに追加する*'
   id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#html-to-dom)*将HTML字符串添加到DOM中*'
+  zh: '*将HTML字符串添加到DOM中*'
 - en: '*次に、生成したHTML 文字列をDOMツリーに追加して表示します。 まずは動的にHTMLをセットするために、目印となる要素を`index.html`に追加します。
     今回は`result`というidを持ったdiv 要素（以降`div#result`要素と表記します）を配置します。'
   id: totrans-10
@@ -88,12 +88,12 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 使用JavaScript将HTML元素添加到DOM中的方法主要有两种。一种是将HTML字符串设置为Element的`innerHTML`属性，就像这次这样。另一种是生成Element对象，然后[逐步构建树结构](https://developer.mozilla.org/ja/docs/Web/API/Node/appendChild)。后者在安全性方面更安全，但代码会更冗长。这次，我们将使用Element的`innerHTML`属性，同时进行安全性的转义处理。
-- en: '[](#escape-html)*HTML 文字列をエスケープする*'
+- en: '*HTML 文字列をエスケープする*'
   id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#escape-html)*转义HTML字符串*'
+  zh: '*转义HTML字符串*'
 - en: '*Elementの`innerHTML`プロパティに文字列をセットすると、その文字列はHTMLとして解釈されます。 たとえばGitHubのユーザー名に`<`記号や`>`記号が含まれていると、意図しない構造のHTMLになる可能性があります。
     これを回避するために、文字列���セットする前に、特定の記号を安全な表現に置換する必要があります。 この処理を一般にHTMLのエスケープと呼びます。'
   id: totrans-17
@@ -179,12 +179,12 @@
   prefs: []
   type: TYPE_IMG
   zh: '![用户信息显示](img/ce2fbff4fda4c97207376b67af18ae7d.png)'
-- en: '[](#section-checklist)*このセクションのチェックリスト*'
+- en: '*このセクションのチェックリスト*'
   id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
-  zh: '[](#section-checklist)*本节的检查清单*'
+  zh: '*本节的检查清单*'
 - en: '**   テンプレートリテラルを使ってHTML 文字列を組み立てた'
   id: totrans-34
   prefs: []

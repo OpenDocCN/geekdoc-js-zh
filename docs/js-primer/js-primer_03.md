@@ -6,7 +6,7 @@ JavaScript Primer（jsprimer）正在寻找持续更新的赞助商。您可以�
 
 +   [JavaScript Primer - Open Collective](https://opencollective.com/jsprimer)
 
-## [](#purpose)*招募赞助商的目的*
+## *招募赞助商的目的*
 
 *JavaScript Primer 旨在持续发展，旨在通过 jsprimer 获得“适应变化的基础知识”。 因此，jsprimer 会根据每年的 ECMAScript 更新进行更新。我们认为，持续的支持对于持续更新非常重要。
 
@@ -14,7 +14,7 @@ JavaScript Primer（jsprimer）正在寻找持续更新的赞助商。您可以�
 
 支持金将用于 JavaScript Primer 的运营费用和持续更新。
 
-## [](#how-to-sponsor)*如何成为赞助商*
+## *如何成为赞助商*
 
 *成为赞助商的步骤如下：*
 
@@ -24,7 +24,7 @@ JavaScript Primer（jsprimer）正在寻找持续更新的赞助商。您可以�
 
 1.  查看赞助商的优惠，并通过联系方式发送所需信息
 
-## [](#benefits)*赞助商的优惠*
+## *赞助商的优惠*
 
 *通过企业计划成为赞助商，您将享有以下优惠。
 
@@ -56,7 +56,7 @@ JavaScript Primer（jsprimer）正在寻找持续更新的赞助商。您可以�
 
 页面赞助商的图标图片展示方式，请参考此页面顶部。如果对展示方式有意见或希望，请联系我们。
 
-## [](#contact)*联系方式*
+## *联系方式*
 
 *`[[email protected]](/cdn-cgi/l/email-protection)` 或从[JavaScript Primer - Open Collective](https://opencollective.com/jsprimer)的 "Actions" → "Contact" 中联系我们。
 
@@ -64,7 +64,7 @@ JavaScript Primer（jsprimer）正在寻找持续更新的赞助商。您可以�
 
 +   [JavaScript Primer 赞助商 · asciidwango/js-primer · 讨论区 #1728](https://github.com/asciidwango/js-primer/discussions/1728)
 
-## [](#reference)*参考资料*
+## *参考资料*
 
 *JavaScript Primer 赞助商的参考资料。您可以从以下仪表板查看[`jsprimer.net`](https://jsprimer.net)的访问量和指标。
 

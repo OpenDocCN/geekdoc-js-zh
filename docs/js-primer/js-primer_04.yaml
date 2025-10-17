@@ -25,7 +25,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 次のJavaScriptのサンプルコードを書き写して、ブラウザでJavaScriptを実行するところから始めてみましょう。
-- en: '[](#samplecode)*サンプルコード*'
+- en: '*サンプルコード*'
   id: totrans-5
   prefs:
   - PREF_H2
@@ -41,7 +41,7 @@
   prefs: []
   type: TYPE_PRE
   zh: '[PRE0]'
-- en: '[](#editor)*エディター*'
+- en: '*エディター*'
   id: totrans-8
   prefs:
   - PREF_H2
@@ -78,7 +78,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: '"実行"ボタンを押して異なるメッセージがでた場合は、次の注意事項を読んでもう一度挑戦してみてください。'
-- en: '[](#caution)*注意事項*'
+- en: '*注意事項*'
   id: totrans-15
   prefs:
   - PREF_H2
@@ -153,7 +153,7 @@
   prefs: []
   type: TYPE_NORMAL
   zh: 一度すべてのコードを消してから、もう一度入力してみましょう。
-- en: '[](#failure)*コードを実行できない*'
+- en: '*コードを実行できない*'
   id: totrans-27
   prefs:
   - PREF_H2
@@ -178,7 +178,7 @@
   type: TYPE_NORMAL
   zh: また、もっとも効率的なのは、身近な知り合いに聞くことです。 一人で学ぼうとすると、思わぬところで詰まってしまい進めなくなる場合があります。 特に新しいことは最初の出発点が一番難しいです。
     ほかの人に手伝ってもらうことで意外と簡単に進めるようになるはずです。
-- en: '[](#welcome-to-javascript)*ようこそJavaScriptへ*'
+- en: '*ようこそJavaScriptへ*'
   id: totrans-31
   prefs:
   - PREF_H2

@@ -26,7 +26,7 @@
 
 在本节中，我们将创建这两个入口点并加载它们。
 
-## [](#project-directory)*创建项目目录*
+## *创建项目目录*
 
 *在这个应用中，需要多个文件，包括 HTML 和 JavaScript 等。因此，首先要创建一个目录来存放这些文件。
 
@@ -34,7 +34,7 @@
 
 在这个项目中，确保将文件保存为**UTF-8**编码，并使用**LF**作为换行符。
 
-## [](#preparing-html)*准备 HTML 文件*
+## *准备 HTML 文件*
 
 *首先，创建一个包含最基本元素的 HTML 文件作为入口点。 在`todoapp`目录中创建名为`index.html`的 HTML 文件，并编写以下内容。 在`body`元素的底部使用`script`元素加载`index.js`，这是本应用程序的处理 JavaScript 文件。
 
@@ -72,7 +72,7 @@ todoapp
 
 接下来，我们将在浏览器中打开`index.html`，并确认控制台中是否输出了日志。
 
-## [](#local-server)*在本地服务器上查看 HTML*
+## *在本地服务器上查看 HTML*
 
 *在打开`index.html`之前，准备一个用于开发的本地服务器。 虽然可以直接打开 HTML 文件而不启动本地服务器，但这样的 URL 将以`file:///`开头。 使用`file`协议时，由于[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)，JavaScript 模块将无法正常工作。 因此，在本章中，我们假设已经启动了本地服务器，并通过以`http`开头的 URL 进行访问。
 
@@ -94,7 +94,7 @@ todoappのローカルサーバーを起動しました。
 
 ![Web 控制台中显示的日志](img/c033f8a07de6770d0a4a364a4a65cebe.png)
 
-### [](#view-console-log-in-dev-tools)*在开发者工具中查看控制台日志*
+### *在开发者工具中查看控制台日志*
 
 *要查看通过 Console API 输出的日志，需要打开 Web 浏览器的开发者工具。 大多数浏览器都内置了开发者工具，但本章将使用 Firefox 进行演示。 打开开发者工具的**控制台**选项卡，可以查看通过 Console API 输出的日志。
 
@@ -106,17 +106,17 @@ todoappのローカルサーバーを起動しました。
 
 詳細は「[浏览器开发者工具是什么？](https://developer.mozilla.org/ja/docs/Learn/Common_questions/What_are_browser_developer_tools)」を参照してください。
 
-### [](#error-not-display-console-log)*控制台日志不显示*
+### *控制台日志不显示*
 
 *HTMLは表示されるがコンソールログに`index.js: loaded`が表示されない場合は、次のような問題に該当してないかを確認してください。
 
-#### [](#fail-to-load-javascript-module)*[错误示例] `index.js`的读取失败*
+#### *[错误示例] `index.js`的读取失败*
 
 *`script`要素の`src`属性に指定した`index.js`のパスにファイルが存在しているかを確認してください。 `<script type="module" src="index.js">`とした場合は`index.html`と`index.js`は同じディレクトリに配置する必要があります。
 
 另外，如果控制台显示类似`CORS policy Invalid`的错误，则是因为[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)导致`index.js`的读取失败。正如之前所介绍的，从以`file:`开头的页面上无法正确运行 JavaScript 模块。因此，请启动本地服务器，并确认正在访问以`http:`开头的本地服务器（URL）。
 
-#### [](#unsupport-javascript-module)*[错误示例] 正在使用的浏览器不支持 JavaScript 模块*
+#### *[错误示例] 正在使用的浏览器不支持 JavaScript 模块*
 
 *由于 JavaScript 模块是较新的功能，因此需要版本 60 以上的 Firefox。版本 60 以下的 Firefox 无法读取作为 JavaScript 模块的`index.js`，因此不会在控制台输出日志。
 
@@ -124,7 +124,7 @@ todoappのローカルサーバーを起動しました。
 
 * * *
 
-## [](#module-entry-point)*创建模块的入口点*
+## *创建模块的入口点*
 
 *最后，从作为入口点的`index.js`中尝试导入其他 JavaScript 文件作为模块。在这个应用程序中，JavaScript 模块多次出现，因此创建了一个名为`src/`的目录，并在`src/`目录下编写 JavaScript 模块。这次创建了一个名为`src/App.js`的文件，并将其作为模块从`index.js`中导入。
 
@@ -171,7 +171,7 @@ App initialized
 
 这样，就确认了 HTML 和 JavaScript 各自的入口点创建和运行情况。
 
-### [](#error-import-app-js)*`App.js`的读取失败*
+### *`App.js`的读取失败*
 
 *如果在此之前的 JavaScript 模块读取过程中出现错误且无法运行，请检查以下事项。
 
@@ -179,7 +179,7 @@ App initialized
 
 下面总结了使用`import`语句进行 JavaScript 模块读取时可能遇到的典型错误及其处理方法。
 
-#### [](#syntax-error-import-declarations)*[错误示例] 语法错误：导入声明只能出现在模块的最顶层*
+#### *[错误示例] 语法错误：导入声明只能出现在模块的最顶层*
 
 *“`import`声明只能在模块的顶层使用”这个错误表明，`import`语句没有满足可使用的条件。换句话说，`import`语句不在顶层，或者是在非模块执行上下文中执行的。
 
@@ -189,7 +189,7 @@ App initialized
 
 若要将执行上下文作为模块执行，需要指定`type=module`，例如`<script type="module" src="index.js">`（由于从`index.js`中的`import`语句引入的`App.js`将继承执行上下文，因此将在模块的执行上下文中处理）。
 
-#### [](#fail-to-load-src-app)*[错误示例] 无法加载模块源 "[`localhost:3000/src/App”](http://localhost:3000/src/App”)。*
+#### *[错误示例] 无法加载模块源 "[`localhost:3000/src/App”](http://localhost:3000/src/App”)。*
 
 *出现了无法加载`App.js`的错误。仔细查看错误消息，发现错误在于`App`而不是`App.js`。
 
@@ -207,11 +207,11 @@ import { App } from "./src/App";
 import { App } from "./src/App.js"; 
 ```
 
-## [](#conclusion)*结论*
+## *结论*
 
 *在此部分中，我们创建了作为 HTML 入口点的文件，并加载了 JavaScript 模块的入口点 JavaScript 文件。
 
-## [](#section-checklist)*此部分的检查清单*
+## *此部分的检查清单*
 
 创建了名为**`todoapp`**的项目目录。
 

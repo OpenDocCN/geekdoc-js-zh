@@ -4,7 +4,7 @@
 
 この章ではJavaScriptにおける文字列について学んでいきます。 まずは、文字列の作成方法や文字列の操作方法について見ていきます。 そして、文字列を編集して自由に文字列を作れるようになることがこの章の目的です。
 
-## [](#create)*文字列を作成する*
+## *文字列を作成する*
 
 *文字列を作成するには、文字列リテラルを利用します。 「データ型とリテラル」の章でも紹介しましたが、文字列リテラルには`"`（ダブルクォート）、`'`（シングルクォート）、```（バッククォート）の3 種類があります。
 
@@ -56,7 +56,7 @@ console.log(str); // => 'This book is "js-primer"'
 
 ```
 
-## [](#escape-sequence)*エスケープシーケンス*
+## *エスケープシーケンス*
 
  *文字列リテラル中にはそのままでは入力できない特殊な文字もあります。 改行もそのひとつで、`"`（ダブルクォート）と`'`（シングルクォート）の文字列リテラルには改行をそのまま入力できません （テンプレートリテラル中には例外的に改行をそのまま入力できます）。
 
@@ -118,7 +118,7 @@ console.log("¯\\_(ツ)_/¯");
 //　¯\_(ツ)_/¯ と表示される 
 ```
 
-## [](#concat)*文字列を結合する*
+## *文字列を結合する*
 
 *文字列を結合する簡単な方法は文字列結合演算子（`+`）を使う方法です。
 
@@ -143,7 +143,7 @@ const name = "JavaScript";
 console.log(`Hello ${name}!`);// => "Hello JavaScript!" 
 ```
 
-## [](#get-char)*文字へのアクセス*
+## *文字へのアクセス*
 
 *文字列の特定の位置にある文字にはインデックスを指定してアクセスできます。 これは、配列における要素へのアクセスにインデックスを指定するのと同じです。
 
@@ -165,7 +165,7 @@ const str = "文字列";
 console.log(str[42]); // => undefined 
 ```
 
-### [](#string-at)*[ES2022] `String.prototype.at`*
+### *[ES2022] `String.prototype.at`*
 
 *ES2022から`String.prototype.at`メソッドが追加されています。 Stringの`at`メソッドは、Arrayの`at`メソッドと同じく、相対的なインデックスを渡してその位置の文字へアクセスできます。 `at`メソッドへ`-1`のようにマイナスのインデックスを渡した場合は、末尾から数えた位置の文字へアクセスできます。
 
@@ -177,7 +177,7 @@ console.log(str.at(2)); // => "列"
 console.log(str.at(-1)); // => "列" 
 ```
 
-## [](#what-is-string)*文字列とは*
+## *文字列とは*
 
 *今まで何気なく「文字列」という言葉を利用していましたが、ここでいう文字列とはどのようなものでしょうか？　コンピュータのメモリ上に文字列の「ア」といった文字をそのまま保存できないため、0と1からなるビット列へ変換する必要があります。 この文字からビット列へ変換することを符号化（エンコード）と呼びます。
 
@@ -228,7 +228,7 @@ UTF-16 的使用似乎是 JavaScript 的内部表示，因此似乎没有必要�
 
 在这里，只需记住“JavaScript 中的字符串由 UTF-16 的 Code Unit 组成”这一点就足够了。
 
-## [](#split-join)*字符串的分解与连接*
+## *字符串的分解与连接*
 
 *要将字符串分解为数组，可以使用 String 的`split`方法。另一方面，要将数组元素连接成字符串，可以使用 Array 的`join`方法。
 
@@ -260,7 +260,7 @@ const strings = str.split(/\s+/);
 console.log(strings); // => ["a", "b", "c", "d"] 
 ```
 
-## [](#length)*字符串的长度*
+## *字符串的长度*
 
 *String 的`length`属性返回字符串的元素数。由于字符串的构成元素是 Code Unit，因此`length`属性返回 Code Unit 的数量。
 
@@ -276,7 +276,7 @@ console.log("文字列".length); // => 3
 console.log("".length); // => 0 
 ```
 
-## [](#compare)*字符串的比较*
+## *字符串的比较*
 
 *使用`===`（严格比较运算符）进行字符串比较。如果满足以下条件，则字符串相同。
 
@@ -314,7 +314,7 @@ console.log("ABC" > "ABD"); // => false
 
 在 JavaScript 中，也有一个与 ECMAScript 相关的 ECMA-402 这样的 ECMAScript 相关规范，它规定了国际化。还有一个名为[Intl](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Intl)的内置对象定义了这些国际化 API，但关于这些 API 的详细内容将省略。
 
-## [](#slice)*获取字符串的一部分*
+## *获取字符串的一部分*
 
 *要从字符串中提取一部分，可以使用 String 的`slice`方法或`substring`方法。
 
@@ -368,7 +368,7 @@ console.log(queryString); // => "?param=1"
 
 また、配列とは異なりプリミティブ型の値である文字列は、`slice`メソッドと`substring`メソッド共に非破壊的です。 機能的な違いがほとんどないため、どちらを利用するかは好みの問題となります。
 
-## [](#search)*文字列の検索*
+## *文字列の検索*
 
 *文字列の検索方法として、大きく分けて文字列による検索と正規表現による検索があります。*
 
@@ -380,11 +380,11 @@ console.log(queryString); // => "?param=1"
 
 +   マッチしたかどうかの真偽値を取得
 
-### [](#search-by-string)*文字列による検索*
+### *文字列による検索*
 
 *`String`オブジェクトには、指定した文字列で検索するメソッドが用意されています。*
 
-#### [](#search-index-by-string)*文字列によるインデックスの取得*
+#### *文字列によるインデックスの取得*
 
 *Stringの`indexOf`メソッドと`lastIndexOf`メソッドは、指定した文字列で検索し、その文字列が最初に現れたインデックスを返します。 これらは配列のArrayの`indexOf`メソッドと同じで、厳密等価演算子（`===`）で文字列を検索します。 一致する文字列がない場合は`-1`を返します。*
 
@@ -406,7 +406,7 @@ console.log(str.lastIndexOf("にわ")); // => 6
 console.log(str.indexOf("未知のキーワード")); // => -1 
 ```
 
-### [](#match-by-string)*文字列にマッチした文字列の取得*
+### *文字列にマッチした文字列の取得*
 
 *文字列を検索してマッチした文字列は、検索文字列そのものになるので自明です。*
 
@@ -423,7 +423,7 @@ if (index !== -1) {
 } 
 ```
 
-#### [](#test-by-string)*真偽値の取得*
+#### *真偽値の取得*
 
 *「文字列」に「検索文字列」が含まれているかを検索する方法がいくつか用意されています。 次の3つのメソッドはES2015で導入されました。*
 
@@ -449,7 +449,7 @@ console.log(str.includes("にわ")); // => true
 console.log(str.includes("いる")); // => true 
 ```
 
-## [](#regexp-object)*正規表現オブジェクト*
+## *正規表現オブジェクト*
 
 *文字列による検索では、固定の文字列にマッチするものしか検索できません。 一方で正規表現による検索では、あるパターン（規則性）にマッチするという柔軟な検索ができます。*
 
@@ -482,7 +482,7 @@ const pattern = /a+/;
 const pattern = new RegExp("a+"); 
 ```
 
-### [](#difference-regexp-literal-regexp-constructor)*正規表現リテラルと`RegExp`コンストラクタの違い*
+### *正規表現リテラルと`RegExp`コンストラクタの違い*
 
 *正则表达式字面量和`RegExp`构造函数的区别在于正则表达式模式的评估时机不同。正则表达式字面量在源代码加载（解析）阶段评估正则表达式模式。另一方面，`RegExp`构造函数与普通函数一样，只有调用`RegExp`构造函数时才会评估正则表达式模式。*
 
@@ -557,7 +557,7 @@ const searchPattern = /\d{3}/;
 console.log(str.search(searchPattern)); // => 3 
 ```
 
-#### [](#match-by-regexp)*通过正则表达式匹配的字符串获取*
+#### *通过正则表达式匹配的字符串获取*
 
 *通过字符串搜索，搜索到的字符串本身就是匹配的字符串。然而，使用 `search` 方法的正则表达式搜索是基于正则表达式模式的搜索，因此搜索到的匹配字符串的长度是不固定的。换句话说，即使只获取 `search` 方法返回的匹配索引，实际匹配的字符串也无法得知。
 
@@ -572,7 +572,7 @@ str.slice(index, index + マッチした文字列の長さ); // マッチした�
 
 因此，提供了获取匹配字符串的 String 的 `match` 方法和 `matchAll` 方法。此外，这些方法通过正则表达式的全局匹配 `g` 标志来改变行为。
 
-##### [](#match)*匹配的字符串获取*
+##### *匹配的字符串获取*
 
 *首先，让我们从 String 的 `match` 方法开始查看获取匹配的字符串。`match` 方法用于在正则表达式 `/pattern/` 与 `"string"` 匹配时返回有关匹配字符串的信息。
 
@@ -651,7 +651,7 @@ for (const match of matchesIterator) {
 
 因此，当使用正则表达式的 `g` 标志进行重复匹配时，应该使用 `matchAll` 方法，而不是 `match` 方法。另外，由于 `matchAll` 方法不支持没有 `g` 标志的正则表达式，因此如果传递没有 `g` 标志的正则表达式，则会引发异常。
 
-#### [](#match-capture-by-regexp)*获取匹配字符串的一部分*
+#### *获取匹配字符串的一部分*
 
 *String 的 `match` 方法和 `matchAll` 方法都支持正则表达式的捕获。捕获是指在正则表达式中使用 `/pattern1(pattern2)/` 这样的括号括起来的部分。通过这种捕获，可以提取正则表达式匹配的部分。
 
@@ -695,7 +695,7 @@ for (const match of matchesIterator) {
 // match: "ES2017", capture1: 2017, index: 14, input: "ES2015、ES2016、ES2017" 
 ```
 
-#### [](#regexp-exec)*[专栏] 使用 RegExp.prototype.exec 进行 String.prototype.matchAll*
+#### *[专栏] 使用 RegExp.prototype.exec 进行 String.prototype.matchAll*
 
 *String 的`matchAll`方法是在 ES2020 中引入的方法。 在那之前，我们使用类似于 String 的`match`方法的 RegExp 的`exec`方法来实现类似于 String 的`matchAll`方法的表达。
 
@@ -770,7 +770,7 @@ while (matches = alphabetsPattern.exec(str)) {
 
 与 String 的`matchAll`方法处理 Iterator 的直观迭代相比，RegExp 的`exec`方法需要手动编写`while`循环等迭代处理，因此不够直观。 因此，在可以使用 String 的`matchAll`方法的情况下，就不需要使用 RegExp 的`exec`方法。
 
-#### [](#test-by-regexp)*获取布尔值*
+#### *获取布尔值*
 
 *使用正则表达式对象，可以使用 RegExp 的`test`方法来测试是否匹配该模式。
 
@@ -804,7 +804,7 @@ console.log(/いる/.test(str)); // => true
 
 此外，正则表达式还可以使用重复和字符集等特殊字符来实现灵活的搜索。
 
-### [](#string-or-regexp)*使用字符串还是正则表达式*
+### *使用字符串还是正则表达式*
 
 *我们已经知道，正则表达式和 String 方法可以实现相同的搜索。当 String 方法和正则表达式可以获得相同结果时，应该选择哪一个呢？
 
@@ -833,7 +833,7 @@ console.log(isRegExpLikeString(str)); // => true
 
 要了解更多关于正则表达式的信息，请参考[MDN 的正则表达式文档](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Regular_Expressions "正则表达式 - JavaScript | MDN")或者可以在控制台中尝试的[regex101](https://regex101.com/ "Online regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript")等网站。
 
-## [](#replace-delete)*替换/删除字符串*
+## *替换/删除字符串*
 
 *要替换或删除字符串的一部分，可以使用 String 的`replace`方法。正如在“数据类型和字面量”中所述，作为不可变的原始类型，字符串无法删除部分字符。
 
@@ -921,7 +921,7 @@ console.log(toDateJa("本日ハ晴天ナリ")); // => "本日ハ晴天ナリ"
 console.log(toDateJa("今日は2017-03-01です")); // => "今日は2017 年 03 月 01 日です" 
 ```
 
-## [](#built)*构建字符串*
+## *构建字符串*
 
 *最后让我们来看看如何构建字符串。正如本章开头所述，本章的目的是“学会自由地构建字符串”。
 
@@ -994,7 +994,7 @@ getResource(baseURL, pathname);
 
 虽然 ECMAScript 范围之外，但对于 URL 或文件路径等典型情况，已经存在专用的处理方式。例如，处理 URL 的 Web 标准 API 对象[URL](https://developer.mozilla.org/ja/docs/Web/API/URL "URL - Web API インターフェイス | MDN")、处理文件路径的 Node.js 核心模块[Path](https://nodejs.org/api/path.html "Path | Node.js v7.9.0 Documentation")等。如果存在专用机制，应避免直接使用`+`运算符进行字符串连接。
 
-### [](#tagged-template-function)*[ES2015] 标签模板函数*
+### *[ES2015] 标签模板函数*
 
 *JavaScript 中，对于模板字符串，可以通过标签模板函数来执行只更改一部分的处理。标签模板函数是函数和模板字面量结合的表达式。请注意，在调用函数时使用的是`関数(`模板`)`而不是`関数`模板`関数`的形式。
 
@@ -1070,7 +1070,7 @@ console.log(escapedURL); // => "https://example.com/search?q=A%26B&sort=desc"
 
 通过使用标签模板字面量，可以添加与上下文相关的处理。这个功能在 JavaScript 内嵌入 HTML 等其他语言或 DSL（领域特定语言）时经常被使用。
 
-## [](#string-summary)*终わりに*
+## *终わりに*
 
 *本章介绍了 JavaScript 中的字符串（`String`对象）。用于处理字符串的 String 方法有很多，其中也包括与正则表达式结合使用的方法。
 
