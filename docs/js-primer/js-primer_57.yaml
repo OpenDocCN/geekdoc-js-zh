@@ -1,695 +1,1173 @@
 - en: '附录: JavaScript 速查表'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '附录: JavaScript 速查表'
 - en: 原文：[`jsprimer.net/cheatsheet/`](https://jsprimer.net/cheatsheet/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/cheatsheet/`](https://jsprimer.net/cheatsheet/)
 - en: 关于 JavaScript 语言功能的速查表。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于 JavaScript 语言功能的速查表。
 - en: 言語機能
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 言語機能
 - en: 评论
+  id: totrans-4
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 评论
 - en: 数据
+  id: totrans-5
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据
 - en: 文字文字
+  id: totrans-6
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 文字文字
 - en: 字符串
+  id: totrans-7
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 字符串
 - en: 数据访问
+  id: totrans-8
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据访问
 - en: 运算符
+  id: totrans-9
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 运算符
 - en: 函数和行为
+  id: totrans-10
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数和行为
 - en: 控制流
+  id: totrans-11
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 控制流
 - en: 模块
+  id: totrans-12
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模块
 - en: 其他
+  id: totrans-13
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 其他
 - en: 指南
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 指南
 - en: 项目结构
+  id: totrans-15
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 项目结构
 - en: '[](#language-feature)*语言功能*'
+  id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#language-feature)*语言功能*'
 - en: '*### [](#comments)*评论*'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '*### [](#comments)*评论*'
 - en: '*关于评论的写法。'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '*关于评论的写法。'
 - en: '| 代码示例 | 描述 | 解释 | MDN |'
+  id: totrans-19
   prefs: []
   type: TYPE_TB
+  zh: '| 代码示例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-20
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `// xxx` | 单行评论 | 评论 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88)
     |'
+  id: totrans-21
   prefs: []
   type: TYPE_TB
+  zh: '| `// xxx` | 单行评论 | 评论 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88)
+    |'
 - en: '| `/* xxx */` | 多行评论 | 评论 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88)
     |'
+  id: totrans-22
   prefs: []
   type: TYPE_TB
+  zh: '| `/* xxx */` | 多行评论 | 评论 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88)
+    |'
 - en: '| `<!-- xxx -->` | [ES2015] 类似 HTML 的评论 | 评论 |   |'
+  id: totrans-23
   prefs: []
   type: TYPE_TB
+  zh: '| `<!-- xxx -->` | [ES2015] 类似 HTML 的评论 | 评论 |   |'
 - en: '[](#data-structures)*数据结构*'
+  id: totrans-24
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#data-structures)*数据结构*'
 - en: '*変数宣言について。'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '*変数宣言について。'
 - en: '| 代码示例 | 描述 | 解释 | MDN |'
+  id: totrans-26
   prefs: []
   type: TYPE_TB
+  zh: '| 代码示例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-27
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `const x` | [ES2015] **变量声明**。不能重新赋值给`x` | 变量和声明 | [const](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/const)
     |'
+  id: totrans-28
   prefs: []
   type: TYPE_TB
+  zh: '| `const x` | [ES2015] **变量声明**。不能重新赋值给`x` | 变量和声明 | [const](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/const)
+    |'
 - en: '| `let x` | [ES2015] **变量声明**。类似`const`，但`x`可以重新赋值 | 变量和声明 | [let](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/let)
     |'
+  id: totrans-29
   prefs: []
   type: TYPE_TB
+  zh: '| `let x` | [ES2015] **变量声明**。类似`const`，但`x`可以重新赋值 | 变量和声明 | [let](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/let)
+    |'
 - en: '| `var x` | **变量声明**。传统的变量声明方法 | 变量和声明 | [var](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/var)
     |'
+  id: totrans-30
   prefs: []
   type: TYPE_TB
+  zh: '| `var x` | **变量声明**。传统的变量声明方法 | 变量和声明 | [var](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/var)
+    |'
 - en: '[](#literal)*文字*'
+  id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#literal)*文字*'
 - en: '*关于表示数据结构的文字。'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '*关于表示数据结构的文字。'
 - en: '| 代码示例 | 描述 | 解释 | MDN |'
+  id: totrans-33
   prefs: []
   type: TYPE_TB
+  zh: '| 代码示例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-34
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `true` 或 `false` | **布尔值** | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E8%AB%96%E7%90%86%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-35
   prefs: []
   type: TYPE_TB
+  zh: '| `true` 或 `false` | **布尔值** | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E8%AB%96%E7%90%86%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `123` | **10 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-36
   prefs: []
   type: TYPE_TB
+  zh: '| `123` | **10 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `123n` | [ES2020] 表示巨大整数的 BigInt 文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-37
   prefs: []
   type: TYPE_TB
+  zh: '| `123n` | [ES2020] 表示巨大整数的 BigInt 文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `0b10` | [ES2015] **2 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-38
   prefs: []
   type: TYPE_TB
+  zh: '| `0b10` | [ES2015] **2 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `0o777` | [ES2015] **8 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-39
   prefs: []
   type: TYPE_TB
+  zh: '| `0o777` | [ES2015] **8 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `0x30A2` | **16 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-40
   prefs: []
   type: TYPE_TB
+  zh: '| `0x30A2` | **16 进制**的整数文字 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `123_456` | [ES2021] 数值文字中的**数字分隔���** | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-41
   prefs: []
   type: TYPE_TB
+  zh: '| `123_456` | [ES2021] 数值文字中的**数字分隔符** | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%95%B0%E5%80%A4%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `{ k: v }` | 创建属性名为`k`，属性值为`v`的**对象** | 对象 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#object_literals)
     |'
+  id: totrans-42
   prefs: []
   type: TYPE_TB
+  zh: '| `{ k: v }` | 创建属性名为`k`，属性值为`v`的**对象** | 对象 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#object_literals)
+    |'
 - en: '| *`{ n }`* | [ES2015] 创建属性名为`n`，属性值为`n`的**对象** | 对象 | [对象初始化器](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Object_initializer#%E3%83%97%E3%83%AD%E3%83%91%E3%83%86%E3%82%A3%E3%81%AE%E5%AE%9A%E7%BE%A9)
     |'
+  id: totrans-43
   prefs: []
   type: TYPE_TB
+  zh: '| *`{ n }`* | [ES2015] 创建属性名为`n`，属性值为`n`的**对象** | 对象 | [对象初始化器](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Object_initializer#%E3%83%97%E3%83%AD%E3%83%91%E3%83%86%E3%82%A3%E3%81%AE%E5%AE%9A%E7%BE%A9)
+    |'
 - en: '| `[x, y]` | 创建具有初始值`x`和`y`的**数组对象** | 数组 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#array_literals)
     |'
+  id: totrans-44
   prefs: []
   type: TYPE_TB
+  zh: '| `[x, y]` | 创建具有初始值`x`和`y`的**数组对象** | 数组 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#array_literals)
+    |'
 - en: '| `/pattern/` | 创建具有`pattern`的**正则表达式对象** | 字符串 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-45
   prefs: []
   type: TYPE_TB
+  zh: '| `/pattern/` | 创建具有`pattern`的**正则表达式对象** | 字符串 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '| `null` | `null`值 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#null_%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
     |'
+  id: totrans-46
   prefs: []
   type: TYPE_TB
+  zh: '| `null` | `null`值 | 数据类型和文字 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#null_%E3%83%AA%E3%83%86%E3%83%A9%E3%83%AB)
+    |'
 - en: '[](#string)*字符串*'
+  id: totrans-47
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#string)*字符串*'
 - en: '*文字列について。'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '*文字列について。'
 - en: '| 代码示例 | 描述 | 解释 | MDN |'
+  id: totrans-49
   prefs: []
   type: TYPE_TB
+  zh: '| 代码示例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-50
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `"xxx"` | 双引号的**字符串文字**。换行等使用`\`和特定字符的组合表示。 | 字符串 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#string_literals)
     |'
+  id: totrans-51
   prefs: []
   type: TYPE_TB
+  zh: '| `"xxx"` | 双引号的**字符串文字**。换行等使用`\`和特定字符的组合表示。 | 字符串 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#string_literals)
+    |'
 - en: '| `''xxx''` | 单引号的**字符串文字**。与`"xxx"`的意义相同。 | 字符串 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#string_literals)
     |'
+  id: totrans-52
   prefs: []
   type: TYPE_TB
+  zh: '| `''xxx''` | 单引号的**字符串文字**。与`"xxx"`的意义相同。 | 字符串 | [语法和数据类型](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Grammar_and_types#string_literals)
+    |'
 - en: '| ``xxx`` | [ES2015] 模板字符串文字。可以包含换行符 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals)
     |'
+  id: totrans-53
   prefs: []
   type: TYPE_TB
+  zh: '| ``xxx`` | [ES2015] 模板字符串文字。可以包含换行符 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals)
+    |'
 - en: '| *``${x}``* | [ES2015] 展开模板字符串文字中变量`x`的值 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals)
     |'
+  id: totrans-54
   prefs: []
   type: TYPE_TB
+  zh: '| *``${x}``* | [ES2015] 展开模板字符串文字中变量`x`的值 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals)
+    |'
 - en: '[](#data-access)*数据访问*'
+  id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#data-access)*数据访问*'
 - en: '*数据访问。'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '*数据访问。'
 - en: '| 代码示例 | 描述 | 解释 | MDN |'
+  id: totrans-57
   prefs: []
   type: TYPE_TB
+  zh: '| 代码示例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-58
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `array[0]` | 数组的**索引访问** | 数组 | [Array](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array#%E6%B7%BB%E5%AD%97%E3%81%AB%E3%82%88%E3%82%8B%E9%85%8D%E5%88%97%E3%81%AE%E8%A6%81%E7%B4%A0%E3%81%B8%E3%81%AE%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9)
     |'
+  id: totrans-59
   prefs: []
   type: TYPE_TB
+  zh: '| `array[0]` | 数组的**索引访问** | 数组 | [Array](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array#%E6%B7%BB%E5%AD%97%E3%81%AB%E3%82%88%E3%82%8B%E9%85%8D%E5%88%97%E3%81%AE%E8%A6%81%E7%B4%A0%E3%81%B8%E3%81%AE%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9)
+    |'
 - en: '| `obj["x"]` | 对象的**属性访问**（方括号表示法） | 对象 | [属性访问器](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Property_Accessors)
     |'
+  id: totrans-60
   prefs: []
   type: TYPE_TB
+  zh: '| `obj["x"]` | 对象的**属性访问**（方括号表示法） | 对象 | [属性访问器](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Property_Accessors)
+    |'
 - en: '| `obj.x` | 对象的**属性访问**（点表示法） | 对象 | [属性访问器](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Property_Accessors)
     |'
+  id: totrans-61
   prefs: []
   type: TYPE_TB
+  zh: '| `obj.x` | 对象的**属性访问**（点表示法） | 对象 | [属性访问器](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Property_Accessors)
+    |'
 - en: '| `obj?.x` | [ES2020] 对象的**属性访问**（可选链操作符） | 对象 | [可选链 (?.)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
     |'
+  id: totrans-62
   prefs: []
   type: TYPE_TB
+  zh: '| `obj?.x` | [ES2020] 对象的**属性访问**（可选链操作符） | 对象 | [可选链 (?.)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+    |'
 - en: '| `const { x } = obj;` | [ES2015] 对象的**解构赋值** | 对象 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
     |'
+  id: totrans-63
   prefs: []
   type: TYPE_TB
+  zh: '| `const { x } = obj;` | [ES2015] 对象的**解构赋值** | 对象 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
+    |'
 - en: '| `const [ x ] = array;` | [ES2015] 使用数组的**解构赋值** | 数组 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
     |'
+  id: totrans-64
   prefs: []
   type: TYPE_TB
+  zh: '| `const [ x ] = array;` | [ES2015] 使用数组的**解构赋值** | 数组 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
+    |'
 - en: '| `f(...array)` | [ES2015] 使用**扩展语法**扩展数组 | 数组 | [展开语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
     |'
+  id: totrans-65
   prefs: []
   type: TYPE_TB
+  zh: '| `f(...array)` | [ES2015] 使用**扩展语法**扩展数组 | 数组 | [展开语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+    |'
 - en: '| `f({ ...obj })` | [ES2018] 使用**扩展语法**扩展对象 | 对象 | [展开语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
     |'
+  id: totrans-66
   prefs: []
   type: TYPE_TB
+  zh: '| `f({ ...obj })` | [ES2018] 使用**扩展语法**扩展对象 | 对象 | [展开语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+    |'
 - en: '[](#operator)*操作符*'
+  id: totrans-67
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#operator)*操作符*'
 - en: '*关于操作符。*'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '*关于操作符。*'
 - en: '| 代码示例 | 描述 | 解释 | MDN |'
+  id: totrans-69
   prefs: []
   type: TYPE_TB
+  zh: '| 代码示例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-70
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `+` | 加号/字符串连接操作符 | 操作符 | [加法 (+)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Addition)
     |'
+  id: totrans-71
   prefs: []
   type: TYPE_TB
+  zh: '| `+` | 加号/字符串连接操作符 | 操作符 | [加法 (+)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Addition)
+    |'
 - en: '| `-` | 减法操作符 | 操作符 | [减法 (-)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Subtraction)
     |'
+  id: totrans-72
   prefs: []
   type: TYPE_TB
+  zh: '| `-` | 减法操作符 | 操作符 | [减法 (-)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Subtraction)
+    |'
 - en: '| `*` | 乘法操作符 | 操作符 | [乘法 (*)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Multiplication)
     |'
+  id: totrans-73
   prefs: []
   type: TYPE_TB
+  zh: '| `*` | 乘法操作符 | 操作符 | [乘法 (*)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Multiplication)
+    |'
 - en: '| `/` | 除法操作符 | 操作符 | [除法 (/)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Division)
     |'
+  id: totrans-74
   prefs: []
   type: TYPE_TB
+  zh: '| `/` | 除法操作符 | 操作符 | [除法 (/)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Division)
+    |'
 - en: '| `%` | 取模操作符 | 操作符 | [取模 (%)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Remainder)
     |'
+  id: totrans-75
   prefs: []
   type: TYPE_TB
+  zh: '| `%` | 取模操作符 | 操作符 | [取模 (%)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Remainder)
+    |'
 - en: '| `**` | [ES2016] 指数操作符 | 操作符 | [指数 (**)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Exponentiation)
     |'
+  id: totrans-76
   prefs: []
   type: TYPE_TB
+  zh: '| `**` | [ES2016] 指数操作符 | 操作符 | [指数 (**)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Exponentiation)
+    |'
 - en: '| `++` | 自增操作符 | 操作符 | [自增](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Increment)
     |'
+  id: totrans-77
   prefs: []
   type: TYPE_TB
+  zh: '| `++` | 自增操作符 | 操作符 | [自增 (++)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Increment)
+    |'
 - en: '| `--` | 自减操作符 | 操作符 | [自减 (--)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Decrement)
     |'
+  id: totrans-78
   prefs: []
   type: TYPE_TB
+  zh: '| `--` | 自减操作符 | 操作符 | [自减 (--)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Decrement)
+    |'
 - en: '| `===` | 严格等于操作符 | 操作符 | [严格相等 (===)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Strict_equality)
     |'
+  id: totrans-79
   prefs: []
   type: TYPE_TB
+  zh: '| `===` | 严格等于操作符 | 演算子 | [严格相等 (===)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Strict_equality)
+    |'
 - en: '| `!==` | 严格不等于操作符 | 操作符 | [严格不等于 (!==)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Strict_inequality)
     |'
+  id: totrans-80
   prefs: []
   type: TYPE_TB
+  zh: '| `!==` | 严格不等于操作符 | 演算子 | [严格不等于 (!==)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Strict_inequality)
+    |'
 - en: '| `==` | 等于操作符 | 操作符 | [等于 (==)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Equality)
     |'
+  id: totrans-81
   prefs: []
   type: TYPE_TB
+  zh: '| `==` | 等于操作符 | 操作符 | [等于 (==)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Equality)
+    |'
 - en: '| `!=` | 不等于操作符 | 操作符 | [不等于 (!=)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Inequality)
     |'
+  id: totrans-82
   prefs: []
   type: TYPE_TB
+  zh: '| `!=` | 不等于操作符 | 操作符 | [不等于 (!=)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Inequality)
+    |'
 - en: '| `>` | 大于操作符 | 操作符 | [大于 (>)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Greater_than)
     |'
+  id: totrans-83
   prefs: []
   type: TYPE_TB
+  zh: '| `>` | 大于操作符 | 操作符 | [大于 (>)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Greater_than)
+    |'
 - en: '| `>=` | 大なりイコール演算子/以上 | 演算子 | [大なりイコール (>=)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Greater_than_or_equal)
     |'
+  id: totrans-84
   prefs: []
   type: TYPE_TB
+  zh: '| `>=` | 大于等于操作符/以上 | 演算子 | [大于等于 (>=)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Greater_than_or_equal)
+    |'
 - en: '| `<` | 小なり演算子/より小さい | 演算子 | [小なり (<)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Less_than)
     |'
+  id: totrans-85
   prefs: []
   type: TYPE_TB
+  zh: '| `<` | 小于操作符/更小 | 演算子 | [小于 (<)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Less_than)
+    |'
 - en: '| `<=` | 小なりイコール演算子/以下 | 演算子 | [小なりイコール (<=)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Less_than_or_equal)
     |'
+  id: totrans-86
   prefs: []
   type: TYPE_TB
+  zh: '| `<=` | 小于等于操作符/以下 | 演算子 | [小于等于 (<=)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Less_than_or_equal)
+    |'
 - en: '| `&` | ビット論理積 | 演算子 | [ビット論理積 (&)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_AND)
     |'
+  id: totrans-87
   prefs: []
   type: TYPE_TB
+  zh: '| `&` | 位逻辑与 | 演算子 | [位逻辑与 (&)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_AND)
+    |'
 - en: '| `&#124;` | ビット論理和 | 演算子 | [ビット論理和 (&#124;)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_OR)
     |'
+  id: totrans-88
   prefs: []
   type: TYPE_TB
+  zh: '| `|` | 位逻辑或 | 演算子 | [位逻辑或 (|)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_OR)
+    |'
 - en: '| `^` | ビット排他的論理和 | 演算子 | [ビット排他的論理和 (^)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_XOR)
     |'
+  id: totrans-89
   prefs: []
   type: TYPE_TB
+  zh: '| `^` | 位逻辑异或 | 演算子 | [位逻辑异或 (^)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_XOR)
+    |'
 - en: '| `~` | ビット否定 | 演算子 | [ビット否定 (~)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_NOT)
     |'
+  id: totrans-90
   prefs: []
   type: TYPE_TB
+  zh: '| `~` | 位逻辑非 | 演算子 | [位逻辑非 (~)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Bitwise_NOT)
+    |'
 - en: '| `<<` | 左シフト演算子 | 演算子 | [左シフト (<<)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Left_shift)
     |'
+  id: totrans-91
   prefs: []
   type: TYPE_TB
+  zh: '| `<<` | 左移操作符 | 演算子 | [左移 (<<)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Left_shift)
+    |'
 - en: '| `>>` | 右シフト演算子 | 演算子 | [右シフト (>>)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Right_shift)
     |'
+  id: totrans-92
   prefs: []
   type: TYPE_TB
+  zh: '| `>>` | 右移操作符 | 演算子 | [右移 (>>)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Right_shift)
+    |'
 - en: '| `>>>` | ゼロ埋め右シフト演算子 | 演算子 | [符号なし右シフト (>>>)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Unsigned_right_shift)
     |'
+  id: totrans-93
   prefs: []
   type: TYPE_TB
+  zh: '| `>>>` | 零填充右移操作符 | 演算子 | [无符号右移 (>>>)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Unsigned_right_shift)
+    |'
 - en: '| `&&` | AND 演算子 | 演算子 | [論理積 (&&)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Logical_AND)
     |'
+  id: totrans-94
   prefs: []
   type: TYPE_TB
+  zh: '| `&&` | AND 演算子 | 演算子 | [逻辑与 (&&)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Logical_AND)
+    |'
 - en: '| `??` | [ES2020] Nullish coalescing 演算子 | 演算子 | [Null 合体演算子 (??)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing)
     |'
+  id: totrans-95
   prefs: []
   type: TYPE_TB
+  zh: '| `??` | [ES2020] Null 合并操作符 | 演算子 | [Null 合并 (??)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing)
+    |'
 - en: '| `&#124;&#124;` | OR 演算子 | 演算子 | [論理和 (&#124;&#124;)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Logical_OR)
     |'
+  id: totrans-96
   prefs: []
   type: TYPE_TB
+  zh: '| `&#124;&#124;` | OR 演算子 | 运算符 | [逻辑或 (&#124;&#124;)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Logical_OR)
+    |'
 - en: '| `(x)` | グループ演算子 | 演算子 | [グループ化演算子 ( )](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Grouping)
     |'
+  id: totrans-97
   prefs: []
   type: TYPE_TB
+  zh: '| `(x)` | 组合运算符 | 运算符 | [组合化运算符 ( )](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Grouping)
+    |'
 - en: '| `x, y` | カンマ演算子 | 演算子 | [カンマ演算子 (,)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Comma_Operator)
     |'
+  id: totrans-98
   prefs: []
   type: TYPE_TB
+  zh: '| `x, y` | 逗号运算符 | 运算符 | [逗号运算符 (,)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Comma_Operator)
+    |'
 - en: '[](#function-behavior)*関数と挙動*'
+  id: totrans-99
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#function-behavior)*函数与行为*'
 - en: '*関数の定義と挙動について。'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '*函数的定义与行为。'
 - en: '| サンプル | 説明 | 解説 | MDN |'
+  id: totrans-101
   prefs: []
   type: TYPE_TB
+  zh: '| サンプル | 说明 | 解说 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `function f(){}` | **関数**宣言 | 関数と宣言 | [関数宣言](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/function)
     |'
+  id: totrans-103
   prefs: []
   type: TYPE_TB
+  zh: '| `function f(){}` | **函数**声明 | 函数与声明 | [函数声明](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/function)
+    |'
 - en: '| `const f = function(){};` | **関数**式 | 関数と宣言 | [関数式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/function)
     |'
+  id: totrans-104
   prefs: []
   type: TYPE_TB
+  zh: '| `const f = function(){};` | **函数**式 | 函数与声明 | [函数式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/function)
+    |'
 - en: '| `const f = () => {};` | [ES2015] **Arrow Function**の宣言 | 関数と宣言 | [アロー関数式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
     |'
+  id: totrans-105
   prefs: []
   type: TYPE_TB
+  zh: '| `const f = () => {};` | [ES2015] **箭头函数**的声明 | 函数与声明 | [箭头函数式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
+    |'
 - en: '| `async function f(){}` | [ES2017] **异步函数**的声明 | 异步处理 | [异步函数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function)
     |'
+  id: totrans-106
   prefs: []
   type: TYPE_TB
+  zh: '| `async function f(){}` | [ES2017] **异步函数**的声明 | 异步处理 | [异步函数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function)
+    |'
 - en: '| *`const f = async function(){};`* | [ES2017] 使用**异步函数**声明的函数表达式 | 异步处理 |
     [异步函数表达式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/async_function)
     |'
+  id: totrans-107
   prefs: []
   type: TYPE_TB
+  zh: '| *`const f = async function(){};`* | [ES2017] 使用**异步函数**声明的函数表达式 | 异步处理 |
+    [异步函数表达式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/async_function)
+    |'
 - en: '| *`const f = async () => {};`* | [ES2017] 使用箭头函数声明的**异步函数** | 异步处理 | [异步函数表达式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/async_function)
     |'
+  id: totrans-108
   prefs: []
   type: TYPE_TB
+  zh: '| *`const f = async () => {};`* | [ES2017] 使用箭头函数声明的**异步函数** | 异步处理 | [异步函数表达式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/async_function)
+    |'
 - en: '| `function f(x, y){}` | 函数中的形参声明 | 函数和声明 | [函数声明](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/function)
     |'
+  id: totrans-109
   prefs: []
   type: TYPE_TB
+  zh: '| `function f(x, y){}` | 函数中的形参声明 | 函数和声明 | [函数声明](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/function)
+    |'
 - en: '| *`function f(x = 1, y = 2){}`* | **默认参数**，指定参数未传递时的初始值。 | 函数和声明 | [默认参数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Default_parameters)
     |'
+  id: totrans-110
   prefs: []
   type: TYPE_TB
+  zh: '| *`function f(x = 1, y = 2){}`* | **默认参数**，指定参数未传递时的初始值。 | 函数和声明 | [默认参数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Default_parameters)
+    |'
 - en: '| *`function f([x, y]){}`* | [ES2015] 函数参数中的数组**解构赋值**。从参数数组中将索引为`0`的值赋给`x`，索引为`1`的值赋给`y`。
     | 函数和声明 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#%E9%85%8D%E5%88%97%E3%81%AE%E5%88%86%E5%89%B2%E4%BB%A3%E5%85%A5)
     |'
+  id: totrans-111
   prefs: []
   type: TYPE_TB
+  zh: '| *`function f([x, y]){}`* | [ES2015] 函数参数中的数组**解构赋值**。从参数数组中将索引为`0`的值赋给`x`，索引为`1`的值赋给`y`。
+    | 函数和声明 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#%E9%85%8D%E5%88%97%E3%81%AE%E5%88%86%E5%89%B2%E4%BB%A3%E5%85%A5)
+    |'
 - en: '| *`function f({ x, y }){}`* | [ES2015] 函数参数中的对象**解构赋值**。从参数对象中接收`x`和`y`属性。
     | 函数和声明 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%81%AE%E5%88%86%E5%89%B2%E4%BB%A3%E5%85%A5)
     |'
+  id: totrans-112
   prefs: []
   type: TYPE_TB
+  zh: '| *`function f({ x, y }){}`* | [ES2015] 函数参数中的对象**解构赋值**。从参数对象中接收`x`和`y`属性。
+    | 函数和声明 | [解构赋值](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%81%AE%E5%88%86%E5%89%B2%E4%BB%A3%E5%85%A5)
+    |'
 - en: '| *`function f(...args)){}`* | [ES2015] **可变长参数**/**Rest parameters**。以数组形式接收传递的参数
     | 函数和声明 | [剩余参数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/rest_parameters)
     |'
+  id: totrans-113
   prefs: []
   type: TYPE_TB
+  zh: '| *`function f(...args)){}`* | [ES2015] **可变长参数**/**Rest parameters**。以数组形式接收传递的参数
+    | 函数和声明 | [剩余参数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/rest_parameters)
+    |'
 - en: '| `const o = { method: function(){} };` | **方法定义** | 函数和声明 | [方法定义](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Method_definitions#%E8%A7%A3%E8%AA%AC)
     |'
+  id: totrans-114
   prefs: []
   type: TYPE_TB
+  zh: '| `const o = { method: function(){} };` | **方法定义** | 函数和声明 | [方法定义](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Method_definitions#%E8%A7%A3%E8%AA%AC)
+    |'
 - en: '| `const o = { method(){} };` | [ES2015] **方法定义**的简写 | 函数和声明 | [方法定义](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Method_definitions#%E8%A7%A3%E8%AA%AC)
     |'
+  id: totrans-115
   prefs: []
   type: TYPE_TB
+  zh: '| `const o = { method(){} };` | [ES2015] **方法定义**的简写 | 函数和声明 | [方法定义](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Functions/Method_definitions#%E8%A7%A3%E8%AA%AC)
+    |'
 - en: '| `class X{}` | [ES2015] **类**声明 | 类 | [class](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/class)
     |'
+  id: totrans-116
   prefs: []
   type: TYPE_TB
+  zh: '| `class X{}` | [ES2015] **类**声明 | 类 | [class](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/class)
+    |'
 - en: '| `const X = class X{};` | [ES2015] **类**表达式 | 类 | [类表达式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/class)
     |'
+  id: totrans-117
   prefs: []
   type: TYPE_TB
+  zh: '| `const X = class X{};` | [ES2015] **类**表达式 | 类 | [类表达式](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/class)
+    |'
 - en: '| *`class X{ method(){} }`* | [ES2015] 定义类的**实例方法** | 类 | [类](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes#%E3%83%97%E3%83%AD%E3%83%88%E3%82%BF%E3%82%A4%E3%83%97%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89)
     |'
+  id: totrans-118
   prefs: []
   type: TYPE_TB
+  zh: '| *`class X{ method(){} }`* | [ES2015] 定义类的**实例方法** | 类 | [类](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes#%E3%83%97%E3%83%AD%E3%83%88%E3%82%BF%E3%82%A4%E3%83%97%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89)
+    |'
 - en: '| *`class X{ get x(){}, set x(v){} }`* | [ES2015] 类的**存取器方法**定义 | 类 | [对象操作](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Working_with_Objects#defining_getters_and_setters)
     |'
+  id: totrans-119
   prefs: []
   type: TYPE_TB
+  zh: '| *`class X{ get x(){}, set x(v){} }`* | [ES2015] 类的**存取器方法**定义 | 类 | [对象操作](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Working_with_Objects#defining_getters_and_setters)
+    |'
 - en: '| *`class X{ property = 1; }`* | [ES2022] 类的**公共类字段**定义 | 类 | [公共类字段](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/Public_class_fields)
     |'
+  id: totrans-120
   prefs: []
   type: TYPE_TB
+  zh: '| *`class X{ property = 1; }`* | [ES2022] 类的**公共类字段**定义 | 类 | [公共类字段](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/Public_class_fields)
+    |'
 - en: '| *`class X{ #privateField = 1; }`* | [ES2022] 类的**私有类字段**定义 | 类 | [私有类字段](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
     |'
+  id: totrans-121
   prefs: []
   type: TYPE_TB
+  zh: '| *`class X{ #privateField = 1; }`* | [ES2022] 类的**私有类字段**定义 | 类 | [私有类字段](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
+    |'
 - en: '| *`class X{ static method(){} }`* | [ES2015] 类的**静态方法**定义 | 类 | [static](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/static)
     |'
+  id: totrans-122
   prefs: []
   type: TYPE_TB
+  zh: '| *`class X{ static method(){} }`* | [ES2015] 类的**静态方法**定义 | 类 | [static](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/static)
+    |'
 - en: '| `class C extends P{}` | [ES2015] 类的**继承** | 类 | [extends](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/extends)
     |'
+  id: totrans-123
   prefs: []
   type: TYPE_TB
+  zh: '| `class C extends P{}` | [ES2015] 类的**继承** | 类 | [extends](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/extends)
+    |'
 - en: '| *`super`* | [ES2015] 引用**父类** | 类 | [super](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/super)
     |'
+  id: totrans-124
   prefs: []
   type: TYPE_TB
+  zh: '| *`super`* | [ES2015] 引用**父类** | 类 | [super](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/super)
+    |'
 - en: '| `fn()` | 函数调用 | 函数和声明 | [函数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Functions#calling_functions)
     |'
+  id: totrans-125
   prefs: []
   type: TYPE_TB
+  zh: '| `fn()` | 函数调用 | 函数和声明 | [函数](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Functions#calling_functions)
+    |'
 - en: '| `fn`xxx`` | [ES2015] 标签函数调用 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals#%E3%82%BF%E3%82%B0%E4%BB%98%E3%81%8D%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88)
     |'
+  id: totrans-126
   prefs: []
   type: TYPE_TB
+  zh: '| `fn`xxx`` | [ES2015] 标签函数调用 | 字符串 | [模板文字（模板字符串）](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Template_literals#%E3%82%BF%E3%82%B0%E4%BB%98%E3%81%8D%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88)
+    |'
 - en: '| `new X()` | 使用`new`运算符从类（具有构造函数的对象）创建实例 | 类 | [new 运算符](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/new)
     |'
+  id: totrans-127
   prefs: []
   type: TYPE_TB
+  zh: '| `new X()` | 使用`new`运算符从类（具有构造函数的对象）创建实例 | 类 | [new 运算符](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/new)
+    |'
 - en: '[](#control-flow)*控制流*'
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#control-flow)*控制流*'
 - en: '*控制流的控制结构。'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '*控制流的控制结构。'
 - en: '| 例 | 描述 | 解释 | MDN |'
+  id: totrans-130
   prefs: []
   type: TYPE_TB
+  zh: '| 例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-131
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `while(x){}` | **while 循环**。当`x`为`true`时执行迭代处理 | 循环和迭代处理 | [while](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/while)
     |'
+  id: totrans-132
   prefs: []
   type: TYPE_TB
+  zh: '| `while(x){}` | **while 循环**。当`x`为`true`时执行迭代处理 | 循环和迭代处理 | [while](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/while)
+    |'
 - en: '| `do{}while(x);` | **do...while 循环**。当`x`为`true`时执行迭代处理。无论`x`如何，都会执行第一次处理
     | 循环和迭代处理 | [do...while](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/do...while)
     |'
+  id: totrans-133
   prefs: []
   type: TYPE_TB
+  zh: '| `do{}while(x);` | **do...while 循环**。当`x`为`true`时执行迭代处理。无论`x`如何，都会执行第一次处理
+    | 循环和迭代处理 | [do...while](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/do...while)
+    |'
 - en: '| `for(let x=0;x < y ;x++){}` | **for 循环**。当`x < y`为`true`时执行迭代处理 | 循环和迭代处理
     | [for](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for)
     |'
+  id: totrans-134
   prefs: []
   type: TYPE_TB
+  zh: '| `for(let x=0;x < y ;x++){}` | **for 循环**。当`x < y`为`true`时执行迭代处理 | 循环和迭代处理
+    | [for](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for)
+    |'
 - en: '| `for(const p in o){}` | **for...in 循环**。对对象（`o`）的属性(`p`)进行迭代处理 | 循环和迭代处理
     | [for...in](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...in)
     |'
+  id: totrans-135
   prefs: []
   type: TYPE_TB
+  zh: '| `for(const p in o){}` | **for...in 循环**。对对象（`o`）的属性(`p`)进行迭代处理 | 循环和迭代处理
+    | [for...in](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...in)
+    |'
 - en: '| `for(const x of iter){}` | [ES2015] **for...of 循环**。对迭代器(`iter`)进行迭代处理 |
     循环和迭代处理 | [for...of](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...of)
     |'
+  id: totrans-136
   prefs: []
   type: TYPE_TB
+  zh: '| `for(const x of iter){}` | [ES2015] **for...of 循环**。对迭代器(`iter`)进行迭代处理 |
+    循环和迭代处理 | [for...of](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/for...of)
+    |'
 - en: '| `if(x){/*A*/}else{/*B*/}` | **条件表达式**。如果`x`为`true`，则执行 A，否则执行 B | 条件分支 |
     [if...else](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/if...else)
     |'
+  id: totrans-137
   prefs: []
   type: TYPE_TB
+  zh: '| `if(x){/*A*/}else{/*B*/}` | **条件表达式**。如果`x`为`true`，则执行 A，否则执行 B | 条件分支 |
+    [if...else](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/if...else)
+    |'
 - en: '| `switch(x){case "A":{/*A*/} "B":{/*B*/}}` | **switch 语句**。如果`x`为`"A"`，则执行
     A，如果为"B"，则执行 B | 条件分支 | [switch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/switch)
     |'
+  id: totrans-138
   prefs: []
   type: TYPE_TB
+  zh: '| `switch(x){case "A":{/*A*/} "B":{/*B*/}}` | **switch 语句**。如果`x`为`"A"`，则执行
+    A，如果为"B"，则执行 B | 条件分支 | [switch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/switch)
+    |'
 - en: '| `x ? A: B` | **条件（三元）运算符**。如果`x`为`true`，则执行`A`，否则执行`B` | 条件分支 | [条件（三元）运算符](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)
     |'
+  id: totrans-139
   prefs: []
   type: TYPE_TB
+  zh: '| `x ? A: B` | **条件（三元）运算符**。如果`x`为`true`，则执行`A`，否则执行`B` | 条件分支 | [条件（三元）运算符](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)
+    |'
 - en: '| `break` | **break 语句**。结束当前循环迭代，跳出循环。 | 条件分支 | [break](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/break)
     |'
+  id: totrans-140
   prefs: []
   type: TYPE_TB
+  zh: '| `break` | **break 语句**。结束当前循环迭代，跳出循环。 | 条件分支 | [break](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/break)
+    |'
 - en: '| `continue` | **continue 语句**。结束当前循环迭代，进入下一个循环。 | 条件分支 | [continue](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/continue)
     |'
+  id: totrans-141
   prefs: []
   type: TYPE_TB
+  zh: '| `continue` | **continue 语句**。结束当前循环迭代，进入下一个循环。 | 条件分支 | [continue](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/continue)
+    |'
 - en: '| `try{}catch(e){}finally{}` | `try...catch`语法 | 异常处理 | [try...catch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch)
     |'
+  id: totrans-142
   prefs: []
   type: TYPE_TB
+  zh: '| `try{}catch(e){}finally{}` | `try...catch`语法 | 异常处理 | [try...catch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch)
+    |'
 - en: '| `throw new Error("xxx")` | `throw`语句 | 异常处理 | [throw](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/throw)
     |'
+  id: totrans-143
   prefs: []
   type: TYPE_TB
+  zh: '| `throw new Error("xxx")` | `throw`语句 | 异常处理 | [throw](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/throw)
+    |'
 - en: '[](#module)*模块*'
+  id: totrans-144
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#module)*模块*'
 - en: '*关于 ECMAScript 模块。'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '*关于 ECMAScript 模块。'
 - en: '| 代码 | 描述 | 解释 | MDN |'
+  id: totrans-146
   prefs: []
   type: TYPE_TB
+  zh: '| 代码 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-147
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `import x from "./x.js"` | [ES2015] **デフォルトインポート** | ECMAScriptモジュール | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
     |'
+  id: totrans-148
   prefs: []
   type: TYPE_TB
+  zh: '| `import x from "./x.js"` | [ES2015] **默认导入** | ECMAScriptモジュール | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
+    |'
 - en: '| `import { x } from "./x.js"` | [ES2015] **命名导入** | ECMAScript 模块 | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
     |'
+  id: totrans-149
   prefs: []
   type: TYPE_TB
+  zh: '| `import { x } from "./x.js"` | [ES2015] **命名导入** | ECMAScript 模块 | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
+    |'
 - en: '| `import { x as y } from "./x.js"` | [ES2015] 名前付きインポート的**别名** | ECMAScript
     模块 | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
     |'
+  id: totrans-150
   prefs: []
   type: TYPE_TB
+  zh: '| `import { x as y } from "./x.js"` | [ES2015] 名前付きインポートの**别名** | ECMAScript
+    模块 | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
+    |'
 - en: '| `import * as x from "./x.js"` | [ES2015] 导入**所有命名导出并取别名** | ECMAScript 模块
     | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
     |'
+  id: totrans-151
   prefs: []
   type: TYPE_TB
+  zh: '| `import * as x from "./x.js"` | [ES2015] 导入**所有命名导出并取别名** | ECMAScript 模块
+    | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
+    |'
 - en: '| `import "./x.js"` | [ES2015] 为了**副作用**而导入 | ECMAScript 模块 | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
     |'
+  id: totrans-152
   prefs: []
   type: TYPE_TB
+  zh: '| `import "./x.js"` | [ES2015] 为了**副作用**而导入 | ECMAScript 模块 | [Import](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)
+    |'
 - en: '| `export default x` | [ES2015] **默认导出** | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
     |'
+  id: totrans-153
   prefs: []
   type: TYPE_TB
+  zh: '| `export default x` | [ES2015] **默认导出** | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
+    |'
 - en: '| `export { x }` | [ES2015] **命名导出** | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
     |'
+  id: totrans-154
   prefs: []
   type: TYPE_TB
+  zh: '| `export { x }` | [ES2015] **命名导出** | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
+    |'
 - en: '| `export { x as y }` | [ES2015] 命名导出的**别名** | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
     |'
+  id: totrans-155
   prefs: []
   type: TYPE_TB
+  zh: '| `export { x as y }` | [ES2015] 命名导出的**别名** | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
+    |'
 - en: '| `export { x } from "./x.js"` | [ES2015] **重新导出**命名导出 | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
     |'
+  id: totrans-156
   prefs: []
   type: TYPE_TB
+  zh: '| `export { x } from "./x.js"` | [ES2015] **重新导出**命名导出 | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
+    |'
 - en: '| `export * from "./x.js"` | [ES2015] **重新导出**所有命名导出 | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
     |'
+  id: totrans-157
   prefs: []
   type: TYPE_TB
+  zh: '| `export * from "./x.js"` | [ES2015] **重新导出**所有命名导出 | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
+    |'
 - en: '| `export * as ns from "./x.js"` | [ES2020] **导入所有命名导出**，并以`ns`的名称**重新导出**
     | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
     |'
+  id: totrans-158
   prefs: []
   type: TYPE_TB
+  zh: '| `export * as ns from "./x.js"` | [ES2020] **导入所有命名导出**，并以`ns`的名称**重新导出**
+    | ECMAScript 模块 | [Export](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)
+    |'
 - en: '[](#miscellaneous)*其他*'
+  id: totrans-159
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#miscellaneous)*其他*'
 - en: '*| 代码示例 | 描述 | 解释 | MDN |'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: '*| 代码示例 | 描述 | 解释 | MDN |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-161
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-162
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `x;` | **语句** | 语句和表达式 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E8%87%AA%E5%8B%95%E3%82%BB%E3%83%9F%E3%82%B3%E3%83%AD%E3%83%B3%E6%8C%BF%E5%85%A5)
     |'
+  id: totrans-163
   prefs: []
   type: TYPE_TB
+  zh: '| `x;` | **语句** | 语句和表达式 | [词法语法](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Lexical_grammar#%E8%87%AA%E5%8B%95%E3%82%BB%E3%83%9F%E3%82%B3%E3%83%AD%E3%83%B3%E6%8C%BF%E5%85%A5)
+    |'
 - en: '| `{ }` | 代码块 | 语句和表达式 | [块](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/block)
     |'
+  id: totrans-164
   prefs: []
   type: TYPE_TB
+  zh: '| `{ }` | 代码块 | 语句和表达式 | [块](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/block)
+    |'
 - en: '[](#guide)*指南*'
+  id: totrans-165
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#guide)*指南*'
 - en: '*### [](#project-anatomy)*项目结构*'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '*### [](#project-anatomy)*项目结构*'
 - en: '*关于 JavaScript 基本项目布局、文件、文件夹结构的内容。'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '*关于 JavaScript 基本项目布局、文件、文件夹结构的内容。'
 - en: '| 名称 | 描述 |'
+  id: totrans-168
   prefs: []
   type: TYPE_TB
+  zh: '| 名称 | 描述 |'
 - en: '| --- | --- |'
+  id: totrans-169
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| src/ | 项目的源代码 |'
+  id: totrans-170
   prefs: []
   type: TYPE_TB
+  zh: '| src/ | 项目的源代码 |'
 - en: '| ~~index.js~~ | 应用程序的默认入口点 |'
+  id: totrans-171
   prefs: []
   type: TYPE_TB
+  zh: '| ~~index.js~~ | 应用程序的默认入口点 |'
 - en: '| test/ | 测试代码。通常用于放置针对`src/`的单元测试 |'
+  id: totrans-172
   prefs: []
   type: TYPE_TB
+  zh: '| test/ | 测试代码。通常用于放置针对`src/`的单元测试 |'
 - en: '| ~~index.test.js~~ | 应用程序的单元测试文件。例如) `index-test.js`、`indexSpec.js`等 |'
+  id: totrans-173
   prefs: []
   type: TYPE_TB
+  zh: '| ~~index.test.js~~ | 应用程序的单元测试文件。例如) `index-test.js`、`indexSpec.js`等 |'
 - en: '| node_modules/ | 项目依赖的 npm 模块安装位置 |'
+  id: totrans-174
   prefs: []
   type: TYPE_TB
+  zh: '| node_modules/ | 项目依赖的 npm 模块安装位置 |'
 - en: '| package.json | 项目的配置文件。包括名称、描述、脚本、依赖模块等 |'
+  id: totrans-175
   prefs: []
   type: TYPE_TB
+  zh: '| package.json | 项目的配置文件。包括名称、描述、脚本、依赖模块等 |'
 - en: '| package-lock.json | npm 处理的依赖模块锁定文件 |'
+  id: totrans-176
   prefs: []
   type: TYPE_TB
+  zh: '| package-lock.json | npm 处理的依赖模块锁定文件 |'
 - en: '**参考**'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '**参考**'
 - en: 待办事项应用*************
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 待办事项应用*************

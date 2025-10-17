@@ -1,236 +1,354 @@
 - en: '[笨办法学 Python3](README.md)'
+  id: totrans-0
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[笨办法学 Python3](README.md)'
 - en: '[引言](js-primer_01.md)'
+  id: totrans-1
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[引言](js-primer_01.md)'
 - en: '[作者介绍](js-primer_02.md)'
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[作者介绍](js-primer_02.md)'
 - en: '[JavaScript Primer 赞助商](js-primer_03.md)'
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[JavaScript Primer 赞助商](js-primer_03.md)'
 - en: '[読みはじめる前の事前準備](js-primer_04.md)'
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[开始前的准备工作](js-primer_04.md)'
 - en: '[发现文中错误时](js-primer_05.md)'
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[发现文中错误时](js-primer_05.md)'
 - en: '[第一部分：基本语法](js-primer_06.md)'
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[第一部分：基本语法](js-primer_06.md)'
 - en: '[JavaScript 简介](js-primer_07.md)'
+  id: totrans-7
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[JavaScript 简介](js-primer_07.md)'
 - en: '[コメント](js-primer_08.md)'
+  id: totrans-8
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[注释](js-primer_08.md)'
 - en: '[変数と宣言](js-primer_09.md)'
+  id: totrans-9
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[变量与声明](js-primer_09.md)'
 - en: '[值的评估与显示](js-primer_10.md)'
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[值的评估与显示](js-primer_10.md)'
 - en: '[データ型とリテラル](js-primer_11.md)'
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[数据类型与字面量](js-primer_11.md)'
 - en: '[演算子](js-primer_12.md)'
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[运算符](js-primer_12.md)'
 - en: '[暗黙的な���変換](js-primer_13.md)'
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[隐式类型转换](js-primer_13.md)'
 - en: '[函数和声明](js-primer_14.md)'
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[函数和声明](js-primer_14.md)'
 - en: '[文と式](js-primer_15.md)'
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[文与式](js-primer_15.md)'
 - en: '[条件分岐](js-primer_16.md)'
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[条件分支](js-primer_16.md)'
 - en: '[ループと反復処理](js-primer_17.md)'
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[循环与重复处理](js-primer_17.md)'
 - en: '[オブジェクト](js-primer_18.md)'
+  id: totrans-18
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[对象](js-primer_18.md)'
 - en: '[原型对象](js-primer_19.md)'
+  id: totrans-19
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[原型对象](js-primer_19.md)'
 - en: '[配列](js-primer_20.md)'
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[数组](js-primer_20.md)'
 - en: '[文字列](js-primer_21.md)'
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[字符串](js-primer_21.md)'
 - en: '[字符串和 Unicode](js-primer_22.md)'
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[字符串和 Unicode](js-primer_22.md)'
 - en: '[ラッパーオブジェクト](js-primer_23.md)'
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[包装对象](js-primer_23.md)'
 - en: '[函数和作用域](js-primer_24.md)'
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[函数与作用域](js-primer_24.md)'
 - en: '[関数とthis](js-primer_25.md)'
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[函数与 this](js-primer_25.md)'
 - en: '[クラス](js-primer_26.md)'
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[类](js-primer_26.md)'
 - en: '[例外処理](js-primer_27.md)'
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[异常处理](js-primer_27.md)'
 - en: '[非同期処理:Promise/Async Function](js-primer_28.md)'
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[非同步处理:Promise/Async Function](js-primer_28.md)'
 - en: '[[ES2015] Map/Set](js-primer_29.md)'
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[[ES2015] Map/Set](js-primer_29.md)'
 - en: '[JSON](js-primer_30.md)'
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[JSON](js-primer_30.md)'
 - en: '[日期](js-primer_31.md)'
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[日期](js-primer_31.md)'
 - en: '[数学](js-primer_32.md)'
+  id: totrans-32
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[数学](js-primer_32.md)'
 - en: '[[ES2015] ECMAScriptモジュール](js-primer_33.md)'
+  id: totrans-33
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[[ES2015] ECMAScript 模块](js-primer_33.md)'
 - en: '[ECMAScript](js-primer_34.md)'
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[ECMAScript](js-primer_34.md)'
 - en: '[第一部分：结束语](js-primer_35.md)'
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[第一部分：结束语](js-primer_35.md)'
 - en: '[第二部分：用例](js-primer_36.md)'
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[第二部分：用例](js-primer_36.md)'
 - en: '[アプリケーション開発の準備](js-primer_37.md)'
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[应用程序开发的准备](js-primer_37.md)'
 - en: '[用例：Ajax 通信](js-primer_38.md)'
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[用例：Ajax 通信](js-primer_38.md)'
 - en: '[入口点](js-primer_39.md)'
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[入口点](js-primer_39.md)'
 - en: '[HTTP 通信](js-primer_40.md)'
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[HTTP 通信](js-primer_40.md)'
 - en: '[データを表示する](js-primer_41.md)'
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[显示数据](js-primer_41.md)'
 - en: '[利用 Promise](js-primer_42.md)'
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[利用 Promise](js-primer_42.md)'
 - en: '[用例：Node.js CLI 应用程序](js-primer_43.md)'
+  id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[用例：Node.js CLI 应用程序](js-primer_43.md)'
 - en: '[Node.js 中的 Hello World](js-primer_44.md)'
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[Node.js 中的 Hello World](js-primer_44.md)'
 - en: '[处理命令行参数](js-primer_45.md)'
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[处理命令行参数](js-primer_45.md)'
 - en: '[读取文件](js-primer_46.md)'
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[读取文件](js-primer_46.md)'
 - en: '[MarkdownをHTMLに変換する](js-primer_47.md)'
+  id: totrans-47
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[Markdown 转换为 HTML](js-primer_47.md)'
 - en: '[ユニットテストを記述する](js-primer_48.md)'
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[编写单元测试](js-primer_48.md)'
 - en: '[用例：Todo 应用](js-primer_49.md)'
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[用例：Todo 应用](js-primer_49.md)'
 - en: '[入口点](js-primer_50.md)'
+  id: totrans-50
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[入口点](js-primer_50.md)'
 - en: '[应用程序的组成要素](js-primer_51.md)'
+  id: totrans-51
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[应用程序的组成要素](js-primer_51.md)'
 - en: '[实现添加 Todo 项目的功能](js-primer_52.md)'
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[实现添加 Todo 项目的功能](js-primer_52.md)'
 - en: '[イベントとモデル](js-primer_53.md)'
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[事件与模型](js-primer_53.md)'
 - en: '[实现更新和删除 Todo 项目](js-primer_54.md)'
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[实现更新和删除 Todo 项目](js-primer_54.md)'
 - en: '[Todo 应用程序的重构](js-primer_55.md)'
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[Todo 应用程序的重构](js-primer_55.md)'
 - en: '[付録: 参考链接集](js-primer_56.md)'
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[附录: 参考链接集](js-primer_56.md)'
 - en: '[附录: JavaScript 速查表](js-primer_57.md)'
+  id: totrans-57
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[附录: JavaScript 速查表](js-primer_57.md)'
 - en: '[おわりに](js-primer_58.md)'
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[结语](js-primer_58.md)'
