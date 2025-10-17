@@ -1,93 +1,148 @@
 - en: コメント
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 注释
 - en: 原文：[`jsprimer.net/basic/comments/`](https://jsprimer.net/basic/comments/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/comments/`](https://jsprimer.net/basic/comments/)
 - en: コメントはプログラムとして評価されないため、ソースコードの説明を書くために利用されています。 この書籍でも、JavaScriptのソースコードを解説するためにコメントを使っていきます。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 注释不会被程序作为代码执行，因此被用于编写源代码的说明。在这本书中，我们也使用注释来解释JavaScript的源代码。
 - en: コメントの書き方には、一行コメントと複数行コメントの2 種類があります。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 注释的编写方式有两种：单行注释和多行注释。
 - en: '[](#single-line-comment)*一行コメント*'
+  id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#single-line-comment)*单行注释*'
 - en: '*一行コメントは名前のとおり、一行ずつコメントを書く際に利用します。 `//` 以降から行末までがコメントとして扱われるため、プログラムとして評価されません。'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: '*单行注释正如其名，用于逐行添加注释。从`//`开始到行末都被视为注释，因此不会被程序作为代码执行。'
 - en: '[PRE0]'
+  id: totrans-6
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[](#multi-line-comment)*複数行コメント*'
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#multi-line-comment)*多行注释*'
 - en: '*複数行コメントは名前のとおり、複数行のコメントを書く際に利用します。 一行コメントとは違い複数行をまとめて書けるので、長い説明を書く際に利用されています。'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '*多行注释正如其名，用于编写多行注释。与单行注释不同，它可以一次性写入多行，因此在需要编写长篇说明时经常使用。'
 - en: '`/*` と `*/`で囲まれた範囲がコメントとして扱われるため、プログラムとして評価されません。'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '`/*` 和 `*/` 包围的区域作为注释处理，因此不会被程序作为代码执行。'
 - en: '[PRE1]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 複数行コメントの中に、複数行コメントを書くことはできません。 次のように、複数行のコメントをネストして書いた場合は構文エラーとなります。
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 在多行注释中，不能嵌套多行注释。如果像下面这样嵌套多行注释，则会发生语法错误。
 - en: '[PRE2]'
+  id: totrans-12
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '[](#html-like-comment)*[ES2015] HTML-likeコメント*'
+  id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#html-like-comment)*[ES2015] HTML-like注释*'
 - en: '*ECMAScript 2015（ES2015）から後方互換性のための仕様として**HTML-likeコメント**が追加されています。 このHTML-likeコメントは、ブラウザの実装に合わせた後方互換性のための仕様として定義されています。'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '*从ECMAScript 2015（ES2015）开始，为了向后兼容，增加了**HTML-like注释**。这种HTML-like注释是为了实现与浏览器实现的后向兼容性而定义的。'
 - en: HTML-likeコメントは名前のとおり、HTMLのコメントと同じ表記です。
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: HTML-like注释正如其名，与HTML的注释标记相同。
 - en: '[PRE3]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ここでは、 `<!--` と `-->` がそれぞれ一行コメントとして認識されます。
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，`<!--` 和 `-->` 分别被识别为单行注释。
 - en: JavaScriptをサポートしていないブラウザでは、`<script>`タグを正しく認識できないために書かれたコードが表示されていました。 それを避けるために`<script>`の中をHTMLコメントで囲み、表示はされないが実行されるという回避策が取られていました。
     今は`<script>`タグをサポートしていないブラウザはないため、この回避策は不要です。
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 在不支持JavaScript的浏览器中，由于无法正确识别`<script>`标签，因此编写的代码无法显示。为了避免这种情况，采取了将`<script>`内容用HTML注释包围的回避策略，这样代码就不会显示但仍然可以执行。现在没有不支持`<script>`标签的浏览器，因此这种回避策略不再需要。
 - en: '[PRE4]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 一方、`<script>`タグ内、つまりJavaScript 内にHTMLコメントが書かれているサイトは残っています。 このようなサイトでもJavaScriptが動作するという、後方互換性のための仕様として追加されています。
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，即使在`<script>`标签内，也就是在JavaScript中，也存在使用HTML注释的网站。为了实现后向兼容性，也添加了这种在`<script>`标签内使用HTML注释的网站。
 - en: '[歴史的経緯](https://dev.mozilla.jp/2016/03/es6-in-depth-arrow-functions/ "ES6 In
     Depth: Arrow functions | Mozilla Developer Street (modest)")は別として、ECMAScriptではこのように後方互換性が慎重に取り扱われます。
     ECMAScriptは一度入った仕様が使えなくなることはほとんどないため、基本文法で覚えたことが使えなくなることはありません。 一方で、仕��が更新されるたびに新しい機能が増えるため、それを学び続けることには変わりありません。'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '除了[历史背景](https://dev.mozilla.jp/2016/03/es6-in-depth-arrow-functions/ "ES6
+    In Depth: Arrow functions | Mozilla Developer Street (modest)")之外，ECMAScript在处理向后兼容性时非常谨慎。由于ECMAScript一旦加入的规范就很少被废弃，因此基本语法中学习的内容不会失效。另一方面，随着规范的更新，新的功能不断增多，因此需要持续学习。'
 - en: '[](#conclusion)*まとめ*'
+  id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)*总结*'
 - en: '*この章では、ソースコードに説明を書けるコメントについて学びました。'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在本章中，我们学习了如何在源代码中添加注释。'
 - en: '`//` 以降から行末までが一行コメント'
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`//` 从此行开始到行末为单行注释'
 - en: '`/*` と `*/`で囲まれた範囲が複数行コメント'
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`/*` 和 `*/` 包围的区域为多行注释'
 - en: HTML-likeコメントは後方互換性のためだけに存在する****
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: HTML-like注释仅为了后向兼容性而存在****

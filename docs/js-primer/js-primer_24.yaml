@@ -1,645 +1,1040 @@
 - en: 函数和作用域
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 函数和作用域
 - en: 原文：[`jsprimer.net/basic/function-scope/`](https://jsprimer.net/basic/function-scope/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/function-scope/`](https://jsprimer.net/basic/function-scope/)
 - en: 每个定义的函数都有自己的作用域。作用域决定了变量或函数参数等的可引用范围。在 JavaScript 中，定义新函数会创建一个与该函数相关联的新作用域。定义函数不仅仅是将处理内容组合在一起，还创建了一个新的作用域来确定变量的有效范围。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个定义的函数都有自己的作用域。作用域决定了变量或函数参数等的可引用范围。在 JavaScript 中，定义新函数会创建一个与该函数相关联的新作用域。定义函数不仅仅是将处理内容组合在一起，还创建了一个新的作用域来确定变量的有效范围。
 - en: 理解作用��的机制有助于更深入地理解函数。因为函数和作用域之间有着密切的关系。本章将重点介绍函数和作用域之间的关系，以及作用域的作用以及作用域内变量的取值方式。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解作用域的机制有助于更深入地理解函数。因为函数和作用域之间有着密切的关系。本章将重点介绍函数和作用域之间的关系，以及作用域的作用以及作用域内变量的取值方式。
 - en: JavaScript 的作用域在 ES2015 中得到了直观易懂的改进。基本上，只要理解了 ES2015 及以后的机制，编写代码就不会有问题。
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript 的作用域在 ES2015 中得到了直观易懂的改进。基本上，只要理解了 ES2015 及以后的机制，编写代码就不会有问题。
 - en: 然而，为了理解现有代码，您还需要了解 ES2015 之前确定的旧机制。因为现有代码有时会使用旧机制编写。此外，在 JavaScript 中，可以混合使用旧机制和新机制编写代码。由于旧机制的作用域存在许多不直观的行为，因此我们也会补充介绍旧机制。
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，为了理解现有代码，您还需要了解 ES2015 之前确定的旧机制。因为现有代码有时会使用旧机制编写。此外，在 JavaScript 中，可以混合使用旧机制和新机制编写代码。由于旧机制的作用域存在许多不直观的行为，因此我们也会补充介绍旧机制。
 - en: '[](#what-is-scope)*作用域是什么*'
+  id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#what-is-scope)*作用域是什么*'
 - en: '*作用域决定了变量名或函数等可被引用的范围。在作用域中定义的变量只能在该作用域内部引用，外部无法引用。'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '*作用域决定了变量名或函数等可被引用的范围。在作用域中定义的变量只能在该作用域内部引用，外部无法引用。'
 - en: 以函数作用域为例，看看身边的作用域示例。
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 以函数作用域为例，看看身边的作用域示例。
 - en: 在下面的代码中，我们在`fn`函数的块（`{`和`}`）内定义了变量`x`。这个变量`x`是在`fn`函数的作用域中定义的，因此在`fn`函数内部可以引用。然而，在`fn`函数外部无法引用变量`x`，因此会导致`ReferenceError`异常。
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，我们在`fn`函数的块（`{`和`}`）内定义了变量`x`。这个变量`x`是在`fn`函数的作用域中定义的，因此在`fn`函数内部可以引用。然而，在`fn`函数外部无法引用变量`x`，因此会导致`ReferenceError`异常。
 - en: '[PRE0]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 如下代码所示，变量`x`是在`fn`函数的作用域中定义的。因此，变量`x`只能在`fn`函数的作用域内部引用。
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 如下代码所示，变量`x`是在`fn`函数的作用域中定义的。因此，变量`x`只能在`fn`函数的作用域内部引用。
 - en: 函数可以拥有**形参**，但形参是在函数作用域中定义的。因此，形参只能在该函数内部引用，外部无法引用。
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数可以拥有**形参**，但形参是在函数作用域中定义的。因此，形参只能在该函数内部引用，外部无法引用。
 - en: '[PRE1]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 这种通过函数确定作用域的概念被称为**函数作用域**。
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种通过函数确定作用域的概念被称为**函数作用域**。
 - en: 在“变量和声明”章节中，我们讨论了`let`和`const`不能在同一作用域内重复定义相同名称变量的问题。这是因为每个作用域只能声明一个同名变量（使用`var`声明的变量和使用`function`声明的函数是例外）。
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在“变量和声明”章节中，我们讨论了`let`和`const`不能在同一作用域内重复定义相同名称变量的问题。这是因为每个作用域只能声明一个同名变量（使用`var`声明的变量和使用`function`声明的函数是例外）。
 - en: '[PRE2]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 在不同作用域中，可以使用相同名称来声明变量。在下面的代码中，我们可以看到在不同作用域中的`fnA`函数和`fnB`函数中分别定义了变量`x`。
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 在不同作用域中，可以使用相同名称来声明变量。在下面的代码中，我们可以看到在不同作用域中的`fnA`函数和`fnB`函数中分别定义了变量`x`。
 - en: '[PRE3]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 由于作用域不同，因此可以在不同作用域中定义相同名称的变量。作用域的存在使得可以在每个作用域中定义相同名称的变量，因此作用域的作用非常重要。
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于作用域不同，因此可以在不同作用域中定义相同名称的变量。作用域的存在使得可以在每个作用域中定义相同名称的变量，因此作用域的作用非常重要。
 - en: '[](#block-scope)*块级作用域*'
+  id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#block-scope)*块级作用域*'
 - en: '*用`{`和`}`括起来的范围称为块（请参阅“语句和表达式”章节）。块也会创建作用域。在块内声明的变量只能在作用域内部引用，外部无法引用。'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '*用`{`和`}`括起来的范围称为块（请参阅“语句和表达式”章节）。块也会创建作用域。在块内声明的变量只能在作用域内部引用，外部无法引用。'
 - en: '[PRE4]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 通过块来创建作用域的概念被称为**块级作用域**。
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过块来创建作用域的概念被称为**块级作用域**。
 - en: if 语句或 while 语句也会创建块级作用域。与单独的块级作用域一样，在块内声明的变量无法从外部引用。
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: if 语句或 while 语句也会创建块级作用域。与单独的块级作用域一样，在块内声明的变量无法从外部引用。
 - en: '[PRE5]'
+  id: totrans-25
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: for 循环会为每个循环创建一个新的块级作用域。考虑到“每个作用域只能声明一个同名变量”的规则，这一点就很容易理解了。在下面的代码中，我们使用`const`在每次循环中定义`element`变量，但却可以无错误地定义。这是因为每次循环都会创建一个独立的块级作用域，变量声明也会在各自独立的作用域中进行。
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: for 循环会为每个循环创建一个新的块级作用域。考虑到“每个作用域只能声明一个同名变量”的规则，这一点就很容易理解了。在下面的代码中，我们使用`const`在每次循环中定义`element`变量，但却可以无错误地定义。这是因为每次循环都会创建一个独立的块级作用域，变量声明也会在各自独立的作用域中进行。
 - en: '[PRE6]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[](#scope-chain)*作用域链*'
+  id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#scope-chain)*作用域链*'
 - en: '*函数和块可以嵌套编写，同样，作用域也可以嵌套。在下面的代码中，我们在一个块内部编写了另一个块。在这种情况下，我们将外部块级作用域称为`OUTER`，内部块级作用域称为`INNER`。'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '*函数和块可以嵌套编写，同样，作用域也可以嵌套。在下面的代码中，我们在一个块内部编写了另一个块。在这种情况下，我们将外部块级作用域称为`OUTER`，内部块级作用域称为`INNER`。'
 - en: '[PRE7]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 当作用域嵌套时，内部作用域可以引用外部作用域中的变量。在下面的代码中，内部的 INNER 块级作用域可以引用外部的 OUTER 块级作用域中定义的变量`x`。这种情况不仅限于块级作用域，函数作用域也是如此。
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 当作用域嵌套时，内部作用域可以引用外部作用域中的变量。在下面的代码中，内部的 INNER 块级作用域可以引用外部的 OUTER 块级作用域中定义的变量`x`。这种情况不仅限于块级作用域，函数作用域也是如此。
 - en: '[PRE8]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 在引用变量时，会逐级检查当前作用域（包含引用变量的表达式的作用域）向外部作用域逐级定义变量的情况。在上述代码中，虽然内部的 INNER 块级作用域中不存在变量`x`，但外部的
     OUTER 块级作用域中定义了变量`x`，因此可以引用。换句话说，我们正在按照以下步骤搜索要引用的变量。
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 在引用变量时，会逐级检查当前作用域（包含引用变量的表达式的作用域）向外部作用域逐级定义变量的情况。在上述代码中，虽然内部的 INNER 块级作用域中不存在变量`x`，但外部的
+    OUTER 块级作用域中定义了变量`x`，因此可以引用。换句话说，我们正在按照以下步骤搜索要引用的变量。
 - en: 检查 INNER 块级作用域中是否存在变量`x` => 不存在
+  id: totrans-34
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查 INNER 块级作用域中是否存在变量`x` => 不存在
 - en: 检查一级外部 OUTER 块级作用域中是否存在变量`x` => 存在
+  id: totrans-35
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查一级外部 OUTER 块级作用域中是否存在变量`x` => 存在
 - en: 另一方面，如果在当前作用域以及外部任何作用域中都没有定义相应的变量，则会导致`ReferenceError`异常。在下面的例子中，由于引用了任何作用域中都不存在的`xyz`，因此会导致`ReferenceError`异常。
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，如果在当前作用域以及外部任何作用域中都没有定义相应的变量，则会导致`ReferenceError`异常。在下面的例子中，由于引用了任何作用域中都不存在的`xyz`，因此会导致`ReferenceError`异常。
 - en: '[PRE9]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 在这种情况下，我们正在检查从当前作用域（包含引用变量的表达式的作用域）向外部作用域逐级定义变量的情况。然而，由于任何作用域中都没有定义变量`xyz`，因此会导致`ReferenceError`异常。换句话说，我们正在按照以下步骤搜索要引用的变量。
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，我们正在检查从当前作用域（包含引用变量的表达式的作用域）向外部作用域逐级定义变量的情况。然而，由于任何作用域中都没有定义变量`xyz`，因此会导致`ReferenceError`异常。换句话说，我们正在按照以下步骤搜索要引用的变量。
 - en: 检查 INNER 块级作用域中是否存在变量`xyz` => 不存在
+  id: totrans-39
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查 INNER 块级作用域中是否存在变量`xyz` => 不存在
 - en: 检查一级外部 OUTER 块级作用域中是否存在变量`xyz` => 不存在
+  id: totrans-40
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查一级外部 OUTER 块级作用域中是否存在变量`xyz` => 不存在
 - en: 最外层作用域中也没有定义变量`xyz` => 导致`ReferenceError`
+  id: totrans-41
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最外层作用域中也没有定义变量`xyz` => 导致`ReferenceError`
 - en: 这种按照内外作用域顺序查找变量定义的机制称为**作用域链**。
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种按照内外作用域顺序查找变量定义的机制称为**作用域链**。
 - en: 即使在内外作用域中都定义了相同名称的变量，作用域链的机制也可以解决。在下面的代码中，内部的 INNER 块作用域和外部的 OUTER 块作用域都定义了相同名称的变量`x`。通过作用域链的机制，优先引用当前作用域中定义的变量`x`。
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使在内外作用域中都定义了相同名称的变量，作用域链的机制也可以解决。在下面的代码中，内部的 INNER 块作用域和外部的 OUTER 块作用域都定义了相同名称的变量`x`。通过作用域链的机制，优先引用当前作用域中定义的变量`x`。
 - en: '[PRE10]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 作用域是层级结构的，当引用变量时，可以通过作用域链来解决哪些变量是可访问的。
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 作用域是层级结构的，当引用变量时，可以通过作用域链来解决哪些变量是可访问的。
 - en: '[](#global-scope)*全局作用域*'
+  id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#global-scope)*全局作用域*'
 - en: '*以前我们将代码写在程序的顶层，但是这里也存在一个称为**全局作用域**的隐式作用域。全局作用域就像其名称一样，是最外层的作用域，在程序执行时会隐式创建。'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '*以前我们将代码写在程序的顶层，但是这里也存在一个称为**全局作用域**的隐式作用域。全局作用域就像其名称一样，是最外层的作用域，在程序执行时会隐式创建。'
 - en: '[PRE11]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 在全局作用域中定义的变量被称为**全局变量**，全局变量可以从任何作用域中访问。这是因为作用域链的机制允许最终访问最外层的全局作用域中定义的变量。
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 在全局作用域中定义的变量被称为**全局变量**，全局变量可以从任何作用域中访问。这是因为作用域链的机制允许最终访问最外层的全局作用域中定义的变量。
 - en: '[PRE12]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 全局作用域中除了自定义的全局变量外，还有在程序执行时自动定义的**内置对象**。
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 全局作用域中除了自定义的全局变量外，还有在程序执行时自动定义的**内置对象**。
 - en: 内置对象大致分为两种。第一种是由 ECMAScript 规范定义的变量（参见“undefined 不是文字”）如`undefined`、`isNaN`等函数，以及`Array`、`RegExp`等构造函数。第二种是由执行环境（如浏览器或
     Node.js 等）定义的对象，如`document`、`module`等。由于两者都会自动定义在全局作用域中，因此在本章中我们将它们都称为**内置对象**。
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 内置对象大致分为两种。第一种是由 ECMAScript 规范定义的变量（参见“undefined 不是文字”）如`undefined`、`isNaN`等函数，以及`Array`、`RegExp`等构造函数。第二种是由执行环境（如浏览器或
+    Node.js 等）定义的对象，如`document`、`module`等。由于两者都会自动定义在全局作用域中，因此在本章中我们将它们都称为**内置对象**。
 - en: 内置对象在程序启动时会自动定义在全局作用域中，因此可以从任何作用域中访问。
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 内置对象在程序启动时会自动定义在全局作用域中，因此可以从任何作用域中访问。
 - en: '[PRE13]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 自定义的全局变量和内置对象之间，全局变量优先被引用。也就是说，如果定义与内置对象相同名称的变量，那么定义的变量将被引用。
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 自定义的全局变量和内置对象之间，全局变量优先被引用。也就是说，如果定义与内置对象相同名称的变量，那么定义的变量将被引用。
 - en: '[PRE14]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 通过定义与内置对象相同名称的变量，将无法访问内置对象。通过在内部作用域中定义与外部作用域相同名称的变量，外部变量将无法访问，这种情况被称为**变量的遮蔽**（shadowing）。
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过定义与内置对象相同名称的变量，将无法访问内置对象。通过在内部作用域中定义与外部作用域相同名称的变量，外部变量将无法访问，这种情况被称为**变量的遮蔽**（shadowing）。
 - en: 避免这个问题的方法之一是不要随意在全局作用域中定义变量。如果在全局作用域中定义的变量与内置对象发生冲突，将影响所有作用域，但在函数作用域内，影响范围仅限于该函数内。
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 避免这个问题的方法之一是不要随意在全局作用域中定义变量。如果在全局作用域中定义的变量与内置对象发生冲突，将影响所有作用域，但在函数作用域内，影响范围仅限于该函数内。
 - en: 避免与内置对象相同的名称是困难的。这是因为内置对象在每个执行环境（如浏览器或 Node.js 等）中都有许多独立定义的对象。通过利用函数等将程序重点放在小范围的作用域中编写，即使存在与内置对象相同名称的变量，也可以限定影响范围。
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 避免与内置对象相同的名称是困难的。这是因为内置对象在每个执行环境（如浏览器或 Node.js 等）中都有许多独立定义的对象。通过利用函数等将程序重点放在小范围的作用域中编写，即使存在与内置对象相同名称的变量，也可以限定影响范围。
 - en: '[](#reduce-scope)*[专栏] 减小变量的作用域*'
+  id: totrans-60
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#reduce-scope)*[专栏] 减小变量的作用域*'
 - en: '*不仅仅是全局变量，减小特定变量的作用域是一件好事。因为有时候会意外地引用全局变量而不是当前作用域的变量，反之亦然。如果所有变量都在全局作用域中，那么就无法了解变量在哪里被引用。避免这种情况的简单方法是尽可能在使用的作用域内定义变量。'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '*不仅仅是全局变量，减小特定变量的作用域是一件好事。因为有时候会意外地引用全局变量而不是当前作用域的变量，反之亦然。如果所有变量都在全局作用域中，那么就无法了解变量在哪里被引用。避免这种情况的简单方法是尽可能在使用的作用域内定义变量。'
 - en: 在下面的代码中，我们试图测量`doHeavyTask`函数的执行时间。`Date.now`方法返回当前时间的毫秒数。通过从**执行后的时间**减去**执行前的时间**，可以得到中间处理的执行时间。
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，我们试图测量`doHeavyTask`函数的执行时间。`Date.now`方法返回当前时间的毫秒数。通过从**执行后的时间**减去**执行前的时间**，可以得到中间处理的执行时间。
 - en: '[PRE15]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 在这段代码中，定义了在计算过程中不会使用的`startTime`和`endTime`两个变量在全局作用域中。如果程序很短，这可能不是问题，但随着程序变得越来越长，影响范围也会扩大。将这两个变量的作用域减小的简单方法是将计时处理过程封装为一个函数。
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这段代码中，定义了在计算过程中不会使用的`startTime`和`endTime`两个变量在全局作用域中。如果程序很短，这可能不是问题，但随着程序变得越来越长，影响范围也会扩大。将这两个变量的作用域减小的简单方法是将计时处理过程封装为一个函数。
 - en: '[PRE16]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 通过这种方式，我们消除了从全局作用域中删除`startTime`和`endTime`这两个变量。此外，将计时处理过程封装为`measureTask`函数，以便重复使用。
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过这种方式，我们消除了从全局作用域中删除`startTime`和`endTime`这两个变量。此外，将计时处理过程封装为`measureTask`函数，以便重复使用。
 - en: 随着代码量的增加，人们一次能够理解的量也有限制。因此，有必要将处理组织到人们一次能够理解的范围内。为了减小变量的作用域，将处理封装为函数是一种常用的方法来解决这个问题。
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着代码量的增加，人们一次能够理解的量也有限制。因此，有必要将处理组织到人们一次能够理解的范围内。为了减小变量的作用域，将处理封装为函数是一种常用的方法来解决这个问题。
 - en: '[](#hoisting-var)*函数作用域和 var 的提升*'
+  id: totrans-68
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#hoisting-var)*函数作用域和 var 的提升*'
 - en: '*变量声明可以使用`var`、`let`、`const`。正如在“变量和声明”章节中所介绍的，“`let`是改进版的`var`”，`let`是为了改进`var`而引入的语法。`const`除了不能重新赋值之外，与`let`的行为相同。因此，在可以使用`let`的情况下，没有理由使用`var`，但是由于现有代码或现有库中仍然使用`var`，因此需要理解`var`的行为。'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '*变量声明可以使用`var`、`let`、`const`。正如在“变量和声明”章节中所介绍的，“`let`是改进版的`var`”，`let`是为了改进`var`而引入的语法。`const`除了不能重新赋值之外，与`let`的行为相同。因此，在可以使用`let`的情况下，没有理由使用`var`，但是由于现有代码或现有库中仍然使用`var`，因此需要理解`var`的行为。'
 - en: 首先，让我们一起看看`let`和`var`共同的行为。`let`和`var`都是在声明变量时没有指定初始值的情况下，变量的评估结果会隐式地变为`undefined`。此外，`let`和`var`都允许在变量声明后赋值。
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们一起看看`let`和`var`共同的行为。`let`和`var`都是在声明变量时没有指定初始值的情况下，变量的评估结果会隐式地变为`undefined`。此外，`let`和`var`都允许在变量声明后赋值。
 - en: 在下面的代码中，如果在**声明变量之后**引用没有初始值的变量，那么变量的评估结果将是`undefined`。
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，如果在**声明变量之后**引用没有初始值的变量，那么变量的评估结果将是`undefined`。
 - en: '[PRE17]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 接下来，我们将看一下`let`和`var`的不同行为。
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们将看一下`let`和`var`的不同行为。
 - en: 使用`let`，在**声明之前**引用变量会导致`ReferenceError`异常，无法访问。 下面的代码由于在声明变量`x`之前引用了变量，因此导致`ReferenceError`。
     从错误消息中可以看出，错误并不是因为变量`x`不存在，而是因为在实际声明之前引用了它。^(1)
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`let`，在**声明之前**引用变量会导致`ReferenceError`异常，无法访问。下面的代码由于在声明变量`x`之前引用了变量，因此导致`ReferenceError`。从错误消息中可以看出，错误并不是因为变量`x`不存在，而是因为在实际声明之前引用了它。
 - en: '[PRE18]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 另一方面，使用`var`，在**声明之前**引用变量会导致其为`undefined`。 下面的代码尽管在声明之前引用了变量，但不会报错，变量`x`的值会变为`undefined`。
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，使用`var`，在**声明之前**引用变量会导致其为`undefined`。下面的代码尽管在声明之前引用了变量，但不会报错，变量`x`的值会变为`undefined`。
 - en: '[PRE19]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: 可以看出，使用`var`声明的变量可以在声明之前被引用，并且其值为`undefined`，这是一种特殊的行为。
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以看出，使用`var`声明的变量可以在声明之前被引用，并且其值为`undefined`，这是一种特殊的行为。
 - en: 为了理解这种`var`的行为，可以将变量声明看作由**声明**和**赋值**两部分组成。 使用`var`进行变量声明时，**声明**部分会被隐式地提升到最近的函数或全局作用域的顶部，而**赋值**部分则保持在原位置。
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了理解这种`var`的行为，可以将变量声明看作由**声明**和**赋值**两部分组成。使用`var`进行变量声明时，**声明**部分会被隐式地提升到最近的函数或全局作用域的顶部，而**赋值**部分则保持在原位置。
 - en: 这种行为导致变量`x`的声明部分被移动到引用变量`x`的代码之前，导致变量`x`的值在隐式情况下变为`undefined`。 换句话说，上述代码在实际执行时可能被解释和执行如下。
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种行为导致变量`x`的声明部分被移动到引用变量`x`的代码之前，导致变量`x`的值在隐式情况下变为`undefined`。换句话说，上述代码在实际执行时可能被解释和执行如下。
 - en: '[PRE20]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: 此外，`var`变量的声明提升会将变量绑定到最近的函数或全局作用域，忽略块级作用域。 因此，即使在`{}`块中使用`var`声明变量，声明部分也会被提升到最近的函数作用域`fn`函数的顶部（在
     if 语句或 for 循环中的块级作用域也会被忽略）。
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，`var`变量的声明提升会将变量绑定到最近的函数或全局作用域，忽略块级作用域。因此，即使在`{}`块中使用`var`声明变量，声明部分也会被提升到最近的函数作用域`fn`函数的顶部（在
+    if 语句或 for 循环中的块级作用域也会被忽略）。
 - en: '[PRE21]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 换句话说，上述代码在实际执行时可能被解释和执行如下。
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，上述代码在实际执行时可能被解释和执行如下。
 - en: '[PRE22]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: 这种变量的**声明**部分被看作移动到最近的函数或全局作用域的顶部的行为称为变量的**提升**（hoisting）。
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种变量的**声明**部分被看作移动到最近的函数或全局作用域的顶部的行为称为变量的**提升**（hoisting）。
 - en: 这样，`var`与`let`、`const`有不同的行为。 `var`通过变量提升来忽略块级作用域，自动将声明部分移动到函数作用域的顶部，这带来了一些难以预测的问题。避免这个问题的最简单方法是不使用`var`，但在包含`var`的代码中需要注意这种行为。
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，`var`与`let`、`const`有不同的行为。`var`通过变量提升来忽略块级作用域，自动将声明部分移动到函数作用域的顶部，这带来了一些难以预测的问题。避免这个问题的最简单方法是不使用`var`，但在包含`var`的代码中需要注意这种行为。
 - en: '[](#function-declaration-hoisting)*函数声明和变量提升*'
+  id: totrans-88
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#function-declaration-hoisting)*函数声明和变量提升*'
 - en: '*使用`function`关键字进行函数声明也会像`var`一样被提升到最近的函数或全局作用域的顶部。 在下面的代码中，您可以在实际声明`hello`函数的行之前调用函数。'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '*使用`function`关键字进行函数声明也会像`var`一样被提升到最近的函数或全局作用域的顶部。在下面的代码中，您可以在实际声明`hello`函数的行之前调用函数。'
 - en: '[PRE23]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: 这是因为函数声明本身就是**声明**，所以`hello`函数本身会被提升到作用域的顶部。 换句话说，上述代码在实际执行时可能被解释和执行如下。
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是因为函数声明本身就是**声明**，所以`hello`函数本身会被提升到作用域的顶部。换句话说，上述代码在实际执行时可能被解释和执行如下。
 - en: '[PRE24]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: 使用`function`关键字进行函数声明也会被提升。 但与使用`var`进行变量声明的提升不同，这几乎不会引起问题。 这是因为实际上提升的函数可以被调用。
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`function`关键字进行函数声明也会被提升。但与使用`var`进行变量声明的提升不同，这几乎不会引起问题。这是因为实际上提升的函数可以被调用。
 - en: 需要注意的是，如果将函数分配给使用`var`声明的变量，则会按照`var`的规则进行提升。 因此，在将函数分配给变量的函数表达式中使用`var`声明的情况下，由于`hello`变量被提升为`undefined`，因此无法调用（请参阅“函数和声明（函数表达式）”）。
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要注意的是，如果将函数分配给使用`var`声明的变量，则会按照`var`的规则进行提升。因此，在将函数分配给变量的函数表达式中使用`var`声明的情况下，由于`hello`变量被提升为`undefined`，因此无法调用（请参阅“函数和声明（函数表达式）”）。
 - en: '[PRE25]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[](#immediate-function)*[专栏] 立即执行函数*'
+  id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#immediate-function)*[专栏] 立即执行函数*'
 - en: '*立即执行函数（**IIFE**，*Immediately-Invoked Function Expression*）是为了避免全局作用域污染而产生的习惯用法。'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '*立即执行函数（**IIFE**，*Immediately-Invoked Function Expression*）是为了避免全局作用域污染而产生的习惯用法。'
 - en: 通过在声明无名函数后立即调用，可以将任意处理封装在函数作用域中。 通过创建函数作用域，`foo`变量无法从无名函数外部访问。
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过在声明无名函数后立即调用，可以将任意处理封装在函数作用域中。通过创建函数作用域，`foo`变量无法从无名函数外部访问。
 - en: '[PRE26]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: 将函数定义为**表达式**，并立即调用它。 由于以`function`开头会被 JavaScript 引擎解释为**函数声明**，因此用无害的括号等将其包围以将其解释为**函数表达式**是一种特殊的写法。
     这种写法与下面的写法意义相同，但可以更简洁地定义和执行匿名函数，而不会在全局作用域中留下多余的函数定义。
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 将函数定义为**表达式**，并立即调用它。由于以`function`开头会被 JavaScript 引擎解释为**函数声明**，因此用无害的括号等将其包围以将其解释为**函数表达式**是一种特殊的写法。这种写法与下面的写法意义相同，但可以更简洁地定义和执行匿名函数，而不会在全局作用域中留下多余的函数定义。
 - en: '[PRE27]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: 在 ECMAScript 5 之前，只有`var`一种方法来声明变量。 因此，立即执行函数被用来防止`var`污染全局作用域。
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 ECMAScript 5 之前，只有`var`一种方法来声明变量。因此，立即执行函数被用来防止`var`污染全局作用域。
 - en: 但是，通过 ECMAScript 2015 引入的`let`和`const`，可以在块级作用域中声明变量。 因此，不再需要立即执行函数来防止全局作用域的污染。
     上述的立即执行函数可以被`let`和`const`与块级作用域替代。
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，通过 ECMAScript 2015 引入的`let`和`const`，可以在块级作用域中声明变量。因此，不再需要立即执行函数来防止全局作用域的污染。上述的立即执行函数可以被`let`和`const`与块级作用域替代。
 - en: '[PRE28]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '[](#closure)*闭包*'
+  id: totrans-105
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#closure)*闭包*'
 - en: '*最后，在本章中我们将探讨与函数和作用域相关的特性，称为闭包。 闭包是指函数具有的一种性质，即“可以保持对外部作用域中变量的引用”。'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: '*最后，在本章中我们将探讨与函数和作用域相关的特性，称为闭包。闭包是指函数具有的一种性质，即“可以保持对外部作用域中变量的引用”。'
 - en: '[闭包](https://wiki.example.org/closure)是一种很难用言语解释清楚的特性。本节的目标是理解使用闭包的代码是如何运作的。'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '[闭包](https://wiki.example.org/closure)是一种很难用言语解释清楚的特性。本节的目标是理解使用闭包的代码是如何运作的。'
 - en: 在下面的示例中，`createCounter`函数返回在函数内定义的`increment`函数。 将返回的`increment`函数赋值给`myCounter`变量。每次执行`myCounter`变量时，它都会返回增加
     1 的值。
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的示例中，`createCounter`函数返回在函数内定义的`increment`函数。 将返回的`increment`函数赋值给`myCounter`变量。每次执行`myCounter`变量时，它都会返回增加
+    1 的值。
 - en: 此外，再次执行`createCounter`函数，并将其返回值赋给`newCounter`变量。 `newCounter`变量每次执行时也会递增 1，但可以看出`newCounter`变量与`myCounter`变量及其值并不共享。
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，再次执行`createCounter`函数，并将其返回值赋给`newCounter`变量。`newCounter`变量每次执行时也会递增 1，但可以看出`newCounter`变量与`myCounter`变量及其值并不共享。
 - en: '[PRE29]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: 这种机制使得函数好像具有状态（在这里是逐渐增加的`count`值）一样，背后的原理是闭包。 由于闭包很难直观理解，因此首先需要了解“静态作用域”和“内存管理机制”来理解闭包。
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种机制使得函数好像具有状态（在这里是逐渐增加的`count`值）一样，背后的原理是闭包。由于闭包很难直观理解，因此首先需要了解“静态作用域”和“内存管理机制”来理解闭包。
 - en: '[](#static-scope)*静的スコープ*'
+  id: totrans-112
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#static-scope)*静态范围*'
 - en: '*クロージャーを理解するために、今まで意識してこなかったスコープの性質について見ていきます。 JavaScriptのスコープには、どの識別子がどの変数を参照するかが静的に決定されるという性質があります。
     つまり、コードを実行する前にどの識別子がどの変数を参照しているかがわかるということです。'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '*为了理解闭包，我们需要回顾一下之前没有意识到的作用域的性质。JavaScript的作用域具有这样的性质，即哪个标识符引用哪个变量是在代码执行之前静态确定的。也就是说，在代码执行之前就可以知道哪个标识符引用哪个变量。'
 - en: 次のような例を見てみます。 `printX`関数内で変数`x`を参照していますが、変数`x`はグローバルスコープと関数`run`の中で、それぞれ定義されています。
     このとき`printX`関数内の`x`という識別子がどの変数`x`を参照するかは静的に決���されます。
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的例子中，`printX`函数内引用了变量`x`，但变量`x`在全局范围和函数`run`中分别定义。在这种情况下，`printX`函数内的`x`这个标识符会静态地确定引用哪个变量`x`。
 - en: 結論から言えば、`printX`関数中にある識別子`x`はグローバルスコープ（＊1）の変数`x`を参照します。 そのため、`printX`関数の実行結果は常に`10`となります。
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 简而言之，`printX`函数中的标识符`x`引用的是全局范围（*1）的变量`x`。因此，`printX`函数的执行结果始终是`10`。
 - en: '[PRE30]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: スコープチェーンの仕組みを思い出すと、この識別子`x`は次のように名前解決されてグローバルスコープの変数`x`を参照することがわかります。
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 回忆一下作用域链的机制，这个标识符`x`会按照以下方式通过名称解析来引用全局范围的变量`x`。
 - en: '`printX`の関数スコープに変数`x`が定義されていない'
+  id: totrans-118
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`printX`的函数作用域中没有定义变量`x`'
 - en: ひとつ外側のスコープ（グローバルスコープ）を確認する
+  id: totrans-119
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查最外层的范围（全局范围）
 - en: ひとつ外側のスコープに`const x = 10;`が定義されているので、識別子`x`はこの変数を参照する
+  id: totrans-120
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最外层的作用域中定义了`const x = 10;`，因此标识符`x`会引用这个变量。
 - en: つまり、`printX`関数中に書かれた`x`という識別子は、`run`関数の実行とは関係なく、静的に＊1で定義された変数`x`を参照することが決定されます。
     このように、どの識別子がどの変数を参照しているかを静的に決定する性質を**静的スコープ**と呼びます。
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 也就是说，`printX`函数中定义的`x`这个标识符，与`run`函数的执行无关，它将静态地引用在*1中定义的变量`x`。就这样，我们称这种确定哪个标识符引用哪个变量的静态特性为**静态范围**。
 - en: この静的スコープの仕組みは`function`キーワードを使った関数宣言、メソッド、Arrow Functionなどすべての関数で共通する性質です。
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种静态范围的机制是使用`function`关键字声明的函数声明、方法、Arrow Function等所有函数共有的特性。
 - en: '[](#dynamic-scope)*[コラム] 動的スコープ*'
+  id: totrans-123
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#dynamic-scope)*[专栏] 动态范围*'
 - en: '*JavaScriptは静的スコープです。 しかし、動的スコープという呼び出し元により識別子がどの変数を参照するかが変わる仕組みを持つ言語もあります。'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '*JavaScript是静态范围。然而，有些语言也有动态范围，这种调用方式会改变标识符引用的变量。'
 - en: 次のコードは、動的スコープの動きを説明する**疑似的な言語のコード例**です。 識別子`x`が呼び出し元のスコープを参照する仕組みである場合には、次のような結果になります。
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码是解释动态范围行为的**伪代码示例**。如果标识符`x`引用调用源的作用域，那么会产生以下结果。
 - en: '[PRE31]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: このように関数呼び出し時に呼び出し元のスコープの変数を参照する仕組みを**動的スコープ**と呼びます。
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，在函数调用时引用调用源范围的变量，这种机制被称为**动态范围**。
 - en: JavaScriptは変数や関数の参照先は静的スコープで決まるため、上記のような動的スコープではありません。 しかし、JavaScriptでも`this`という特別なキーワードだけは、呼び出し元によって動的に参照先が変わります。
     `this`というキーワードについては次の章で解説します。
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript是静态范围，变量或函数的引用是由静态范围决定的，因此它不是上述的动态范围。然而，JavaScript中也有`this`这个特殊关键字，它的引用会根据调用源而动态变化。关于`this`这个关键字将在下一章中解释。
 - en: '[](#memory-management)*メモリ管理の仕組み*'
+  id: totrans-129
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#memory-management)*内存管理机制*'
 - en: '*プログラミング言語は、使わなくなった変数やデータを解放する仕組みを持っています。 なぜなら、変数や関数を定義すると定義されたデータはメモリ上に確保されますが、ハードウェアのメモリは有限だからです。
     そのため、メモリからデータがあふれないように、必要なタイミングで不要なデータをメモリから解放する必要があります。'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '*编程语言都有释放不再使用的变量或数据的机制。这是因为定义变量或函数时，定义的数据会被保存在内存中，而硬件的内存是有限的。因此，为了防止内存溢出，需要在适当的时机从内存中释放不再需要的内存。'
 - en: 不要なデータをメモリから解放する方法は言語によって異なりますが、JavaScriptでは**ガベージコレクション**が採用されています。 ガベージコレクションとは、どこからも参照されなくなったデータを不要なデータと判断して自動的にメモリ上から解放する仕組みのことです。
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 释放不再需要的内存的方法因语言而异，但JavaScript采用**垃圾回收**。垃圾回收是指自动判断不再被引用的数据为不再需要的内存，并从内存中释放的机制。
 - en: JavaScriptにはガベージコレクションがあるため、手動でメモリを解放するコードを書く必要はありません。 しかし、ガベージコレクションといったメモリ管理の仕組みを理解することは、スコープやクロージャーに関係するため大切です。
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript有垃圾回收，因此不需要手动编写释放内存的代码。但是，理解像垃圾回收这样的内存管理机制对于理解作用域和闭包非常重要。
 - en: どのようなタイミングでメモリ上から不要なデータが解放されるのか、具体的な例を見てみましょう。
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们通过具体的例子来看看何时从内存中释放不再需要的内存。
 - en: 次の例では、最初に`"before text"`という文字列のデータがメモリ上に確保され、変数`x`はそのメモリ上のデータを参照しています。 その後、`"after
     text"`という新しい文字列のデータを作り、変数`x`はその新しいデータへ参照先を変えています。
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的例子中，首先在内存中保存了`"before text"`这个字符串数据，变量`x`引用了内存中的数据。之后，创建了新的字符串数据`"after
+    text"`，变量`x`将其引用指向新的数据。
 - en: このとき、最初にメモリ上へ確保した`"before text"`という文字列のデータはどこからも参照されなくなっています。 どこからも参照されなくなった時点で不要になったデータと判断されるためガベージコレクションの回収対象となります。
     その後、任意のタイミングでガベージコレクションによって回収されてメモリ上から解放されます。^(2)
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，最初保存在内存中的`"before text"`这个字符串数据不再被任何地方引用。当不再被引用时，它会被判断为不再需要的内存，并成为垃圾回收的目标。之后，它将在任意时刻被垃圾回收回收并从内存中释放。^(2)
 - en: '[PRE32]'
+  id: totrans-136
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 次にこのガベージコレクションと関数の関係性について考えてみましょう。 よくある誤解として「関数の中で作成したデータは、その関数の実行が終了したら解放される」というのがあります。
     関数の中で作成したデータは、その関数の実行が終了した時点で必ずしも解放されるわけではありません。
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，让我们思考一下垃圾回收与函数之间的关系。常见的误解是“在函数中创建的数据，在函数执行结束后一定会被释放”。实际上，在函数中创建的数据，在函数执行结束后并不一定会被释放。
 - en: 具体的に、「関数の実行が終了した際に解放される場合」と「関数の実行が終了しても解放されない場合」の例をそれぞれ見ていきます。
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 具体来说，我们分别来看一下“函数执行结束后释放的情况”和“函数执行结束后也不会释放的情况”的例子。
 - en: まずは、関数の実行が終了した際に解放されるデータの例です。
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们来看一个函数执行结束后会释放的数据的例子。
 - en: 次のコードでは、`printX`関数の中で変数`x`を定義しています。 この変数`x`は、`printX`関数が実行されるたびに定義され、実行終了後にどこからも参照されなくなります。
     どこからも参照されなくなったものは、ガベージコレクションによって回収されてメモリ上から解放されます。
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，`printX`函数中定义了变量`x`。这个变量`x`在每次`printX`函数执行时都会定义，并在执行结束后不再被引用。不再被引用的变量将成为垃圾回收的目标，并从内存中释放。
 - en: '[PRE33]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: 次に、関数の実行が終了しても解放されないデータの例です。
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们来看一个函数执行结束后也不会释放的数据的例子。
 - en: 次のコードでは、`createArray`関数の中で定義された変数`tempArray`は、`createArray`関数の返り値となっています。 この、関数で定義された変数`tempArray`は返り値として、別の変数`array`に代入されています。
     つまり、変数`tempArray`が参照している配列オブジェクトは、`createArray`関数の実行終了後も変数`array`から参照され続けています。
     ひとつでも参照されているならば、そのデータが自動的に解放されることはありません。
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、`createArray`関数の中で定義された変数`tempArray`は、`createArray`関数の返り値となっています。 この、関数で定義された変数`tempArray`は返り値として、別の変数`array`に代入されています。
+    つまり、変数`tempArray`が参照している配列オブジェクトは、`createArray`関数の実行終了後も変数`array`から参照され続けています。
+    ひとつでも参照されているならば、そのデータが自動的に解放されることはありません。
 - en: '[PRE34]'
+  id: totrans-144
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: つまり、関数の実行が終了したことと関数内で定義したデータの解放のタイミングは直接関係ないことがわかります。 そのデータがメモリ上から解放されるかどうかはあくまで、そのデータが参照されているかによって決定されます。
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: つまり、関数の実行が終了したことと関数内で定義したデータの解放のタイミングは直接関係ないことがわかります。 そのデータがメモリ上から解放されるかどうかはあくまで、そのデータが参照されているかによって決定されます。
 - en: '[](#why-closure-work)*クロージャーがなぜ動くのか*'
+  id: totrans-146
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#why-closure-work)*クロージャーがなぜ動くのか*'
 - en: '*ここまでで「静的スコープ」と「メモリ管理の仕組み」について説明してきました。'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '*ここまでで「静的スコープ」と「メモリ管理の仕組み」について説明してきました。'
 - en: '静的スコープ: ある変数がどの値を参照するかは静的に決まる'
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '静的スコープ: ある変数がどの値を参照するかは静的に決まる'
 - en: 'メモリ管理の仕組み: 参照されなくなったデータはガベージコレクションにより解放される'
+  id: totrans-149
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'メモリ管理の仕組み: 参照されなくなったデータはガベージコレクションにより解放される'
 - en: クロージャーとはこの２つの仕組みを利用して、関数内から特定の変数を参照し続けることで関数が状態を持てる仕組みのことを言います。
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: クロージャーとはこの２つの仕組みを利用して、関数内から特定の変数を参照し続けることで関数が状態を持てる仕組みのことを言います。
 - en: 最初にクロージャーの例として紹介した`createCounter`関数の例を改めて見てみましょう。
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 最初にクロージャーの例として紹介した`createCounter`関数の例を改めて見てみましょう。
 - en: '[PRE35]'
+  id: totrans-152
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: 因此，可以确认`myCounter`变量和`count`变量之间存在以下引用关系：
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，可以确认`myCounter`变量和`count`变量之间存在以下引用关系：
 - en: '`myCounter`变量引用了`createCounter`函数的返回值`increment`函数'
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`myCounter`变量引用了`createCounter`函数的返回值`increment`函数'
 - en: '`myCounter`变量通过`increment`函数引用了`count`变量'
+  id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`myCounter`变量通过`increment`函数引用了`count`变量'
 - en: '`myCounter`变量执行后，对`count`变量的引用仍然保持'
+  id: totrans-156
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`myCounter`变量执行后，对`count`变量的引用仍然保持'
 - en: '`myCounter` → `increment` → `count`'
+  id: totrans-157
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '`myCounter` → `increment` → `count`'
 - en: 由于有引用`count`变量的存在，`count`变量不会自动释放。 因此，`count`变量的值会持续保持，并且每次执行`myCounter`变量时都会增加
     1。
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于有引用`count`变量的存在，`count`变量不会自动释放。 因此，`count`变量的值会持续保持，并且每次执行`myCounter`变量时都会增加
+    1。
 - en: '`count`变量可以持续保持不释放的原因是因为它是“`increment`函数内部引用了外部`createCounter`函数作用域中的`count`变量”的结果。
     这种特性称为**闭包**。 闭包由“静态作用域”和“持续引用的变量数据被保持”的两个特性组成。'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '`count`变量可以持续保持不释放的原因是因为它是“`increment`函数内部引用了外部`createCounter`函数作用域中的`count`变量”的结果。
+    这种特性称为**闭包**。 闭包由“静态作用域”和“持续引用的变量数据被保持”的两个特性组成。'
 - en: JavaScript 函数始终具有静态作用域和内存管理的两个特性。 因此，在某种程度上，所有函数都是闭包，但这里指的是函数通过引用特定变量来持有状态。
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript 函数始终具有静态作用域和内存管理的两个特性。 因此，在某种程度上，所有函数都是闭包，但这里指的是函数通过引用特定变量来持有状态。
 - en: 在之前的示例中，每次执行`createCounter`函数时，都会定义一个新的`count`和`increment`函数。 因此，每次执行`createCounter`函数时，都会定义不同的`increment`函数，并且分别引用不同的`count`变量。
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 在之前的示例中，每次执行`createCounter`函数时，都会定义一个新的`count`和`increment`函数。 因此，每次执行`createCounter`函数时，都会定义不同的`increment`函数，并且分别引用不同的`count`变量。
 - en: 如果多次调用`createCounter`函数，可以确认它们具有不同的状态。
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果多次调用`createCounter`函数，可以确认它们具有不同的状态。
 - en: '[PRE36]'
+  id: totrans-163
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '[](#closure-usecase)*闭包的用途*'
+  id: totrans-164
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#closure-usecase)*闭包的用途*'
 - en: '*闭包可用于各种用途，但经常用于以下情况：'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '*闭包可用于各种用途，但经常用于以下情况：'
 - en: 作为使函数具有状态的手段
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作为使函数具有状态的手段
 - en: 作为定义无法从外部引用的变量的手段
+  id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作为定义无法从外部引用的变量的手段
 - en: 作为减少全局变量的手段
+  id: totrans-168
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作为减少全局变量的手段
 - en: 高阶函数的一部分包括
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 高阶函数的一部分包括
 - en: 这些也是闭包的特征，因此它们经常一起使用。
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些也是闭包的特征，因此它们经常一起使用。
 - en: 例如，在以下示例中，我们定义了名为`privateCount`的变量。 这个`privateCount`变量无法直接从外部全局作用域引用。 通过将不需要从外部引用的变量封闭在闭包函数中，可以减少全局定义的变量。
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，在以下示例中，我们定义了名为`privateCount`的变量。 这个`privateCount`变量无法直接从外部全局作用域引用。 通过将不需要从外部引用的变量封闭在闭包函数中，可以减少全局定义的变量。
 - en: '[PRE37]'
+  id: totrans-172
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: 另外，将函数作为返回值的函数称为高阶函数，通过利用闭包的特性，可以创建判断是否大于`n`的高阶函数。 虽然可以直接定义一个名为`greaterThan5`的函数，但使用高阶函数可以灵活地在之后定义条件等。
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，将函数作为返回值的函数称为高阶函数，通过利用闭包的特性，可以创建判断是否大于`n`的高阶函数。 虽然可以直接定义一个名为`greaterThan5`的函数，但使用高阶函数可以灵活地在之后定义条件等。
 - en: '[PRE38]'
+  id: totrans-174
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: 闭包由函数具有静态作用域和数据持续引用保持的两个特性组成。
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 闭包由函数具有静态作用域和数据持续引用保持的两个特性组成。
 - en: JavaScript 提供了便于使用闭包的环境，例如可以通过 Arrow Function 或高阶函数如 Array 的`forEach`方法来定义函数。
     在理解函数时，理解闭包是很重要的。
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript 提供了便于使用闭包的环境，例如可以通过 Arrow Function 或高阶函数如 Array 的`forEach`方法来定义函数。
+    在理解函数时，理解闭包是很重要的。
 - en: '[](#closure-vs-function-object)*[专栏] 具有状态的函数对象*'
+  id: totrans-177
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#closure-vs-function-object)*[专栏] 具有状态的函数对象*'
 - en: '*在 JavaScript 中，函数是一种对象。 作为对象，函数可以直接分配值给属性。 因此，即使不使用闭包，也可以通过以下方式为函数设置属性并保持状态。'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在 JavaScript 中，函数是一种对象。 作为对象，函数可以直接分配值给属性。 因此，即使不使用闭包，也可以通过以下方式为函数设置属性并保持状态。'
 - en: '[PRE39]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: 然而，这种方法并不推荐。 因为可以从函数外部更改`count`属性。 函数对象的属性可以从外部引用，并且其属性值可以更改。 如果想要处理仅在函数内部可引用的状态，那么强制使用闭包是有效的。
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这种方法并不推荐。 因为可以从函数外部更改`count`属性。 函数对象的属性可以从外部引用，并且其属性值可以更改。 如果想要处理仅在函数内部可引用的状态，那么强制使用闭包是有效的。
 - en: '[PRE40]'
+  id: totrans-181
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: '[](#conclusion)*总结*'
+  id: totrans-182
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)*总结*'
 - en: '*本章主要学习了关于函数的作用域。'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: '*本章主要学习了关于函数的作用域。'
 - en: 函数或块具有作用域
+  id: totrans-184
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数或块具有作用域
 - en: 作用域可以嵌套
+  id: totrans-185
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作用域可以嵌套
 - en: 最外层是全局作用域
+  id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 最外层是全局作用域
 - en: 作用域链是指从内部向外部作用域按顺序搜索变量定义的机制
+  id: totrans-187
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作用域链是指从内部向外部作用域按顺序搜索变量定义的机制
 - en: 使用`var`关键字声明变量或使用`function`声明函数时会发生提升
+  id: totrans-188
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`var`关键字声明变量或使用`function`声明函数时会发生提升
 - en: 闭包是由函数具有静态作用域和内存管理机制组成的性质
+  id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 闭包是由函数具有静态作用域和内存管理机制组成的性质
 - en: ¹. 这种机制被称为 Temporal Dead Zone（TDZ）。 ↩
+  id: totrans-190
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: ¹. 这种机制被称为 Temporal Dead Zone（TDZ）。 ↩
 - en: ''
+  id: totrans-191
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: ². 根据 ECMAScript 规范，垃圾收集的实现规范是没有的，因此它是依赖于具体实现的。 ↩****************
+  id: totrans-192
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: ². 根据 ECMAScript 规范，垃圾收集的实现规范是没有的，因此它是依赖于具体实现的。 ↩****************

@@ -1,226 +1,369 @@
 - en: アプリケーション開発の準備
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 应用程序开发准备
 - en: 原文：[`jsprimer.net/use-case/setup-local-env/`](https://jsprimer.net/use-case/setup-local-env/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/use-case/setup-local-env/`](https://jsprimer.net/use-case/setup-local-env/)
 - en: これまでに学んだJavaScriptの基本構文は、実行環境を問わずに使えるものです。 しかしこの後に続くユースケースの章では、具体的な実行環境としてウェブブラウザと[Node.js](https://nodejs.org/)の2つを扱います。
     また、ブラウザで実行するアプリケーションであっても、その開発にはツールとしてのNode.jsが欠かせません。 このセクションではユースケースの学習へ進むために必要なアプリケーション開発環境の準備をします。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，您已经学到的 JavaScript 基本语法可以在任何执行环境中使用。但在接下来的“用例”章节中，我们将处理具体的执行环境，即网络浏览器和
+    [Node.js](https://nodejs.org/)。此外，即使是浏览器中执行的应用程序，其开发也离不开 Node.js 这个工具。在本节中，我们将为学习用例所需的应用程序开发环境做准备。
 - en: '[](#install-nodejs)*Node.jsのインストール*'
+  id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#install-nodejs)*Node.js 的安装*'
 - en: '*[Node.js](https://nodejs.org/)はサーバーサイドJavaScript 実行環境のひとつで、次のような特徴があります。'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[Node.js](https://nodejs.org/) 是一种服务器端 JavaScript 执行环境，具有以下特点。'
 - en: ウェブブラウザのChromeと同じ[V8](https://v8.dev/) JavaScriptエンジンで動作する
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用与 Chrome 相同的 [V8](https://v8.dev/) JavaScript 引擎运行
 - en: オープンソースで開発されている
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 开发是开源的
 - en: OSを問わずクロスプラットフォームで動作する
+  id: totrans-7
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: OS 交叉平台运行
 - en: Node.jsはサーバーサイドで使うために開発されました。 しかし今ではコマンドラインツールや[Electron](https://www.electronjs.org/)などのデスクトップアプリケーションにも利用されています。
     そのため、Node.jsはサーバーサイドに限らずクライアントサイドのJavaScript 実行環境としても幅広く使われています。
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 是为服务器端使用而开发的。但如今，它也被用于命令行工具和 [Electron](https://www.electronjs.org/)
+    等桌面应用程序。因此，Node.js 不仅限于服务器端，还被广泛用作客户端 JavaScript 执行环境。
 - en: Node.jsは多くの他のプログラミング言語と同じように、実行環境をマシンにインストールすることで使用できます。 公式の[ダウンロードページ](https://nodejs.org/en/download/)から、開発用のマシンに合わせたインストーラをダウンロードして、インストールしましょう。
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 与许多其他编程语言一样，可以通过在机器上安装执行环境来使用。从官方的 [下载页面](https://nodejs.org/en/download/)
+    下载适合开发机器的安装程序，并进行安装。
 - en: 'ダウンロードページのURL: [`nodejs.org/en/download/`](https://nodejs.org/en/download/)'
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '下载页面 URL: [`nodejs.org/en/download/`](https://nodejs.org/en/download/)'
 - en: Node.jsには**LTS（Long-Term Support）**版と最新版の2つのリリース版が��ります。 **LTS（Long-Term Support）**版は2
     年間のメンテナンスとサポートが宣言されたバージョンです。 具体的には、後方互換性を壊さない範囲でのアップデートと、継続的なセキュリティパッチの提供が行われます。
     一方で、最新版はNode.jsの最新の機能を使用できますが、常に最新のバージョンしかメンテナンスされません。 ほとんどのユーザーは、LTS 版を用いることが推奨されます。Node.jsでの開発が初めてであれば、迷わずにLTS
     版のインストーラをダウンロードしましょう。 この章では執筆時点の最新 LTS 版であるバージョン20.11.1で動作するように開発します。
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 有 LTS（长期支持）版和最新版两个发布版本。LTS（长期支持）版是声明了 2 年维护和支持的版本。具体来说，它包括在不破坏向后兼容性的范围内进行更新，以及提供持续的安全补丁。另一方面，最新版可以使用
+    Node.js 的最新功能，但只维护最新版本。大多数用户推荐使用 LTS 版。如果您是第一次使用 Node.js 进行开发，请毫不犹豫地下载 LTS 版的安装程序。在本章中，我们将使用当时最新的
+    LTS 版本 20.11.1 进行开发。
 - en: インストールが完了すると、コマンドラインで`node`コマンドが使用可能になっているはずです。 次のコマンドを実行して、インストールされたNode.jsのバージョンを確認しましょう
     （`$`はコマンドラインの入力欄を表す記号であるため、実際に入力する必要はありません）。
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 安装完成后，您应该在命令行中可以使用 `node` 命令。执行以下命令以确认已安装的 Node.js 版本（`$` 表示命令行输入栏的符号，因此实际上不需要输入）。
 - en: '[PRE0]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: また、Node.jsには[npm](https://www.npmjs.com/)というパッケージマネージャーが同梱されています。 Node.jsをインストールすると、`node`コマンドだけでなくnpmを扱うための`npm`コマンドも使えるようになっています。
     次のコマンドを実行して、インストールされたnpmのバージョンを確認しましょう。
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，Node.js 还包含 [npm](https://www.npmjs.com/) 这个包管理器。安装 Node.js 后，不仅可以使用 `node`
+    命令，还可以使用 `npm` 命令来处理 npm。执行以下命令以确认已安装的 npm 版本。
 - en: '[PRE1]'
+  id: totrans-15
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Node.jsとnpmのバージョン番号は`{major}.{minor}.{patch}`という構成になっていて、先頭のメジャーバージョンが同じなら互換性は保証されています。
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 和 npm 的版本号采用 `{major}.{minor}.{patch}` 的结构，如果前缀的版本号相同，则保证兼容性。
 - en: Node.jsのライブラリのほとんどはnpmを使ってインストールできます。 npmや`npm`コマンドについての詳細は[npmの公式ドキュメント](https://docs.npmjs.com/)や[npmのGitHubリポジトリ](https://github.com/npm/cli)を参照してください。
     実際に、ユースケースの章ではnpmを使ってライブラリをインストールして利用します。
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 的库几乎都可以通过 npm 进行安装。有关 npm 或 `npm` 命令的详细信息，请参阅 [npm 的官方文档](https://docs.npmjs.com/)
+    或 [npm 的 GitHub 仓库](https://github.com/npm/cli)。实际上，在“用例”章节中，我们将使用 npm 安装库并使用它。
 - en: '[](#npx-execution)*npxコマンドによるnpmパッケージの実行*'
+  id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#npx-execution)*通过 npx 命令执行 npm 包*'
 - en: '*Node.jsを使ったコマンドラインツールは数多く公開されており、npmでインストールすることによりコマンドとして実行できるようになります。 ところで、Node.jsのインストールにより、[npx](https://docs.npmjs.com/cli/v8/commands/npx/)というコマンドも使えるようになっています。
     `npx`コマンドを使うと、npmで公開されている実行可能なパッケージのインストールと実行をまとめてできます。 この後のユースケースでも`npx`コマンドでツールを利用するため、ここでツールの実行を試してみましょう。'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Node.js 的命令行工具有很多公开，通过 npm 安装后可以作为命令执行。顺便说一句，通过 Node.js 的安装，您还可以使用 [npx](https://docs.npmjs.com/cli/v8/commands/npx/)
+    这个命令。使用 `npx` 命令可以将 npm 公开的可执行包的安装和执行合并。在接下来的用例中，我们将使用 `npx` 命令来使用工具，所以在这里尝试执行工具。'
 - en: ここでは例として[@js-primer/hello-world](https://github.com/js-primer/hello-world)というサンプル用のパッケージを実行します。
     `npx`コマンドでコマンドラインツールを実行するには、次のように `npx`コマンドにパッケージ名を渡して実行します。 npx 7から、初めて実行するコマンドは対話式のプロンプトでパッケージをインストールするかが確認されます。
     このプロンプトに対してEnterキーを押すとインストールが開始され、コマンドが実行されます。
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们将以[@js-primer/hello-world](https://github.com/js-primer/hello-world)这个示例包为例。要使用
+    `npx` 命令执行命令行工具，请将包名传递给 `npx` 命令并执行。从 npx 7 开始，第一次执行的命令会提示是否安装包。按下 Enter 键后，安装开始，并执行命令。
 - en: '[PRE2]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: デフォルトでは対話式のプロンプトが挟まれますが、次のように`--yes`オプションを付与すると自動的にインストールとコマンドが実行され��す。
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，会包含交互式提示符，但通过添加 `--yes` 选项，可以自动执行安装和命令。
 - en: '[PRE3]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: このように、`npx`コマンドを使うことによりnpmで公開されているコマンドラインツールを簡単に実行できます。
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，通过使用 `npx` 命令，可以轻松地执行 npm 公开的命令行工具。
 - en: '[](#command-line-tools-installation)*[コラム] コマンドラインツールのインストールと実行*'
+  id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#command-line-tools-installation)*[专栏] 命令行工具的安装与执行*'
 - en: '*npmで公開されているコマンドラインツールを実行する方法は`npx`コマンドだけではありません。 `npm install`コマンドを使ってパッケージをインストールし、インストールされたパッケージのコマンドを実行する方法があります。
     通常の`npm install`コマンドは実行したカレントディレクトリにパッケージをインストールしますが、`--global`フラグを加えるとパッケージをグローバルインストールします。
     グローバルインストールされたパッケージのコマンドは、`node`コマンドや`npm`コマンドと同じように、任意の場所から実行できます。'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*执行 npm 公开的可执行命令的方法不仅仅是 `npx` 命令。您可以使用 `npm install` 命令安装包，并执行已安装包的命令。通常的 `npm
+    install` 命令会将包安装到当前目录，但添加 `--global` 标志可以将包全局安装。全局安装的包的命令可以像 `node` 命令或 `npm`
+    命令一样，从任意位置执行。'
 - en: 下面的示例中，全局安装了`@js-primer/hello-world`包。 然后，调用包含的`js-primer-hello-world`命令而无需指定绝对路径。
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的示例中，全局安装了`@js-primer/hello-world`包。 然后，调用包含的`js-primer-hello-world`命令而无需指定绝对路径。
 - en: '[PRE4]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[](#local-server)*本地服务器的设置*'
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#local-server)*本地服务器的设置*'
 - en: '*在“值的评估和显示”章节中，创建了名为`index.html`和`index.js`的文件并在浏览器中显���。 当直接在浏览器中加载本地创建的 HTML
     文件时，浏览器的地址栏将显示以`file:///`开头的 URL。 使用`file`模式时，由于[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)的安全限制，应用程序在许多情况下将无法正常运行。'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在“值的评估和显示”章节中，创建了名为`index.html`和`index.js`的文件并在浏览器中显���。 当直接在浏览器中加载本地创建的 HTML
+    文件时，浏览器的地址栏将显示以`file:///`开头的 URL。 使用`file`模式时，由于[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)的安全限制，应用程序在许多情况下将无法正常运行。'
 - en: 在接下来的用例章节中，我们将编写的应用程序为了避免[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)的限制，假定使用`http`模式的
     URL 进行访问。 通过使用开发用的本地服务器，可以使用`http`模式的 URL 来显示在本地创建的 HTML 文件。
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的用例章节中，我们将编写的应用程序为了避免[同源策略](https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy)的限制，假定使用`http`模式的
+    URL 进行访问。 通过使用开发用的本地服务器，可以使用`http`模式的 URL 来显示在本地创建的 HTML 文件。
 - en: 在这里，我们将看到如何设置用于开发的本地服务器。
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们将看到如何设置用于开发的本地服务器。
 - en: '[](#preparing-html)*准备 HTML 文件*'
+  id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#preparing-html)*准备 HTML 文件*'
 - en: '*首先，让我们创建一个只放置最基本元素的 HTML 文件。 在这里，我们创建了名为`index.html`的文件，并在 HTML 文件中编写如下内容。
     在这个 HTML 文件中，使用`script`元素加载名为`index.js`的 JavaScript 文件。'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '*首先，让我们创建一个只放置最基本元素的 HTML 文件。 在这里，我们创建了名为`index.html`的文件，并在 HTML 文件中编写如下内容。
+    在这个 HTML 文件中，使用`script`元素加载名为`index.js`的 JavaScript 文件。'
 - en: index.html
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: index.html
 - en: '[PRE5]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 类似地，创建名为`index.js`的 JavaScript 文件。 在这个`index.js`文件中，只需编写输出日志以确认脚本已正确加载的处理。
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，创建名为`index.js`的 JavaScript 文件。 在这个`index.js`文件中，只需编写输出日志以确认脚本已正确加载的处理。
 - en: index.js
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: index.js
 - en: '[PRE6]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[](#open-js-primer-local-server)*启动本地服务器*'
+  id: totrans-40
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#open-js-primer-local-server)*启动本地服务器*'
 - en: '*在与刚刚创建的`index.html`相同的目录中，启动本地服务器。 使用以下命令，可以下载并执行为本书创建的本地服务器模块[@js-primer/local-server](https://github.com/js-primer/local-server)。
     该本地服务器模块具有提供在执行目录中的文件的功能，以便通过`http`模式的 URL 访问本地文件。'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在与刚刚创建的`index.html`相同的目录中，启动本地服务器。 使用以下命令，可以下载并执行为本书创建的本地服务器模块[@js-primer/local-server](https://github.com/js-primer/local-server)。
+    该本地服务器模块具有提供在执行目录中的文件的功能，以便通过`http`模式的 URL 访问本地文件。'
 - en: '[PRE7]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 当访问启动的本地服务器的 URL（`http://localhost:3000`）时，将显示先前的`index.html`内容。 在许多服务器中，如果不指定文件路径，例如`http://localhost:3000`，则会提供`index.html`。
     `@js-primer/local-server`也具有此功能，因此`http://localhost:3000`和`http://localhost:3000/index.html`两个
     URL 都提供相同的`index.html`。
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 当访问启动的本地服务器的 URL（`http://localhost:3000`）时，将显示先前的`index.html`内容。 在许多服务器中，如果不指定文件路径，例如`http://localhost:3000`，则会提供`index.html`。
+    `@js-primer/local-server`也具有此功能，因此`http://localhost:3000`和`http://localhost:3000/index.html`两个
+    URL 都提供相同的`index.html`。
 - en: '![显示日志的 Web 控制台](img/060fab37fdefacc7581414049c4bbfae.png)'
+  id: totrans-44
   prefs: []
   type: TYPE_IMG
+  zh: '![显示日志的 Web 控制台](img/060fab37fdefacc7581414049c4bbfae.png)'
 - en: 如果可以访问`index.html`，请检查`index.js`是否正确加载。 要查看通过 Console API 输出的日志，请打开浏览器的开发者工具。
     大多数浏览器都包含开发者工具，但本书中将使用 Firefox 进行演示。
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果可以访问`index.html`，请检查`index.js`是否正确加载。 要查看通过 Console API 输出的日志，请打开浏览器的开发者工具。
+    大多数浏览器都包含开发者工具，但本书中将使用 Firefox 进行演示。
 - en: 可以通过以下任一方法打开 Firefox 的开发者工具。
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以通过以下任一方法打开 Firefox 的开发者工具。
 - en: 从 Firefox 菜单（如果有菜单栏或在 macOS 上，从工具菜单）中选择“Web 开发工具”子菜单中的“浏览器工具”
+  id: totrans-47
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从 Firefox 菜单（如果有菜单栏或在 macOS 上，从工具菜单）中选择“Web 开发工具”子菜单中的“浏览器工具”
 - en: 按下键盘快捷键 Ctrl+Shift+K（在 macOS 上为 Command+Option+K）
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 按下键盘快捷键 Ctrl+Shift+K（在 macOS 上为 Command+Option+K）
 - en: 有关详细信息，请参阅“[浏览器的开发者工具是什么？](https://developer.mozilla.org/ja/docs/Learn/Common_questions/What_are_browser_developer_tools)”。
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 有关详细信息，请参阅“[浏览器的开发者工具是什么？](https://developer.mozilla.org/ja/docs/Learn/Common_questions/What_are_browser_developer_tools)”。
 - en: '[](#close-js-primer-local-server)*关闭本地服务器*'
+  id: totrans-50
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#close-js-primer-local-server)*关闭本地服务器*'
 - en: '*最后，关闭启动的本地服务器。 可以通过在启动本地服务器的命令行中按下`Ctrl+C`来关闭。'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '*最后，关闭启动的本地服务器。 可以通过在启动本地服务器的命令行中按下`Ctrl+C`来关闭。'
 - en: 可以同时启动多个本地服务器，但不能在多个服务器上使用相同的端口号。 端口是指刚刚启动的本地服务器 URL 中的`:3000`部分，表示在 3000 端口上启动了本地服务器。
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以同时启动多个本地服务器，但不能在多个服务器上使用相同的端口号。 端口是指刚刚启动的本地服务器 URL 中的`:3000`部分，表示在 3000 端口上启动了本地服务器。
 - en: 如果默认端口（3000 端口）已被占用，则`@js-primer/local-server`将查找未使用的端口并启动本地服务器。此外，可以使用`--port`选项在任意端口号上启动本地服务器。
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果默认端口（3000 端口）已被占用，则`@js-primer/local-server`将查找未使用的端口并启动本地服务器。此外，可以使用`--port`选项在任意端口号上启动本地服务器。
 - en: '[PRE8]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 本书将在默认端口号 3000 上使用`@js-primer/local-server`进行操作。 因此，通过按下`Ctrl+C`关闭不再使用的本地服务器，可以确保可以继续使用与书中相同的
     URL（端口号）。
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书将在默认端口号 3000 上使用`@js-primer/local-server`进行操作。 因此，通过按下`Ctrl+C`关闭不再使用的本地服务器，可以确保可以继续使用与书中相同的
+    URL（端口号）。
 - en: '[](#conclusion)*结论*'
+  id: totrans-56
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)*结论*'
 - en: '*在本章中，我们准备好了接下来用例章节所需的环境。'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在本章中，我们准备好了接下来用例章节所需的环境。'
 - en: 安装了 Node.js 的 LTS 版本
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 安装了 Node.js 的 LTS 版本
 - en: 使用 npm 和 npx 安装和运行模块
+  id: totrans-59
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 npm 和 npx 安装和运行模块
 - en: 使用`@js-primer/local-server`模块启动并关闭了本地服务器
+  id: totrans-60
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`@js-primer/local-server`模块启动并关闭了本地服务器
 - en: npm 中已经有各种各样的本地服务器模块可供使用。本书将使用名为`@js-primer/local-server`的专用本地服务器模块，以确保所使用的本地服务器功能没有差异。
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: npm 中已经有各种各样的本地服务器模块可供使用。本书将使用名为`@js-primer/local-server`的专用本地服务器模块，以确保所使用的本地服务器功能没有差异。

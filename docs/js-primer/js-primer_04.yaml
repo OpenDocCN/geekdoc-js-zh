@@ -1,129 +1,203 @@
 - en: 読みはじめる前の事前準備
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 読みはじめる前の事前準備
 - en: 原文：[`jsprimer.net/intro/preparation/`](https://jsprimer.net/intro/preparation/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/intro/preparation/`](https://jsprimer.net/intro/preparation/)
 - en: この書籍は、すでに何かしらのプログラミング言語を触ったことがある人向けに書かれています。 そのため、この書籍でプログラミング言語を初めて学ぶ場合には、まずコードに慣れる必要があります。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: この書籍は、すでに何かしらのプログラミング言語を触ったことがある人向けに書かれています。 そのため、この書籍でプログラミング言語を初めて学ぶ場合には、まずコードに慣れる必要があります。
 - en: JavaScriptのコードは、ブラウザがあれば実行できます。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScriptのコードは、ブラウザがあれば実行できます。
 - en: 次のJavaScriptのサンプルコードを書き写して、ブラウザでJavaScriptを実行するところから始めてみましょう。
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のJavaScriptのサンプルコードを書き写して、ブラウザでJavaScriptを実行するところから始めてみましょう。
 - en: '[](#samplecode)*サンプルコード*'
+  id: totrans-5
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[サンプルコード](https://example.org/samplecode)'
 - en: '*次のコードが書き写して実行するサンプルコードです。 今はまだコードの内容が理解できなくても問題ありません。 まずは、実際にコードを実行してみることが重要です。'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '*次のコードが書き写して実行するサンプルコードです。 今はまだコードの内容が理解できなくても問題ありません。 まずは、実際にコードを実行してみることが重要です。*'
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[](#editor)*エディター*'
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[エディター](https://example.org/editor)'
 - en: '*このサンプルコードを、次のエディターに書き写して"実行"ボタンを押して、JavaScriptを実行してみてください。 `"`と`"`で囲まれた`名前`という文字列は、自分の名前に書き換えてみてください。'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*このサンプルコードを、次のエディターに書き写して"実行"ボタンを押して、JavaScriptを実行してみてください。 `"`と`"`で囲まれた`名前`という文字列は、自分の名前に書き換えてみてください。*'
 - en: '[PRE1]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 実行した結果として、次のようなメッセージが表示されているなら実行成功です （メッセージの`名前`の部分は、自分で書いた名前に書き換えて読んでください）。
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 实行した結果として、次のようなメッセージが表示されているなら実行成功です （メッセージの`名前`の部分は、自分で書いた名前に書き換えて読んでください）。
 - en: こんにちは名前さん
+  id: totrans-12
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: こんにちは名前さん
 - en: '"ログをクリア"ボタンを押すと、表示されているログを削除できます。 "終了"ボタンを押すとエディターを終了できます。'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '"ログをクリア"ボタンを押すと、表示されているログを削除できます。 "終了"ボタンを押すとエディターを終了できます。'
 - en: '"実行"ボタンを押して異なるメッセージがでた場合は、次の注意事項を読んでもう一度挑戦してみてくだ���い。'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '"実行"ボタンを押して異なるメッセージがでた場合は、次の注意事項を読んでもう一度挑戦してみてください。'
 - en: '[](#caution)*注意事項*'
+  id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[注意事項](https://example.org/caution)'
 - en: '*"実行"したときに、`SyntaxError`というようなエラーが表示されたなら、コードのどこかを書き間違えています。 次の点に気をつけて成功するまで試してみてください。'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '*"実行"したときに、`SyntaxError`というようなエラーが表示されたなら、コードのどこかを書き間違えています。 次の点に気をつけて成功するまで試してみてください。*'
 - en: コードは日本語入力をオフにして入力します
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: コードは日本語入力をオフにして入力します
 - en: '`"`と`"`で囲まれた部分以外は、すべて半角の英数字で入力してください'
+  id: totrans-18
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`"`と`"`で囲まれた部分以外は、すべて半角の英数字で入力してください'
 - en: '`"`（ダブルクォート）、`;`（セミコロン）、カッコ、スペースなどの記号も半角になっているかを確認してください'
+  id: totrans-19
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`"`（ダブルクォート）、`;`（セミコロン）、カッコ、スペースなどの記号も半角になっているかを確認してください'
 - en: 1 行入力するごとに`Enter`キーを押すことで改行できます
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 1 行入力するごとに`Enter`キーを押すことで改行できます
 - en: 大文字と小文字は区別されます
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 大文字と小文字は区別されます
 - en: このサンプルコードでは小文字の英数字しか利用していません
+  id: totrans-22
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: このサンプルコードでは小文字の英数字しか利用していません
 - en: コードの意味はまだわからなくても問題ありません
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: コードの意味はまだわからなくても問題ありません
 - en: 正しくコードを入力して、実行できることが重要です
+  id: totrans-24
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 正しくコードを入力して、実行できることが重要です
 - en: '*SyntaxError: illegal character*や*SyntaxError: Invalid or unexpected token*のようなエラーメッセージが出ている場合は、
     どこかに全角の記号や全角の英数字が混ざっています。'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '*SyntaxError: illegal character*や*SyntaxError: Invalid or unexpected token*のようなエラーメッセージが出ている場合は、
+    どこかに全角の記号や全角の英数字が混ざっています。'
 - en: 一度すべてのコードを消してから、もう一度入力してみましょう。
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 一度すべてのコードを消してから、もう一度入力してみましょう。
 - en: '[](#failure)*コードを実行できない*'
+  id: totrans-27
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[コードを実行できない](https://example.org/failure)'
 - en: '*どうしても実行できない場合は、まだこの書籍を読むには少し早いのかもしれません。 また、書籍は文字を中心とした解説になるため、初めてのプログラミン��ではイメージするのが難しいこともあります。
     そのため、書籍より情報量の多い動画などを見て、まずはコードを実行できるようにすることからはじめるのがよいかもしれません。'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '*どうしても実行できない場合は、まだこの書籍を読むには少し早いのかもしれません。 また、書籍は文字を中心とした解説になるため、初めてのプログラミングではイメージするのが難しいこともあります。
+    そのため、書籍より情報量の多い動画などを見て、まずはコードを実行できるようにすることからはじめるのがよいかもしれません。*'
 - en: '`"JavaScript 入門 動画"`といったキーワードで検索し、映像で学んで見てからでも遅くはありません。'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '`"JavaScript 入門 動画"`といったキーワードで検索し、映像で学んで見てからでも遅くはありません。'
 - en: また、もっとも効率的なのは、身近な知り合いに聞くことです。 一人で学ぼうとすると、思わぬところで詰まってしまい進めなくなる場合があります。 特に新しいことは最初の出発点が一番難しいです。
     ほかの人に手伝ってもらうことで意外と簡単に進めるようになるはずです。
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: また、もっとも効率的なのは、身近な知り合いに聞くことです。 一人で学ぼうとすると、思わぬところで詰まってしまい進めなくなる場合があります。 特に新しいことは最初の出発点が一番難しいです。
+    ほかの人に手伝ってもらうことで意外と簡単に進めるようになるはずです。
 - en: '[](#welcome-to-javascript)*ようこそJavaScriptへ*'
+  id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[ようこそJavaScriptへ](https://example.org/welcome-to-javascript)'
 - en: '*サンプルコードが実行できたなら、おそらくこの書籍は読めるはずです。'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '*サンプルコードが実行できたなら、おそらくこの書籍は読めるはずです。*'
 - en: この書籍は、JavaScriptというプログラミング言語の基本的な文法から、実際のウェブアプリケーションで使われるようなパターンについてを学んでいく書籍です。
     JavaScriptという言語は、常に変化している言語としても知られています。 その意味は、古いコードが動かなくなるのではなく、新しいやり方が常に増えていくという意味での変化です。
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: この書籍は、JavaScriptというプログラミング言語の基本的な文法から、実際のウェブアプリケーションで使われるようなパターンについてを学んでいく書籍です。
+    JavaScriptという言語は、常に変化している言語としても知られています。 その意味は、古いコードが動かなくなるのではなく、新しいやり方が常に増えていくという意味での変化です。
 - en: この書��では、そのような変化していくJavaScriptの学び方についても学んでいきます。*****
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: この書籍では、そのような変化していくJavaScriptの学び方についても学んでいきます。*****

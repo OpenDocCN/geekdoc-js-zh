@@ -1,352 +1,562 @@
 - en: '[ES2015] Map/Set'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '[ES2015] Map/Set'
 - en: 原文：[`jsprimer.net/basic/map-and-set/`](https://jsprimer.net/basic/map-and-set/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/map-and-set/`](https://jsprimer.net/basic/map-and-set/)
 - en: JavaScriptでデータの集まり（コレクション）を扱うビルトインオブジェクトは、ObjectやArrayだけではありません。 この章では、ES2015で導入されたマップ型のコレクションである`Map`と、セット型のコレクションである`Set`について学びます。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScriptでデータの集まり（コレクション）を扱うビルトインオブジェクトは、ObjectやArrayだけではありません。 この章では、ES2015で導入されたマップ型のコレクションである`Map`と、セット型のコレクションである`Set`について学びます。
 - en: '[](#map)*Map*'
+  id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[Map](#map)'
 - en: '*[Map](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Map)はマップ型のコレクションを扱うためのビルトインオブジェクトです。
     マップとは、キーと値の組み合わせからなる抽象データ型です。 他のプログラミング言語の文脈では辞書やハッシュマップ、連想配列などと呼ばれることもあります。'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[Map](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Map)はマップ型のコレクションを扱うためのビルトインオブジェクトです。
+    マップとは、キーと値の組み合わせからなる抽象データ型です。 他のプログラミング言語の文脈では辞書やハッシュマップ、連想配列などと呼ばれることもあります。'
 - en: '[](#map-new)*マップの作成と初期化*'
+  id: totrans-5
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[マップの作成と初期化](#map-new)'
 - en: '*`Map`オブジェクトを`new`することで、新しいマップを作成できます。 作成されたばかりのマップは何も持っていません。 そのため、マップが持つ要素の数を返す`size`プロパティは`0`を返します。'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`Map`オブジェクトを`new`することで、新しいマップを作成できます。 作成されたばかりのマップは何も持っていません。 そのため、マップが持つ要素の数を返す`size`プロパティは`0`を返します。'
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '`Map`オブジェクトを`new`で初期化するときに、コンストラクタに初期値を渡せます。 コンストラクタ引数として渡せるのは**エントリー**の配列です。
     エントリーとは、1つのキーと値の組み合わせを`[キー, 値]`という形式の配列で表現したものです。'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Map`オブジェクトを`new`で初期化するときに、コンストラクタに初期値を渡せます。 コンストラクタ引数として渡せるのは**エントリー**の配列です。
+    エントリーとは、1つのキーと値の組み合わせを`[キー, 値]`という形式の配列で表現したものです。'
 - en: 次のコードでは、Mapに初期値となるエントリー（配列）の配列を渡しています。
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、Mapに初期値となるエントリー（配列）の配列を渡しています。
 - en: '[PRE1]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[](#map-read-and-write)*要素の追加と取り出し*'
+  id: totrans-11
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[要素の追加と取り出し](#map-read-and-write)'
 - en: '*`Map`には新しい要素を`set`メソッドで追加でき、追加した要素を`get`メソッドで取り出せます。'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`Map`には新しい要素を`set`メソッドで追加でき、追加した要素を`get`メソッドで取り出せます。'
 - en: '`set`メソッドは特定のキーと値を持つ要素をマップに追加します。 ただし、同じキーで複数回`set`メソッドを呼び出した際は、後から追加された値で上書きされます。'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '`set`メソッドは特定のキーと値を持つ要素をマップに追加します。 ただし、同じキーで複数回`set`メソッドを呼び出した際は、後から追加された値で上書きされます。'
 - en: '`get`メソッドは特定のキーにひもづいた値を取り出します。 また、特定のキーにひもづいた値を持っているかを確認する`has`メソッドがあります。'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '`get`メソッドは特定のキーにひもづいた値を取り出します。 また、特定のキーにひもづいた値を持っているかを確認する`has`メソッドがあります。'
 - en: '[PRE2]'
+  id: totrans-15
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '`delete`メソッドはマップから要素を削除します。 `delete`メソッドに渡されたキーと、そのキーにひもづいた値がマップから削除されます。 また、マップが持つすべての要素を削除するための`clear`メソッドがあります。'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '`delete`メソッドはマップから要素を削除します。 `delete`メソッドに渡されたキーと、そのキーにひもづいた値がマップから削除されます。 また、マップが持つすべての要素を削除するための`clear`メソッドがあります。'
 - en: '[PRE3]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[](#map-iteration)*マップの反復処理*'
+  id: totrans-18
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[マップの反復処理](#map-iteration)'
 - en: '*マップが持つ要素を列挙するメソッドとして、`forEach`、`keys`、`values`、`entries`があります。'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '*マップが持つ要素を列挙するメソッドとして、`forEach`、`keys`、`values`、`entries`があります。'
 - en: '`forEach`メソッドはマップが持つすべての要素を、マップへの挿入順に反復処理します。 コールバック関数には引数として値、キー、マップの3つが渡されます。
     配列の`forEach`メソッドと似ていますが、インデックスの代わりにキーが渡されます。 配列はインデックスにより要素を特定しますが、マップはキーにより要素を特定するためです。'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '`forEach`メソッドはマップが持つすべての要素を、マップへの挿入順に反復処理します。 コールバック関数には引数として値、キー、マップの3つが渡されます。
+    配列の`forEach`メソッドと似ていますが、インデックスの代わりにキーが渡されます。 配列はインデックスにより要素を特定しますが、マップはキーにより要素を特定するためです。'
 - en: '[PRE4]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '`keys`メソッドはマップが持つすべての要素のキーを挿入順に並べた**Iterator**オブジェクトを返します。 同様に、`values`メソッドはマップが持つすべての要素の値を挿入順に並べたIteratorオブジェクトを返します。
     これらの返り値はIteratorオブジェクトであって配列ではありません。 そのため、次の例のように`for...of`文で反復処理を行ったり、`Array.from`メソッドに渡して配列に変換して使ったりします。'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '`keys`メソッドはマップが持つすべての要素のキーを挿入順に並べた**Iterator**オブジェクトを返します。 同様に、`values`メソッドはマップが持つすべての要素の値を挿入順に並べたIteratorオブジェクトを返します。
+    これらの返り値はIteratorオブジェクトであって配列ではありません。 そのため、次の例のように`for...of`文で反復処理を行ったり、`Array.from`メソッドに渡して配列に変換して使ったりします。'
 - en: '[PRE5]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '`entries`メソッドはマップが持つすべての要素をエントリーとして挿入順に並べたIteratorオブジェクトを返します。 先述のとおりエントリーは`[キー,
     値]`の配列です。 そのため、配列の分割代入を使うとエントリーからキーと値を簡単に取り出せます。'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '`entries`メソッドはマップが持つすべての要素をエントリーとして挿入順に並べたIteratorオブジェクトを返します。 先述のとおりエントリーは`[キー,
+    値]`の配列です。 そのため、配列の分割代入を使うとエントリーからキーと値を簡単に取り出せます。'
 - en: '[PRE6]'
+  id: totrans-25
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: また、マップ自身もiterableなオブジェクトなので、`for...of`文で反復処理できます。 マップを`for...of`文で反復したときは、すべての要素をエントリーとして挿入順に反復処理します。
     つまり、`entries`メソッドの返り値を反復処理するときと同じ結果が得られます。
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: また、マップ自身もiterableなオブジェクトなので、`for...of`文で反復処理できます。 マップを`for...of`文で反復したときは、すべての要素をエントリーとして挿入順に反復処理します。
+    つまり、`entries`メソッドの返り値を反復処理するときと同じ結果が得られます。
 - en: '[PRE7]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[](#object-and-map)*マップとしてのObjectとMap*'
+  id: totrans-28
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[マップとしてのObjectとMap](#object-and-map)'
 - en: '*ES2015で`Map`が導入されるまで、JavaScriptにおいてマップ型を実現するために`Object`が利用されてきました。 何かをキーにして値にアクセスするという点で、`Map`と`Object`はよく似ています。
     ただし、マップとしての`Object`にはいくつかの問題があります。'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '*ES2015で`Map`が導入されるまで、JavaScriptにおいてマップ型を実現するために`Object`が利用されてきました。 何かをキーにして値にアクセスするという点で、`Map`と`Object`はよく似ています。
+    ただし、マップとしての`Object`にはいくつかの問題があります。'
 - en: '`Object`の`prototype`オブジェクトから継承されたプロパティによって、意図しないマッピングを生じる危険性がある'
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Object`の`prototype`オブジェクトから継承されたプロパティによって、意図しないマッピングを生じる危険性がある'
 - en: また、プロパティとしてデータを持つため、キーとして使えるのは文字列か`Symbol`に限られる
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: また、プロパティとしてデータを持つため、キーとして使えるのは文字列か`Symbol`に限られる
 - en: '`Object`には`prototype`オブジェクトがあるため、いくつかのプロパティは初期化されたときから存在します。 `Object`をマップとして使うと、そのプロパティと同じ名前のキーを使おうとしたときに問題となります
     （詳細は「オブジェクト」の章の「プロパティの存在を確認する」を参照）。'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Object`には`prototype`オブジェクトがあるため、いくつかのプロパティは初期化されたときから存在します。 `Object`をマップとして使うと、そのプロパティと同じ名前のキーを使おうとしたときに問題となります
+    （詳細は「オブジェクト」の章の「プロパティの存在を確認する」を参照）。'
 - en: たとえば`constructor`という文字列は`Object.prototype.constructor`プロパティと衝突してしまいます。 そのため`constructor`のような文字列をオブジェクトのキーに使うことで意図しないマッピングを生じる危険性があります。
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: たとえば`constructor`という文字列は`Object.prototype.constructor`プロパティと衝突してしまいます。 そのため`constructor`のような文字列をオブジェクトのキーに使うことで意図しないマッピングを生じる危険性があります。
 - en: '[PRE8]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: このマップとして使うオブジェクトの問題は、`Object`のインスタンスを`Object.create(null)`のように初期化して作ることで回避されてきました
     （詳細は「プロトタイプオブジェクト」の章の「`Object.prototype`を継承しないオブジェクト」を参照）。
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: このマップとして使うオブジェクトの問題は、`Object`のインスタンスを`Object.create(null)`のように初期化して作ることで回避されてきました
+    （詳細は「プロトタイプオブジェクト」の章の「`Object.prototype`を継承しないオブジェクト」を参照）。
 - en: ES2015では、これらの問題を根本的に解決する`Map`が導入されました。 `Map`はプロパティとは異なる仕組みでデータを格納します。 そのため、`Map`のプロトタイプが持つメソッドやプロパティとキーが衝突することはありません。
     また、`Map`ではマップのキーとしてあらゆるオブジェクトを使えます。
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: ES2015では、これらの問題を根本的に解決する`Map`が導入されました。 `Map`はプロパティとは異なる仕組みでデータを格納します。 そのため、`Map`のプロトタイプが持つメソッドやプロパティとキーが衝突することはありません。
+    また、`Map`ではマップのキーとしてあらゆるオブジェクトを使えます。
 - en: ほかにも`Map`には次のような利点があります。
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: ほかにも`Map`には次のような利点があります。
 - en: マップのサイズを簡単に知ることができる
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: マップのサイズを簡単に知ることができる
 - en: マップが持つ要素を簡単に列挙できる
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: マップが持つ要素を簡単に列挙できる
 - en: オブジェクトをキーにすると参照ごとに違うマッピングができる
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: オブジェクトをキーにすると参照ごとに違うマッピングができる
 - en: たとえばショッピングカートのような仕組みを作るとき、次のように`Map`を使って商品のオブジェクトと注文数をマッピングできます。
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: たとえばショッピングカートのような仕組みを作るとき、次のように`Map`を使って商品のオブジェクトと注文数をマッピングできます。
 - en: '[PRE9]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '`Object`をマップとして使うときに起きる多くの問題は、`Map`オブジェクトを使うことで解決しますが、 常に`Map`が`Object`の代わりになるわけではありません。
     マップとしての`Object`には次のような利点があります。'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用`Object`作为映射时，许多问题可以通过使用`Map`对象来解决，但`Map`并不总是`Object`的替代品。作为映射的`Object`具有以下优点。
 - en: リテラル表現があるため作成しやすい
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于存在字面量表达式，因此易于创建
 - en: 規定のJSON 表現があるため、`JSON.stringify`関数を使ってJSONに変換するのが簡単
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由于具有规定的JSON表示，因此可以使用`JSON.stringify`函数轻松地将`Object`转换为JSON。
 - en: ネイティブAPI・外部ライブラリを問わず、多くの関数がマップとして`Object`を渡される設計になっている
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不论是原生API还是外部库，许多函数都设计为以`Object`作为映射传递。
 - en: 次の例では、ログインフォームのsubmitイベントを受け取ったあと、サーバーにPOSTリクエストを送信しています。 サーバーにJSON 文字列を送るために、`JSON.stringify`関数を使います。
     そのため、`Object`のマップを作ってフォームの入力内容を持たせています。 このような簡易なマップにおいては、`Object`を使うほうが適切でしょう。
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下示例中，在接收到登录表单的submit事件后，向服务器发送POST请求。为了向服务器发送JSON字符串，使用`JSON.stringify`函数。因此，创建了一个`Object`映射，其中包含表单的输入内容。在这种情况下，使用`Object`作为这种简单映射是合适的。
 - en: '[PRE10]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[](#weakmap)*WeakMap*'
+  id: totrans-49
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#weakmap)*WeakMap*'
 - en: '*[WeakMap](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)は、`Map`と同じくマップを扱うためのビルトインオブジェクトです。
     `Map`と違う点は、キーを**弱い参照**（Weak Reference）で持つことです。'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[WeakMap](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)与`Map`一样，是用于处理映射的内置对象。与`Map`的不同之处在于，它使用**弱引用**（Weak
+    Reference）来持有键。'
 - en: '[弱い参照](https://ja.wikipedia.org/wiki/%E5%BC%B1%E3%81%84%E5%8F%82%E7%85%A7)とは、ガベージコレクション（GC）によるオブジェクトの解放を妨げないための特殊な参照です。
     本来、GCによりメモリから解放できるオブジェクトは、どこからも参照されていないものだけです。 弱い参照は例外的に、該当するオブジェクトへの弱い参照があったとしても、GCはそのオブジェクトを解放できます。'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '[弱引用](https://ja.wikipedia.org/wiki/%E5%BC%B1%E3%81%84%E5%8F%82%E7%85%A7)是一种特殊的引用，它不会阻止垃圾收集（GC）释放对象。通常，只有当对象不再被任何地方引用时，GC才能从内存中释放对象。弱引用例外地，即使存在对该对象的弱引用，GC也可以释放该对象。'
 - en: そのため、弱い参照は不要になったオブジェクトを参照し続けて発生してしまうメモリリークを防ぐために使われます。 `WeakMap`では不要になったキーとそれにひもづいた値が自動的に削除されるため、メモリリークを引き起こす心配がありません。
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，弱引用用于防止因持续引用不再需要的对象而导致的内存泄漏。由于`WeakMap`中不再需要的键及其关联的值会自动删除，因此不会引起内存泄漏。
 - en: 次のコードでは、最初に`obj`には`{}`を設定し、`WeakMap`ではその`obj`をキーにして値（`"value"`）を設定しています。 次に`obj`に別の値（ここでは`null`）を代入すると、`obj`が元々参照していた`{}`という値はどこからも参照されなくなります。
     このとき`WeakMap`は`{}`への弱い参照を持っていますが、弱い参照はGCを妨げないため、`{}`は不要になった値としてGCによりメモリから解放されます。
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下代码中，首先将`obj`设置为`{}`，然后在`WeakMap`中将该`obj`作为键并设置值（`"value"`）。接下来，将`obj`赋值为另一个值（此处为`null`），则`obj`最初引用的`{}`值将不再被任何地方引用。此时，`WeakMap`持有对`{}`的弱引用，但弱引用不会阻止GC，因此`{}`作为不再需要的值将被GC从内存中释放。
 - en: 同時に、`WeakMap`は解放されたオブジェクト（`{}`）をキーにしてひもづいていた値（`"value"`）を破棄できます。 ただし、どのタイミングで実際にメモリから解放するかは、JavaScriptエンジンの実装に依存します。
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 同时，`WeakMap`可以丢弃与已释放对象（`{}`）关联的值（`"value"`）。但是，实际何时从内存中释放取决于JavaScript引擎的实现。
 - en: '[PRE11]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '`WeakMap`は`Map`と似ていますがiterableではありません。 そのため、キーを列挙する`keys`メソッドや、データの数を返す`size`プロパティなどは存在しません。
     また、キーを弱い参照で持つ特性上、キーとして使えるのは参照型のオブジェクトと`Symbol`^(es2023)だけです。'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '`WeakMap`与`Map`相似，但不是可迭代的。因此，不存在用于列举键的`keys`方法或返回数据数量的`size`属性。此外，由于它使用弱引用持有键，因此可以作为键使用的只有引用类型的对象和`Symbol`（es2023）。'
 - en: '`WeakMap`の主な使い方のひとつは、クラスにプライベートの値を格納することです。 `this` （クラスインスタンス） を `WeakMap`
     のキーにすることで、インスタンスの外からはアクセスできない値を保持できます。 また、クラスインスタンスが参照されなくなったときには自動的に解放されます。'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '`WeakMap`的主要用途之一是将私有值存储在类中。将`this`（类实例）作为`WeakMap`的键，可以保持无法从实例外部访问的值。此外，当类实例不再被引用时，这些值将自动释放。'
 - en: 次のコードでは、オブジェクトが発火するイベントのリスナー関数（イベントリスナー）を `WeakMap` で管理しています。 イベントリスナーとは、イベントが発生したときに呼び出される関数のことです。
     このマップを`Map`で実装してしまうと、明示的に削除されるまでイベントリスナーはメモリ上に残り続けます。 ここで`WeakMap`を使うと、`addListener`
     メソッドに渡された`listener`は `EventEmitter` インスタンスが参照されなくなった際、自動的に解放されます。
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下代码中，使用`WeakMap`管理触发事件的监听器函数（事件监听器）。事件监听器是指当事件发生时被调用的函数。如果使用`Map`实现此映射，则事件监听器将一直保留在内存中，直到显式删除。在这里使用`WeakMap`，则传递给`addListener`方法的`listener`在`EventEmitter`实例不再被引用时将自动释放。
 - en: '[PRE12]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: また、あるオブジェクトから計算した結果を一時的に保存する用途でもよく使われます。 次の例ではHTML 要素の高さを計算した結果を保存して、2 回目以降に同じ計算をしないようにしています。
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，它还常用于临时保存从某个对象计算出的结果。在以下示例中，保存了HTML元素的高度计算结果，以避免在第二次及以后进行相同的计算。
 - en: '[PRE13]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[](#key-and-nan)*[コラム] キーの等価性とNaN*'
+  id: totrans-62
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#key-and-nan)*[专栏] 键的等价性与NaN*'
 - en: '*`Map`に値をセットする際のキーにはあらゆるオブジェクトが使えます。 このときのマップが特定のキーをすでに持っているか、つまり挿入と上書きの判定は基本的に`===`演算子と同じです。'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`Map`中设置值时可以使用任何对象作为键。在这种情况下，该映射是否已经包含特定的键，即插入和覆盖的判断基本上与`===`运算符相同。'
 - en: ただし、キーが`NaN`の扱いだけが例外的に違います。`Map`におけるキーの比較では、`NaN`同士は常に等価であるとみなされます。 この挙動は[Same-value-zero](https://developer.mozilla.org/ja/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality)アルゴリズムと呼ばれます。
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，键为`NaN`的处理方式例外。在`Map`中，键的比较中，`NaN`总是被视为等价的。这种行为被称为[Same-value-zero](https://developer.mozilla.org/ja/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality)算法。
 - en: 次のコードでは、`NaN`同士の`===`の比較結果が`false`になるのに対して、`Map`のキーでは`NaN`同士の比較結果が一致していることがわかります。
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下代码中，`NaN`之间的`===`比较结果为`false`，而`Map`的键中`NaN`之间的比较结果是一致的。
 - en: '[PRE14]'
+  id: totrans-66
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[](#set)*Set*'
+  id: totrans-67
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#set)*Set*'
 - en: '*[Set](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Set)はセット型のコレクションを扱うためのビルトインオブジェクトです。
     セットとは、重複する値がないことを保証したコレクションのことを言います。 `Set`は追加した値を列挙できるので、値が重複しないことを保証する配列のようなものとしてよく使われます。
     ただし、配列と違って要素は順序を持たず、インデックスによるアクセスはできません。'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[Set](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Set)是用于处理集合的内置对象。集合是指不包含重复值的集合。`Set`可以列举添加的值，因此它类似于不包含重复值的数组，常用于保证值的唯一性。然而，与数组不同，集合没有顺序，也不能通过索引访问元素。'
 - en: '[](#set-new)*セットの作成と初期化*'
+  id: totrans-69
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#set-new)*创建和初始化集合*'
 - en: '*`Set`オブジェクトを`new`することで、新しいセットを作れます。 作成されたばかりのセットは何も持っていません。 そのため、セットが持つ要素の数を返す`size`プロパティは0を返します。'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '*通过`new`创建`Set`对象可以创建一个新的集合。创建的集合一开始没有任何内容。因此，返回集合中元素数量的`size`属性将返回0。'
 - en: '[PRE15]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '`Set`オブジェクトを`new`で初期化するときに、コンストラクタに初期値を渡せます。 コンストラクタ引数として渡せるのはiterableオブジェクトです。'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用`new`初始化`Set`对象时，可以将初始值传递给构造函数。构造函数参数可以是可迭代对象。
 - en: 次のコードではiterableオブジェクトである配列を初期値として渡しています。 また、`Set`では重複する同じ値を持たないことを保証するため、同じ値は1つのみ格納されます。
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下代码中，将可迭代对象数组作为初始值传递。此外，`Set`确保不包含重复的相同值，因此相同的值只存储一次。
 - en: '[PRE16]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[](#set-read-and-write)**値の追加と取り出し**'
+  id: totrans-75
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#set-read-and-write)**值的添加和提取**'
 - en: '*作成したセットに値を追加するには、`add`メソッドを使います。 先述のとおり、セットは重複する値を持たないことが保証されます。 そのため、すでにセットが持っている値を`add`メソッドに渡した際は無視されます。'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '*要向创建的集合中添加值，可以使用`add`方法。正如之前所述，集合保证不包含重复的值。因此，当将已存在于集合中的值传递给`add`方法时，它将被忽略。'
 - en: また、セットが特定の値を持っているかどうかを確認する`has`メソッドがあります。
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，还有一个`has`方法可以用来检查集合是否包含特定的值。
 - en: '[PRE17]'
+  id: totrans-78
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: セットから値を削除するには、`delete`メソッドを使います。 `delete`メソッドに渡された値がセットから削除されます。 また、セットが持つすべての値を削除するための`clear`メソッドがあります。
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 要从集合中删除值，可以使用`delete`方法。`delete`方法会删除传递给它的值。此外，还有`clear`方法可以删除集合中所有的值。
 - en: '[PRE18]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[](#set-iteration)**セットの反復処理**'
+  id: totrans-81
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#set-iteration)**集合的遍历**'
 - en: '*セットが持つ値を反復処理するには、`forEach`メソッドが利用できます。 `forEach`メソッドではセットが持つすべての要素を、セットへの挿入順に反復します。'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '*要遍历集合中的值，可以使用`forEach`方法。`forEach`方法会按照集合的插入顺序遍历集合中所有的元素。'
 - en: '[PRE19]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: セットからIteratorオブジェクトを作成するメソッドとして`keys`、`values`、`entries`があります。 これらは**Map**との類似性のために存在しますが、セットには**Map**におけるキー相当のものがありません。
     そのため、`keys`メソッドは`values`メソッドのエイリアスになっており、セットが持つすべての値を挿入順に列挙するIteratorオブジェクトを返します。
     また、`entries`メソッドは`[値, 値]`という形のエントリーを挿入順に列挙するIteratorオブジェクトを返します。
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 集合中创建迭代器对象的`keys`、`values`、`entries`方法类似于`Map`，但集合中没有与`Map`中的键相当的元素。因此，`keys`方法实际上是`values`方法的别名，它返回一个按插入顺序列出集合中所有值的迭代器对象。同样，`entries`方法返回一个按插入顺序列出`[值,
+    值]`形式条目的迭代器对象。
 - en: '[PRE20]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '`Set`オブジェクト自身もiterableなオブジェクトであるため`for...of`文で反復処理できます。 `for...of`文で`Set`オブジェクトを反復処理したときも、セットへの挿入順に値が取り出されます。
     `keys`、`values`、`entries`メソッドはどれも取得できる情報は同じであるため、基本的には`Set`オブジェクト自体を反復処理することで代用できます。'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于`Set`对象自身也是一个可迭代的对象，因此可以使用`for...of`语句进行遍历。使用`for...of`语句遍历`Set`对象时，值也会按照集合的插入顺序被取出。由于`keys`、`values`、`entries`方法可以获取相同的信息，因此基本上可以通过遍历`Set`对象本身来代替。
 - en: '[PRE21]'
+  id: totrans-87
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[](#weakset)**WeakSet**'
+  id: totrans-88
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#weakset)**WeakSet**'
 - en: '*[WeakSet](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)*は弱い参照で値を持つセットです。
     `WeakSet`は`Set`と似ていますが、iterableではないので追加した値を反復処理できません。 つまり、`WeakSet`は値の追加と削除、存在確認以外のことができません。
     データの格納ではなく、データの一意性を確認することに特化したセットと言えるでしょう。'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[WeakSet](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)*是一个包含有值引用的集合。`WeakSet`与`Set`类似，但它不是可迭代的，因此不能遍历添加的值。换句话说，`WeakSet`只能进行值的添加和删除、存在性检查等操作。可以说它是一个专注于检查数据唯一性的集合。'
 - en: また、弱い参照で値を持つ特性上、**WeakSet**の値として使えるのは参照型のオブジェクトと**Symbol**^(es2023)だけです。
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，由于**WeakSet**的特性是只包含有值的引用，因此可以作为其值的只能是引用类型的对象和**Symbol**(es2023)。
 - en: '[](#conclusion)**まとめ**'
+  id: totrans-91
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)**总结**'
 - en: この章では**Map**と**Set**について学びました。
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章我们学习了**Map**和**Set**。
 - en: '`Map`はキーと値の組み合わせからなるコレクションを扱うビルトインオブジェクト'
+  id: totrans-93
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Map`是一个内置对象，用于处理由键值对组成的集合。'
 - en: '**Map**のキーはプロトタイプオブジェクトのプロパティと名前が衝突しないため意図しないマッピングを避けられる'
+  id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**Map**的键可以避免与原型对象的属性和名称冲突，从而避免意外的映射。'
 - en: '`WeakMap`はキーを弱い参照で持つ`Map`と同様のビルトインオブジェクト'
+  id: totrans-95
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`WeakMap`是一个与键为弱引用的`Map`类似的内置对象。'
 - en: '`Set`は重複する値がないことを保証した順序を持たないコレクションを扱うビルトインオブジェクト'
+  id: totrans-96
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Set`是一个内置对象，用于处理不包含重复值的有序集合。'
 - en: '`WeakSet`は値を弱い参照で持つ`Set`と同様のビルトインオブジェクト'
+  id: totrans-97
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`WeakSet`是一个与值为弱引用的`Set`类似的内置对象。'
 - en: ^(es2023). ES2023で**Symbol**も扱えるように仕様が変更されています。 ↩*************
+  id: totrans-98
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: ^(es2023). ES2023中已经修改了规范，使得**Symbol**也可以被处理。 ↩*************

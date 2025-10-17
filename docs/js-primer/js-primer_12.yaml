@@ -1,950 +1,1540 @@
 - en: 演算子
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 运算符
 - en: 原文：[`jsprimer.net/basic/operator/`](https://jsprimer.net/basic/operator/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/operator/`](https://jsprimer.net/basic/operator/)
 - en: 演算子はよく利用する演算処理を記号などで表現したものです。 たとえば、足し算をする `+` も演算子の一種です。これ以外にも演算子には多くの種類があります。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 运算符是使用符号等表示常用运算处理的。例如，加法运算的`+`也是运算符的一种。除此之外，还有许多种类的运算符。
 - en: 演算子は演算する対象を持ちます。この演算子の対象のことを**被演算子（オペランド）**と呼びます。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 运算符具有运算对象。这个运算符的目标被称为**被运算符（操作数）**。
 - en: 次のコードでは、`+`演算子が値同士を足し算する加算演算を行っています。 このとき、`+`演算子の対象となっている`1`と`2`という2つの値がオペランドです。
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码中，`+`运算符执行了值之间的加法运算。此时，`+`运算符的目标值`1`和`2`是操作数。
 - en: '[PRE0]'
+  id: totrans-5
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: このコードでは`+`演算子に対して、前後に合計 2つのオペランドがあります。 このように、2つのオペランドを取る演算子を**二項演算子**と呼びます。
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此代码中，`+`运算符前后共有两个操作数。这样，取两个操作数的运算符被称为**二元运算符**。
 - en: '[PRE1]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: また、1つの演算子に対して1つのオペランドだけを取るものもあります。 たとえば、数値をインクリメントする`++`演算子は、次のように前後どちらか一方にオペランドを置きます。
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，有些运算符只需要一个操作数。例如，用于数值递增的`++`运算符，可以将操作数放在前后任一端。
 - en: '[PRE2]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: このように、1つのオペランドを取る演算子を**単項演算子**と呼びます。 単項演算子と二項演算子で同じ記号を使うことがあるため、呼び方を変えています。
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，只取一个操作数的运算符被称为**一元运算符**。由于一元运算符和二元运算符可能会使用相同的符号，因此我们使用不同的名称来区分。
 - en: この章では、演算子ごとにそれぞれの処理について学んでいきます。 また、演算子の中でも比較演算子は、JavaScriptでも特に挙動が理解しにくい**暗黙的な型変換**という問題と密接な関係があります。
     そのため、演算子をひととおり見た後に、暗黙的な型変換と明示的な型変換について学んでいきます。
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们将分别学习每个运算符的处理过程。此外，比较运算符与JavaScript中的**隐式类型转换**问题密切相关。因此，在查看运算符之后，我们将学习隐式类型转换和显式类型转换。
 - en: 演算子の種類は多いため、すべての演算子の動作をここで覚える必要はありません。 必要となったタイミングで、改めてその演算子の動作を見るのがよいでしょう。
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于运算符种类繁多，因此不需要在这里记住所有运算符的行为。在需要的时候，再次查看该运算符的行为会更好。
 - en: '[](#binary-operator)*二項演算子*'
+  id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#binary-operator)*二元运算符*'
 - en: '*四則演算など基本的な二項演算子を見ていきます。'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我们将查看基本的四则运算等二元运算符。'
 - en: '[](#plus-operator)*プラス演算子（`+`）*'
+  id: totrans-15
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#plus-operator)*加法运算符（`+`）*'
 - en: '*2つの数値を加算する演算子です。'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这是一个加法运算符，返回两个数值的和。'
 - en: '[PRE3]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: JavaScriptでは、数値は内部的にIEEE 754 方式の浮動小数点数として表現されています （ データ型とリテラルを参照）。 そのため、整数と浮動小数点数の加算もプラス演算子で行えます。
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 在JavaScript中，数值内部以IEEE 754浮点数方式表示（请参阅数据类型和字面量）。因此，整数和浮点数的加法也可以使用加法运算符进行。
 - en: '[PRE4]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '[](#string-combination-operator)*文字列結合演算子（`+`）*'
+  id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#string-combination-operator)*字符串连接运算符（`+`）*'
 - en: '*数値の加算に利用したプラス演算子（`+`）は、文字列の結合に利用できます。'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这是一个加法运算符，用于字符串的连接。'
 - en: 文字列結合演算子（`+`）は、2つの文字列を結合した文字列を返します。
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 字符串连接运算符（`+`）返回连接两个字符串的字符串。
 - en: '[PRE5]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: つまり、プラス演算子（`+`）は数値同士と文字列同士の演算をします。
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 也就是说，加法运算符（`+`）可以执行数值和字符串之间的运算。
 - en: '[](#minus-operator)*マイナス演算子（`-`）*'
+  id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#minus-operator)*减法运算符（`-`）*'
 - en: '*2つの数値を減算する演算子です。左オペランドから右オペランドを減算した値を返します。'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这是一个减法运算符，返回左操作数减去右操作数的值。'
 - en: '[PRE6]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[](#multiplication-operator)*乗算演算子（`*`）*'
+  id: totrans-28
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#multiplication-operator)*乘法运算符（`*`）*'
 - en: '*2つの数値を乗算する演算子です。'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这是一个乘法运算符，返回两个数值的乘积。'
 - en: '[PRE7]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[](#division-operator)*除算演算子（`/`）*'
+  id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#division-operator)*除法运算符（`/`）*'
 - en: '*2つの数値を除算する演算子です。左オペランドを右オペランドで除算した値を返します。'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这是一个除法运算符，返回左操作数除以右操作数的值。'
 - en: '[PRE8]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ただし、任意の数値を`0`で除算した結果は、無限大を表す数値である`Infinity`となります。
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，任何数值除以`0`的结果是表示无穷大的数值`Infinity`。
 - en: '[PRE9]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[](#modulus-operator)*剰余演算子（`%`）*'
+  id: totrans-36
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#modulus-operator)*取模运算符（`%`）*'
 - en: '*2つの数値を除算したあまりを求める演算子です。左オペランドを右オペランドで除算したあまりを返します。'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这是一个除法运算符，返回左操作数除以右操作数的余数。'
 - en: '[PRE10]'
+  id: totrans-38
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[](#pow-operator)*[ES2016] べき乗演算子（`**`）*'
+  id: totrans-39
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#pow-operator)*[ES2016] 幂运算符（`**`）*'
 - en: '*2つの数値のべき乗を求める演算子です。 左オペランドを右オペランドでべき乗した値を返します。'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这是一个求两个数值幂的运算符。返回左操作数以右操作数为幂的值。'
 - en: '[PRE11]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: べき乗演算子と同じ動作をする`Math.pow`メソッドがあります。
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 幂运算符与`Math.pow`方法具有相同的操作。
 - en: '[PRE12]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: べき乗演算子はES2016で後から追加された演算子であるため、関数と演算子がそれぞれ存在しています。 一方、他の二項演算子は演算子が先に存在していたため、`Math`には対応するメソッドがありません。
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 幂运算符是在ES2016中后来添加的运算符，因此存在函数和运算符。另一方面，其他二元运算符由于运算符先存在，因此`Math`中没有对应的函数。
 - en: '[](#unary-operator)*単項演算子（算術）*'
+  id: totrans-45
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#unary-operator)*一元运算符（算术）*'
 - en: '*単項演算子は、1つのオペランドを受け取り処理する演算子です。'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '*一元运算符是接受一个操作数并处理它的运算符。'
 - en: '[](#unary-plus-operator)*単項プラス演算子（`+`）*'
+  id: totrans-47
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#unary-plus-operator)*一元加法运算符（`+`）*'
 - en: '*単項演算子の`+`はオペランドを数値に変換します。'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '*一元运算符的`+`将操作数转换为数值。'
 - en: 次のコードでは、数値の`1`を数値へ変換するため、結果は変わらず数値の`1`です。 `+数値`のように数値に対して、単項プラス演算子をつけるケースはほぼ無いでしょう。
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，为了将数值`1`转换为数值，结果保持不变，仍然是数值`1`。几乎不会出现像`+数值`这样的在数值上添加一元加法运算符的情况。
 - en: '[PRE13]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: また、単項プラス演算子は、数値以外も数値へと変換します。 次のコードでは、数字（文字列）を数値へ変換しています。
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，一元加法运算符还可以将非数值转换为数值。在下面的代码中，将数字（字符串）转换为数值。
 - en: '[PRE14]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 一方、数値に変換できない文字列などは`NaN`という特殊な値へと変換されます。
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，无法转换为数值的字符串等将转换为特殊的值`NaN`。
 - en: '[PRE15]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '`NaN`は"Not-a-Number"の略称で、数値ではないがNumber 型の値を表現しています。 `NaN`はどの値とも（NaN 自身に対しても）一致しない特性があり、`Number.isNaN`メソッドを使うことで`NaN`の判定を行えます。'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '`NaN`是"Not-a-Number"的缩写，表示不是数值但表示Number类型的值。`NaN`与任何值（包括自身）都不相等，可以使用`Number.isNaN`方法来检测`NaN`。'
 - en: '[PRE16]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: しかし、単項プラス演算子は文字列から数値への変換に使うべきではありません。 なぜなら、`Number`コンストラクタ関数や`parseInt`関数などの明示的な変換方法が存在するためです。
     詳しくは「暗黙的な型変換」の章で解説します。
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，一元加法运算符不应用于字符串到数值的转换。因为存在`Number`构造函数或`parseInt`函数等明确的转换方法。有关详细信息，请参阅“隐式类型转换”章节。
 - en: '[](#unary-minus-operator)*単項マイナス演算子（`-`）*'
+  id: totrans-58
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#unary-minus-operator)*一元减法运算符（`-`）*'
 - en: '*単項マイナス演算子はマイナスの数値を記述する場合に利用します。'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '*一元减法运算符用于表示负数值。'
 - en: たとえば、マイナスの1という数値を `-1` と書くことができるのは、単項マイナス演算子を利用しているからです。
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，可以写成`-1`的负数`-1`，是因为使用了单负运算符。
 - en: '[PRE17]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: また、単項マイナス演算子はマイナスの数値を反転できます。 そのため、"マイナスのマイナスの数値"はプラスの数値となります。
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，一元减法运算符还可以反转负数值。因此，“负的负数值”是正数值。
 - en: '[PRE18]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 単項マイナス演算子も文字列などを数値へ変換します。
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 一元减法运算符也可以将字符串等转换为数值。
 - en: '[PRE19]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: また、数値へ変換できない文字列などをオペランドに指定した場合は、`NaN`という特殊な値になります。 そのため、単項プラス演算子と同じく、文字列から数値への変換に単項マイナス演算子を使うべきではありません。
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，如果指定了无法转换为数值的字符串等作为操作数，则结果将是特殊的值`NaN`。因此，与一元加法运算符一样，不应使用一元减法运算符进行字符串到数值的转换。
 - en: '[PRE20]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '[](#increment-operator)*インクリメント演算子（`++`）*'
+  id: totrans-68
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#increment-operator)*增量运算符（`++`）*'
 - en: '*インクリメント演算子（`++`）は、オペランドの数値を`+1`する演算子です。 オペランドの前後どちらかにインクリメント演算子を置くことで、オペランドに対して値を`+1`した値を返します。'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '*增量运算符（`++`）是一个将操作数的数值加`+1`的运算符。通过在操作数前后放置增量运算符，可以返回对操作数进行`+1`后的值。'
 - en: '[PRE21]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: インクリメント演算子（`++`）は、オペランドの前後どちらに置くかによって評価の順番が異なります。
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 增量运算符（`++`）根据操作数的放置位置不同，其评估顺序也不同。
 - en: 後置インクリメント演算子（`num++`）は、次のような順で処理が行われます。
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 后置增量运算符（`num++`）的处理顺序如下。
 - en: '`num`の評価結果を返す'
+  id: totrans-73
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`num`的评估结果返回'
 - en: '`num`に対して`+1`する'
+  id: totrans-74
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`num`对`+1`'
 - en: そのため、`num++`が返す値は`+1`する前の値となります。
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，`num++`返回的值是加`+1`前的值。
 - en: '[PRE22]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: 一方、前置インクリメント演算子（`++num`）は、次のような順で処理が行われます。
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，前置增量运算符（`++num`）的处理顺序如下。
 - en: '`num`に対して`+1`する'
+  id: totrans-78
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`num`对`+1`'
 - en: '`num`の評価結果を返す'
+  id: totrans-79
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`num`的评估结果返回'
 - en: そのため、`++num`が返す値は`+1`した後の値となります。
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，`++num`返回的值是加`+1`后的值。
 - en: '[PRE23]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: この2つの使い分けが必要となる場面は多くありません。 そのため、評価の順番が異なることだけを覚えておけば問題ないと言えます。
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两个用法很少需要区分。因此，只需记住评估顺序的不同即可。
 - en: '[](#decrement-operator)*デクリメント演算子（`--`）*'
+  id: totrans-83
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#decrement-operator)*递减运算符（`--`）*'
 - en: '*デクリメント演算子（`--`）は、オペランドの数値を`-1`する演算子です。'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '*递减运算符（`--`）是用于将操作数的数值减去`-1`的运算符。'
 - en: '[PRE24]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: デクリメント演算子は、インクリメント演算子と同様に、オペランドの前後のどちらかに置くことができます。 デクリメント演算子も、前後どちらに置くかで評価の順番が変わります。
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 递减运算符与递增运算符类似，可以放在操作数的前面或后面。递减运算符的位置也会改变评估顺序。
 - en: '[PRE25]'
+  id: totrans-87
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '[](#comparison-operator)*比較演算子*'
+  id: totrans-88
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#comparison-operator)*比较运算符*'
 - en: '*比較演算子はオペランド同士の値を比較し、真偽値を返す演算子です。'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '*比较运算符是用于比较操作数的值并返回布尔值的运算符。'
 - en: '[](#strict-equal-operator)*厳密等価演算子（`===`）*'
+  id: totrans-90
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#strict-equal-operator)*严格等价运算符（`===`）*'
 - en: '*厳密等価演算子は、左右の2つのオペランドを比較します。 同じ型で同じ値である場合に、`true`を返します。'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '*严格等价运算符是，比较左右两个操作数。如果类型相同且值相同，则返回`true`。'
 - en: '[PRE26]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: また、オペランドがどちらもオブジェクトであるときは、 オブジェクトの参照が同じである場合に、`true`を返します。
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，如果两个操作数都是对象，则只有在对象的引用相同的情况下才会返回`true`。
 - en: 次のコードでは、空のオブジェクトリテラル(`{}`)同士を比較しています。 オブジェクトリテラルは、新しいオブジェクトを作成します。 そのため、異なるオブジェクトを参照する変数を`===`で比較すると`false`を返します。
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下代码中，正在比较两个空对象字面量（`{}`）。对象字面量会创建新的对象。因此，使用`===`比较引用不同对象的变量会返回`false`。
 - en: '[PRE27]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '[](#strict-not-equal-operator)*厳密不等価演算子（`!==`）*'
+  id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#strict-not-equal-operator)*严格不等价运算符（`!==`）*'
 - en: '*厳密不等価演算子は、左右の2つのオペランドを比較します。 異なる型または異なる値である場合に、`true`を返します。'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '*严格不等价运算符是，比较左右两个操作数。如果类型不同或值不同，则返回`true`。'
 - en: '[PRE28]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '`===`を反転した結果を返す演算子となります。'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '`===`是返回反转结果的运算符。'
 - en: '[](#equal-operator)*等価演算子（`==`）*'
+  id: totrans-100
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#equal-operator)*等价运算符（`==`）*'
 - en: '*等価演算子（`==`）は、2つのオペランドを比較します。 同じデータ型のオペランドを比較する場合は、厳密等価演算子（`===`）と同じ結果になります。'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '*等价运算符（`==`）比较两个操作数。如果操作数是相同的数据类型，则与严格等价运算符（`===`）的结果相同。'
 - en: '[PRE29]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: しかし、等価演算子（`==`）はオペランド同士が異なる型の値であった場合に、 同じ型となるように**暗黙的な型変換**をしてから比較します。
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，等价运算符（`==`）在比较不同类型的操作数时，会先进行**隐式类型转换**，使其成为相同类型后再进行比较。
 - en: そのため、次のような、見た目からは結果を予測できない挙動が多く存在します。
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，存在许多从外观上无法预测结果的异常行为。
 - en: '[PRE30]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 意図しない挙動となることがあるため、暗黙的な型変換が行われる等価演算子（`==`）を使うべきではありません。 代わりに、厳密等価演算子（`===`）を使い、異なる型を比較したい場合は明示的に型を合わせるべきです。
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于可能产生意外的行为，因此不应使用进行隐式类型转换的等价运算符（`==`）。相反，应使用严格等价运算符（`===`），并在需要比较不同类型时显式地转换类型。
 - en: 例外的に、等価演算子（`==`）が使われるケースとして、`null`と`undefined`の比較があります。
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 例外情况下，使用等价运算符（`==`）的例子包括`null`和`undefined`的比较。
 - en: 次のように、比較したいオペランドが `null` または `undefined` であることを判定したい場合に、 厳密等価演算子（`===`）では二度比較する必要があります。
     等価演算子（`==`）では`null`と`undefined`の比較結果は`true`となるため、一度の比較でよくなります。
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 当需要判断比较的操作数是否为`null`或`undefined`时，如以下所示，使用严格等价运算符（`===`）可能需要两次比较。由于等价运算符（`==`）将`null`和`undefined`的比较结果视为`true`，因此一次比较就足够了。
 - en: '[PRE31]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: このように等価演算子（`==`）を使う例外的なケースはありますが、 等価演算子（`==`）は暗黙的な型変換をするため、バグを引き起こしやすいです。 そのため、仕組みを理解するまでは常に厳密等価演算子（`===`）を利用することを推奨します。
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，等价运算符（`==`）的例外用法是存在的，但由于等价运算符（`==`）会进行隐式类型转换，因此容易引发错误。因此，在理解其工作原理之前，建议始终使用严格等价运算符（`===`）。
 - en: '[](#not-equal-operator)*不等価演算子（`!=`）*'
+  id: totrans-111
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#not-equal-operator)*不等价运算符（`!=`）*'
 - en: '*不等価演算子（`!=`）は、2つのオペランドを比較し、等しくないなら`true`を返します。'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '*不等价运算符（`!=`）比较两个操作数，如果不相等则返回`true`。'
 - en: '[PRE32]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 不等価演算子も、等価演算子（`==`）と同様に異なる型のオペランドを比較する際に、暗黙的な型変換をしてから比較します。
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 不等价运算符也像等价运算符（`==`）一样，在比较不同类型的操作数时，会先进行隐式类型转换后再进行比较。
 - en: '[PRE33]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: そのため、不等価演算子（`!=`）は、利用するべきではありません。 代わりに暗黙的な型変換をしない厳密不等価演算子（`!==`）を利用します。
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，不等价运算符（`!=`）不应该使用。相反，应使用不进行隐式类型转换的严格不等价运算符（`!==`）。
 - en: '[](#more-than)*大なり演算子/より大きい（`>`）*'
+  id: totrans-117
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#more-than)*大于运算符/比...大（`>`）*'
 - en: '*大なり演算子は、左オペランドが右オペランドより大きいならば、`true`を返します。'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '*大于运算符是，如果左操作数大于右操作数，则返回`true`。'
 - en: '[PRE34]'
+  id: totrans-119
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: '[](#more-than-equal)*大なりイコール演算子/以上（`>=`）*'
+  id: totrans-120
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#more-than-equal)*大于等于运算符/比...大或等于（`>=`）*'
 - en: '*大なりイコール演算子は、左オペランドが右オペランドより大きいまたは等しいならば、`true`を返します。'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: '*大于等于运算符是，如果左操作数大于或等于右操作数，则返回`true`。'
 - en: '[PRE35]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: '[](#less-than)*小なり演算子/より小さい（`<`）*'
+  id: totrans-123
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#less-than)*小于运算符/比...小（`<`）*'
 - en: '*小なり演算子は、左オペランドが右オペランドより小さいならば、`true`を返します。'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '*小于运算符是，如果左操作数小于右操作数，则返回`true`。'
 - en: '[PRE36]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: '[](#less-than-equal)*小なりイコール演算子/以下（`<=`）*'
+  id: totrans-126
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#less-than-equal)*小于等于运算符/比...小或等于（`<=`）*'
 - en: '*小なりイコール演算子は、左オペランドが右オペランドより小さいまたは等しいならば、`true`を返します。'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '*小于等于运算符是，如果左操作数小于或等于右操作数，则返回`true`。'
 - en: '[PRE37]'
+  id: totrans-128
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: '[](#bit-operator)*ビット演算子*'
+  id: totrans-129
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#bit-operator)*位运算符*'
 - en: '*ビット演���子では、オペランドである数値を符号付き32ビット整数（`0`と`1`からなる32 個のビットの集合）として扱います。'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '*位运算符将操作数视为符号位32位整数（由`0`和`1`组成的32位集合）。'
 - en: たとえば、`1`という数値は符号付き32ビット整数のビットでは、`00000000000000000000000000000001` として表現されます。
     わかりやすく4ビットごとに区切ると `0000_0000_0000_0000_0000_0000_0000_0001` のような32ビットの集合となります。
     符号付き32ビット整数では、先頭の最上位ビット（一番左のビット）は符号を表し、`0`の場合は正の値、`1`の場合は負の値であることを示しています。
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，数值`1`在符号位32位整数的位表示中为`00000000000000000000000000000001`。为了便于理解，可以将其分为每4位一组，形成一个32位的集合，如`0000_0000_0000_0000_0000_0000_0000_0001`。
 - en: '![1の符号付き32bit 整数での表現](img/298ae64ae40417ba6ef446a8fec80f2b.png)'
+  id: totrans-132
   prefs: []
   type: TYPE_IMG
+  zh: '![1的符号位32位整数表示](img/298ae64ae40417ba6ef446a8fec80f2b.png)'
 - en: 符号付き32ビット整数では負の数値は、2の補数形式という形式で表現されます。 2の補数とは、それぞれのビットを反転して1ビットを足した値となります。
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 符号位32位整数中，负数以2的补码形式表示。2的补码是将每个位取反并加1的值。
 - en: たとえば、`-1` という数値の符号付き32ビット整数は、次のように2の補数で求められます。
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，数值`-1`的符号位32位整数可以通过以下方式计算2的补码。
 - en: 10 進数の`1`は、符号付き32ビット整数では`0000_0000_0000_0000_0000_0000_0000_0001`となる
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 10进制数`1`在符号位32位整数中表示为`0000_0000_0000_0000_0000_0000_0000_0001`。
 - en: '`0000_0000_0000_0000_0000_0000_0000_0001` の各ビットを反転すると `1111_1111_1111_1111_1111_1111_1111_1110`
     となる'
+  id: totrans-136
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将`0000_0000_0000_0000_0000_0000_0000_0001`的每个位取反后得到`1111_1111_1111_1111_1111_1111_1111_1110`。
 - en: これに1ビットを足すと `1111_1111_1111_1111_1111_1111_1111_1111` となる
+  id: totrans-137
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将1位加到`1111_1111_1111_1111_1111_1111_1111_1111`上。
 - en: これによって、`-1`の符号付き32ビット整数は `1111_1111_1111_1111_1111_1111_1111_1111` となります。
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，`-1`的符号位32位整数表示为`1111_1111_1111_1111_1111_1111_1111_1111`。
 - en: '![-1の符号付き32ビット整数での表現](img/68ca86456c854787fdff42f3f3afef06.png)'
+  id: totrans-139
   prefs: []
   type: TYPE_IMG
+  zh: '![-1的符号位32位整数表示](img/68ca86456c854787fdff42f3f3afef06.png)'
 - en: 符号付き32ビット整数で表現できる数値の範囲は、`1000_0000_0000_0000_0000_0000_0000_0000`から`0111_1111_1111_1111_1111_1111_1111_1111`までとなります。
     10 進数に直すと`-(2³¹)`（2の31 乗の負の数）から `(2³¹) - 1`（2の31 乗から1 引いた数）までとなります。 32ビットを超える数値については、32ビットをはみ出るビットが最上位（一番左）から順番に捨てられます。
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '*表示数值范围，符号位32位整数可以表示的数值范围是`1000_0000_0000_0000_0000_0000_0000_0000`到`0111_1111_1111_1111_1111_1111_1111_1111`。转换为十进制数是`-(2³¹)`（2的31次幂的负数）到`(2³¹)
+    - 1`（2的31次幂减1）。'
 - en: これから見ていくビット演算子はオペランドを符号付き32ビット整数として扱い、その演算結果を10 進数の数値として返します。
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来要查看的位运算符将操作数作为符号位32位整数处理，并以十进制数值返回运算结果。
 - en: '[](#bit-and)*ビット論理積（`&`）*'
+  id: totrans-142
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#bit-and)*位逻辑与（`&`)*'
 - en: '*ビット論理積演算子（`&`）はビットごとの**AND**演算した結果を返します。 AND 演算では、オペランドの各ビットがどちらも`1`の場合は`1`となり、それ以外の場合は`0`となります。'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '*位逻辑与运算符（`&`）返回各位**AND**运算的结果。AND运算中，如果操作数的每一位都是`1`，则结果为`1`；否则为`0`。'
 - en: 次のコードでは、10 進数の`15`と`9`をAND 演算しています。 `15`は、符号付き32ビット整数では`0000_0000_0000_0000_0000_0000_0000_1111`となります。
     `9`は、符号付き32ビット整数では`0000_0000_0000_0000_0000_0000_0000_1001`となります。 これらをAND 演算した結果は`0000_0000_0000_0000_0000_0000_0000_1001`となり、10
     進数の値である`9`を返します。
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，对十进制数`15`和`9`进行AND运算。`15`在符号位32位整数中是`0000_0000_0000_0000_0000_0000_0000_1111`。`9`在符号位32位整数中是`0000_0000_0000_0000_0000_0000_0000_1001`。进行AND运算后的结果是`0000_0000_0000_0000_0000_0000_0000_1001`，返回十进制数`9`。
 - en: '[PRE38]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: '[](#bit-or)*ビット論理和（`|`）*'
+  id: totrans-146
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#bit-or)*位逻辑或（`|`)*'
 - en: '*ビット論理和演算子（`|`）はビットごとの**OR**演算した結果を返します。 OR 演算では、オペランドの各ビットがどちらか片方でも`1`の場合は`1`となり、両方とも`0`の場合は`0`となります。'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '*位逻辑或运算符（`|`）返回各位**OR**运算的结果。OR运算中，如果操作数的任何一位是`1`，则结果为`1`；如果两位都是`0`，则结果为`0`。'
 - en: '[PRE39]'
+  id: totrans-148
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: '[](#bit-xor)*ビット排他的論理和（`^`）*'
+  id: totrans-149
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#bit-xor)*位排他逻辑或（`^`)*'
 - en: '*ビット排他的論理和演算子（`^`）はビットごとの**XOR**演算した結果を返します。 XOR 演算では、オペランドのビットが異なるなら`1`、両方とも同じなら`0`となります。'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '*位排他逻辑或运算符（`^`）返回各位**XOR**运算的结果。XOR运算中，如果操作数的位不同，则结果为`1`；如果相同，则结果为`0`。'
 - en: '[PRE40]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: '[](#bit-not)*ビット否定（`~`）*'
+  id: totrans-152
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#bit-not)*位否定（`~`)*'
 - en: '*単項演算子の否定演算子（`~`）はオペランドの各ビットを反転した値を返します。 これは1の補数として知られている値と同じものです。'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: '*单项运算符的否定运算符（`~`）返回操作数各位的反转值。这被称为1的补码值。'
 - en: 次のコードでは、10 進数で`15`を否定演算子（`~`）で各ビットを反転させた値を得ています。 `15` は `0000_0000_0000_0000_0000_0000_0000_1111`です。
     各ビットを反転させると`1111_1111_1111_1111_1111_1111_1111_0000`になり、10 進数では`-16` となります。
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，使用否定运算符（`~`）将十进制数`15`的每一位反转，得到的结果。`15`是`0000_0000_0000_0000_0000_0000_0000_1111`。反转每一位后变为`1111_1111_1111_1111_1111_1111_1111_0000`，十进制数为`-16`。
 - en: '[PRE41]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: '`~x`のように`x`をビット否定演算子で演算した結果は、`-(x + 1)`となります。 この性質を利用する形で、ビット否定演算子（`~`）はビット演算以外でも使われていることがあります。'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: '`~x`这样的`x`通过位否定运算符计算的结果是`-(x + 1)`。利用这一性质，位否定运算符（`~`）在位运算之外也有使用。'
 - en: 文字列（Stringオブジェクト）が持つ`indexOf`メソッドは、マッチする文字列を見つけて、そのインデックス（位置）を返すメソッドです。 この`indexOf`メソッドは、検索対象が見つからない場合には`-1`を返します。
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 字符串（String对象）的`indexOf`方法用于查找匹配的字符串，并返回其索引（位置）。如果找不到搜索对象，则`indexOf`方法返回`-1`。
 - en: '[PRE42]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: 否定演算子（`~`）は1の補数を返すため、`~(-1)`は`0`となります。
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 否定运算符（`~`）返回1的补码，因此`~(-1)`是`0`。
 - en: '[PRE43]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: JavaScriptでは`0`も、if 文では`false`として扱われます。 そのため、`~indexOfの結果`が`0`となるのは、その文字列が見つからなかった場合だけとなります。
     次のコードのように否定演算子（`~`）と`indexOf`メソッドを使ったイディオムが一部では使われていました。
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 在JavaScript中，`0`在if语句中被视为`false`。因此，`~indexOf的结果`只有在字符串找不到时才会是`0`。以下代码中，使用否定运算符（`~`）和`indexOf`方法的一些惯用用法。
 - en: '[PRE44]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: ES2015では、文字列（Stringオブジェクト）に`includes`メソッドが実装されました。 `includes`メソッドは指定した文字列が含まれているかを真偽値で返します。
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: ES2015为字符串（String对象）实现了`includes`方法。`includes`方法以真值返回指定的字符串是否包含在内。
 - en: '[PRE45]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: そのため、否定演算子（`~`）と`indexOf`メソッドを使ったイディオムは、`includes`メソッドに置き換えられます。
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，使用否定运算符（`~`）和`indexOf`方法的一些惯用用法可以替换为`includes`方法。
 - en: '[](#left-shift)*左シフト演算子（`<<`）*'
+  id: totrans-166
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#left-shift)*左移运算符（`<<`)*'
 - en: '*左シフト演算子は、数値である`num`を`bit`の数だけ左へシフトします。 左にあふれたビットは破棄され、`0`のビットを右から詰めます。'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '*左移运算符将数值`num`向左移动`bit`位。左移溢出的位被丢弃，并用`0`的位从右填充。'
 - en: '[PRE46]'
+  id: totrans-168
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: 次のコードでは、`9`を2ビット分だけ左へシフトしています。
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，将`9`向左移动2位。
 - en: '[PRE47]'
+  id: totrans-170
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: '[](#right-shift)*右シフト演算子（`>>`）*'
+  id: totrans-171
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#right-shift)*右移运算符（`>>`)*'
 - en: '*右シフト演算子は、数値である`num`を`bit`の数だけ右へシフトします。 右にあふれたビットは破棄され、左端のビットのコピーを左から詰めます。'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: '*右移运算符将数值`num`向右移动`bit`位。右移溢出的位被丢弃，并用左端的位复制填充。'
 - en: '[PRE48]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: 次のコードでは、`-9`を2ビット分だけ右へシフトしています。 左端のビットのコピーを使うため、常に符号は維持されます。
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，将`-9`向右移动2位。为了使用左端的位来复制，符号始终被保留。
 - en: '[PRE49]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: '[](#fill-zero-right-shift)*ゼロ埋め右シフト演算子（`>>>`）*'
+  id: totrans-176
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#fill-zero-right-shift)*零填充右移运算符（`>>>`)*'
 - en: '*ゼロ埋め右シフト演算子は、数値である`num`を`bit`の数だけ右へシフトするのは右シフト演算子（`>>`）と同じです。 異なる点としては右にあふれたビットは破棄され、`0`のビットを左から詰めます。'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '*零填充右移运算符将数值`num`向右移动`bit`位，与右移运算符（`>>`）相同。不同之处在于右移溢出的位被丢弃，并用`0`的位从左填充。'
 - en: 次のコードでは、`-9`を2ビット分だけゼロ埋め右シフトしています。 左端のビットは`0`となるため、常に正の値となります。
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，将`-9`向右移动2位。由于左端的位是`0`，因此始终是正数。
 - en: '[PRE50]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: '[](#assignment-operator)*代入演算子（`=`）*'
+  id: totrans-180
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#assignment-operator)*代入运算符（`=`)*'
 - en: '*代入演算子（`=`）は変数に対して値を代入します。 代入演算子については「変数と宣言」の章も参照してください。'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '*代入运算符（`=`）用于向变量赋值。有关代入运算符的更多信息，请参阅“变量与声明”章节。'
 - en: '[PRE51]'
+  id: totrans-182
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: また、代入演算子は二項演算子と組み合わせて利用できます。 `+=`、`-=`、`*=`、`/=`、`%=`、`<<=`、`>>=`、`>>>=`、`&=`、`^=`、`|=`、`**=`のように、演算した結果を代入できます。
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，代入运算符可以与二项运算符结合使用。例如，`+=`、`-=`、`*=`、`/=`、`%=`、`<<=`、`>>=`、`>>>=`、`&=`、`^=`、`|=`、`**=`等，可以将计算结果代入。
 - en: '[PRE52]'
+  id: totrans-184
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: '[](#destructuring-assignment)*[ES2015] 分割代入（Destructuring assignment）*'
+  id: totrans-185
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#destructuring-assignment)*[ES2015] 分割代入（Destructuring assignment)*'
 - en: '*今まで見てきた代入演算子は1つの変数に値を代入するものでした。 分割代入を使うことで、配列やオブジェクトの値を複数の変数へ同時に代入できます。 分割代入は短縮記法のひとつでES2015から導入された構文です。'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '*之前看到的代入运算符是将值代入一个变量的。使用分割代入可以将数组或对象的值同时代入多个变量。分割代入是ES2015引入的一种缩写语法。'
 - en: 分割代入は、代入演算子（`=`）を使うのは同じですが、左辺のオペランドが配列リテラルやオブジェクトリテラルとなります。
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 分割代入与代入运算符（`=`）使用相同，但左边的操作数是数组字面量或对象字面量。
 - en: 次のコードでは、右辺の配列の値を、左辺の配列リテラルの対応するインデックスに書かれた変数名へ代入します。
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，将右边的数组的值代入到左边数组字面量的相应索引处的变量名中。
 - en: '[PRE53]'
+  id: totrans-189
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: これは、次のように書いたのと同じ結果になります。
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 这与以下写法得到相同的结果。
 - en: '[PRE54]'
+  id: totrans-191
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: 同様にオブジェクトも分割代入に対応しています。 オブジェクトの場合は、右辺のオブジェクトのプロパティ値を、左辺に対忈するプロパティ名へ代入します。
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样，对象也支持分割代入。在对象的情况下，将右边的对象的属性值代入到左边的相应属性名中。
 - en: '[PRE55]'
+  id: totrans-193
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: これは、次のように書いたのと同��結果になります。
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 这与以下写法得到相同的结果。
 - en: '[PRE56]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: '[](#logical-operator)*論理演算子*'
+  id: totrans-196
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#logical-operator)*逻辑运算符*'
 - en: '*論理演算子は基本的に真偽値を扱う演算子でAND（かつ）、OR（または）、NOT（否定）を表現できます。'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '*逻辑运算符是基本处理真值运算的运算符，可以表示AND（且）、OR（或）、NOT（否定）。'
 - en: '[](#and-operator)*AND 演算子（`&&`）*'
+  id: totrans-198
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#and-operator)*AND 运算符（`&&`)*'
 - en: '*AND 演算子（`&&`）は、左辺の値の評価結果が`true`ならば、右辺の評価結果を返します。 一方で、左辺の値の評価結果が`false`ならば、そのまま左辺の値を返します。'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: '*AND 演算子（`&&`）は、左辺の値の評価結果が`true`ならば、右辺の評価結果を返します。 一方で、左辺の値の評価結果が`false`ならば、そのまま左辺の値を返します。'
 - en: '[PRE57]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: AND 演算子（`&&`）は、左辺の評価が`false`の場合、オペランドの右辺は評価されません。 次のように、左辺が`false`の場合は、右辺に書いた`console.log`関数自体が実行されません。
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: AND 演算子（`&&`）は、左辺の評価が`false`の場合、オペランドの右辺は評価されません。 次のように、左辺が`false`の場合は、右辺に書いた`console.log`関数自体が実行されません。
 - en: '[PRE58]'
+  id: totrans-202
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE58]'
 - en: このような値が決まった時点でそれ以上評価しないことを**短絡評価**と呼びます。
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: このような値が決まった時点でそれ以上評価しないことを**短絡評価**と呼びます。
 - en: また、AND 演算子は左辺を評価する際に、左辺を真偽値へと暗黙的な型変換をしてから判定します。 真偽値への暗黙的な型変換では、次に挙げる値は`false`へ変換されます。
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: また、AND 演算子は左辺を評価する際に、左辺を真偽値へと暗黙的な型変換をしてから判定します。 真偽値への暗黙的な型変換では、次に挙げる値は`false`へ変換されます。
 - en: '`false`'
+  id: totrans-205
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`false`'
 - en: '`undefined`'
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`undefined`'
 - en: '`null`'
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`null`'
 - en: '`0`'
+  id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0`'
 - en: '`0n`'
+  id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0n`'
 - en: '`NaN`'
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`NaN`'
 - en: '`""`（空文字列）'
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`""`（空文字列）'
 - en: 暗黙的な型変換によって`false`に変換されるこれらの値をまとめて**falsy**な値と呼びます。 falsyではない値は、`true`へと変換されます。
     `true`へと変換される値の種類は多いため、`false`へと変換されない値は`true`となることは覚えておくとよいです。 このオペランドを真偽値に変換してから評価するのはAND、OR、NOT
     演算子で共通の動作です。
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 暗黙的な型変換によって`false`に変換されるこれらの値をまとめて**falsy**な値と呼びます。 falsyではない値は、`true`へと変換されます。
+    `true`へと変換される値の種類は多いため、`false`へと変換されない値は`true`となることは覚えておくとよいです。 このオペランドを真偽値に変換してから評価するのはAND、OR、NOT
+    演算子で共通の動作です。
 - en: 次のように、AND 演算子（`&&`）は左辺を真偽値へと変換した結果が`true`の場合に、右辺の評価結果を返します。 つまり、左辺がfalsyの場合は、右辺は評価されません。
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のように、AND 演算子（`&&`）は左辺を真偽値へと変換した結果が`true`の場合に、右辺の評価結果を返します。 つまり、左辺がfalsyの場合は、右辺は評価されません。
 - en: '[PRE59]'
+  id: totrans-214
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE59]'
 - en: AND 演算子は、if 文と組み合わせて利用することが多い演算子です。
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: AND 演算子は、if 文と組み合わせて利用することが多い演算子です。
 - en: 次のように、`value`がString 型で **かつ** 値が`"str"`である場合という条件をひとつの式として書くことができます。
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のように、`value`がString 型で **かつ** 値が`"str"`である場合という条件をひとつの式として書くことができます。
 - en: '[PRE60]'
+  id: totrans-217
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE60]'
 - en: このときに、`value`がString 型でない場合は、その時点でif 文の条件式は`false`となります。 そのため、`value`がString
     型ではない場合は、AND 漮算子（`&&`）の右辺は評価されずに、if 文の中身も実行されません。
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: このときに、`value`がString 型でない場合は、その時点でif 文の条件式は`false`となります。 そのため、`value`がString
+    型ではない場合は、AND 演算子（`&&`）の右辺は評価されずに、if 文の中身も実行されません。
 - en: AND 演算子（`&&`）を使うと、if 文のネストに比べて短く書くことができます。
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: AND 演算子（`&&`）を使うと、if 文のネストに比べて短く書くことができます。
 - en: しかし、if 文が3 重 4 重にネストしているのは複雑なのと同様に、 AND 演算子やOR 演算子が3つ4つ連続すると複雑で読みにくいコードとなります。
     その場合は抽象化ができないかを検討するべきサインとなります。
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: しかし、if 文が3 重 4 重にネストしているのは複雑なのと同様に、 AND 演算子やOR 演算子が3つ4つ連続すると複雑で読みにくいコードとなります。
+    その場合は抽象化ができないかを検討するべきサインとなります。
 - en: '[](#or-operator)*OR 演算子（`||`）*'
+  id: totrans-221
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#or-operator)*OR 演算子（`||`）*'
 - en: '*OR 演算子（`||`）は、左辺の値の評価結果が`true`ならば、そのまま左辺の値を返します。 一方で、左辺の値の評価結果が`false`であるならば、右辺の評価結果を返します。'
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: '*OR 演算子（`||`）は、左辺の値の評価結果が`true`ならば、そのまま左辺の値を返します。 一方で、左辺の値の評価結果が`false`であるならば、右辺の評価結果を返します。'
 - en: '[PRE61]'
+  id: totrans-223
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE61]'
 - en: OR 演算子（`||`）は、左辺の評価が`true`の場合、オペランドの右辺を評価しません。 これは、AND 演算子（`&&`）と同様の短絡評価となるためです。
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: OR 演算子（`||`）は、左辺の評価が`true`の場合、オペランドの右辺を評価しません。 これは、AND 演算子（`&&`）と同様の短絡評価となるためです。
 - en: '[PRE62]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE62]'
 - en: また、OR 演算子は左辺を評価する際に、左辺を真偽値へと暗黙的な型変換をします。 次のように、OR 演算子は左辺がfalsyの場合には右辺の値を返します。
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: また、OR 演算子は左辺を評価する際に、左辺を真偽値へと暗黙的な型変換をします。 次のように、OR 演算子は左辺がfalsyの場合には右辺の値を返します。
 - en: '[PRE63]'
+  id: totrans-227
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE63]'
 - en: OR 演算子は、if 文と組み合わせて利用することが多い演算子です。
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: OR 演算子は、if 文と組み合わせて利用することが多い演算子です。
 - en: 次のように、`value`が`0`**または**`1`の場合にif 文の中身が実行されます。
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のように、`value`が`0`**または**`1`の場合にif 文の中身が実行されます。
 - en: '[PRE64]'
+  id: totrans-230
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE64]'
 - en: '[](#not-operator)*NOT 演算子（`!`）*'
+  id: totrans-231
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#not-operator)*NOT 演算子（`!`）*'
 - en: '*NOT 演算子（`!`）は、`オペランド`の評価結果が`true`ならば、`false`を返します。 一方で、`オペランド`の評価結果が`false`ならば、`true`を返します。
     つまり、オペランドの評価結果を反転した真偽値を返します。'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: '*NOT 演算子（`!`）は、`オペランド`の評価結果が`true`ならば、`false`を返します。 一方で、`オペランド`の評価結果が`false`ならば、`true`を返します。
+    つまり、オペランドの評価結果を反転した真偽値を返します。'
 - en: '[PRE65]'
+  id: totrans-233
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE65]'
 - en: NOT 演算子（`!`）もAND 演算子（`&&`）とOR 演算子（`||`）と同様に真偽値へと暗黙的な型変換します。 falsyである値は`true`へ変換され、falsyではない値は`false`へと変換されます。
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: NOT 演算子（`!`）もAND 演算子（`&&`）とOR 演算子（`||`）と同様に真偽値へと暗黙的な型変換します。 falsyである値は`true`へ変換され、falsyではない値は`false`へと変換されます。
 - en: '[PRE66]'
+  id: totrans-235
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE66]'
 - en: NOT 演算子は必ず真偽値を返すため、次のように2つNOT 演算子を重ねて真偽値へ変換するという使い方も見かけます。 たとえば、`!!falsyな値`のように2
     度反転すれば`false`になります。
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: NOT 演算子は必ず真偽値を返すため、次のように2つNOT 演算子を重ねて真偽値へ変換するという使い方も見かけます。 たとえば、`!!falsyな値`のように2
+    度反転すれば`false`になります。
 - en: '[PRE67]'
+  id: totrans-237
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE67]'
 - en: このようなケースの多くは、比較演算子���使うなどより明示的な方法で、真偽値を得ることができます。 安易に`!!`による変換に頼るよりは別の方法を探してみるのがいいでしょう。
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: このようなケースの多くは、比較演算子���使うなどより明示的な方法で、真偽値を得ることができます。 安易に`!!`による変換に頼るよりは別の方法を探してみるのがいいでしょう。
 - en: '[PRE68]'
+  id: totrans-239
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE68]'
 - en: '[](#nullish-coalescing-operator)*[ES2020] Nullish coalescing 演算子(`??`)*'
+  id: totrans-240
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#nullish-coalescing-operator)*[ES2020] Nullish coalescing 演算子(`??`)*'
 - en: '*Nullish coalescing 演算子(`??`)は、左辺の値が**nullish**であるならば、右辺の評価結果を返します。 **nullish**とは、評価結果が`null`または`undefined`となる値のことです。'
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Nullish coalescing 演算子(`??`)は、左辺の値が**nullish**であるならば、右辺の評価結果を返します。 **nullish**とは、評価結果が`null`または`undefined`となる値のことです。'
 - en: '[PRE69]'
+  id: totrans-242
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE69]'
 - en: Nullish coalescing 演算子(`??`)とOR 演算子（`||`）は、値のデフォルト値を指定する場合によく利用されています。 OR 演算子（`||`）は左辺がfalsyの場合に右辺を評価するため、意図しない結果となる場合があります。
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: Nullish coalescing 演算子(`??`)とOR 演算子（`||`）は、値のデフォルト値を指定する場合によく利用されています。 OR 演算子（`||`）は左辺がfalsyの場合に右辺を評価するため、意図しない結果となる場合があります。
 - en: 次のコードは、`inputValue`が未定義だった場合に、`value`に対するデフォルト値をOR 演算子（`||`）で指定しています。 `inputValue`が未定義(`undefined`)の場合は、意図したようにOR
     演算子（`||`）の右辺で指定した`42`が入ります。 しかし、`inputValue`が`0`という値であった場合は、`0`はfalsyであるため`value`には右辺の`42`が入ります。
     これでは`0`という値が扱えないため、意図しない動作となっています。
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードは、`inputValue`が未定義だった場合に、`value`に対するデフォルト値をOR 演算子（`||`）で指定しています。 `inputValue`が未定義(`undefined`)の場合は、意図したようにOR
+    演算子（`||`）の右辺で指定した`42`が入ります。 しかし、`inputValue`が`0`という値であった場合は、`0`はfalsyであるため`value`には右辺の`42`が入ります。
+    これでは`0`という値が扱えないため、意図しない動作となっています。
 - en: '[PRE70]'
+  id: totrans-245
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE70]'
 - en: この問題を解決するためにES2020でNullish coalescing 演算子(`??`)が導入されています。
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: この問題を解決するためにES2020でNullish coalescing 演算子(`??`)が導入されています。
 - en: Nullish coalescing 演算子(`??`)では、左辺がnullishの場合のみ、`value`に右辺で指定した`42`が入ります。 そのため、`inputValue`が`0`という値が入った場合は、`value`にはそのまま`inputValue`の値である`0`が入ります。
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: Nullish coalescing 演算子(`??`)では、左辺がnullishの場合のみ、`value`に右辺で指定した`42`が入ります。 そのため、`inputValue`が`0`という値が入った場合は、`value`にはそのまま`inputValue`の値である`0`が入ります。
 - en: '[PRE71]'
+  id: totrans-248
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE71]'
 - en: '[](#ternary-operator)*条件（三項）演算子（`?`と`:`）*'
+  id: totrans-249
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#ternary-operator)*条件（三項）演算子（`?`と`:`）*'
 - en: '*条件演算子（`?`と`:`）は三項をとる演算子であるため、三項演算子とも呼ばれます。'
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: '*条件演算子（`?`と`:`）は三項をとる演算子であるため、三項演算子とも呼ばれます。'
 - en: 条件演算子は`条件式`を評価した結果が`true`ならば、`Trueのとき処理する式`の評価結果を返します。 `条件式`が`false`である場合は、`Falseのとき処理する式`の評価結果を返します。
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 条件演算子は`条件式`を評価した結果が`true`ならば、`Trueのとき処理する式`の評価結果を返します。 `条件式`が`false`である場合は、`Falseのとき処理する式`の評価結果を返します。
 - en: '[PRE72]'
+  id: totrans-252
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE72]'
 - en: if 文との違いは、条件演算子は式として書くことができるため値を返すという点です。 たとえば、次のよう��`条件式`の評価結果により`"A"` または
     `"B"` どちらかを返します。
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: if 文との違いは、条件演算子は式として書くことができるため値を返すという点です。 たとえば、次のよう��`条件式`の評価結果により`"A"` または
+    `"B"` どちらかを返します。
 - en: '[PRE73]'
+  id: totrans-254
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE73]'
 - en: 条件分岐による値を返せるため、条件によって変数の初期値が違う場合などに使われます。
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 条件分岐による値を返せるため、条件によって変数の初期値が違う場合などに使われます。
 - en: 在下面的示例中，我们编写了一个函数，该函数将一个前缀字符串添加到`text`字符串的开头。如果第二个参数`prefix`被省略或者不是一个字符串，则会使用默认的`prefix`。如果省略了第二个参数，则`prefix`将被设为`undefined`。
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的示例中，我们编写了一个函数，该函数将一个前缀字符串添加到`text`字符串的开头。如果第二个参数`prefix`被省略或者不是一个字符串，则会使用默认的`prefix`。如果省略了第二个参数，则`prefix`将被设为`undefined`。
 - en: 条件运算符的评估结果会返回一个值，因此可以使用`const`进行声明和赋值。
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: 条件运算符的评估结果会返回一个值，因此可以使用`const`进行声明和赋值。
 - en: '[PRE74]'
+  id: totrans-258
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE74]'
 - en: 如果使用 if 语句，需要分开声明和赋值，因此无法使用`const`。
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果使用 if 语句，需要分开声明和赋值，因此无法使用`const`。
 - en: '[PRE75]'
+  id: totrans-260
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE75]'
 - en: '[](#group-operator)*分组运算符（`(`和`)`）*'
+  id: totrans-261
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[分组运算符（`(`和`)`）](https://wiki.example.org/group-operator)*分组运算符（`(`和`)`）*'
 - en: '*分组运算符是一种可以明确表示多个二元运算符组合的运算符的优先级的运算符。'
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: '*分组运算符是一种可以明确表示多个二元运算符组合的运算符的优先级的运算符。'
 - en: 例如，由于首先处理了由分组运算符括起来的部分，因此结果也会发生变化。
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，由于首先处理了由分组运算符括起来的部分，因此结果也会发生变化。
 - en: '[PRE76]'
+  id: totrans-264
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE76]'
 - en: '[运算符优先级](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#Table
     "运算符优先级 - JavaScript | MDN")由 ECMAScript 规范定义，但记住所有运算符的优先级是困难的。 在运算符优先级中，分组运算符的优先级较高，使用分组运算符可以明确优先级。'
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: '[运算符优先级](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#Table
+    "运算符优先级 - JavaScript | MDN")由 ECMAScript 规范定义，但记住所有运算符的优先级是困难的。 在运算符优先级中，分组运算符的优先级较高，使用分组运算符可以明确优先级。'
 - en: 让我们看看不使用分组运算符编写的代码。 当`x`为`true`或`y`和`z`均为`true`时进行处理。
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看不使用分组运算符编写的代码。 当`x`为`true`或`y`和`z`均为`true`时进行处理。
 - en: '[PRE77]'
+  id: totrans-267
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE77]'
 - en: 如果一个表达式中出现多种类型的运算符，往往会变得难以阅读。 在这种情况下，可以使用分组运算符并明确结合顺序进行编写。
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个表达式中出现多种类型的运算符，往往会变得难以阅读。 在这种情况下，可以使用分组运算符并明确结合顺序进行编写。
 - en: '[PRE78]'
+  id: totrans-269
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE78]'
 - en: 但是，与其在一个表达式中进行多个运算，不如将表达式本身分开可能更易读。
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，与其在一个表达式中进行多个运算，不如将表达式本身分开可能更易读。
 - en: 让我们考虑一下当`a`和`b`是字符串类型或者`x`和`y`是数值类型时的 if 语句。 虽然可以使用分组运算符直接编写为一个条件表达式，但这会使代码难以阅读。
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们考虑一下当`a`和`b`是字符串类型或者`x`和`y`是数值类型时的 if 语句。 虽然可以使用分组运算符直接编写为一个条件表达式，但这会使代码难以阅读。
 - en: '[PRE79]'
+  id: totrans-272
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE79]'
 - en: 与其勉强写成一个表达式（一行），不如将条件表达式分解并将每个结果定义为变量更易于阅读。
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: 与其勉强写成一个表达式（一行），不如将条件表达式分解并将每个结果定义为变量更易于阅读。
 - en: '[PRE80]'
+  id: totrans-274
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE80]'
 - en: 因此，与其使用分组运算符将所有条件组合在一起，不如将每个条件分解并赋予名称（作为变量定义）同样重要。
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，与其使用分组运算符将所有条件组合在一起，不如将每个条件分解并赋予名称（作为变量定义）同样重要。
 - en: '[](#comma-operator)*逗号运算符（`,`）*'
+  id: totrans-276
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[逗号运算符（`,`）](https://wiki.example.org/comma-operator)*逗号运算符（`,`）*'
 - en: '*逗号运算符（`,`）会依次评估用逗号（`,`）分隔的表达式， 并返回最后一个表达式的评估结果。'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: '*逗号运算符（`,`）会依次评估用逗号（`,`）分隔的表达式， 并返回最后一个表达式的评估结果。'
 - en: 在下面的示例中，将依次评估`expression1`、`expression2`和`expression3`，并返回`expression3`的评估结果。
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的示例中，将依次评估`expression1`、`expression2`和`expression3`，并返回`expression3`的评估结果。
 - en: '[PRE81]'
+  id: totrans-279
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE81]'
 - en: 到目前为止，我们已经看到，逗号分隔的概念也出现在使用`const`声明变量等地方。 在从左到右执行方面，逗号运算符的行为与其相同，但语法不同。
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们已经看到，逗号分隔的概念也出现在使用`const`声明变量等地方。 在从左到右执行方面，逗号运算符的行为与其相同，但语法不同。
 - en: '[PRE82]'
+  id: totrans-281
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE82]'
 - en: 通常情况下，很少会使用逗号运算符，因此只需知道“逗号分隔的表达式会从左到右进行评估”就可以了。^(1)
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常情况下，很少会使用逗号运算符，因此只需知道“逗号分隔的表达式会从左到右进行评估”就可以了。^(1)
 - en: '[](#conclusion)*总结*'
+  id: totrans-283
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[总结](https://wiki.example.org/conclusion)*总结*'
 - en: '*本章介绍了运算符。'
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: '*本章介绍了运算符。'
 - en: 运算符是用符号等表示常用运算操作的符号
+  id: totrans-285
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 运算符是用符号等表示常用运算操作的符号
 - en: 有各种类型的运算符，如四则运算和逻辑运算
+  id: totrans-286
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 有各种类型的运算符，如四则运算和逻辑运算
 - en: 运算符有优先级，可以通过分组运算符来明确
+  id: totrans-287
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 运算符有优先级，可以通过分组运算符来明确
 - en: ¹. 使用逗号运算符的技巧之一是间接调用。[`2ality.com/2014/01/eval.html`](https://2ality.com/2014/01/eval.html)
     ↩
+  id: totrans-288
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: ¹. 使用逗号运算符的技巧之一是间接调用。[2ality.com/2014/01/eval.html](https://2ality.com/2014/01/eval.html)
+    ↩

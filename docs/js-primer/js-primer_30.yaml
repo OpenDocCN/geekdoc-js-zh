@@ -1,195 +1,273 @@
 - en: JSON
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: 原文：[`jsprimer.net/basic/json/`](https://jsprimer.net/basic/json/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: この章では、JavaScriptと密接な関係にあるJSONというデータフォーマットについて見ていきます。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
 - en: '[](#what-is-json)*JSONとは*'
+  id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: '*JSONはJavaScript Object Notationの略で、JavaScriptのオブジェクトリテラルをベースに作られた軽量なデータフォーマットです。
     JSONの仕様は[ECMA-404](https://www.ecma-international.org/publications-and-standards/standards/ecma-404/)として標準化されています。
     JSONは、人間にとって読み書きが容易で、マシンにとっても簡単にパースや生成を行える形式になっています。 そのため、多くのプログラミング言語がJSONを扱う機能を備えています。'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
 - en: JSONはJavaScriptのオブジェクトリテラル、配列リテラル、各種プリミティブ型の値を組み合わせたものです。 ただしJSONとJavaScriptは一部の構文に違いがあります。
     たとえばJSONでは、オブジェクトリテラルのキーを必ずダブルクォートで囲まなければいけません。 また、小数点から書きはじめる数値リテラルや、先頭がゼロからはじまる数値リテラルも使えません。
     これらは機械がパースしやすくするために仕様で定められた制約です。
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-6
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: JSONの細かい仕様に関しては[json.orgの日本語ドキュメント](https://www.json.org/json-ja.html)にわかりやすくまとまっているので、参考にするとよいでしょう。
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: '[](#json-object)*`JSON`オブジェクト*'
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: '*JavaScriptでJSONを扱うには、ビルトインオブジェクトである[JSONオブジェクト](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON)を利用します。
     `JSON`オブジェクトはJSON 形式の文字列とJavaScriptのオブジェクトを相互に変換するための`parse`メソッドと`stringify`メソッドを提供します。'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: '[](#json-parse)*JSON 文字列をオブジェクトに変換する*'
+  id: totrans-10
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: '*[JSON.parseメソッド](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)は引数に与えられた文字列をJSONとしてパースし、その結果をJavaScriptのオブジェクトとして返す関数です。
     次のコードは簡単なJSON 形式の文字列をJavaScriptのオブジェクトに変換する例です。'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-12
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 文字列がJSONの配列を表す場合は、`JSON.parse`メソッドの返り値も配列になります。
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-14
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 与えられた文字列がJSON 形式でパースできない場合は例外が投げられます。 また、実際のアプリケーションでJSONを扱うのは、外部のプログラムとデータを交換する用途がほとんどです。
     外部のプログラムが送ってくるデータが常にJSONとして正しい保証はありません。 そのため、`JSON.parse`メソッドは基本的に`try...catch`構文で例外処理をするべきです。
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE3]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[](#json-format)*オブジェクトをJSON 文字列に変換する*'
+  id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: '*[JSON.stringifyメソッド](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)は第一引数に与えられたオブジェクトをJSON
     形式の文字列に変換して返す関数です。 HTTP 通信でサーバーにデータを送信するときや、 アプリケーションが保持している状態を外部に保存するときなどに必要になります。
     次のコードはJavaScriptのオブジェクトをJSON 形式の文字列に変換する例です。'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '`JSON.stringify`メソッドにはオプショナルな引数が2つあります。 第二引数はreplacer 引数とも呼ばれ、関数あるいは配列を渡せます。
     関数を渡した場合は引数にプロパティのキーと値が渡され、その返り値によって文字列に変換される際の挙動をコントロールできます。 次の例は値がnullであるプロパティを除外してJSONに変換するreplacer
     引数の例です。 replacer 引数の関数で`undefined`が返されたプロパティは、変換後のJSONに含まれなくなります。'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE5]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: replacer 引数に配列を渡した場合はプロパティの許可リストとして使われ、 その配列に含まれる名前のプロパティだけが変換されます。
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE6]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 第三引数はspace 引数とも呼ばれ、変換後のJSON 形式の文字列を読みやすくフォーマットする際のインデントを設定できます。 数値を渡すとその数値分の長さのスペースで、文字列を渡すとその文字列でインデントされます。
     次のコードはスペース2 個でインデントされたJSONを得る例です。
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE7]'
+  id: totrans-25
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: また、次のコードはタブ文字でインデントされたJSONを得る例です。
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE8]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[](#not-serialization-object)*JSONにシリアライズできないオブジェクト*'
+  id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: '*`JSON.stringify`メソッドはJSONで表現可能な値だけをシリアライズします。 そのため、値が関数や`Symbol`、あるいは`undefined`であるプロパティなどは変換されません。
     ただし、配列の値としてそれらが見つかったときには例外的に`null`に置き換えられます。 またキーが`Symbol`である場合にもシリアライズの対象外になります。
     代表的な変換の例を次の表とサンプルコードに示します。'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
 - en: '| シリアライズ前の値 | シリアライズ後の値 |'
+  id: totrans-30
   prefs: []
   type: TYPE_TB
 - en: '| --- | --- |'
+  id: totrans-31
   prefs: []
   type: TYPE_TB
 - en: '| 文字列・数値・真偽値 | 対応する値 |'
+  id: totrans-32
   prefs: []
   type: TYPE_TB
 - en: '| null | null |'
+  id: totrans-33
   prefs: []
   type: TYPE_TB
 - en: '| 配列 | 配列 |'
+  id: totrans-34
   prefs: []
   type: TYPE_TB
 - en: '| オブジェクト | オブジェクト |'
+  id: totrans-35
   prefs: []
   type: TYPE_TB
 - en: '| 関数 | 変換されない（配列のときはnull） |'
+  id: totrans-36
   prefs: []
   type: TYPE_TB
 - en: '| undefined | 変換されない（配列のときはnull） |'
+  id: totrans-37
   prefs: []
   type: TYPE_TB
 - en: '| Symbol | 変換されない（配列のときはnull） |'
+  id: totrans-38
   prefs: []
   type: TYPE_TB
 - en: '| RegExp | {} |'
+  id: totrans-39
   prefs: []
   type: TYPE_TB
 - en: '| Map, Set | {} |'
+  id: totrans-40
   prefs: []
   type: TYPE_TB
 - en: '| BigInt | 例外が発生する |'
+  id: totrans-41
   prefs: []
   type: TYPE_TB
 - en: '[PRE9]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: オブジェクトがシリアライズされる際は、そのオブジェクトの列挙可能なプロパティだけが再帰的にシリアライズされます。 `RegExp`や`Map`、`Set`などのインスタンスは列挙可能なプロパティを持たないため、空のオブジェクトに変換されます。
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: 此外，`JSON.stringify`方法有时会序列化失败。常见的情况是当尝试序列化具有循环引用的对象时，会引发异常。例如，如果递归遍历某个对象的属性，直到发现自身时，序列化将变得不可能。不仅仅是`JSON.parse`方法，`JSON.stringify`方法也要进行异常处理，以确保安全使用。
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，`JSON.stringify`方法有时会序列化失败。常见的情况是当尝试序列化具有循环引用的对象时，会引发异常。例如，如果递归遍历某个对象的属性，直到发现自身时，序列化将变得不可能。不仅仅是`JSON.parse`方法，`JSON.stringify`方法也要进行异常处理，以确保安全使用。
 - en: '[PRE10]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[](#serialization-by-toJSON)*使用`toJSON`方法进行序列化*'
+  id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#serialization-by-toJSON)*使用`toJSON`方法进行序列化*'
 - en: '*如果对象具有`toJSON`方法，则`JSON.stringify`方法将使用`toJSON`方法的返回值，而不是默认的字符串转换。就像下面的例子一样，它将递归地处理作为参数直接传递以及作为参数属性出现的情况。*'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '*如果对象具有`toJSON`方法，则`JSON.stringify`方法将使用`toJSON`方法的返回值，而不是默认的字符串转换。就像下面的例子一样，它将递归地处理作为参数直接传递以及作为参数属性出现的情况。*'
 - en: '[PRE11]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '`toJSON`方法被用于将自定义类以特殊格式进行序列化。'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '`toJSON`方法被用于将自定义类以特殊格式进行序列化。'
 - en: '[](#conclusion)*总结*'
+  id: totrans-50
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)*总结*'
 - en: '*在本章中，我们学习了关于 JSON 的知识。'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在本章中，我们学习了关于 JSON 的知识。'
 - en: JSON 是基于 JavaScript 对象文字的轻量级数据格式。
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: JSON 是基于 JavaScript 对象文字的轻量级数据格式。
 - en: 使用`JSON`对象进行序列化和反序列化。
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`JSON`对象进行序列化和反序列化。
 - en: 也有一些无法被序列化为 JSON 格式的对象。
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 也有一些无法被序列化为 JSON 格式的对象。
 - en: '`JSON.stringify`利用了要序列化的对象的`toJSON`方法**********'
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`JSON.stringify`利用了要序列化的对象的`toJSON`方法**********'

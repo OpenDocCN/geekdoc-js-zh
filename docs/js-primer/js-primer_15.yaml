@@ -1,192 +1,308 @@
 - en: 文と式
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 语句和表达式
 - en: 原文：[`jsprimer.net/basic/statement-expression/`](https://jsprimer.net/basic/statement-expression/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/statement-expression/`](https://jsprimer.net/basic/statement-expression/)
 - en: 本格的に基本文法について学ぶ前に、JavaScriptというプログラミング言語がどのような要素からできているかを見ていきましょう。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 在正式学习基本语法之前，先看看JavaScript这种编程语言是由哪些元素组成的。
 - en: JavaScriptは、**文**（Statement）と**式**（Expression）から構成されています。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript由**语句**（Statement）和**表达式**（Expression）组成。
 - en: '[](#expression)*式*'
+  id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#expression)*表达式*'
 - en: '***式**（Expression）を簡潔に述べると、値を生成し、変数に代入できるものを言います。'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: '***表达式**（Expression）可以简洁地描述为，可以生成值并可以赋值给变量的东西。'
 - en: '`42`のようなリテラルや`foo`といった変数、関数呼び出しが式です。 また、`1 + 1`のような式と演算子の組み合わせも式と呼びます。'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '`42`这样的字面量或`foo`这样的变量、函数调用是表达式。此外，`1 + 1`这样的表达式和运算符的组合也称为表达式。'
 - en: 式の特徴として、式を評価すると結果の値を得ることができます。 この結果の値を**評価値**と呼びます。
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 表达式的特征是，评估表达式可以得到结果值。这个结果值被称为**评估值**。
 - en: 評価した結果を変数に代入できるものは**式**であるという理解で問題ありません。
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以将评估结果赋值给变量的东西是**表达式**。
 - en: '[PRE0]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[](#statement)*文*'
+  id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#statement)*语句*'
 - en: '***文**（Statement）を簡潔に述べると、処理する1ステップが1つの文と言えます。 JavaScriptでは、文の末尾にセミコロン(`;`)を置くことで文と文に区切りをつけます。'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '**语句**（Statement）可以简洁地描述为，处理1个步骤的语句。在JavaScript中，通过在语句末尾放置分号(`;`)来分隔语句和语句。'
 - en: ソースコードとして書かれた文を上から処理していくことで、プログラムが実行されます。
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过从上到下处理源代码中的语句，程序被执行。
 - en: '[PRE1]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: たとえば、if 文やfor 文などが**文**と呼ばれるものです。 次のように、文の処理の一部として式を含むことがあります。
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，if语句或for语句等被称为**语句**的东西。有时，作为语句处理的一部分，可以包含表达式。
 - en: '[PRE2]'
+  id: totrans-15
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 一方、if 文などは文であり式にはなれません。
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，if语句等是语句，不是表达式。
 - en: '**式**ではないため、if 文を変数へ代入することはできません。 次のようなコードは構文として問題があるため、構文エラー（`SyntaxError`）となります。'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '**不是表达式**，因此不能将if语句赋值给变量。以下代码在语法上有问题，因此会导致语法错误（`SyntaxError`）。'
 - en: '[PRE3]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[](#expression-statement)*式文*'
+  id: totrans-19
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#expression-statement)*表达式语句*'
 - en: '*一方で、**式**（Expression）は**文**（Statement）になれます。文となった式のことを**式文**と呼びます。 基本的に文が書ける場所には式を書けます。'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '*另一方面，**表达式**（Expression）可以成为**语句**（Statement）。将变成语句的表达式称为**表达式语句**。基本上，可以在可以写语句的地方写表达式。'
 - en: その際に、**式文**（Expression statement）は文の一種であるため、セミコロンで文を区切っています。
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，**表达式语句**（Expression statement）是语句的一种，因此我们使用分号来分隔语句。
 - en: '[PRE4]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 式は文になれますが、先ほどのif 文のように文は式になれ���せん。
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 表达式可以变成语句，但像之前的if语句那样，语句不能变成表达式。
 - en: '[](#block-statement)*ブロック文*'
+  id: totrans-24
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#block-statement)*块语句*'
 - en: '*次のような、文を`{`と`}`で囲んだ部分を**ブロック**と言います。 ブロックには、複数の**文**が書けます。'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '*将以下用`{`和`}`包围的部分称为**块**。块中可以写多个**语句**。'
 - en: '[PRE5]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ブロック文は単独でも書けますが、基本的にはif 文やfor 文など他の構文と組み合わせて書くことがほとんどです。 次のコードでは、if 文とブロック文を組み合わせることで、if
     文の処理内容に複数の文を書いています。
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 块语句可以单独编写，但基本上与其他结构（如if语句或for语句）结合使用。以下代码通过将if语句和块语句结合使用，将多个语句写入if语句的处理内容中。
 - en: '[PRE6]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 文の末尾にはセミコロンをつけるとしていましたが、 例外として**ブロックで終わる文**の末尾には、セミコロンが不要となっています。
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 之前提到，在语句的末尾应该加上分号，但作为例外，**以块结束的语句**的末尾不需要分号。
 - en: '[PRE7]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[](#isolate-block-statement)*[コラム] 単独のブロック文の活用*'
+  id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#isolate-block-statement)*[专栏] 单独的块语句的应用*'
 - en: '*アプリケーションのソースコードにif 文などと組み合わせない単独のブロック文を書くことはほとんどありません。 しかし、REPLで同じコードの一部を変更して実行を繰り返している場合には、単独のブロック文が役に立つ機会もあります。'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在应用程序的源代码中，几乎不会单独编写if语句等与组合的块语句。但是，在REPL中重复执行相同代码的一部分时，单独的块语句有时也会很有用。'
 - en: REPLでは、次のように同じ変数名を再定義すると、構文エラーが発生します（詳細は「変数と宣言」の章の「`var`の問題」を参照）。 そのため、同じコードを再び実行するには、ブラウザでページをリロードして変数定義をリセットしないといけませんでした。
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 在REPL中，如果以相同变量名重新定义，将发生语法错误（详细信息请参考“变量与声明”章节中的“`var`的问题”）。因此，要再次执行相同的代码，必须通过在浏览器中重新加载页面来重置变量定义。
 - en: '[PRE8]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: この問題は単独のブロック文で変数定義を囲むことで回避できます。 ブロック文（`{}`）の中でletやconstを用いて変数を定義しても、そのブロック文の外には影響しません。
     そのため、次のようにブロック文で囲んでおけば、同じ変数名を定義しても構文エラー（`SyntaxError`）にはなりません。
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个问题可以通过使用单独的块语句来定义变量来避免。在块语句（`{}`）中使用let或const定义变量时，它不会影响块语句之外的内容。因此，可以通过以下方式使用块语句来避免相同的变量名定义导致的语法错误（`SyntaxError`）。
 - en: '[PRE9]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: これは、ブロックスコープという仕組みによるものですが、詳しい仕組みについては「関数とスコープ」の章で解説します。 今は、ブロック文を使うとREPLでの試行錯誤がしやすいということだけ知っていれば問題ありません。
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是由块作用域这种机制造成的，但具体的机制将在“函数与作用域”章节中解释。现在，只要知道使用块语句可以使REPL中的试错变得容易就可以了。
 - en: '[](#function-statement-and-function-expression)*関数宣言（文）と関数式*'
+  id: totrans-38
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#function-statement-and-function-expression)*函数声明（文）与函数表达式*'
 - en: '*「関数と宣言」の章において、関数を定義する方法を学びました。 functionキーワードから文を開始する**関数宣言**と、変数へ**関数式**を代入する方法があります。'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在“函数与声明”章节中，我们学习了定义函数的方法。可以从使用`function`关键字开始的**函数声明**和将**函数表达式**赋值给变量的方法开始。'
 - en: 関数宣言（文）と関数式は、どちらも`function`というキーワードを利用しています。
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数声明（文）和函数式都使用了`function`这个关键字。
 - en: '[PRE10]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: この文と式の違いを見ると、関数宣言文にはセミコロンがなく、関数式にはセミコロンがあります。 このような違いがなぜ生まれるのかは、ここまでの内容から説明できます。
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过观察语句和表达式的区别，可以看出函数声明语句没有分号，而函数式有分号。这种差异可以从前面的内容中解释。
 - en: 関数宣言（文）で定義した`learn`関数には、セミコロンがありません。 これは、**ブロックで終わる文**にはセミコロンが不要であるためです。
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用函数声明（文）定义的`learn`函数没有分号。这是因为**以块结束的语句**不需要分号。
 - en: 一方、関数式を`read`変数へ代入したものには、セミコロンがあります。
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，将函数式赋值给`read`变量时，有分号。
 - en: 「ブロックで終わる関数であるためセミコロンが不要なのでは？」と思うかもしれません。
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: “可能是因为以块结束的函数不需要分号吗？”你可能会有这样的疑问。
 - en: しかし、この無名関数は**式**であり、この処理は変数を宣言する文の一部であることがわかります。 つまり、次のように置き換えても同じと言えるため、末尾にセミコロンが必要となります。
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，这个匿名函数是**表达式**，并且可以看出这个处理是变量声明语句的一部分。换句话说，可以将其替换为以下内容，因此需要在末尾添加分号。
 - en: '[PRE11]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[](#statement-expression-summary)*まとめ*'
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#statement-expression-summary)*总结*'
 - en: '*この章では次のことについて学びました。'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在本章中，我们学习了以下内容。'
 - en: JavaScriptは**文**（Statement）と**式**（Expression）から構成される
+  id: totrans-50
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: JavaScript由**语句**（Statement）和**表达式**（Expression）组成
 - en: 文は式になれない
+  id: totrans-51
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 语句不能变成表达式
 - en: 式は文になれる（**式文**）
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 表达式可以变成语句（**表达式语句**）
 - en: 文の末尾にはセミコロンをつける
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 语句的末尾要加分号
 - en: ブロックで終わる文は例外的にセミコロンをつけなくてよい
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 以块结束的语句例外地不需要加分号
 - en: JavaScriptには、特殊なルールに基づき、セミコロンがない文も行末に自動でセミコロンが挿入されるという仕組みがあります。 しかし、この仕組みは構文を正しく解析できない場合に、セミコロンを足すという挙動を持っています。
     これにより、意図しない挙動を生むことがあります。そのため、必ず**文**の末尾にはセミコロンを書くようにします。
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript有一种基于特殊规则的机制，即使没有分号，也会在行末自动插入分号。但是，这个机制在无法正确解析语法的情况下，会插入分号，这可能会导致意外的行为。因此，建议始终在**语句**的末尾写上分号。
 - en: エディターやIDEの中にはセミコロンの入力の補助をしてくれるものや、[ESLint](https://eslint.org/ "ESLint - Pluggable
     JavaScript linter")などのLintツールを使うことで、 セミコロンが必要なのかをチェックできます。
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 编辑器或IDE中有些可以辅助输入分号，或者可以使用[ESLint](https://eslint.org/ "ESLint - 可插拔的JavaScript代码检查工具")等Lint工具来检查是否需要分号。
 - en: セミコロンが必要か見分けるにはある程度慣れが必要ですが、ツールを使って静的にチェックできます。 そのため、ツールなどの支援を受けて経験的に慣れていくこともよい方法と言えます。*******
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 要判断是否需要分号，需要一定程度的熟悉，但可以使用工具进行静态检查。因此，在工具等辅助下，通过经验逐渐熟悉也是一个好方法。*******

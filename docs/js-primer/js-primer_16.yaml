@@ -1,261 +1,419 @@
 - en: 条件分岐
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 条件分岐
 - en: 原文：[`jsprimer.net/basic/condition/`](https://jsprimer.net/basic/condition/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/condition/`](https://jsprimer.net/basic/condition/)
 - en: この章ではif 文やswitch 文を使った条件分岐について学んでいきます。 条件分岐を使うことで、特定の条件を満たすかどうかで行う処理を変更できます。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: この章ではif 文やswitch 文を使った条件分岐について学んでいきます。 条件分岐を使うことで、特定の条件を満たすかどうかで行う処理を変更できます。
 - en: '[](#if-statement)*if 文*'
+  id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#if-statement)*if 文*'
 - en: '*if 文を使うことで、プログラム内に条件分岐を書けます。'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*if 文を使うことで、プログラム内に条件分岐を書けます。'
 - en: if 文は次のような構文が基本形となります。 `条件式`の評価結果が`true`であるならば、`実行する文`が実行されます。
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: if 文は次のような構文が基本形となります。 `条件式`の評価結果が`true`であるならば、`実行する文`が実行されます。
 - en: '[PRE0]'
+  id: totrans-6
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 次のコードでは`条件式`が`true`であるため、ifの中身が実行されます。
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは`条件式`が`true`であるため、ifの中身が実行されます。
 - en: '[PRE1]'
+  id: totrans-8
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '`実行する文`が1つのみの場合は、`{` と `}` のブロックを省略できます。 しかし、どこまでがif 文かがわかりにくくなるため、常にブロックで囲むことを推奨します。'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '`実行する文`が1つのみの場合は、`{` と `}` のブロックを省略できます。 しかし、どこまでがif 文かがわかりにくくなるため、常にブロックで囲むことを推奨します。'
 - en: '[PRE2]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: if 文は`条件式`に比較演算子などを使い、その比較結果によって処理を分岐するためによく使われます。 次のコードでは、`x`が`10`よりも大きな値である場合に、if
     文の中身が実行されます。
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: if 文は`条件式`に比較演算子などを使い、その比較結果によって処理を分岐するためによく使われます。 次のコードでは、`x`が`10`よりも大きな値である場合に、if
+    文の中身が実行されます。
 - en: '[PRE3]'
+  id: totrans-12
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: if 文の`条件式`には`true`または`false`といった真偽値以外の値も指定できます。 真偽値以外の値の場合、その値を暗黙的に真偽値へ変換してから、条件式として判定します。
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: if 文の`条件式`には`true`または`false`といった真偽値以外の値も指定できます。 真偽値以外の値の場合、その値を暗黙的に真偽値へ変換してから、条件式として判定します。
 - en: 真偽値へ変換すると`true`となる値の種類は多いため、逆に変換した結果が`false`となる値を覚えるのが簡単です。 次の値は真偽値へと変換すると`false`となるため、これらは**falsy**な値と呼ばれます（「暗黙的な型変換」の章を参照）。
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 真偽値へ変換すると`true`となる値の種類は多いため、逆に変換した結果が`false`となる値を覚えるのが簡単です。 次の値は真偽値へと変換すると`false`となるため、これらは**falsy**な値と呼ばれます（「暗黙的な型変換」の章を参照）。
 - en: '`false`'
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`false`'
 - en: '`undefined`'
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`undefined`'
 - en: '`null`'
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`null`'
 - en: '`0`'
+  id: totrans-18
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0`'
 - en: '`0n`'
+  id: totrans-19
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0n`'
 - en: '`NaN`'
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`NaN`'
 - en: '`""`（空文字列）'
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`""`（空文字列）'
 - en: falsyではない値は、`true`へと変換されます。 そのため、`"文字列"`や0 以外の数値などを`条件式`に指定した場合は、`true`へと変換してから条件式として判定します。
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: falsyではない値は、`true`へと変換されます。 そのため、`"文字列"`や0 以外の数値などを`条件式`に指定した場合は、`true`へと変換してから条件式として判定します。
 - en: 次のコードは、条件式が`true`へと変換されるため、if 文の中身が実行されます。
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードは、条件式が`true`へと変換されるため、if 文の中身が実行されます。
 - en: '[PRE4]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: falsyな値を`条件式`に指定した場合は、`false`へと変換されます。 次のコードは、条件式が`false`へと変換されるため、if 文の中身は実行されません。
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: falsyな値を`条件式`に指定した場合は、`false`へと変換されます。 次のコードは、条件式が`false`へと変換されるため、if 文の中身は実行されません。
 - en: '[PRE5]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[](#else-if-statement)*else if 文*'
+  id: totrans-27
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#else-if-statement)*else if 文*'
 - en: '*複数の条件分岐を書く場合は、if 文に続けてelse if 文を使うことで書けます。 たとえば、次の3つの条件分岐するプログラムを考えます。'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '*複数の条件分岐を書く場合は、if 文に続けてelse if 文を使うことで書けます。 たとえば、次の3つの条件分岐するプログラムを考えます。'
 - en: '`version` が `"ES5"` ならば `"ECMAScript 5"` と出力'
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`version` が `"ES5"` ならば `"ECMAScript 5"` と出力'
 - en: '`version` が `"ES6"` ならば `"ECMAScript 2015"` と出力'
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`version` が `"ES6"` ならば `"ECMAScript 2015"` と出力'
 - en: '`version` が `"ES7"` ならば `"ECMAScript 2016"` と出力'
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`version` が `"ES7"` ならば `"ECMAScript 2016"` と出力'
 - en: 次のコードでは、if 文とelse if 文を使うことで3つの条件を書いています。 変数`version`の値が`"ES6"`であるため、コンソールには`"ECMAScript
     2015"`が出力されます。
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、if 文とelse if 文を使うことで3つの条件を書いています。 変数`version`の値が`"ES6"`であるため、コンソールには`"ECMAScript
+    2015"`が出力されます。
 - en: '[PRE6]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '[](#else-statement)*else 文*'
+  id: totrans-34
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#else-statement)*else 文*'
 - en: '*if 文とelse if 文では、条件に一致した場合の処理をブロック内に書いていました。 一方で条件に一致しなかった場合の処理は、else 文を使うことで書けます。'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '*if 文とelse if 文では、条件に一致した場合の処理をブロック内に書いていました。 一方で条件に一致しなかった場合の処理は、else 文を使うことで書けます。'
 - en: 次のコードでは、変数`num`の数値が10より大きいかを判定しています。 `num`の値は10 以下であるため、else 文で書いた処理が実行されます。
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、変数`num`の数値が10より大きいかを判定しています。 `num`の値は10 以下であるため、else 文で書いた処理が実行されます。
 - en: '[PRE7]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[](#nested-if-statement)*ネストしたif 文*'
+  id: totrans-38
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#nested-if-statement)*ネストしたif 文*'
 - en: '*if 文、else if 文、else 文はネストして書けます。 次のように複数の条件を満たすかどうかをif 文のネストとして表現できます。'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '*if 文、else if 文、else 文はネストして書けます。 次のように複数の条件を満たすかどうかをif 文のネストとして表現できます。'
 - en: '[PRE8]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ネストしたif 文���例として、今年がうるう年かを判定してみましょう。
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: ネストしたif 文���例として、今年がうるう年かを判定してみましょう。
 - en: うるう年の条件は次のとおりです。
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: うるう年の条件は次のとおりです。
 - en: 西暦で示した年が4で割り切れる年はうるう年です
+  id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 西暦で示した年が4で割り切れる年はうるう年です
 - en: ただし、西暦で示した年が100で割り切れる年はうるう年ではありません
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ただし、西暦で示した年が100で割り切れる年はうるう年ではありません
 - en: ただし、西暦で示した年が400で割り切れる年はうるう年です
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ただし、西暦で示した年が400で割り切れる年はうるう年です
 - en: 西暦での現在の年は `new Date().getFullYear();` で取得できます。 このうるう年の条件をif 文で表現すると次のように書けます。
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 西暦での現在の年は `new Date().getFullYear();` で取得できます。 このうるう年の条件をif 文で表現すると次のように書けます。
 - en: '[PRE9]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 条件を上から順に書き下したため、ネストが深い文となってしまっています。 一般的にはネストは浅いほうが、読みやすいコードとなります。
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 条件を上から順に書き下したため、ネストが深い文となってしまっています。 一般的にはネストは浅いほうが、読みやすいコードとなります。
 - en: 条件を少し読み解くと、400で割り切れる年は無条件にうるう年であることがわかります。 そのため、条件を並び替えることで、ネストするif 文なしに書くことができます。
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 条件を少し読み解くと、400で割り切れる年は無条件にうるう年であることがわかります。 そのため、条件を並び替えることで、ネストするif 文なしに書くことができます。
 - en: '[PRE10]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[](#switch-statement)*switch 文*'
+  id: totrans-51
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#switch-statement)*switch 文*'
 - en: '*switch 文は、次のような構文で`式`の評価結果が指定した値である場合に行う処理を並べて書きます。'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '*switch 文は、次のような構文で`式`の評価結果が指定した値である場合に行う処理を並べて書きます。'
 - en: '[PRE11]'
+  id: totrans-53
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: switch 文はif 文と同様に`式`の評価結果に基づく条件分岐を扱います。 またbreak 文は、switch 文から抜けてswitch 文の次の文から実行するためのものです。
     次のコードでは、`version`の評価結果は`"ES6"`となるため、`case "ES6":`に続く文が実行されます。
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: switch 文はif 文と同様に`式`の評価結果に基づく条件分岐を扱います。 またbreak 文は、switch 文から抜けてswitch 文の次の文から実行するためのものです。
+    次のコードでは、`version`の評価結果は`"ES6"`となるため、`case "ES6":`に続く文が実行されます。
 - en: '[PRE12]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: これはif 文で次のように書いた場合と同じ結果になります。
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: これはif 文で次のように書いた場合と同じ結果になります。
 - en: '[PRE13]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: switch 文はやや複雑な仕組みであるため、どのように処理されているかを見ていきます。 まず `switch (式)` の`式`を評価します。
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: switch 文はやや複雑な仕組みであるため、どのように処理されているかを見ていきます。 まず `switch (式)` の`式`を評価します。
 - en: '[PRE14]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 次に`式`の評価結果が厳密等価演算子（`===`）で一致するラベルを探索します。 一致するラベルが存在する場合は、そのcase 節を実行します。 一致する`ラベル`が存在しない場合は、default
     節が実行されます。
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 次に`式`の評価結果が厳密等価演算子（`===`）で一致するラベルを探索します。 一致するラベルが存在する場合は、そのcase 節を実行します。 一致する`ラベル`が存在しない場合は、default
+    節が実行されます。
 - en: '[PRE15]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '[](#break-statement)*break 文*'
+  id: totrans-62
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#break-statement)*break 文*'
 - en: '*switch 文のcase 節では基本的に`break;`を使ってswitch 文を抜けるようにします。 この`break;`は省略が可能ですが、省略した場合、後ろに続くcase
     節が条件に関係なく実行されます。'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '*switch 文のcase 節では基本的に`break;`を使ってswitch 文を抜けるようにします。 この`break;`は省略が可能ですが、省略した場合、後ろに続くcase
+    節が条件に関係なく実行されます。'
 - en: '[PRE16]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: このように`break;`を忘れてしまうと意図しないcase 節が実行されてしまいます。 そのため、case 節とbreak 文が多用されているswitch
     文が出てきた場合、 別の方法で書けないかを考えるべきサインとなります。
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: このように`break;`を忘れてしまうと意図しないcase 節が実行されてしまいます。 そのため、case 節とbreak 文が多用されているswitch
+    文が出てきた場合、 別の方法で書けないかを考えるべきサインとなります。
 - en: switch 文はif 文の代用として使うのではなく、次のように関数と組み合わせて条件に対する値を返すパターンとして使うことが多いです。 関数については「関数と宣言」の章を参照してください。
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: switch 文はif 文の代用として使うのではなく、次のように関数と組み合わせて条件に対する値を返すパターンとして使うことが多いです。 関数については「関数と宣言」の章を参照してください。
 - en: '[PRE17]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[](#conclusion)*まとめ*'
+  id: totrans-68
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)*まとめ*'
 - en: '*この章では条件分岐について学びました。'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '*この章では条件分岐について学びました。'
 - en: if 文、else if 文、else 文で条件分岐した処理を扱える
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: if 文、else if 文、else 文で条件分岐した処理を扱える
 - en: 条件式に指定した値は真偽値へと変換してから判定される
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 条件式に指定した値は真偽値へと変換してから判定される
 - en: 真偽値に変換すると`false`となる値をfalsyと呼ぶ
+  id: totrans-72
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 真偽値に変換すると`false`となる値をfalsyと呼ぶ
 - en: switch 文とcase 節、default 節を組み合わせて条件分岐した処理を扱える
+  id: totrans-73
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: switch 文とcase 節、default 節を組み合わせて条件分岐した処理を扱える
 - en: case 節でbreak 文を省略した場合は、後ろに続くcase 節が実行される。
+  id: totrans-74
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在case语句中省略了break语句的情况下，将执行其后的case语句。
 - en: 条件分岐にはif 文やswitch 文を利用します。複雑な条件を定義する場合には、if 文のネストが深くなりやすいです。そのような場合には、条件式自体を見直してよりシンプルな条件にできないかを考えてみることも重要です。
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 条件分支可以使用if语句或switch语句。在定义复杂条件的情况下，if语句的嵌套可能会变得很深。在这种情况下，重新审视条件表达式，考虑是否可以将其简化为更简单的条件，也是很重要的。

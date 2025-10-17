@@ -1,341 +1,538 @@
 - en: 引言
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 引言
 - en: 原文：[`jsprimer.net/intro/`](https://jsprimer.net/intro/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/intro/`](https://jsprimer.net/intro/)
 - en: '[](#do)*本书的目的*'
+  id: totrans-2
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#do)*本书的目的*'
 - en: '*本书的目的是学习 JavaScript 这门编程语言。 通过从头开始阅读，您可以学习 JavaScript 的语法和功能。'
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: '*本书的目的是学习 JavaScript 这门编程语言。 通过从头开始阅读，您可以学习 JavaScript 的语法和功能。'
 - en: 学习 JavaScript 的语法等写法也很重要，但了解实际使用方法也是目的。 这是因为，要阅读或编写 JavaScript 代码，仅仅了解语法是不够的。
     因此，在第一部分：基本语法中，我们不仅涉及语法，还提到了实际用法；在第二部分：用例中，我们通过小型应用程序示例介绍了实际用法。
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 学习 JavaScript 的语法等写法也很重要，但了解实际使用方法也是目的。 这是因为，要阅读或编写 JavaScript 代码，仅仅了解语法是不够的。
+    因此，在第一部分：基本语法中，我们不仅涉及语法，还提到了实际用法；在第二部分：用例中，我们通过小型应用程序示例介绍了实际用法。
 - en: JavaScript 是一种不断变化的语言，语言本身以及周围的开发环境也在不断变化。 本书的目的是为了掌握能够适应围绕 JavaScript 的变化的基础知识。
     因此，我们将重点放在为什么不起作用以及如何解决问题上，而不仅仅是学习语法。
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript 是一种不断变化的语言，语言本身以及周围的开发环境也在不断变化。 本书的目的是为了掌握能够适应围绕 JavaScript 的变化的基础知识。
+    因此，我们将重点放在为什么不起作用以及如何解决问题上，而不仅仅是学习语法。
 - en: '[](#do-not)*本书的目的不在于*'
+  id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#do-not)*本书的目的不在于*'
 - en: '*无法通过一本书学会 JavaScript 的所有内容。 这是因为 JavaScript 的应用范围非常广泛。 因此，我们将明确列出本书不涉及的内容（非目的）。'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '*无法通过一本书学会 JavaScript 的所有内容。 这是因为 JavaScript 的应用范围非常广泛。 因此，我们将明确列出本书不涉及的内容（非目的）。'
 - en: 本书不旨在与其他编程语言进行比较
+  id: totrans-8
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 本书不旨在与其他编程语言进行比较
 - en: 本书不旨在学习 Web 浏览器
+  id: totrans-9
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 本书不旨在学习 Web 浏览器
 - en: 不是为了学习 Node.js
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不是为了学习 Node.js
 - en: JavaScript 的所有语法和功能并非本书的目的
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: JavaScript 的所有语法和功能并非本书的目的
 - en: 本书不旨在成为 JavaScript 的参考资料
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 本书不旨在成为 JavaScript 的参考资料
 - en: 本书的目标不是学习 JavaScript 库或框架的使用方法
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 本书的目标不是学习 JavaScript 库或框架的使用方法
 - en: 阅读本书并不意味着您可以立即创造出什么。
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 阅读本书并不意味着您可以立即创造出什么。
 - en: 本书的目的不是涵盖所有语法和功能，就像参考[MDN Web Docs](https://developer.mozilla.org/ja/)（MDN）一样，JavaScript
     和浏览器的 API 已经有了很好的参考资料。
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的目的不是涵盖所有语法和功能，就像参考[MDN Web Docs](https://developer.mozilla.org/ja/)（MDN）一样，JavaScript
+    和浏览器的 API 已经有了很好的参考资料。
 - en: 本书不旨在教授库的使用方法或特定应用程序的创建方法。 我们建议您从库的文档或现有应用程序中学习这些内容。 当然，您也可以阅读有关库或应用程序的其他书籍。
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书不旨在教授库的使用方法或特定应用程序的创建方法。 我们建议您从库的文档或现有应用程序中学习这些内容。 当然，您也可以阅读有关库或应用程序的其他书籍。
 - en: 本书将帮助您理解那些库和应用程序运行所需的机制。 精心设计的库和应用程序看起来可能像魔法一样。 实际上，它们是在某种机制的基础上构建的，然后作为库或应用程序运行。
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书将帮助您理解那些库和应用程序运行所需的机制。 精心设计的库和应用程序看起来可能像魔法一样。 实际上，它们是在某种机制的基础上构建的，然后作为库或应用程序运行。
 - en: 虽然不会详细解释具体机制，但会帮助您意识到这些机制的存在并理解。
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然不会详细解释具体机制，但会帮助您意识到这些机制的存在并理解。
 - en: '[](#who-read)*谁应该阅读本书*'
+  id: totrans-19
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#who-read)*谁应该阅读本书*'
 - en: '*本书旨在让有编程经验的人学习 JavaScript 这门语言。 因此，对于第一次学习编程语言的人来说，可能会有一些困难。 但是，由于书中实际上是通过运行程序来学习的，因此即使是编程新手也可以尝试挑战。'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '*本书旨在让有编程经验的人学习 JavaScript 这门语言。 因此，对于第一次学习编程语言的人来说，可能会有一些困难。 但是，由于书中实际上是通过运行程序来学习的，因此即使是编程新手也可以尝试挑战。'
 - en: 即使您已经写过 JavaScript，但对最近的 JavaScript 不太了解的人也是本书的读者对象。 2015 年，JavaScript 经历了名为
     ECMAScript 2015 的规范的重大变化。 本书是基于 ECMAScript 2015 的 JavaScript 入门书籍，并在必要时介绍了与以前写法的不同之处。
     因此，即使对新的写法或不了解与以前有何不同的情况，本书也会有所帮助。
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使您已经写过 JavaScript，但对最近的 JavaScript 不太了解的人也是本书的读者对象。 2015 年，JavaScript 经历了名为
+    ECMAScript 2015 的规范的重大变化。 本书是基于 ECMAScript 2015 的 JavaScript 入门书籍，并在必要时介绍了与以前写法的不同之处。
+    因此，即使对新的写法或不了解与以前有何不同的情况，本书也会有所帮助。
 - en: 本书认真对待 JavaScript 的规范。 尽管这是一本入门书，但我们避免极端简化和不准确的内容。 因此，即使是 JavaScript 专家，阅读本书也应该有所发现。
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书认真对待 JavaScript 的规范。 尽管这是一本入门书，但我们避免极端简化和不准确的内容。 因此，即使是 JavaScript 专家，阅读本书也应该有所发现。
 - en: '[](#features)*本书的特点*'
+  id: totrans-23
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#features)*本书的特点*'
 - en: '*简要介绍本书的特点*'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '*简要介绍本书的特点*'
 - en: 当 ECMAScript 2015 规范进行了重大更新时，JavaScript 的写法和功能大大增加。 这使得 JavaScript 看起来与以往的语言有很大不同。
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 ECMAScript 2015 规范进行了重大更新时，JavaScript 的写法和功能大大增加。 这使得 JavaScript 看起来与以往的语言有很大不同。
 - en: 本书是基于更新后的 ECMAScript 2015 编写的。 如果要学习 JavaScript，最好以更新后的 ECMAScript 2015 为前提，因为这样更容易学习。
     本书基于 ECMAScript 2015，同时覆盖了截至目前的最新版本 ECMAScript 2023。
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书是基于更新后的 ECMAScript 2015 编写的。 如果要学习 JavaScript，最好以更新后的 ECMAScript 2015 为前提，因为这样更容易学习。
+    本书基于 ECMAScript 2015，同时覆盖了截至目前的最新版本 ECMAScript 2023。
 - en: 此外，现代 Web 浏览器支持 ECMAScript 2015。 因此，在学习过程中，本书可能不会介绍旧的写法，因为这些写法可能已经不再需要。 但是，对于阅读现有代码时，了解旧的写法仍然是必要的，因此我们会介绍常见情况。
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，现代 Web 浏览器支持 ECMAScript 2015。 因此，在学习过程中，本书可能不会介绍旧的写法，因为这些写法可能已经不再需要。 但是，对于阅读现有代码时，了解旧的写法仍然是必要的，因此我们会介绍常见情况。
 - en: 但是，本书没有涉及即将出现的 JavaScript 新功能。 这是因为这些是未来的事情，因此有很多不确定性，而且无法预测实际的使用方式。 本书的目的是在学习基础知识的同时不要偏离实际用例。
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，本书没有涉及即将出现的 JavaScript 新功能。 这是因为这些是未来的事情，因此有很多不确定性，而且无法预测实际的使用方式。 本书的目的是在学习基础知识的同时不要偏离实际用例。
 - en: 本书的文本和源代码作为开源项目在 GitHub 的[asciidwango/js-primer](https://github.com/asciidwango/js-primer)上公开。
     此外，由于书籍内容在[jsprimer.net](https://jsprimer.net/)上公开，因此可以在 Web 浏览器中阅读。 在 Web 版本中，您可以即时运行示例代码并��习
     JavaScript。
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的文本和源代码作为开源项目在 GitHub 的[asciidwango/js-primer](https://github.com/asciidwango/js-primer)上公开。
+    此外，由于书籍内容在[jsprimer.net](https://jsprimer.net/)上公开，因此可以在 Web 浏览器中阅读。 在 Web 版本中，您可以即时运行示例代码并学习
+    JavaScript。
 - en: 由于书籍内容在 Web 上公开，因此在需要共享书籍内容时可以提供 URL。 此外，书籍内容和示例代码在以下许可范围内可自由使用。
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于书籍内容在 Web 上公开，因此在需要共享书籍内容时可以提供 URL。 此外，书籍内容和示例代码在以下许可范围内可自由使用。
 - en: '[](#license)*许可*'
+  id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#license)*许可*'
 - en: '*本书中的所有源代码均以[MIT 许可证](https://github.com/asciidwango/js-primer/blob/master/LICENSE-MIT)提供为基础的开源软件。
     此外，本书的文本以[知识共享署名 4.0](https://github.com/asciidwango/js-primer/blob/master/LICENSE-CC-BY)（CC
     BY 4.0）许可证提供。 只要遵循版权声明，您就可以在一定程度上自由使用这两种许可证。'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '*本书中的所有源代码均以[MIT 许可证](https://github.com/asciidwango/js-primer/blob/master/LICENSE-MIT)提供为基础的开源软件。
+    此外，本书的文本以[知识共享署名 4.0](https://github.com/asciidwango/js-primer/blob/master/LICENSE-CC-BY)（CC
+    BY 4.0）许可证提供。 只要遵循版权声明，您就可以在一定程度上自由使用这两种许可证。'
 - en: 有关详细信息，请参阅[许可证信息](https://github.com/asciidwango/js-primer/blob/master/README.md#license)。
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 有关详细信息，请参阅[许可证信息](https://github.com/asciidwango/js-primer/blob/master/README.md#license)。
 - en: '[](#print-version)*关于书籍版*'
+  id: totrans-34
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#print-version)*关于书籍版*'
 - en: '*这本书由[AsciiDwango](https://asciidwango.jp/)出版。 您可以从以下页面购买书籍版。'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这本书由[AsciiDwango](https://asciidwango.jp/)出版。 您可以从以下页面购买书籍版。'
 - en: '物理书籍和 Kindle: [JavaScript Primer 修订 2 版 迷你入门书 | azu, Suguru Inatomi |书 | 网购
     | 亚马逊](https://www.amazon.co.jp/dp/4048931105/)'
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '物理书籍和 Kindle: [JavaScript Primer 修订 2 版 迷你入门书 | azu, Suguru Inatomi |书 | 网购
+    | 亚马逊](https://www.amazon.co.jp/dp/4048931105/)'
 - en: 'PDF 和 epub: [JavaScript Primer 迷你入门书【委托】 - 達人出版会](https://tatsu-zine.com/books/javascript-primer)
     （截至 2023 年 06 月 03 日仍为初版）'
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 'PDF 和 epub: [JavaScript Primer 迷你入门书【委托】 - 達人出版会](https://tatsu-zine.com/books/javascript-primer)
+    （截至 2023 年 06 月 03 日仍为初版）'
 - en: '[](#diff-with-print-version)*网页版和书籍版的区别*'
+  id: totrans-38
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#diff-with-print-version)*网页版和书籍版的区别*'
 - en: '*书籍版的内容与[JavaScript Primer v4.0.0](https://github.com/asciidwango/js-primer/releases/tag/v4.0.0-publish)相同。'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '*书籍版的内容与[JavaScript Primer v4.0.0](https://github.com/asciidwango/js-primer/releases/tag/v4.0.0-publish)相同。'
 - en: 网页版和书籍版有以下不同之处。
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 网页版和书籍版有以下不同之处。
 - en: 网页版和书籍版的布局不同
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 网页版和书籍版的布局不同
 - en: 书籍版包含索引
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 书籍版包含索引
 - en: 网页版会持续每天略微更新，以保持最新的规范
+  id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 网页版会持续每天略微更新，以保持最新的规范
 - en: 书籍版的内容与网页版相同，但内容和布局经过优化，以便作为书籍阅读。 书籍版在出版时基本内容相同，但网页版始终保持更新。
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 书籍版的内容与网页版相同，但内容和布局经过优化，以便作为书籍阅读。 书籍版在出版时基本内容相同，但网页版始终保持更新。
 - en: 这本书是按顺序阅读的。因此，作为阅读材料，书籍版更易于阅读。由于网页版内置了搜索功能和可执行示例代码的功能，因此请根据需要同时使用。
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 这本书是按顺序阅读的。因此，作为阅读材料，书籍版更易于阅读。由于网页版内置了搜索功能和可执行示例代码的功能，因此请根据需要同时使用。
 - en: '[](#sponsors)*关于对书籍的支持*'
+  id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#sponsors)*关于对书籍的支持*'
 - en: '*JavaScript Primer 会持续更新以跟进 ECMAScript 的更新，反映实际使用情况。 为了持续更新，我们随时欢迎对书籍的支持。'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '*JavaScript Primer 会持续更新以跟进 ECMAScript 的更新，反映实际使用情况。 为了持续更新，我们随时欢迎对书籍的支持。'
 - en: 您可以在 GitHub Sponsors 上支持作者。
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以在 GitHub Sponsors 上支持作者。
 - en: '[在 GitHub Sponsors 上赞助@azu](https://github.com/sponsors/azu)'
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[在 GitHub Sponsors 上赞助@azu](https://github.com/sponsors/azu)'
 - en: 您可以通过 Open Collective 支持 jsprimer 项目。 Open Collective 的支持包括企业特权，例如在网站上显示徽标。
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以通过 Open Collective 支持 jsprimer 项目。 Open Collective 的支持包括企业特权，例如在网站上显示徽标。
 - en: JavaScript Primer 赞助商
+  id: totrans-51
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: JavaScript Primer 赞助商
 - en: '[JavaScript Primer - Open Collective](https://opencollective.com/jsprimer)'
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[JavaScript Primer - Open Collective](https://opencollective.com/jsprimer)'
 - en: 此外，撰写书籍评论也是一种支持。
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，撰写书籍评论也是一种支持。
 - en: '[JavaScript Primer 修订 2 版 迷你入门书 | azu, Suguru Inatomi |书 | 网购 | 亚马逊](https://www.amazon.co.jp/dp/4048931105/)'
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[JavaScript Primer 修订 2 版 迷你入门书 | azu, Suguru Inatomi |书 | 网购 | 亚马逊](https://www.amazon.co.jp/dp/4048931105/)'
 - en: 回答 GitHub Discussions（论坛）中其他人的问题，或者写下对 JSPrimer 的感想也是一种支持。
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 回答 GitHub Discussions（论坛）中其他人的问题，或者写下对 JSPrimer 的感想也是一种支持。
 - en: '[讨论](https://github.com/asciidwango/js-primer/discussions)'
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[讨论](https://github.com/asciidwango/js-primer/discussions)'
 - en: Discussions 的指南已整理在以下主题中。
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: Discussions 的指南已整理在以下主题中。
 - en: '[👋 欢迎来到 JavaScript Primer！ · 讨论 #1304](https://github.com/asciidwango/js-primer/discussions/1304)'
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[👋 欢迎来到 JavaScript Primer！ · 讨论 #1304](https://github.com/asciidwango/js-primer/discussions/1304)'
 - en: 您可以提���问题或发送 Pull Request 直接支持书籍。 有关 Issue 和 Pull Request，请参阅下一页。
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以提问或发送 Pull Request 直接支持书籍。有关 Issue 和 Pull Request，请参阅下一页。
 - en: '[发现错误？请告诉我们 · JavaScript Primer #jsprimer](https://jsprimer.net/intro/feedback/)'
+  id: totrans-60
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[发现错误？请告诉我们 · JavaScript Primer #jsprimer](https://jsprimer.net/intro/feedback/)'
 - en: '[](#thanks)*致谢*'
+  id: totrans-61
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#thanks)*致谢*'
 - en: '*在初版中，我们征求了以下人员的审阅意见。'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在初版中，我们征求了以下人员的审阅意见。'
 - en: mizchi（竹马光太郎）
+  id: totrans-63
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: mizchi（竹马光太郎）
 - en: 中西优介@better_than_i_w
+  id: totrans-64
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 中西优介@better_than_i_w
 - en: '@tsin1rou'
+  id: totrans-65
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '@tsin1rou'
 - en: sakito
+  id: totrans-66
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: sakito
 - en: 川上和义
+  id: totrans-67
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 川上和义
 - en: 尾上洋介
+  id: totrans-68
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 尾上洋介
 - en: 在第 2 版中，我们征求了以下人员的审阅意见。
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第 2 版中，我们征求了以下人员的审阅意见。
 - en: haruguchi（池奥 悠马）
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: haruguchi（池奥 悠马）
 - en: 2nofa11（ツノ）
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 2nofa11（ツノ）
 - en: staticWagomU（林 永远）
+  id: totrans-72
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: staticWagomU（林 永远）
 - en: kakts（阿久津 恵太）
+  id: totrans-73
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: kakts（阿久津 恵太）
 - en: keisuke kudo（工藤佳祐）
+  id: totrans-74
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: keisuke kudo（工藤佳祐）
 - en: r-shirasu
+  id: totrans-75
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: r-shirasu
 - en: 藤野慎也（morinokami）
+  id: totrans-76
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 藤野慎也（morinokami）
 - en: kobakazu0429（小畠 一泰）
+  id: totrans-77
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: kobakazu0429（小畠 一泰）
 - en: 滝谷修
+  id: totrans-78
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 滝谷修
 - en: 这本书能够变得更好，完全归功于大家的合作。
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 这本书能够变得更好，完全归功于大家的合作。
 - en: 此外，这本书是在 GitHub 上公开的状态下编写的。因此，感谢所有为这本书做出贡献的人。
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，这本书是在 GitHub 上公开的状态下编写的。因此，感谢所有为这本书做出贡献的人。
 - en: '[](#changelog)*变更点*'
+  id: totrans-81
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#changelog)*变更点*'
 - en: '*网页版会持续更新以支持最新的 ECMAScript。 在支持每个新的 ECMAScript 版本时，我们会制作变更摘要的发布说明。'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '*网页版会持续更新以支持最新的 ECMAScript。 在支持每个新的 ECMAScript 版本时，我们会制作变更摘要的发布说明。'
 - en: '[v1.0.0: 初版发布](https://github.com/asciidwango/js-primer/releases/tag/1.0.0)'
+  id: totrans-83
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[v1.0.0: 初版发布](https://github.com/asciidwango/js-primer/releases/tag/1.0.0)'
 - en: '[v2.0.0: 支持 ECMAScript 2020](https://github.com/asciidwango/js-primer/releases/tag/v2.0.0)'
+  id: totrans-84
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[v2.0.0: 支持 ECMAScript 2020](https://github.com/asciidwango/js-primer/releases/tag/v2.0.0)'
 - en: '[v3.0.0: ECMAScript 2021 兼容](https://github.com/asciidwango/js-primer/releases/tag/v3.0.0)'
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[v3.0.0: ECMAScript 2021 兼容](https://github.com/asciidwango/js-primer/releases/tag/v3.0.0)'
 - en: '[v4.0.0: ECMAScript 2022 兼容](https://github.com/asciidwango/js-primer/releases/tag/v4.0.0)'
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[v4.0.0: ECMAScript 2022 兼容](https://github.com/asciidwango/js-primer/releases/tag/v4.0.0)'
 - en: '[v5.0.0: ECMAScript 2023 兼容/更改为 CC BY 许可证/Open Collective](https://github.com/asciidwango/js-primer/releases/tag/v5.0.0)'
+  id: totrans-87
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[v5.0.0: ECMAScript 2023 兼容/更改为 CC BY 许可证/Open Collective](https://github.com/asciidwango/js-primer/releases/tag/v5.0.0)'
 - en: 当新版本发布时，希望收到通知的人，请[关注](https://github.com/asciidwango/js-primer/watchers)[GitHub
     仓库](https://github.com/asciidwango/js-primer)。
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 当新版本发布时，希望收到通知的人，请[关注](https://github.com/asciidwango/js-primer/watchers)[GitHub
+    仓库](https://github.com/asciidwango/js-primer)。
 - en: '![关注按钮](https://github.com/asciidwango/js-primer/watchers)'
+  id: totrans-89
   prefs: []
   type: TYPE_IMG
+  zh: '![关注按钮](https://github.com/asciidwango/js-primer/watchers)'
 - en: 此外，您也可以通过下面的表单预先注册邮箱地址，以便通过邮件接收更新信息。
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，您也可以通过下面的表单预先注册邮箱地址，以便通过邮件接收更新信息。
 - en: '[注册接收更新通知的邮箱地址表单](https://us13.list-manage.com/subscribe?u=fc41e11a2b9dc6f05350e0de0&id=7ab1594ae8)**********'
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[注册接收更新通知的邮箱地址表单](https://us13.list-manage.com/subscribe?u=fc41e11a2b9dc6f05350e0de0&id=7ab1594ae8)**********'

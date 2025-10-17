@@ -1,186 +1,299 @@
 - en: 日期
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 日期
 - en: 原文：[`jsprimer.net/basic/date/`](https://jsprimer.net/basic/date/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/date/`](https://jsprimer.net/basic/date/)
 - en: 本章将学习如何在 JavaScript 中处理日期和时间的[Date](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date)。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章将学习如何在 JavaScript 中处理日期和时间的[Date](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date)。
 - en: '[](#date-object)*日期对象*'
+  id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#date-object)*日期对象*'
 - en: '*`Date`对象与`String`、`Array`等一样，是在 ECMAScript 中定义的内置对象。'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`Date`对象与`String`、`Array`等一样，是在 ECMAScript 中定义的内置对象。'
 - en: 通过实例化`Date`对象，可以获得表示特定时间的对象。 在`Date`中，“时间”以相对毫秒形式保留，以 UTC（协调世界时）的 1970 年 1 月
     1 日 0 时 0 分 0 秒为基准。 本章将这个毫秒值称为“时间值”。 `Date`对象的实例各自具有一个时间值，并提供用于处理日期、小时和分钟等的方法。
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过实例化`Date`对象，可以获得表示特定时间的对象。 在`Date`中，“时间”以相对毫秒形式保留，以 UTC（协调世界时）的 1970 年 1 月
+    1 日 0 时 0 分 0 秒为基准。 本章将这个毫秒值称为“时间值”。 `Date`对象的实例各自具有一个时间值，并提供用于处理日期、小时和分钟等的方法。
 - en: '[](#create-instance)*创建实例*'
+  id: totrans-6
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#create-instance)*创建实例*'
 - en: '*`Date`对象的实例始终使用 new 运算符创建。 创建`Date`对象的实例有两种主要方法。 一种是实例化当前时间，另一种是实例化任意时间。'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`Date`对象的实例始终使用`new`运算符创建。 创建`Date`对象的实例有两种主要方法。 一种是实例化当前时间，另一种是实例化任意时间。'
 - en: '[](#instance-current-time)*实例化当前时间*'
+  id: totrans-8
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#instance-current-time)*实例化当前时间*'
 - en: '*如果在 new 时不传递构造函数参数，则创建的实例将表示当前时间。 如果只需要当前时间的时间值而不是`Date`对象的实例，则可以使用`Date.now`方法的返回值。
     创建的实例的时间值可以通过`getTime`方法获取。 此外，使用`toISOString`方法可以将时间转换为 UTC 的[ISO 8601](https://ja.wikipedia.org/wiki/ISO_8601)格式的字符串��
     ISO 8601 是一种国际标准的字符串格式，表示时间和时区信息，例如`2006-01-02T15:04:05.999+09:00`。 由于这种格式易于理解，因此被广泛使用。'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*如果在`new`时不传递构造函数参数，则创建的实例将表示当前时间。 如果只需要当前时间的时间值而不是`Date`对象的实例，则可以使用`Date.now`方法的返回值。
+    创建的实例的时间值可以通过`getTime`方法获取。 此外，使用`toISOString`方法可以将时间转换为 UTC 的[ISO 8601](https://ja.wikipedia.org/wiki/ISO_8601)格式的字符串。
+    ISO 8601 是一种国际标准的字符串格式，表示时间和时区信息，例如`2006-01-02T15:04:05.999+09:00`。 由于这种格式易于理解，因此被广泛使用。'
 - en: '[PRE0]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[](#instance-any-time)*实例化任意时间*'
+  id: totrans-11
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#instance-any-time)*实例化任意时间*'
 - en: '*通过传递构造函数参数，可以创建表示任意时间的实例。 `Date`的构造函数根据传递的数据类型和参数来确定时间的指定方法。 `Date`支持以下 3
     种参数。'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: '*通过传递构造函数参数，可以创建表示任意时间的实例。 `Date`的构造函数根据传递的数据类型和参数来确定时间的指定方法。 `Date`支持以下 3
+    种参数。'
 - en: 传递时间值
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 传递时间值
 - en: 传递表示时间的字符串
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 传递表示时间的字符串
 - en: 通过数字分别传递时间部分（年、月、日等）
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过数字分别传递时间部分（年、月、日等）
 - en: 第一种方法是在构造函数中传递表示毫秒的数字类型参数时应用。 将传递的数字视为相对于 UTC 的 1970 年 1 月 1 日 0 时 0 分 0 秒的时间值。
     由于此方法的基准时间和时区是固定的，因此不会受执行环境时区的影响，因此很安全。 因此，与其他两种方法不同，不需要考虑时区。
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一种方法是在构造函数中传递表示毫秒的数字类型参数时应用。 将传递的数字视为相对于 UTC 的 1970 年 1 月 1 日 0 时 0 分 0 秒的时间值。
+    由于此方法的基准时间和时区是固定的，因此不会受执行环境时区的影响，因此很安全。 因此，与其他两种方法不同，不需要考虑时区。
 - en: '[PRE1]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 第二种方法是在传递字符串类型的参数时应用。 当传递符合[RFC2822](https://www.rfc-editor.org/rfc/rfc2822#section-3.3)或[ISO
     8601](https://ja.wikipedia.org/wiki/ISO_8601)格式的字符串时，将解析该字符串并使用得到的时间值创建`Date`的实例。
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二种方法是在传递字符串类型的参数时应用。 当传递符合[RFC2822](https://www.rfc-editor.org/rfc/rfc2822#section-3.3)或[ISO
+    8601](https://ja.wikipedia.org/wiki/ISO_8601)格式的字符串时，将解析该字符串并使用得到的时间值创建`Date`的实例。
 - en: 下面的代码将传递 ISO 8601 格式的字符串以创建`Date`的实例。 如果字符串包含时区，则将计算该时区的时间值。 如果无法从字符串中读取时区，则需要注意根据执行环境的时区计算时间值。
     此外，由于不同的浏览器可能返回不同的结果，因此要注意 ISO 8601 格式以外的字符串解析。
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码将传递 ISO 8601 格式的字符串以创建`Date`的实例。 如果字符串包含时区，则将计算该时区的时间值。 如果无法从字符串中读取时区，则需要注意根据执行环境的时区计算时间值。
+    此外，由于不同的浏览器可能返回不同的结果，因此要注意 ISO 8601 格式以外的字符串解析。
 - en: '[PRE2]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 第三种方法是逐个指定时间，例如年、月、日等的部分数字。
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三种方法是逐个指定时间，例如年、月、日等的部分数字。
 - en: '[PRE3]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 当向构造函数传递两个以上的参数时，将使用此方法创建`Date`实例。 表示月内日期的第三个参数（`day`）及其后的参数是可选的。 如果省略这些参数，每个参数的默认值为`0`，但是表示日期（`day`）的第三个参数的默认值为`1`。
     此外，要注意月份（`month`）的第二个参数对应于 1 月的`0`，并且月份是以`0`到`11`的数字指定的。
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 当向构造函数传递两个以上的参数时，将使用此方法创建`Date`实例。 表示月内日期的第三个参数（`day`）及其后的参数是可选的。 如果省略这些参数，每个参数的默认值为`0`，但是表示日期（`day`）的第三个参数的默认值为`1`。
+    此外，要注意月份（`month`）的第二个参数对应于 1 月的`0`，并且月份是以`0`到`11`的数字指定的。
 - en: 与前述的两种方法不同，此方法无法指定时区。 传递的数字始终被视为本地时区的时间。
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 与前述两种方法不同，此方法无法指定时区。 传递的数字始终被视为本地时区的时间。
 - en: 由于结果取决于执行环境，基本上不应该使用这种方法。
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于结果取决于执行环境，基本上不应该使用这种方法。
 - en: 如果要逐个指定时间，则最好使用[Date.UTC](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date/UTC)方法。
     参数的格式相同，但`Date.UTC`方法将传递的数字视为 UTC 时间，并返回该时间值。
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果要逐个指定时间，则最好使用[Date.UTC](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date/UTC)方法。
+    参数的格式相同，但`Date.UTC`方法将传递的数字视为 UTC 时间，并返回该时间值。
 - en: '[PRE4]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 请注意，如果传递的参数不符合任何重载，或者传递的字符串无法解析为时间，则将创建`Date`的实例。 但是，由于该实例的时间是无效的，因此`getTime`方法将返回`NaN`，`toString`方法将返回`Invalid
     Date`字符串。
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，如果传递的参数不符合任何重载，或者传递的字符串无法解析为时间，则将创建`Date`的实例。 但是，由于该实例的时间是无效的，因此`getTime`方法将返回`NaN`，`toString`方法将返回`Invalid
+    Date`字符串。
 - en: '[PRE5]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[](#instance-method)*Date 实例方法*'
+  id: totrans-30
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#instance-method)*Date 实例方法*'
 - en: '*`Date`对象的实例具有许多方法，但大多数是用于获取和更新时间各部分的方法，如`getHours`和`setHours`。'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`Date`对象的实例具有许多方法，但大多数是用于获取和更新时间各部分的方法，如`getHours`和`setHours`。'
 - en: 下面的代码将日期转换为特定格式的字符串。 要注意像`getMonth`和`setMonth`这样以数字表示月份的方法，需要注意月份是从 0 到 11 的数字。
     要显示`Date`实例的时间是哪个月，需要将`getMonth`方法的返回值加 1。
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码将日期转换为特定格式的字符串。 要注意像`getMonth`和`setMonth`这样以数字表示月份的方法，需要注意月份是从 0 到 11 的数字。
+    要显示`Date`实例的时间是哪个月，需要将`getMonth`方法的返回值加 1。
 - en: '[PRE6]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '`getTimezoneOffset`メソッドは、実行環境のタイムゾーンのUTC**からの**オフセット値を**分**単位の数値で返します。 たとえばAsia/TokyoタイムゾーンはUTC+9
     時間なのでオフセット値は-9 時間となり、`getTimezoneOffset`メソッドの返り値は`-540`です。'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '`getTimezoneOffset`方法返回执行环境时区的UTC**相对于**的偏移值，以**分钟**为单位。 例如，Asia/Tokyo时区是UTC+9小时，因此偏移值是-9小时，`getTimezoneOffset`方法的返回值是`-540`。'
 - en: '[PRE7]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[](#usecase)*現実のユースケースとDate*'
+  id: totrans-36
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#usecase)*实际用例与Date*'
 - en: '*ここまで`Date`オブジェクトとインスタンスメソッドについて述べましたが、 多くのユースケースにおいては機能が不十分です。 たとえば次のような場合に、`Date`では直感的に記述できません。'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '*到此为止，我们讲述了`Date`对象和实例方法。但在许多用例中，`Date`的功能是不够的。例如，在以下情况下，使用`Date`无法直观地描述：'
 - en: 任意の書式の文字列から時刻に変換するメソッドがない
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 没有从任意格式字符串转换时刻的方法
 - en: 「時刻を1 時間進める」のように時刻を前後にずらす操作を提供するメソッドがない
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 「时辰向前推进一小时」等类似操作，没有提供调整时刻的方法
 - en: 任意のタイムゾーンにおける時刻を計算するメソッドがない
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 没有计算任意时区时刻的方法
 - en: '`YYYY/MM/DD HH:mm`のよ��なフォーマットに��づいた文字列への変換を提供するメソッドがない'
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 没有提供将字符串转换为`YYYY/MM/DD HH:mm`等格式的方法
 - en: そのため、JavaScriptにおける日付・時刻の処理は、標準のDateではなくライブラリを使うことが一般的になっています。 代表的なライブラリとしては、[Day.js](https://day.js.org/)、[date-fns](https://date-fns.org/)、[js-joda](https://github.com/js-joda/js-joda)、[moment.js](https://momentjs.com/)の後継である[Luxon](https://github.com/moment/luxon/)などがあります。
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，在JavaScript中处理日期和时间的通常做法是使用库，而不是标准库中的`Date`。 典型的库包括[Day.js](https://day.js.org/)、[date-fns](https://date-fns.org/)、[js-joda](https://github.com/js-joda/js-joda)、[moment.js](https://momentjs.com/)的后续者[Luxon](https://github.com/moment/luxon/)等。
 - en: '[PRE8]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[](#conclusion)*まとめ*'
+  id: totrans-44
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)*总结*'
 - en: '*この章では、Dateオブジェクトについて学びました。'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在本章中，我们学习了`Date`对象。'
 - en: '`Date`オブジェクトのインスタンスはある特定の時刻を表すビルトインオブジェクト'
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Date`对象实例表示一个特定的时间点，是内置对象'
 - en: '`Date`における「時刻」は、UTC（協定世界時）の1970 年 1 月 1 日 0 時 0 分 0 秒を基準とした相対的なミリ秒として保持されている'
+  id: totrans-47
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在`Date`中，“时间”是以UTC（协调世界时）1970年1月1日0时0分0秒为基准的相对毫秒来保持的
 - en: '`Date`コンストラクタで任意の時間を表す`Date`インスタンスを作成できる'
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以使用`Date`构造函数创建表示任意时间的`Date`实例
 - en: '`Date`インスタンスメソッドにはさまざまなものがあるが、現実のユースケースでは機能が不十分になりやすい'
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Date`实例方法有很多种，但在现实的使用场景中，其功能往往不够完善'
 - en: ビルトインオブジェクトの`Date`のみではなく、ライブラリも合わせて利用するのが一般的*******
+  id: totrans-50
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不仅限于内置对象`Date`，通常还会结合使用库

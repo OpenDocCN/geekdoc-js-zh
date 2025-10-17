@@ -1,404 +1,653 @@
 - en: ループと反復処理
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: ループと反復処理
 - en: 原文：[`jsprimer.net/basic/loop/`](https://jsprimer.net/basic/loop/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/loop/`](https://jsprimer.net/basic/loop/)
 - en: この章では、while 文やfor 文などの基本的な反復処理と制御文について学んでいきます。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: この章では、while 文やfor 文などの基本的な反復処理と制御文について学んでいきます。
 - en: プログラミングにおいて、同じ処理を繰り返すために同じコードを繰り返し書く必要はありません。 ループやイテレータなどを使い、反復処理として同じ処理を繰り返し実行できます。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: プログラミングにおいて、同じ処理を繰り返すために同じコードを繰り返し書く必要はありません。 ループやイテレータなどを使い、反復処理として同じ処理を繰り返し実行できます。
 - en: また、for 文などのような構文だけではなく、配列のメソッドを利用して反復処理を行う方法もあります。 配列のメソッドを使った反復処理もよく利用されるため、合わせて見ていきます。
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: また、for 文などのような構文だけではなく、配列のメソッドを利用して反復処理を行う方法もあります。 配列のメソッドを使った反復処理もよく利用されるため、合わせて見ていきます。
 - en: '[](#while-statement)*while 文*'
+  id: totrans-5
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#while-statement)*while 文*'
 - en: '*while 文は`条件式`が`true`であるならば、反復処理を行います。'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '*while 文は`条件式`が`true`であるならば、反復処理を行います。'
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: while 文の実行フローは次のようになります。 最初から`条件式`が`false`である場合は、何も実行せずwhile 文は終了します。
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: while 文の実行フローは次のようになります。 最初から`条件式`が`false`である場合は、何も実行せずwhile 文は終了します。
 - en: '`条件式` の評価結果が`true`なら次のステップへ、`false`なら終了'
+  id: totrans-9
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`条件式` の評価結果が`true`なら次のステップへ、`false`なら終了'
 - en: '`実行する文`を実行'
+  id: totrans-10
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`実行する文`を実行'
 - en: ステップ1へ戻る
+  id: totrans-11
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: ステップ1へ戻る
 - en: 次のコードでは`x`の値が10 未満であるなら、コンソールへ繰り返しログが出力されます。 また、`実行する文`にて、`x`の値を増やし`条件式`が`false`となるようにしています。
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは`x`の値が10 未満であるなら、コンソールへ繰り返しログが出力されます。 また、`実行する文`にて、`x`の値を増やし`条件式`が`false`となるようにしています。
 - en: '[PRE1]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: つまり、`実行する文`の中で`条件式`が`false`となるような処理を書かないと無限ループします。 JavaScriptにはより安全な反復処理の書き方があるため、while
     文は使う場面が限られています。
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: つまり、`実行する文`の中で`条件式`が`false`となるような処理を書かないと無限ループします。 JavaScriptにはより安全な反復処理の書き方があるため、while
+    文は使う場面が限られています。
 - en: 安易にwhile 文を使うよりも、ほかの書き方で解決できないかを考えてからでも遅くはないでしょう。
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 安易にwhile 文を使うよりも、ほかの書き方で解決できないかを考えてからでも遅くはないでしょう。
 - en: '[](#infinite-loop)*[コラム] 無限ループ*'
+  id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#infinite-loop)*[コラム] 無限ループ*'
 - en: '*反復処理を扱う際に、コードの書き間違いや条件式のミスなどから無限ループを引き起こしてしまう場合があります。 たとえば、次のコードは条件式の評価結果が常に`true`となってしまうため、無限ループが発生してしまいます。'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '*反復処理を扱う際に、コードの書き間違いや条件式のミスなどから無限ループを引き起こしてしまう場合があります。 たとえば、次のコードは条件式の評価結果が常に`true`となってしまうため、無限ループが発生してしまいます。'
 - en: '[PRE2]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 無限ループが発生してしまったときは、あわてずにスクリプトを停止してからコードを修正しましょう。
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 無限ループが発生してしまったときは、あわてずにスクリプトを停止してからコードを修正しましょう。
 - en: ほとんどのブラウザは無限ループが発生した際に、自動的にスクリプトの実行を停止する機能が含まれています。 また、ブラウザで該当のスクリプトを実行しているページ（タブ）またはブラウザそのものを閉じることで強制的に停止できます。
     Node.jsで実行している場合は`Ctrl + C`を入力し、終了シグナルを送ることで強制的に停止できます。
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: ほとんどのブラウザは無限ループが発生した際に、自動的にスクリプトの実行を停止する機能が含まれています。 また、ブラウザで該当のスクリプトを実行しているページ（タブ）またはブラウザそのものを閉じることで強制的に停止できます。
+    Node.jsで実行している場合は`Ctrl + C`を入力し、終了シグナルを送ることで強制的に停止できます。
 - en: 無限ループが発生する原因のほとんどは条件式に関連する実装ミスです。 まずは条件式の確認をしてみることで問題を解決できるはずです。
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 無限ループが発生する原因のほとんどは条件式に関連する実装ミスです。 まずは条件式の確認をしてみることで問題を解決できるはずです。
 - en: '[](#do-while-statement)*do-while 文*'
+  id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#do-while-statement)*do-while 文*'
 - en: '*do-while 文はwhile 文とほとんど同じですが実行順序が異なります。'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '*do-while 文はwhile 文とほとんど同じですが実行順序が異なります。'
 - en: '[PRE3]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: do-while 文の実行フローは次のようになります。
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: do-while 文の実行フローは次のようになります。
 - en: '`実行する文`を実行'
+  id: totrans-26
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`実行する文`を実行'
 - en: '`条件式` の評価結果が`true`なら次のステップへ、`false`なら終了'
+  id: totrans-27
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`条件式` の評価結果が`true`なら次のステップへ、`false`なら終了'
 - en: ステップ1へ戻る
+  id: totrans-28
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: ステップ1へ戻る
 - en: while 文とは異なり、必ず最初に`実行する文`を処理します。
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: while 文とは異なり、必ず最初に`実行する文`を処理します。
 - en: そのため、次のコードのように最初から`条件式`を満たさない場合でも、 初回の`実行する文`が処理され、コンソールへ`1000`と出力されます。
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: そのため、次のコードのように最初から`条件式`を満たさない場合でも、 初回の`実行する文`が処理され、コンソールへ`1000`と出力されます。
 - en: '[PRE4]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: この仕組みをうまく利用し、ループの開始前とループ中の処理をまとめて書くことができます。 しかし、while 文と同じくほかの書き方で解決できないかを考えてからでも遅くはないでしょう。
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: この仕組みをうまく利用し、ループの開始前とループ中の処理をまとめて書くことができます。 しかし、while 文と同じくほかの書き方で解決できないかを考えてからでも遅くはないでしょう。
 - en: '[](#for-statement)*for 文*'
+  id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#for-statement)*for 文*'
 - en: '*for 文は繰り返す範囲を指定した反復処理を書くことができます。'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '*for 文は繰り返す範囲を指定した反復処理を書くことができます。'
 - en: '[PRE5]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: for 文の実行フローは次のようになります。
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: for 文の実行フローは次のようになります。
 - en: '`初期化式` で変数の宣言'
+  id: totrans-37
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`初期化式` で変数の宣言'
 - en: '`条件式` の評価結果が`true`なら次のステップへ、`false`なら終了'
+  id: totrans-38
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`条件式` の評価結果が`true`なら次のステップへ、`false`なら終了'
 - en: '`実行する文` を実行'
+  id: totrans-39
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`実行する文` を実行'
 - en: '`増分式` で変数を更新'
+  id: totrans-40
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`増分式` で変数を更新'
 - en: ステップ2へ戻る
+  id: totrans-41
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: ステップ2へ戻る
 - en: 次のコードでは、for 文で1から10までの値を合計して、その結果をコンソールへ出力しています。
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、for 文で1から10までの値を合計して、その結果をコンソールへ出力しています。
 - en: '[PRE6]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: このコードは1から10までの合計を電卓で計算すればいいので、普通は必要ありませんね。 もう少し実用的なものを考えると、任意の数値の入った配列を受け取り、その合計を計算して返すという関数を実装すると良さそうです。
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: このコードは1から10までの合計を電卓で計算すればいいので、普通は必要ありませんね。 もう少し実用的なものを考えると、任意の数値の入った配列を受け取り、その合計を計算して返すという関数を実装すると良さそうです。
 - en: 次のコードでは、任意の数値が入った配列を受け取り、その合計値を返す `sum` 関数を実装しています。 `numbers`配列に含まれている要素を先頭から順番に変数`total`へ加算することで合計値を計算しています。
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、任意の数値が入った配列を受け取り、その合計値を返す `sum` 関数を実装しています。 `numbers`配列に含まれている要素を先頭から順番に変数`total`へ加算することで合計値を計算しています。
 - en: '[PRE7]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: JavaScriptの配列である`Array`オブジェクトには、反復処理のためのメソッドが備わっています。 そのため、配列のメソッドを使った反復処理も合わせて見ていきます。
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScriptの配列である`Array`オブジェクトには、反復処理のためのメソッドが備わっています。 そのため、配列のメソッドを使った反復処理も合わせて見ていきます。
 - en: '[](#array-foreach)*配列の`forEach`メソッド*'
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#array-foreach)*配列の`forEach`メソッド*'
 - en: '*配列には`forEach`メソッドというfor 文と同じように反復処理を行うメソッドがあります。'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '*配列には`forEach`メソッドというfor 文と同じように反復処理を行うメソッドがあります。'
 - en: '`forEach`メソッドでの反復処理は、次のように書けます。'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`forEach`メソッドでの反復処理は、次のように書けます。'
 - en: '[PRE8]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: JavaScriptでは、関数がファーストクラスであるため、その場で作った無名関数（名前のない関数）を引数として渡せます。
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScriptでは、関数がファーストクラスであるため、その場で作った無名関数（名前のない関数）を引数として渡せます。
 - en: 引数として渡される関数のことを**コールバック関数**と呼びます。 また、コールバック関数を引数として受け取る関数やメソッドのことを**高階関数**と呼びます。
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 引数として渡される関数のことを**コールバック関数**と呼びます。 また、コールバック関数を引数として受け取る関数やメソッドのことを**高階関数**と呼びます。
 - en: '[PRE9]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '`forEach`メソッドのコールバック関数には、配列の要素が先頭から順���に渡されて実行されます。 つまり、コールバック関数の仮引数であるcurrentValueには、1から3の値が順番に渡されます。'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '`forEach`メソッドのコールバック関数には、配列の要素が先頭から順番に渡されて実行されます。 つまり、コールバック関数の仮引数であるcurrentValueには、1から3の値が順番に渡されます。'
 - en: '[PRE10]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 先ほどのfor 文の例と同じ数値の合計を返す`sum` 関数を`forEach`メソッドで実装してみます。
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 先ほどのfor 文の例と同じ数値の合計を返す`sum` 関数を`forEach`メソッドで実装してみます。
 - en: '[PRE11]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '`forEach`はfor 文の`条件式`に相当するものはなく、必ず配列のすべての要素を反復処理します。 変数`i`といった一時的な値を定義する必要がないため、シンプルに反復処理を書けます。'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: '`forEach`はfor 文の`条件式`に相当するものはなく、必ず配列のすべての要素を反復処理します。 変数`i`といった一時的な値を定義する必要がないため、シンプルに反復処理を書けます。'
 - en: '[](#break-statement)*break 文*'
+  id: totrans-60
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#break-statement)*break 文*'
 - en: '*break 文は処理中の文から抜けて次の文へ移行する制御文です。 while、do-while、forの中で使い、処理中のループを抜けて次の文へ制御を移します。'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '*break 文は処理中の文から抜けて次の文へ移行する制御文です。 while、do-while、forの中で使い、処理中のループを抜けて次の文へ制御を移します。'
 - en: '[PRE12]'
+  id: totrans-62
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: switch 文で出てきたものと同様で、処理中のループ文を終了できます。
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: switch 文で出てきたものと同様で、処理中のループ文を終了できます。
 - en: 次のコードでは配列の要素に1つでも偶数を含んでいるかを判定しています。
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは配列の要素に1つでも偶数を含んでいるかを判定しています。
 - en: '[PRE13]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 1つでも偶数があるかがわかればいいため、配列内から最初の偶数を見つけたらfor 文での反復処理を終了します。 このような処理は、使い回せるように関数として実装するのが一般的です。
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 1つでも偶数があるかがわかればいいため、配列内から最初の偶数を見つけたらfor 文での反復処理を終了します。 このような処理は、使い回せるように関数として実装するのが一般的です。
 - en: 同様の処理をする `isEvenIncluded` 関数を実装してみます。 次のコードでは、break 文が実行され、ループを抜けた後にreturn 文で結果を返しています。
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 同様の処理をする `isEvenIncluded` 関数を実装してみます。 次のコードでは、break 文が実行され、ループを抜けた後にreturn 文で結果を返しています。
 - en: '[PRE14]'
+  id: totrans-68
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: return 文は現在の関数を終了させることができるため、次のように書くこともできます。 `numbers`に1つでも偶数が含まれていれば結果は`true`となるため、偶数の値が見つかった時点で`true`を返しています。
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: return语句可以结束当前函数，因此也可以这样写。如果`numbers`中包含至少一个偶数，则结果为`true`，因此当找到偶数时立即返回`true`。
 - en: '[PRE15]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 偶数を見つけたらすぐにreturnすることで一時的な変数が不要となり、より簡潔に書けました。
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 当找到偶数时立即返回，这样就不需要临时变量，代码也更简洁。
 - en: '[](#array-some)*配列の`some`メソッド*'
+  id: totrans-72
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#array-some)*数组的`some`方法*'
 - en: '*先ほどの`isEvenIncluded`関数は、偶数を見つけたら `true` を返す関数でした。 配列では`some`メソッドで同様のことが行えます。'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: '*之前提到的`isEvenIncluded`函数是当找到偶数时返回`true`的函数。在数组中，可以使用`some`方法执行类似操作。'
 - en: '`some`メソッドは、配列の各要素をテストする処理をコールバック関数として受け取ります。 コールバック関数が、一度でも`true`を返した時点で反復処理を終了し、`some`メソッドは`true`を返します。'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '`some`方法接受一个回调函数作为数组每个元素的测试处理。当回调函数返回`true`时，迭代处理将在该点结束，`some`方法返回`true`。'
 - en: '[PRE16]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '`some`メソッドを使うことで、配列に偶数が含まれているかは次のように書くことができます。 受け取った値が偶数であるかをテストするコールバック関数として`isEven`関数を渡します。'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`some`メソッド，可以像这样检查数组中是否包含偶数。将测试偶数的回调函数`isEven`传递给接收到的值。
 - en: '[PRE17]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '[](#continue-statement)*continue 文*'
+  id: totrans-78
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#continue-statement)*continue语句*'
 - en: '*continue 文は現在の反復処理を終了して、次の反復処理を行います。 continue 文は、while、do-while、forの中で使うことができます。'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '*continue语句是结束当前迭代处理并执行下一个迭代处理的语句。它可以在while、do-while、for中使用。'
 - en: たとえば、while 文の処理中で`continue`文が実行されると、現在の反復処理はその時点で終了されます。 そして、次の反復処理で`条件式`を評価するところからループが再開されます。
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，在while循环的处理过程中，如果执行了`continue`语句，则当前迭代处理将在该点结束。然后，从下一个迭代处理开始，从评估`条件式`的地方重新开始循环。
 - en: '[PRE18]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 次のコードでは、配列の中から偶数を集め、新しい配列を作り返しています。 偶数ではない場合、処理中のfor 文をスキップしています。
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，我们从数组中收集偶数，并返回一个新的数组。如果不包含偶数，则跳过处理中的for循环。
 - en: '[PRE19]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: もちろん、次のように`continue`文を使わずに「偶数なら`results`へ追加する」という書き方も可能です。
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，也可以不使用`continue`语句，而是将“偶数则添加到`results`”这样的写法。
 - en: '[PRE20]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: この場合、条件が複雑になってきた場合にネストが深くなってコードが読みにくくなります。 そのため、ネストしたif 文のうるう年の例でも紹介したように、 できるだけ早い段階でそれ以上処理を続けない宣��をすることで、複雑なコードになることを避けています。
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，当条件变得复杂时，代码的嵌套会变得很深，代码的可读性会降低。因此，为了避免复杂的代码，我会在尽可能早的阶段停止进一步的执行。
 - en: '[](#array-filter)*配列の`filter`メソッド*'
+  id: totrans-87
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#array-filter)*数组的`filter`方法*'
 - en: '*配列から特定の値だけを集めた新しい配列を作るには`filter`メソッドを利用できます。'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '*要创建只包含特定值的新的数组，可以使用filter方法。'
 - en: '`filter`メソッドには、配列の各要素をテストする処理をコールバック関数として渡します。 コールバック関数が`true`を返した要素のみを集めた新しい配列を返します。'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '`filter`方法接受一个回调函数作为数组每个元素的测试处理。它返回一个只包含回调函数返回`true`的元素的新的数组。'
 - en: '[PRE21]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 先ほどのcontinue 文を使った値の絞り込みは`filter`メソッドを使うとより簡潔に書けます。 次のコードでは、`filter`メソッドを使って偶数だけに絞り込んでいます。
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 之前提到的使用continue语句进行值筛选，使用filter方法可以更简洁地编写。下面的代码使用filter方法筛选出偶数。
 - en: '[PRE22]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: '[](#for-in-statement)*for...in 文*'
+  id: totrans-93
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#for-in-statement)*for...in语句*'
 - en: '*for...in 文はオブジェクトのプロパティに対して、反復処理を行います。^(1)'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: '*for...in语句是针对对象的属性进行迭代处理的。^(1)*'
 - en: '[PRE23]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: 次のコードでは`obj`のプロパティ名を`key`変数に代入して反復処理をしています。 `obj`には、3つのプロパティ名があるため３回繰り返されます
     （ループのたびに毎回新しいブロックを作成しているため、ループごとに定義する変数`key`は再定義エラーになりません。詳細は「関数とスコープ」の章の「ブロックスコープ」で解説します）。
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，将`obj`的属性名赋值给`key`变量进行迭代处理。`obj`有3个属性名，因此会重复3次（每次循环都会创建一个新的块，因此每次循环定义的变量`key`不会导致重新定义错误。有关详细信息，请参阅“函数与作用域”章节中的“块作用域”部分）。
 - en: '[PRE24]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: オブジェクトに対する反復処理のためにfor...in 文は有用に見えますが、多くの問題を持っています。
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然for...in语句在处理对象时看起来很有用，但它有很多问题。
 - en: JavaScriptでは、オブジェクトは何らかのオブジェクトを継承しています。 for...in 文は、対象となるオブジ��クトのプロパティを列挙する場合に、親オブジェクトまで列挙可能なものがあるかを探索して列挙します。
     そのため、オブジェクト自身が持っていないプロパティも列挙されてしまい、意図しない結果になる場合があります。
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 在JavaScript中，对象是继承自某种对象的。for...in语句在列举目标对象的属性时，会探索是否存在可以列举父对象的属性，因此可能会列举出对象自身不拥有的属性，导致出现意外的结果。
 - en: 安全にオブジェクトのプロパティを列挙するには、`Object.keys`メソッド、`Object.values`メソッド、`Object.entries`メソッドなどが利用できます。
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了安全地列举对象的属性，可以使用`Object.keys`方法、`Object.values`方法、`Object.entries`方法等。
 - en: 先ほどの例である、オブジェクトのキーと値を列挙するコードはfor...in 文を使わずに書けます。 `Object.keys`メソッドは引数のオブジェクト自身が持つ列挙可能なプロパティ名の配列を返します。
     そのためfor...in 文とは違い、親オブジェクトのプロパティは列挙されません。
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 之前提到的使用for...in语句列举对象的键和值的代码，可以不使用for...in语句编写。`Object.keys`方法返回一个包含参数对象自身可列举属性名的数组。因此，与for...in语句不同，它不会列举父对象的属性。
 - en: '[PRE25]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: また、for...in 文は配列に対しても利用できますが、こちらも期待した結果にはなりません。
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，for...in语句也可以用于数组，但结果可能并不如预期。
 - en: 次のコードでは、配列の要素が列挙されそうですが、実際には配列のプロパティ名が列挙されます。 for...in 文が列挙する配列オブジェクトのプロパティ名は、要素のインデックスを文字列化した"0"、"1"となるため、その文字列が`num`へと順番に代入されます。
     そのため、数値と文字列の加算が行われ、意図した結果にはなりません。
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，看起来像是要列举数组的元素，但实际上列举的是数组的属性名。for...in语句列举的数组对象的属性名是元素索引的字符串形式"0"、"1"，因此这些字符串依次赋值给`num`。因此，数值和字符串的加法运算，并不会得到预期的结果。
 - en: '[PRE26]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: 配列の内容に対して反復処理を行う場合は、for 文や`forEach`メソッド、後述するfor...of 文を使うべきでしょう。
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 当需要对数组内容进行迭代处理时，应使用for循环、`forEach`方法或后面将要介绍的for...of语句。
 - en: このようにfor...in 文は正しく扱うのが難しいですが、代わりとなる手段が豊富にあります。 そのため、for...in 文の利用は避け、`Object.keys`メソッドなどを使って配列として反復処理するなど別の方法を考えたほうがよいでしょう。
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，for...in语句处理起来比较困难，但有很多替代方法。因此，最好避免使用for...in语句，而是使用`Object.keys`方法等将数组作为迭代处理。
 - en: '[](#for-of-statement)*[ES2015] for...of 文*'
+  id: totrans-108
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#for-of-statement)*[ES2015] for...of语句*'
 - en: '*最後にfor...of 文についてです。'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '*最后谈谈for...of语句。'
 - en: JavaScriptでは、`Symbol.iterator`という特別な名前のメソッドを実装したオブジェクトを**iterable**と呼びます。 iterableオブジェクトは、for...of
     文で反復処理できます。
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 在JavaScript中，实现了名为`Symbol.iterator`的特殊方法的对象被称为**iterable**。iterable对象可以在for...of语句中进行迭代处理。
 - en: iterableオブジェクトは反復処理時の動作が定義されたオブジェクトの総称で、反復処理時に次の返す値を定義しています。 for...of 文では、iterableオブジェクトから次の返す値を1つ取り出し、variableに代入して反復処理を行います。
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: iterable对象是反迭代处理时定义的对象的统称，在反迭代处理时定义了要返回的下一个值。在for...of语句中，从iterable对象中取出一个值，赋给variable，然后进行迭代处理。
 - en: '[PRE27]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: 実はすでにiterableオブジェクトは登場していて、Arrayはiterableオブジェクトです。
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，iterable对象已经出现，Array就是iterable对象。
 - en: 次のようにfor...of 文で、配列から値を取り出して反復処理を行えます。 for...in 文とは異なり、インデックス値ではなく配列の値を列挙します。
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以像这样使用for...of语句从数组中提取值并执行迭代处理。与for...in语句不同，它列举的是数组的值，而不是索引值。
 - en: '[PRE28]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: JavaScriptではStringオブジェクトもiterableです。 そのため、文字列を1 文字ずつ列挙できます。
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 在JavaScript中，String对象也是iterable的。因此，可以逐个字符列举字符串。
 - en: '[PRE29]'
+  id: totrans-117
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: そのほかにも、`TypedArray`、`Map`、`Set`、DOM NodeListなど、`Symbol.iterator`が実装されているオブジェクトは多いです。
     for...of 文は、それらのiterableオブジェクトで反復処理に利用できます。
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，还有`TypedArray`、`Map`、`Set`、DOM NodeList等实现了`Symbol.iterator`的对象。for...of语句可以在这些iterable对象上用于迭代处理。
 - en: '[](#conclusion)*まとめ*'
+  id: totrans-119
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#conclusion)*总结*'
 - en: '*在这一章中，我们比较了使用循环结构（如 for 循环）和使用数组方法进行迭代处理的方式。在循环结构（如 for 循环）中，可以使用 continue
     语句和 break 语句，但在数组方法中无法使用它们。另一方面，数组方法的不同之处在于不需要管理临时变量，并且可以将处理写成回调函数。'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在这一章中，我们比较了使用循环结构（如 for 循环）和使用数组方法进行迭代处理的方式。在循环结构（如 for 循环）中，可以使用 continue
+    语句和 break 语句，但在数组方法中无法使用它们。另一方面，数组方法的不同之处在于不需要管理临时变量，并且可以将处理写成回调函数。'
 - en: 这两种方法在迭代处理中都经常被使用。由于没有哪一种方法是绝对优越的，因此掌握这两种方法都是重要的。此外，在“数组”章节中我们也会对数组方法进行详细解释。
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两种方法在迭代处理中都经常被使用。由于没有哪一种方法是绝对优越的，因此掌握这两种方法都是重要的。此外，在“数组”章节中我们也会对数组方法进行详细解释。
 - en: ¹. `for...in`语句列举属性的顺序在 ES2019 之前是实现相关的，但在 ES2020 中已经确定了列举的顺序。 ↩************
+  id: totrans-122
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: ¹. `for...in`语句列举属性的顺序在 ES2019 之前是实现相关的，但在 ES2020 中已经确定了列举的顺序。 ↩************

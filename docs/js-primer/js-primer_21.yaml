@@ -1,1025 +1,1681 @@
 - en: 文字列
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 文字列
 - en: 原文：[`jsprimer.net/basic/string/`](https://jsprimer.net/basic/string/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/string/`](https://jsprimer.net/basic/string/)
 - en: この章ではJavaScriptにおける文字列について学んでいきます。 まずは、文字列の作成方法や文字列の操作方法について見ていきます。 そして、文字列を編集して自由に文字列を作れるようになることがこの章の目的です。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: この章ではJavaScriptにおける文字列について学んでいきます。 まずは、文字列の作成方法や文字列の操作方法について見ていきます。 そして、文字列を編集して自由に文字列を作れるようになることがこの章の目的です。
 - en: '[](#create)*文字列を作成する*'
+  id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#create)*文字列を作成する*'
 - en: '*文字列を作成するには、文字列リテラルを利用します。 「データ型とリテラル」の章でも紹介しましたが、文字列リテラルには`"`（ダブルクォート）、`''`（シングルクォート）、[PRE0]'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*文字列を作成するには、文字列リテラルを利用します。 「データ型とリテラル」の章でも紹介しましたが、文字列リテラルには`"`（ダブルクォート）、`''`（シングルクォート）、[PRE0]'
 - en: const double = "文字列";
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: const double = "文字列";
 - en: console.log(double); // => "文字列"
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: console.log(double); // => "文字列"
 - en: const single = '文字列';
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: const single = '文字列';
 - en: console.log(single); // => '文字列'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: console.log(single); // => '文字列'
 - en: // どちらも同じ文字列
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: // どちらも同じ文字列
 - en: console.log(double === single);// => true
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: console.log(double === single);// => true
 - en: '[PRE1]（バッククォート）が追加されました。 [PRE2]'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '[PRE1]（バッククォート）が追加されました。 [PRE2]'
 - en: const multiline = `1 行目
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: const multiline = `1 行目
 - en: 2 行目
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 2 行目
 - en: 3 行目`;
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 3 行目`;
 - en: // \n は改行を意味する
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: // \n は改行を意味する
 - en: console.log(multiline); // => "1 行目\n2 行目\n3 行目"
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: console.log(multiline); // => "1 行目\n2 行目\n3 行目"
 - en: '[PRE3]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: const str = "This book is \"js-primer\"";
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: const str = "This book is \"js-primer\"";
 - en: console.log(str); // => 'This book is "js-primer"'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: console.log(str); // => 'This book is "js-primer"'
 - en: '[PRE4]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: // JavaScriptエンジンが構文として解釈できないため、SyntaxErrorとなる
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: // JavaScriptエンジンが構文として解釈できないため、SyntaxErrorとなる
 - en: const invalidString = "1 行目
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: const invalidString = "1 行目
 - en: 2 行目
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 2 行目
 - en: 3 行目";
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 3 行目";
 - en: '[PRE5]（バッククォート）すべての文字列リテラルの中で利用できます。'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '[PRE5]（バッククォート）すべての文字列リテラルの中で利用できます。'
 - en: '| エスケープシーケンス | 意味 |'
+  id: totrans-26
   prefs: []
   type: TYPE_TB
+  zh: '| エスケープシーケンス | 意味 |'
 - en: '| --- | --- |'
+  id: totrans-27
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `\''` | シングルクォート |'
+  id: totrans-28
   prefs: []
   type: TYPE_TB
+  zh: '| `\''` | シングルクォート |'
 - en: '| `\"` | ダブルクォート |'
+  id: totrans-29
   prefs: []
   type: TYPE_TB
+  zh: '| `\"` | ダブルクォート |'
 - en: '| `\`` | バッククォート |'
+  id: totrans-30
   prefs: []
   type: TYPE_TB
+  zh: '| `\`` | バッククォート |'
 - en: '| `\\` | バックスラッシュ(`\`そのものを表示する) |'
+  id: totrans-31
   prefs: []
   type: TYPE_TB
+  zh: '| `\\` | バックスラッシュ(`\`そのものを表示する) |'
 - en: '| `\n` | 改行 |'
+  id: totrans-32
   prefs: []
   type: TYPE_TB
+  zh: '| `\n` | 改行 |'
 - en: '| `\t` | タブ |'
+  id: totrans-33
   prefs: []
   type: TYPE_TB
+  zh: '| `\t` | タブ |'
 - en: '| `\uXXXX` | Code Unit(`\u`と4 桁のHexDigit) |'
+  id: totrans-34
   prefs: []
   type: TYPE_TB
+  zh: '| `\uXXXX` | Code Unit(`\u`と4 桁のHexDigit) |'
 - en: '| `\u{X}` ... `\u{XXXXXX}` | Code Point（`\u{}`のカッコ中にHexDigit） |'
+  id: totrans-35
   prefs: []
   type: TYPE_TB
+  zh: '| `\u{X}` ... `\u{XXXXXX}` | Code Point（`\u{}`のカッコ中にHexDigit） |'
 - en: このエスケープシーケンスを利用することで、先ほどの`"`（ダブルクォート）の中に改行（`\n`）を入力できます。
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: このエスケープシーケンスを利用することで、先ほどの`"`（ダブルクォート）の中に改行（`\n`）を入力できます。
 - en: '[PRE6]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: また、`\`からはじまる文字は自動的にエスケープシーケンスとして扱われます。 しかし、`\a`のように定義されていないエスケープシーケンスは、`\`が単に無視され`a`という文字列として扱われます。
     これにより、`\`（バックスラッシュ）そのものを入力していたつもりが、その文字がエスケープシーケンスとして扱われてしまう問題があります。
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: また、`\`からはじまる文字は自動的にエスケープシーケンスとして扱われます。 しかし、`\a`のように定義されていないエスケープシーケンスは、`\`が単に無視され`a`という文字列として扱われます。
+    これにより、`\`（バックスラッシュ）そのものを入力していたつもりが、その文字がエスケープシーケンスとして扱われてしまう問題があります。
 - en: 次のコードでは、`\_`という組み合わせのエスケープシーケンスはないため、`\`が無視された文字列として評価されます。
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、`\_`という組み合わせのエスケープシーケンスはないため、`\`が無視された文字列として評価されます。
 - en: '[PRE7]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '`\`（バックスラッシュ）そのものを入力したい場合は、`\\`のようにエスケープする必要があります。'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '`\`（バックスラッシュ）そのものを入力したい場合は、`\\`のようにエスケープする必要があります。'
 - en: '[PRE8]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '[](#concat)*文字列を結合する*'
+  id: totrans-43
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#concat)*文字列を結合する*'
 - en: '*文字列を結合する簡単な方法は文字列結合演算子（`+`）を使う方法です。'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '*文字列を結合する簡単な方法は文字列結合演算子（`+`）を使う方法です。'
 - en: '[PRE9]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 変数と文字列を結合したい場合も文字列結合演算子で行えます。
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 変数と文字列を結合したい場合も文字列結合演算子で行えます。
 - en: '[PRE10]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 特定の書式に文字列を埋め込むには、テンプレートリテラルを使うとより宣言的に書けます。
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 特定の書式に文字列を埋め込むには、テンプレートリテラルを使うとより宣言的に書けます。
 - en: テンプレートリテラル中に`${変数名}`で書かれた変数は評価時に展開されます。 つまり、先ほどの文字列結合は次のように書けます。
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: テンプレートリテラル中に`${変数名}`で書かれた変数は評価時に展開されます。 つまり、先ほどの文字列結合は次のように書けます。
 - en: '[PRE11]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[](#get-char)*文字へのアクセス*'
+  id: totrans-51
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#get-char)*文字へのアクセス*'
 - en: '*文字列の特定の位置にある文字にはインデックスを指定してアクセスできます。 これは、配列における要素へのアクセスにインデックスを指定するのと同じです。'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '*文字列の特定の位置にある文字にはインデックスを指定してアクセスできます。 これは、配列における要素へのアクセスにインデックスを指定するのと同じです。'
 - en: 文字列では`文字列[インデックス]`のように指定した位置（インデックス）の文字へアクセスできます。 インデックスの値は`0`以上`2⁵³ - 1`未満の整数が指定できます。
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 文字列では`文字列[インデックス]`のように指定した位置（インデックス）の文字へアクセスできます。 インデックスの値は`0`以上`2⁵³ - 1`未満の整数が指定できます。
 - en: '[PRE12]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: また、存在しないインデックスへのアクセスでは配列やオブジェクトと同じように`undefined`を返します。
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: また、存在しないインデックスへのアクセスでは配列やオブジェクトと同じように`undefined`を返します。
 - en: '[PRE13]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '[](#string-at)*[ES2022] `String.prototype.at`*'
+  id: totrans-57
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#string-at)*[ES2022] `String.prototype.at`*'
 - en: '*ES2022から`String.prototype.at`メソッドが追加されています。 Stringの`at`メソッドは、Arrayの`at`メソッドと同じく、相対的なインデックスを渡してその位置の文字へアクセスできます。
     `at`メソッドへ`-1`のようにマイナスのインデックスを渡した場合は、末尾から数えた位置の文字へアクセスできます。'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '*ES2022から`String.prototype.at`メソッドが追加されています。 Stringの`at`メソッドは、Arrayの`at`メソッドと同じく、相対的なインデックスを渡してその位置の文字へアクセスできます。
+    `at`メソッドへ`-1`のようにマイナスのインデックスを渡した場合は、末尾から数えた位置の文字へアクセスできます。'
 - en: '[PRE14]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[](#what-is-string)*文字列とは*'
+  id: totrans-60
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#what-is-string)*文字列とは*'
 - en: '*今まで何気なく「文字列」という言葉を利用していましたが、ここでいう文字列とはどのようなものでしょうか？　コンピュータのメモリ上に文字列の「ア」といった文字をそのまま保存できないため、0と1からなるビット列へ変換する必要があります。
     この文字からビット列へ変換することを符号化（エンコード）と呼びます。'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '*今まで何気なく「文字列」という言葉を利用していましたが、ここでいう文字列とはどのようなものでしょうか？　コンピュータのメモリ上に文字列の「ア」といった文字をそのまま保存できないため、0と1からなるビット列へ変換する必要があります。
+    この文字からビット列へ変換することを符号化（エンコード）と呼びます。'
 - en: 一方で、変換後のビット列が何の文字なのかを管理する表が必要になります。 この文字に対応するIDの一覧表のことを符号化文字集合と呼びます。
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 一方で、変換後のビット列が何の文字なのかを管理する表が必要になります。 この文字に対応するIDの一覧表のことを符号化文字集合と呼びます。
 - en: 次の表は、Unicodeという文字コードにおける符号化文字集合からカタカナの一部分を取り出したものです。^(1) Unicodeはすべての文字に対してID（Code
     Point）を振ることを目的に作成されている仕様です。
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 次の表は、Unicodeという文字コードにおける符号化文字集合からカタカナの一部分を取り出したものです。^(1) Unicodeはすべての文字に対してID（Code
+    Point）を振ることを目的に作成されている仕様です。
 - en: '|  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F |'
+  id: totrans-64
   prefs: []
   type: TYPE_TB
+  zh: '|  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F |'
 - en: '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
     | --- | --- | --- | --- |'
+  id: totrans-65
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+    | --- | --- | --- | --- |'
 - en: '| 30A0 | ゠ | ァ | ア | ィ | イ | ゥ | ウ | ェ | エ | ォ | オ | カ | ガ | キ | ギ | ク |'
+  id: totrans-66
   prefs: []
   type: TYPE_TB
+  zh: '| 30A0 | ら | り | り | り | り | り | り | り | り | り | り | り | り | り | り | り |'
 - en: '| 30B0 | グ | ケ | ゲ | コ | ゴ | サ | ザ | シ | ジ | ス | ズ | セ | ゼ | ソ | ゾ | タ |'
+  id: totrans-67
   prefs: []
   type: TYPE_TB
+  zh: '| 30B0 | れ | む | め | ろ | ろ | ろ | ろ | ろ | ろ | ろ | ろ | ろ | ろ | ろ | ろ | ろ |'
 - en: '| 30C0 | ダ | チ | ヂ | ッ | ��� | ヅ | テ | デ | �� | ド | ナ | ニ | ヌ | ネ | ノ | ハ |'
+  id: totrans-68
   prefs: []
   type: TYPE_TB
+  zh: '| 30C0 | ダ | チ | ヂ | ッ | ��� | ヅ | テ | デ | �� | ド | ナ | ニ | ヌ | ネ | ノ | ハ |'
 - en: JavaScript（ECMAScript）は文字コードとしてUnicodeを採用し、文字をエンコードする方式としてUTF-16を採用しています。 UTF-16とは、それぞれの文字を16ビットのビット列に変換するエンコード方式です。
     Unicodeでは1 文字を表すのに使う最小限のビットの組み合わせを**Code Unit**（符号単位）と呼び、UTF-16では各 Code Unitのサイズが16ビット（2バイト）です。
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript（ECMAScript）采用Unicode作为字符编码，并采用UTF-16作为编码文字的方式。UTF-16是将每个字符转换为16位位序列的编码方式。在Unicode中，用于表示1个字符的最小位组合称为**Code
+    Unit**（符号单元），UTF-16中每个Code Unit的大小为16位（2字节）。
 - en: 次のコードは、文字列を構成するCode Unitをhex 値（16 進数）にして表示する例です。 Stringの`charCodeAt`メソッドは、文字列の指定インデックスのCode
     Unitを整数として返します。 そのCode Unitの整数値をNumberの`toString`メソッドでhex 値（16 進数）にしています。
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码是显示构成字符串的Code Unit的hex值（十六进制）的示例。String的`charCodeAt`方法返回字符串指定索引的Code Unit的整数。然后使用Number的`toString`方法将这个Code
+    Unit的整数值转换为hex值（十六进制）。
 - en: '[PRE15]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 逆に、Code Unitをhex 値（16 進数）から文字へと変換するには`String.fromCharCode`メソッドを使います。 次のコードでは、16
     進数の整数リテラルである`0x`で記述したCode Unitから文字列へと変換しています （`0x`リテラルについては「データ型とリテラル」の章を参照）。
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，要将Code Unit转换为hex值（十六进制）并转换为字符，可以使用`String.fromCharCode`方法。下面的代码展示了如何将用`0x`表示的十六进制整数字面量转换为字符串（有关`0x`字面量，请参阅“数据类型和字面量”章节）。
 - en: '[PRE16]'
+  id: totrans-73
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: これらの結果をまとめると、この文字列と文字列を構成するUTF-16のCode Unitとの関係は次のようになります。
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结这些结果，这个字符串与构成它的UTF-16的Code Unit之间的关系如下。
 - en: '| インデックス | 0 | 1 | 2 |'
+  id: totrans-75
   prefs: []
   type: TYPE_TB
+  zh: '| 索引 | 0 | 1 | 2 |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-76
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| 文字列 | ア | オ | イ |'
+  id: totrans-77
   prefs: []
   type: TYPE_TB
+  zh: '| 文字串 | ア | オ | イ |'
 - en: '| UTF-16のCode Unit（16 進数） | 0x30A2 | 0x30AA | 0x30A4 |'
+  id: totrans-78
   prefs: []
   type: TYPE_TB
+  zh: '| UTF-16的Code Unit（十六进制） | 0x30A2 | 0x30AA | 0x30A4 |'
 - en: このように、JavaScriptにおける文字列は16ビットのCode Unitが順番に並んだものとして内部的に管理されています。 これは、ECMAScriptの内部表現としてUTF-16を採用しているだけで、JavaScriptファイル（ソースコードを書いたファイル）のエンコーディングとは関係ありません。そのため、JavaScriptファイル自体のエンコードは、UTF-16
     以外の文字コードであっても問題ありません。
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，JavaScript中的字符串在内部以16位的Code Unit顺序排列。这仅仅是ECMAScript的内部表示采用UTF-16，与JavaScript文件（编写的源代码文件）的编码无关。因此，即使JavaScript文件的编码不是UTF-16，也没有问题。
 - en: UTF-16を利用していることはJavaScriptの内部的な表現であるため、気にする必要がないようにも思えます。 しかし、このJavaScriptがUTF-16を利用していることは、これから見ていくStringのAPIにも影響しています。
     このUTF-16と文字列については、次の章である「文字列とUnicode」で詳しく見ていきます。
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: UTF-16的使用似乎是JavaScript的内部表示，因此似乎没有必要担心。然而，JavaScript使用UTF-16的事实对String的API也有影响。关于UTF-16和字符串，我们将在下一章“字符串与Unicode”中详细探讨。
 - en: ここでは、「JavaScriptの文字列の各要素はUTF-16のCode Unitで構成されている」ということだけを覚えておけば問題ありません。
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，只需记住“JavaScript中的字符串由UTF-16的Code Unit组成”这一点就足够了。
 - en: '[](#split-join)*文字列の分解と結合*'
+  id: totrans-82
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#split-join)*字符串的分解与连接*'
 - en: '*文字列を配列へ分解するにはStringの`split`メソッドを利用できます。 一方、配列の要素を結合して文字列にするにはArrayの`join`メソッドを利用できます。'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '*要将字符串分解为数组，可以使用String的`split`方法。另一方面，要将数组元素连接成字符串，可以使用Array的`join`方法。'
 - en: この２つはよく組み合わせて利用されるため、合わせて見ていきます。
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两个经常一起使用，所以我们一起来了解一下。
 - en: Stringの`split`メソッドは、第一引数に指定した区切り文字で文字列を分解した配列を返します。 次のコードでは、文字列を`・`で区切った配列を作成しています。
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: String的`split`方法返回一个使用指定的分隔符分割的字符串的数组。下面的代码展示了如何创建一个用`・`分割的数组。
 - en: '[PRE17]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 分解してできた文字列の配列を結合して文字列を作る際に、Arrayの`join`メソッドが利用できます。 Arrayの`join`メソッドの第一引数には区切り文字を指定し、その区切り文字で結合した文字列を返します。
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 在将分解后的字符串数组组合成字符串时，可以使用Array的`join`方法。Array的`join`方法的第一个参数是分隔符，它将使用该分隔符将字符串连接起来并返回。
 - en: この２つを合わせれば、区切り文字を`・`から`、`へ変換する処理を次のように書くことができます。 `・`で文字列を分割（`split`）してから、区切り文字を`、`にして結合（`join`）すれば変換できます。
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 将这两个结合起来，可以将分隔符从`・`转换为`、`的处理过程写成如下。首先用`・`分割字符串（`split`），然后用`、`连接（`join`）即可完成转换。
 - en: '[PRE18]'
+  id: totrans-89
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: Stringの`split`メソッドの第一引数には正規表現も指定できます。 これを利用すると、次のように文字列をスペースで区切るような処理を簡単に書けます。
     `/\s+/`は1つ以上のスペースにマッチする正規表現オブジェクトを作成する正規表現リテラルです。
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: String的`split`方法的第一个参数可以是正则表达式。利用这一点，可以轻松地编写如下分割字符串的处理过程。`/\s+/`是一个匹配一个或多个空格的正则表达式字面量，它创建了一个匹配该正则表达式的正则表达式对象。
 - en: '[PRE19]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: '[](#length)*文字列の長さ*'
+  id: totrans-92
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#length)*字符串的长度*'
 - en: '*Stringの`length`プロパティは文字列の要素数を返します。 文字列の構成要素はCode Unitであるため、`length`プロパティはCode
     Unitの個数を返します。'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: '*String的`length`属性返回字符串的元素数。由于字符串的构成元素是Code Unit，因此`length`属性返回Code Unit的数量。'
 - en: 次の文字列は3つの要素（Code Unit）が並んだものであるため、`length`プロパティは`3`を返します。
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于以下字符串由3个Code Unit组成，因此`length`属性返回`3`。
 - en: '[PRE20]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: また、空文字列は要素数が`0`であるため、`length`プロパティの結果も`0`となります。
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 另外，由于空字符串的元素数量为`0`，因此`length`属性的结果也是`0`。
 - en: '[PRE21]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '[](#compare)*文字列の比較*'
+  id: totrans-98
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#compare)*字符串的比较*'
 - en: '*文字列の比較には`===`（厳密比較演算子）を利用します。 次の条件を満たしていれば同じ文字列となります。'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '*使用`===`（严格比较运算符）进行字符串比较。如果满足以下条件，则字符串相同。'
 - en: 文字列の要素であるCode Unitが同じ順番で並んでいるか
+  id: totrans-100
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 字符串的元素Code Unit是否按相同的顺序排列
 - en: 文字列の長さ（length）は同じか
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 文字的长度（length）是否相同
 - en: 難しく書いていますが、同じ文字列同士なら`===`（厳密比較演算子）の結果は`true`となります。
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然写得复杂，但如果字符串相同，使用`===`（严格比较运算符）的结果将是`true`。
 - en: '[PRE22]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: また、`===`などの比較演算子だけではなく、 `>`、`<`、`>=`、`<=`など大小の関係演算子で文字列同士の比較もできます。
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，除了`===`等比较运算符之外，还可以使用`>`、`<`、`>=`、`<=`等大小关系运算符来比较字符串。
 - en: これらの関係演算子も、文字列の要素であるCode Unit 同士を先頭から順番に比較します。 文字列からCode Unitの数値を取得するには、Stringの`charCodeAt`メソッドを利用できます。
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些关系运算符也按顺序比较字符串的元素Code Unit。要从字符串中获取Code Unit的数值，可以使用String的`charCodeAt`方法。
 - en: 次のコードでは、`ABC`と`ABD`を比較した場合にどちらが大きい（Code Unitの値が大きい）かを比較しています。
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，比较了`ABC`和`ABD`哪个更大（Code Unit的值更大）。
 - en: '[PRE23]'
+  id: totrans-107
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: このように、関係演算子での文字列比較はCode Unit 同士を比較しています。 この結果を予測することは難しく、また直感的ではない結果が生まれることも多いです。
     文字の順番は国や言語によっても異なるため、国際化（Internationalization）に関する知識も必要です。
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，关系运算符中的字符串比较是针对Code Unit进行的。预测这个结果很困难，而且产生的结果往往不直观。因为字符的顺序可能因国家或语言而异，所以也需要国际化（Internationalization）相关的知识。
 - en: JavaScriptにおいても、[ECMA-402](https://www.ecma-international.org/publications-and-standards/standards/ecma-402/
     "Standard ECMA-402")というECMAScriptと関連する別の仕様として国際化についての取り決めがされています。 この国際化に関するAPIを定義した[Intl](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Intl)というビルトインオブジェクトもありますが、このAPIについての詳細は省略します。
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 在JavaScript中，也有一个与ECMAScript相关的ECMA-402这样的ECMAScript相关规范，它规定了国际化。还有一个名为[Intl](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Intl)的内置对象定义了这些国际化API，但关于这些API的详细内容将省略。
 - en: '[](#slice)*文字列の一部を取得*'
+  id: totrans-110
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#slice)*获取字符串的一部分*'
 - en: '*文字列からその一部を取り出したい場合には、Stringの`slice`メソッドや`substring`メソッドが利用できます。'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '*要从字符串中提取一部分，可以使用String的`slice`方法或`substring`方法。'
 - en: '`slice`メソッドについては、すでに配列で学んでいますが、基本的な動作は文字列でも同様です。 まずは`slice`メソッドについて見ていきます。'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '`slice`方法已经在数组中学习过，但基本操作在字符串中也是相同的。首先来看一下`slice`方法。'
 - en: Stringの`slice`メソッドは、第一引数の開始位置から第二引数の終了位置（終了位置の要素は含まない）までの範囲を取り出した新しい文字列を返します。
     第二引数は省略でき、省略した場合は文字列の末尾まで含んだ新しい文字列を返します。
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: Stringの`slice`メソッドは、第一引数の開始位置から第二引数の終了位置（終了位置の要素は含まない）までの範囲を取り出した新しい文字列を返します。
+    第二引数を省略した場合の挙動も同様で、省略した場合は文字列の末尾まで含んだ新しい文字列を返します。
 - en: 位置にマイナスの値を指定した場合は文字列の末尾から数えた位置となります。 また、第一引数の位置が第二引数の位置より大きい場合、常に空の文字列を返します。
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 位置にマイナスの値を指定した場合は文字列の末尾から数えた位置となります。 また、第一引数の位置が第二引数の位置より大きい場合、常に空の文字列を返します。
 - en: そのため、メソッドの引数の扱い方は配列の`slice`メソッドと同様です。
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: そのため、メソッドの引数の扱い方は配列の`slice`メソッドと同様です。
 - en: '[PRE24]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: Stringの`substring`メソッドは、`slice`メソッドと同じく第一引数に開始位置、第二引数に終了位置を指定し、その範囲を取り出して新しい文字列を返します。
     第二引数を省略した場合の挙動も同様で、省略した場合は文字列の末尾が終了位置となります。
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: Stringの`substring`メソッドは、`slice`メソッドと同じく第一引数に開始位置、第二引数に終了位置を指定し、その範囲を取り出して新しい文字列を返します。
+    第二引数を省略した場合の挙動も同様で、省略した場合は文字列の末尾が終了位置となります。
 - en: '`slice`メソッドとは異なる点として、位置にマイナスの値を指定した場合は常に`0`として扱われます。 また、第一引数の位置が第二引数の位置より大きい場合、第一引数と第二引数が入れ替わるという予想しにくい挙動となります。'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '`slice`メソッドとは異なる点として、位置にマイナスの値を指定した場合は常に`0`として扱われます。 また、第一引数の位置が第二引数の位置より大きい場合、第一引数と第二引数が入れ替わるという予想しにくい挙動となります。'
 - en: '[PRE25]'
+  id: totrans-119
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: このように、マイナスの位置や引数が交換される挙動はわかりやすいものとは言えません。 そのため、`slice`メソッドと`substring`メソッドに指定する引数は、どちらとも同じ結果となる範囲に限定したほうが直感的な挙動となります。
     つまり、指定するインデックスは0 以上にして、第二引数を指定する場合は`第一引数の位置 < 第二引数の位置`にするということです。
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: このように、マイナスの位置や引数が交換される挙動はわかりやすいものとは言えません。 そのため、`slice`メソッドと`substring`メソッドに指定する引数は、どちらとも同じ結果となる範囲に限定したほうが直感的な挙動となります。
+    つまり、指定するインデックスは0 以上にして、第二引数を指定する場合は`第一引数の位置 < 第二引数の位置`にするということです。
 - en: Stringの`slice`メソッドは、`indexOf`メソッドなどの位置を取得するものと組み合わせて使うことが多いでしょう。 次のコードでは、`?`の位置を`indexOf`メソッドで取得し、それ以降の文字列を`slice`メソッドで切り出しています。
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: Stringの`slice`メソッドは、`indexOf`メソッドなどの位置を取得するものと組み合わせて使うことが多いでしょう。 次のコードでは、`?`の位置を`indexOf`メソッドで取得し、それ以降の文字列を`slice`メソッドで切り出しています。
 - en: '[PRE26]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: また、配列とは異なりプリミティブ型の値である文字列は、`slice`メソッドと`substring`メソッド共に非破壊的です。 機能的な違いがほとんどないため、どちらを利用するかは好みの問題となるでしょう。
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: また、配列とは異なりプリミティブ型の値である文字列は、`slice`メソッドと`substring`メソッド共に非破壊的です。 機能的な違いがほとんどないため、どちらを利用するかは好みの問題となります。
 - en: '[](#search)*文字列の検索*'
+  id: totrans-124
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#search)*文字列の検索*'
 - en: '*文字列の検索方法として、大きく分けて文字列による検索と正規表現による検索があります。'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '*文字列の検索方法として、大きく分けて文字列による検索と正規表現による検索があります。*'
 - en: 指定した文字列が文字列中に含まれているかを検索する方法として、Stringメソッドには取得したい結果ごとにメソッドが用意���れています。 ここでは、次の3
     種類の結果を取得する方法について文字列と正規表現それぞれの検索方法を見ていきます。
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 指定した文字列が文字列中に含まれているかを検索する方法として、Stringメソッドには取得したい結果ごとにメソッドが用意���れています。 ここでは、次の3
+    種類の結果を取得する方法について文字列と正規表現それぞれの検索方法を見ていきます。
 - en: マッチした箇所のインデックスを取得
+  id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: マッチした箇所のインデックスを取得
 - en: マッチした文字列の取得
+  id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: マッチした文字列の取得
 - en: マッチしたかどうかの真偽値を取得
+  id: totrans-129
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: マッチしたかどうかの真偽値を取得
 - en: '[](#search-by-string)*文字列による検索*'
+  id: totrans-130
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#search-by-string)*文字列による検索*'
 - en: '*`String`オブジェクトには、指定した文字列で検索するメソッドが用意されています。'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`String`オブジェクトには、指定した文字列で検索するメソッドが用意されています。*'
 - en: '[](#search-index-by-string)*文字列によるインデックスの取得*'
+  id: totrans-132
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#search-index-by-string)*文字列によるインデックスの取得*'
 - en: '*Stringの`indexOf`メソッドと`lastIndexOf`メソッドは、指定した文字列で検索し、その文字列が最初に現れたインデックスを返します。
     これらは配列のArrayの`indexOf`メソッドと同じで、厳密等価演算子（`===`）で文字列を検索します。 一致する文字列がない場合は`-1`を返します。'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Stringの`indexOf`メソッドと`lastIndexOf`メソッドは、指定した文字列で検索し、その文字列が最初に現れたインデックスを返します。
+    これらは配列のArrayの`indexOf`メソッドと同じで、厳密等価演算子（`===`）で文字列を検索します。 一致する文字列がない場合は`-1`を返します。*'
 - en: '`文字列.indexOf("検索文字列")`: 先頭から検索し、指定された文字列が最初に現れたインデックスを返す'
+  id: totrans-134
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`文字列.indexOf("検索文字列")`: 先頭から検索し、指定された文字列が最初に現れたインデックスを返す'
 - en: '`文字列.lastIndexOf("検索文字列")`: 末尾から検索し、指定された文字列が最初に現れたインデックスを返す'
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`文字列.lastIndexOf("検索文字列")`: 末尾から検索し、指定された文字列が最初に現れたインデックスを返す'
 - en: どちらのメソッドも一致する文字列が複数個ある場合でも、指定した検索文字列を最初に見つけた時点で検索は��了します。
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: どちらのメソッドも一致する文字列が複数個ある場合でも、指定した検索文字列を最初に見つけた時点で検索は��了します。
 - en: '[PRE27]'
+  id: totrans-137
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: '[](#match-by-string)*文字列にマッチした文字列の取得*'
+  id: totrans-138
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#match-by-string)*文字列にマッチした文字列の取得*'
 - en: '*文字列を検索してマッチした文字列は、検索文字列そのものになるので自明です。'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '*文字列を検索してマッチした文字列は、検索文字列そのものになるので自明です。*'
 - en: 次のコードでは`"Script"`という文字列で検索していますが、その検索文字列にマッチする文字列はもちろん`"Script"`になります。
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは`"Script"`という文字列で検索していますが、その検索文字列にマッチする文字列はもちろん`"Script"`になります。
 - en: '[PRE28]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: '[](#test-by-string)*真偽値の取得*'
+  id: totrans-142
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#test-by-string)*真偽値の取得*'
 - en: '*「文字列」に「検索文字列」が含まれているかを検索する方法がいくつか用意されています。 次の3つのメソッドはES2015で導入されました。'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: '*「文字列」に「検索文字列」が含まれているかを検索する方法がいくつか用意されています。 次の3つのメソッドはES2015で導入されました。*'
 - en: '`String.prototype.startsWith(検索文字列)`^([ES2015]): 検索文字列が先頭にあるかの真偽値を返す'
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`String.prototype.startsWith(検索文字列)`^([ES2015]): 検索文字列が先頭にあるかの真偽値を返す'
 - en: '`String.prototype.endsWith(検索文字列)`^([ES2015]): 検索文字列が末尾にあるかの真偽値を返す'
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`String.prototype.endsWith(検索文字列)`^([ES2015]): 検索文字列が末尾にあるかの真偽値を返す'
 - en: '`String.prototype.includes(検索文字列)`^([ES2015]): 検索文字列を含むかの真偽値を返す'
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`String.prototype.includes(検索文字列)`^([ES2015]): 検索文字列を含むかの真偽値を返す'
 - en: 具体的な例をいくつか見てみましょう。
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 具体的な例をいくつか見てみましょう。
 - en: '[PRE29]'
+  id: totrans-148
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: '[](#regexp-object)*正規表現オブジェクト*'
+  id: totrans-149
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#regexp-object)*正規表現オブジェクト*'
 - en: '*文字列による検索では、固定の文字列にマッチするものしか検索できません。 一方で正規表現による検索では、あるパターン（規則性）にマッチするという柔軟な検索ができます。'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '*文字列による検索では、固定の文字列にマッチするものしか検索できません。 一方で正規表現による検索では、あるパターン（規則性）にマッチするという柔軟な検索ができます。*'
 - en: 正規表現は正規表現オブジェクト（`RegExp`オブジェクト）として表現されます。 正規表現オブジェクトはマッチする範囲を決める`パターン`と正規表現の検索モードを指定する`フラグ`の2つで構成されます。
     正規表現のパターン内では、次の文字は**特殊文字**と呼ばれ、特別な意味を持ちます。特殊文字として解釈されないように入力する場合には`\`（バックスラッシュ）でエスケープする必要があります。
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 正規表現は正規表現オブジェクト（`RegExp`オブジェクト）として表現されます。 正規表現オブジェクトはマッチする範囲を決める`パターン`と正規表現の検索モードを指定する`フラグ`の2つで構成されます。
+    正規表現のパターン内では、次の文字は**特殊文字**と呼ばれ、特別な意味を持ちます。特殊文字として解釈されないように入力する場合には`\`（バックスラッシュ）でエスケープする必要があります。
 - en: '[PRE30]'
+  id: totrans-152
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 正規表現オブジェクトを作成するには、正規表現リテラルと`RegExp`コンストラクタを使う2つの方法があります。
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 正規表現オブジェクトを作成するには、正規表現リテラルと`RegExp`コンストラクタを使う2つの方法があります。
 - en: '[PRE31]'
+  id: totrans-154
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 正規表現リテラルは、`/`と`/`のリテラル内に正規表現のパターンを書くことで、正規表現オブジェクトを作成できます。 次のコードでは、`+`という1 回以上の繰り返しを意味する特殊文字を使い、`a`が1
     回以上連続する文字列にマッチする正規表現オブジェクトを作成しています。
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 正規表現リテラルは、`/`と`/`のリテラル内に正規表現のパターンを書くことで、正規表現オブジェクトを作成できます。 次のコードでは、`+`という1 回以上の繰り返しを意味する特殊文字を使い、`a`が1
+    回以上連続する文字列にマッチする正規表現オブジェクトを作成しています。
 - en: '[PRE32]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 正規表現オブジェクトを作成するもうひとつの方法として`RegExp`コンストラクタがあります。 `RegExp`コンストラクタでは、文字列から正規表現オブジェクトを作成できます。
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 正規表現オブジェクトを作成するもうひとつの方法として`RegExp`コンストラクタがあります。 `RegExp`コンストラクタでは、文字列から正規表現オブジェクトを作成できます。
 - en: 次のコードでは、`RegExp`コンストラクタを使って`a`が1 文字以上連続している文字列にマッチする正規表現オブジェクトを作成しています。 これは先ほどの正規表現リテラルで作成した正規表現オブジェクトと同じ意味になります。
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、`RegExp`コンストラクタを使って`a`が1 文字以上連続している文字列にマッチする正規表現オブジェクトを作成しています。 これは先ほどの正規表現リテラルで作成した正規表現オブジェクトと同じ意味になります。
 - en: '[PRE33]'
+  id: totrans-159
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: '[](#difference-regexp-literal-regexp-constructor)*正規表現リテラルと`RegExp`コンストラクタの違い*'
+  id: totrans-160
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#difference-regexp-literal-regexp-constructor)*正規表現リテラルと`RegExp`コンストラクタの違い*'
 - en: '*正则表达式字面量和`RegExp`构造函数的区别在于正则表达式模式的评估时机不同。正则表达式字面量在源代码加载（解析）阶段评估正则表达式模式。另一方面，`RegExp`构造函数与普通函数一样，只有调用`RegExp`构造函数时才会评估正则表达式模式。'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: '*正则表达式字面量和`RegExp`构造函数的区别在于正则表达式模式的评估时机不同。正则表达式字面量在源代码加载（解析）阶段评估正则表达式模式。另一方面，`RegExp`构造函数与普通函数一样，只有调用`RegExp`构造函数时才会评估正则表达式模式。*'
 - en: 以单独的`[`为例，这是一个无效的模式正则表达式，我们来看看评估时机的不同之处。由于`[`需要与`]`配对使用，因此在正则表达式模式中单独使用会导致语法错误异常。
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 以单独的 `[` 为例，这是一个无效的模式正则表达式，我们来看看评估时机的不同之处。由于 `[` 需要与 `]` 配对使用，因此在正则表达式模式中单独使用会导致语法错误异常。
 - en: 正则表达式字面量在代码加载时会评估正则表达式模式，因此，即使没有调用`main`函数，也会导致语法错误（`SyntaxError`）。
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式字面量在代码加载时会评估正则表达式模式，因此，即使没有调用 `main` 函数，也会导致语法错误（`SyntaxError`）。
 - en: '[PRE34]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 另一方面，`RegExp`构造函数在运行时评估正则表达式模式，因此只有调用`main`函数时才会出现语法错误（`SyntaxError`）。
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，`RegExp` 构造函数在运行时评估正则表达式模式，因此只有调用 `main` 函数时才会出现语法错误（`SyntaxError`）。
 - en: '[PRE35]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: 这意味着，正则表达式字面量是在编写代码时创建固定模式的正则表达式对象。另一方面，`RegExp`构造函数可以创建在运行时可能变化的模式的正则表达式对象，例如与变量结合使用。
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着，正则表达式字面量是在编写代码时创建固定模式的正则表达式对象。另一方面，`RegExp` 构造函数可以创建在运行时可能变化的模式的正则表达式对象，例如与变量结合使用。
 - en: 例如，我们将比较使用正则表达式对象匹配连续空格的情况。
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，我们将比较使用正则表达式对象匹配连续空格的情况。
 - en: 在下面的代码中，使用正则表达式字面量创建一个匹配连续 3 个空格的正则表达式对象。`\s`匹配空格或制表符等空白字符。另外，`{number}`表示重复指定次数的特殊字符。
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，使用正则表达式字面量创建一个匹配连续 3 个空格的正则表达式对象。`\s` 匹配空格或制表符等空白字符。另外，`{number}` 表示重复指定次数的特殊字符。
 - en: '[PRE36]'
+  id: totrans-170
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: 正则表达式字面量在加载时评估正则表达式模式，因此无法动态更改`\s`连续出现的次数。另一方面，`RegExp`构造函数在运行时评估正则表达式模式，因此可以创建包含变量的正则表达式对象。
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式字面量在加载时评估正则表达式模式，因此无法动态更改 `\s` 连续出现的次数。另一方面，`RegExp` 构造函数在运行时评估正则表达式模式，因此可以创建包含变量的正则表达式对象。
 - en: 在下面的代码中，使用`RegExp`构造函数根据变量`spaceCount`的数量创建一个匹配连续空格的正则表达式对象。需要注意的是，`\`（反斜杠）本身在字符串中是转义字符，请注意在`RegExp`构造函数的模式字符串中，以`\`（反斜杠）开头的特殊字符需要转义。
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，使用 `RegExp` 构造函数根据变量 `spaceCount` 的数量创建一个匹配连续空格的正则表达式对象。需要注意的是，`\`（反斜杠）本身在字符串中是转义字符，请注意在
+    `RegExp` 构造函数的模式字符串中，以 `\`（反斜杠）开头的特殊字符需要转义。
 - en: '[PRE37]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: 因此，`RegExp`构造函数可以从字符串创建正则表达式对象，但需要对特殊字符进行转义。因此，在可以使用正则表达式字面量的情况下，最好使用字面量，因为它更简洁且性能更好。当需要在正则表达式模式中使用变量时，可以使用`RegExp`构造函数。
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，`RegExp` 构造函数可以从字符串创建正则表达式对象，但需要对特殊字符进行转义。因此，在可以使用正则表达式字面量的情况下，最好使用字面量，因为它更简洁且性能更好。当需要在正则表达式模式中使用变量时，可以使用
+    `RegExp` 构造函数。
 - en: '[*通过正则表达式搜索*'
+  id: totrans-175
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[*通过正则表达式搜索*'
 - en: '*通过正则表达式搜索，使用与 String 对象或 RegExp 对象对应的方法。'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: '*通过正则表达式搜索，使用与 String 对象或 RegExp 对象对应的方法。'
 - en: '[](#search-index-by-regexp)*通过正则表达式获取索引*'
+  id: totrans-177
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#search-index-by-regexp)*通过正则表达式获取索引*'
 - en: '*String 的`indexOf`方法的正则表达式版本是 String 的`search`方法。`search`方法返回与正则表达式模式匹配的位置的索引，如果没有匹配的字符串，则返回`-1`。'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: '*String 的 `indexOf` 方法的正则表达式版本是 String 的 `search` 方法。`search` 方法返回与正则表达式模式匹配的位置的索引，如果没有匹配的字符串，则返回
+    `-1`。'
 - en: '`String.prototype.indexOf(searchString)`: 返回匹配的字符串的索引'
+  id: totrans-179
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`String.prototype.indexOf(searchString)`：返回匹配的字符串的索引'
 - en: '`String.prototype.search(/pattern/)`: 返回与指定正则表达式模式匹配的位置的索引'
+  id: totrans-180
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`String.prototype.search(/pattern/`)：返回与指定正则表达式模式匹配的位置的索引'
 - en: 在下面的代码中，搜索连续 3 个数字，并返回匹配位置的索引。`\d`是匹配单个数字（`0`到`9`）的特殊字符。
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，搜索连续 3 个数字，并返回匹配位置的索引。`\d` 是匹配单个数字（`0` 到 `9`）的特殊字符。
 - en: '[PRE38]'
+  id: totrans-182
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: '[](#match-by-regexp)*通过正则表达式匹配的字符串获取*'
+  id: totrans-183
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#match-by-regexp)*通过正则表达式匹配的字符串获取*'
 - en: '*通过字符串搜索，搜索到的字符串本身就是匹配的字符串。然而，使用`search`方法的正则表达式搜索是基于正则表达式模式的搜索，因此搜索到的匹配字符串的长度是不固定的。换句话说，即使只获取`search`方法返回的匹配索引，实际匹配的字符串也无法得知。'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: '*通过字符串搜索，搜索到的字符串本身就是匹配的字符串。然而，使用 `search` 方法的正则表达式搜索是基于正则表达式模式的搜索，因此搜索到的匹配字符串的长度是不固定的。换句话说，即使只获取
+    `search` 方法返回的匹配索引，实际匹配的字符串也无法得知。'
 - en: '[PRE39]'
+  id: totrans-185
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: 因此，提供了获取匹配字符串的 String 的`match`方法和`matchAll`方法。此外，这些方法通过正则表达式的全局匹配`g`标志来改变行为。
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，提供了获取匹配字符串的 String 的 `match` 方法和 `matchAll` 方法。此外，这些方法通过正则表达式的全局匹配 `g` 标志来改变行为。
 - en: '[](#match)*匹配的字符串获取*'
+  id: totrans-187
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: '[](#match)*匹配的字符串获取*'
 - en: '*首先，让我们从 String 的`match`方法开始查看获取匹配的字符串。`match`方法用于在正则表达式`/pattern/`与`"string"`匹配时返回有关匹配字符串的信息。'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: '*首先，让我们从 String 的 `match` 方法开始查看获取匹配的字符串。`match` 方法用于在正则表达式 `/pattern/` 与 `"string"`
+    匹配时返回有关匹配字符串的信息。'
 - en: '[PRE40]'
+  id: totrans-189
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: 如果使用`match`方法搜索，但没有匹配正则表达式的字符串，则返回`null`。
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果使用 `match` 方法搜索，但没有匹配正则表达式的字符串，则返回 `null`。
 - en: '[PRE41]'
+  id: totrans-191
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 当使用不带`g`标志的正则表达式模式进行搜索时，`match`方法会在找到第一个匹配项时结束搜索。此时，`match`方法的返回值是一个特殊数组，包含`index`属性和`input`属性。`index`属性包含匹配字符串的起始索引，`input`属性包含整个搜索字符串。
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用不带 `g` 标志的正则表达式模式进行搜索时，`match` 方法会在找到第一个匹配项时结束搜索。此时，`match` 方法的返回值是一个特殊数组，包含
+    `index` 属性和 `input` 属性。`index` 属性包含匹配字符串的起始索引，`input` 属性包含整个搜索字符串。
 - en: 下面的代码中的`/[a-zA-Z]+/`正则表达式将匹配一个或多个连续的`a`到`Z`之间的字符。这个正则表达式匹配的字符串可以通过索引访问返回的数组中获取。没有`g`标志时，只有一个匹配项时搜索会结束，因此返回的数组只包含一个元素。
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码中的 `/[a-zA-Z]+/` 正则表达式将匹配一个或多个连续的 `a` 到 `Z` 之间的字符。这个正则表达式匹配的字符串可以通过索引访问返回的数组中获取。没有
+    `g` 标志时，只有一个匹配项时搜索会结束，因此返回的数组只包含一个元素。
 - en: '[PRE42]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: '`match`方法在使用带有`g`标志的正则表达式模式进行搜索时，将返回包含所有匹配字符串的数组。'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '`match` 方法在使用带有 `g` 标志的正则表达式模式进行搜索时，将返回包含所有匹配字符串的数组。'
 - en: 下面的代码中的`/[a-zA-Z]+/g`正则表达式将匹配一个或多个连续的`a`到`Z`之间的字符。这个正则表达式匹配的位置是"ABC"和"DE"，因此`match`方法返回的数组中包含
     2 个元素。
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码中的 `/[a-zA-Z]+/g` 正则表达式将匹配一个或多个连续的 `a` 到 `Z` 之间的字符。这个正则表达式匹配的位置是 "ABC"
+    和 "DE"，因此 `match` 方法返回的数组中包含 2 个元素。
 - en: '[PRE43]'
+  id: totrans-197
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: 在这种情况下，`match`方法返回的数组不包含`index`和`input`属性。 这是因为在多个匹配位置的情况下，单个`index`属性无法唯一确定意义。
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，`match` 方法返回的数组不包含 `index` 和 `input` 属性。这是因为在多个匹配位置的情况下，单个 `index` 属性无法唯一确定意义。
 - en: 总结 String 的`match`方法的行为如下。
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结 String 的 `match` 方法的行为如下。
 - en: 如果没有匹配，则返回`null`
+  id: totrans-200
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果没有匹配，则返回 `null`
 - en: 如果匹配成功，则返回包含匹配字符串的特殊数组
+  id: totrans-201
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果匹配成功，则返回包含匹配字符串的特殊数组
 - en: 当使用正则表达式的`g`标志时，返回包含所有匹配结果的普通数组
+  id: totrans-202
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当使用正则表达式的 `g` 标志时，返回包含所有匹配结果的普通数组
 - en: 在 ES2020 中，引入了 String 的`matchAll`方法，用于使用正则表达式的`g`标志进行重复匹配。 `matchAll`方法返回一个
     Iterator，其中包含匹配的结果。
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 ES2020 中，引入了 String 的 `matchAll` 方法，用于使用正则表达式的 `g` 标志进行重复匹配。`matchAll` 方法返回一个
+    Iterator，其中包含匹配的结果。
 - en: 下面的代码获取了与字母匹配的结果的 Iterator 对象。 Iterator 对象可以通过`for...of`语法进行迭代处理，从而逐个获取 Iterator
     中的值进行处理（有关详细信息，请参阅“循环和迭代”章节）。 在这种迭代处理中，可以获取每个匹配的字符串以及具有`index`和`input`属性的特殊数组。
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码获取了与字母匹配的结果的 Iterator 对象。Iterator 对象可以通过 `for...of` 语法进行迭代处理，从而逐个获取 Iterator
+    中的值进行处理（有关详细信息，请参阅“循环和迭代”章节）。在这种迭代处理中，可以获取每个匹配的字符串以及具有 `index` 和 `input` 属性的特殊数组。
 - en: '[PRE44]'
+  id: totrans-205
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: 因此，当使用正则表达式的`g`标志进行重复匹配时，应该使用`matchAll`方法，而不是`match`方法。 另外，由于`matchAll`方法不支持没有`g`标志的正则表达式，因此如果传递没有`g`标志的正则表达式，则会引发异常。
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，当使用正则表达式的 `g` 标志进行重复匹配时，应该使用 `matchAll` 方法，而不是 `match` 方法。另外，由于 `matchAll`
+    方法不支持没有 `g` 标志的正则表达式，因此如果传递没有 `g` 标志的正则表达式，则会引发异常。
 - en: '[](#match-capture-by-regexp)*获取匹配字符串的一部分*'
+  id: totrans-207
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#match-capture-by-regexp)*获取匹配字符串的一部分*'
 - en: '*String 的`match`方法和`matchAll`方法都支持正则表达式的捕获。 捕获是指在正则表达式中使用`/pattern1(pattern2)/`这样的括号括起来的部分。
     通过这种捕获，可以提取正则表达式匹配的部分。'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: '*String 的 `match` 方法和 `matchAll` 方法都支持正则表达式的捕获。捕获是指在正则表达式中使用 `/pattern1(pattern2)/`
+    这样的括号括起来的部分。通过这种捕获，可以提取正则表达式匹配的部分。'
 - en: '`match`方法和`matchAll`方法都将匹配结果作为数组返回。'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: '`match` 方法和 `matchAll` 方法都将匹配结果作为数组返回。'
 - en: 如果匹配的模式中包含捕获，则返回的数组将逐渐添加捕获的部分。 数组的开头包含整个匹配的字符串，然后按顺序包含捕获（用`(`和`)`括起来的部分）。
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果匹配的模式中包含捕获，则返回的数组将逐渐添加捕获的部分。数组的开头包含整个匹配的字符串，然后按顺序包含捕获（用 `(` 和 `)` 括起来的部分）。
 - en: '[PRE45]'
+  id: totrans-211
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: 下面的代码尝试提取`ECMAScript 数字`中的`数字`部分。 通过 String 的`match`方法和捕获，提取了与数字(`\d+`)匹配的部分。
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码尝试提取 `ECMAScript 数字` 中的 `数字` 部分。通过 String 的 `match` 方法和捕获，提取了与数字 (`\d+`)
+    匹配的部分。
 - en: '[PRE46]'
+  id: totrans-213
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: 当使用正则表达式的`g`标志重复匹配字符串时，应该使用`matchAll`方法。 正如前面介绍的那样，`match`方法无法在重复匹配时获取各自独立的匹配信息。
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用正则表达式的 `g` 标志重复匹配字符串时，应该使用 `matchAll` 方法。正如前面介绍的那样，`match` 方法无法在重复匹配时获取各自独立的匹配信息。
 - en: 下面的代码尝试提取`ES 数字`中的数字(`\d+`)。 通过迭代处理`matchAll`的返回值，可以提取每个匹配的捕获。
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码尝试提取 `ES 数字` 中的数字 (`\d+`)。通过迭代处理 `matchAll` 的返回值，可以提取每个匹配的捕获。
 - en: '[PRE47]'
+  id: totrans-216
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: '[](#regexp-exec)*[专栏] 使用 RegExp.prototype.exec 进行 String.prototype.matchAll*'
+  id: totrans-217
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#regexp-exec)*[专栏] 使用 RegExp.prototype.exec 进行 String.prototype.matchAll*'
 - en: '*String 的`matchAll`方法是在 ES2020 中引入的方法。 在那之前，我们使用类似于 String 的`match`方法的 RegExp
     的`exec`方法来实现类似于 String 的`matchAll`方法的表达。'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '*String 的`matchAll`方法是在 ES2020 中引入的方法。 在那之前，我们使用类似于 String 的`match`方法的 RegExp
+    的`exec`方法来实现类似于 String 的`matchAll`方法的表达。'
 - en: RegExp 的`exec`方法是接受字符串参数的方法。
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: RegExp 的`exec`方法是接受字符串参数的方法。
 - en: '[PRE48]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: 当使用没有`g`标志的模式进行搜索时，RegExp 的`exec`方法将返回一个包含仅匹配的第一个结果的特殊数组。 在这种情况下，返回的数组具有添加了`index`属性和`input`属性的特殊数组，与
     String 的`match`方法类似。
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用没有`g`标志的模式进行搜索时，RegExp 的`exec`方法将返回一个包含仅匹配的第一个结果的特殊数组。 在这种情况下，返回的数组具有添加了`index`属性和`input`属性的特殊数组，与
+    String 的`match`方法类似。
 - en: '[PRE49]'
+  id: totrans-222
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: 即使在使用具有`g`标志的模式进行搜索时，RegExp 的`exec`方法也将返回一个包含仅匹配的第一个结果的特殊数组。 这一点与 String 的`match`方法不同。
     此外，它还将匹配的字符串末尾索引记录在正则表达式对象的`lastIndex`属性中。 然后再次调用`exec`方法时，将从最后一个匹配的末尾索引（`lastIndex`属性位置）开始搜索。
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使在使用具有`g`标志的模式进行搜索时，RegExp 的`exec`方法也将返回一个包含仅匹配的第一个结果的特殊数组。 这一点与 String 的`match`方法不同。
+    此外，它还将匹配的字符串末尾索引记录在正则表达式对象的`lastIndex`属性中。 然后再次调用`exec`方法时，将从最后一个匹配的末尾索引（`lastIndex`属性位置）开始搜索。
 - en: '[PRE50]'
+  id: totrans-224
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: 总结 RegExp 的`exec`方法的行为如下。 如果正则表达式没有`g`标志，则结果与 String 的`match`方法相同。 另一方面，如果正则表达式有`g`标志，则行为与
     String 的`match`方法不同。
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结 RegExp 的`exec`方法的行为如下。 如果正则表达式没有`g`标志，则结果与 String 的`match`方法相同。 另一方面，如果正则表达式有`g`标志，则行为与
+    String 的`match`方法不同。
 - en: 如果没有匹配，则返回`null`
+  id: totrans-226
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果没有匹配，则返回`null`
 - en: 如果匹配成功，则返回包含匹配字符串的特殊数组
+  id: totrans-227
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果匹配成功，则返回包含匹配字符串的特殊数组
 - en: 当使用正则表达式的`g`标志时，返回包含匹配字符串的特殊数组，并将匹配的末尾索引记录在正则表达式对象的`lastIndex`属性中
+  id: totrans-228
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当使用正则表达式的`g`标志时，返回包含匹配字符串的特殊数组，并将匹配的末尾索引记录在正则表达式对象的`lastIndex`属性中
 - en: 利用正则表达式的`g`标志和`exec`方法进行搜索时，可以利用`lastIndex`属性在每次搜索时更新，从而获取所有匹配的结果。
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 利用正则表达式的`g`标志和`exec`方法进行搜索时，可以利用`lastIndex`属性在每次搜索时更新，从而获取所有匹配的结果。
 - en: 下面的代码使用了 RegExp 的`exec`方法，将匹配字母的结果存储在`matches`中。 在具有`g`标志的情况下，`exec`方法会记录最后一个匹配位置，因此在`while`循环中进行迭代处理并从上次匹配的位置继续搜索。
     此外，由于`exec`方法在没有匹配时会返回`null`，因此一旦没有匹配项，就会自动退出 while 循环。
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码使用了 RegExp 的`exec`方法，将匹配字母的结果存储在`matches`中。 在具有`g`标志的情况下，`exec`方法会记录最后一个匹配位置，因此在`while`循环中进行迭代处理并从上次匹配的位置继续搜索。
+    此外，由于`exec`方法在没有匹配时会返回`null`，因此一旦没有匹配项，就会自动退出 while 循环。
 - en: '[PRE51]'
+  id: totrans-231
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: 使用 RegExp 的`exec`方法和正则表达式的`g`标志，实现了类似于 String 的`matchAll`方法的迭代处理。 RegExp 的`exec`方法是一种在引入迭代处理对象之前就存在的方法。
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 RegExp 的`exec`方法和正则表达式的`g`标志，实现了类似于 String 的`matchAll`方法的迭代处理。 RegExp 的`exec`方法是一种在引入迭代处理对象之前就存在的方法。
 - en: 与 String 的`matchAll`方法处理 Iterator 的直观迭代相比，RegExp 的`exec`方法需要手动编写`while`循环等迭代处理，因此不够直观。
     因此，在可以使用 String 的`matchAll`方法的情况下，就不需要使用 RegExp 的`exec`方法。
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 String 的`matchAll`方法处理 Iterator 的直观迭代相比，RegExp 的`exec`方法需要手动编写`while`循环等迭代处理，因此不够直观。
+    因此，在可以使用 String 的`matchAll`方法的情况下，就不需要使用 RegExp 的`exec`方法。
 - en: '[](#test-by-regexp)*获取布尔值*'
+  id: totrans-234
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#test-by-regexp)*获取布尔值*'
 - en: '*使用正则表达式对象，可以使用 RegExp 的`test`方法来测试是否匹配该模式。'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: '*使用正则表达式对象，可以使用 RegExp 的`test`方法来测试是否匹配该模式。'
 - en: 正则表达式的模式中有指定位置的特殊字符。因此，“基于字符串的搜索”中提到的方法可以使用特殊字符和 RegExp 的`test`方法来表示。
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式的模式中有指定位置的特殊字符。因此，“基于字符串的搜索”中提到的方法可以使用特殊字符和 RegExp 的`test`方法来表示。
 - en: String 的`startsWith`等效于：`/^pattern/.test(string)`
+  id: totrans-237
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: String 的`startsWith`等效于：`/^pattern/.test(string)`
 - en: '`^`表示匹配开头的特殊字符'
+  id: totrans-238
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`^`表示匹配开头的特殊字符'
 - en: String 的`endsWith`等效于：`/pattern$/.test(string)`
+  id: totrans-239
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: String 的`endsWith`等效于：`/pattern$/.test(string)`
 - en: '`$`表示匹配末尾的特殊字符'
+  id: totrans-240
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`$`表示匹配末尾的特殊字符'
 - en: String 的`includes`等效于：`/pattern/.test(string)`
+  id: totrans-241
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: String 的`includes`等效于：`/pattern/.test(string)`
 - en: 让我们看一个具体的例子。
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个具体的例子。
 - en: '[PRE52]'
+  id: totrans-243
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: 此外，正则表达式还可以使用重复和字符集等特殊字符来实现灵活的搜索。
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，正则表达式还可以使用重复和字符集等特殊字符来实现灵活的搜索。
 - en: '[](#string-or-regexp)*使用字符串还是正则表达式*'
+  id: totrans-245
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#string-or-regexp)*使用字符串还是正则表达式*'
 - en: '*我们已经知道，正则表达式和 String 方法可以实现相同的搜索。当 String 方法和正则表达式可以获得相同结果时，应该选择哪一个呢？'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我们已经知道，正则表达式和 String 方法可以实现相同的搜索。当 String 方法和正则表达式可以获得相同结果时，应该选择哪一个呢？'
 - en: 正则表达式对模糊搜索有很强的支持，并且可以使用特殊字符获得灵活的搜索结果。另一方面，由于模糊性，有时很难从正则表达式的模式本身看出代码正在搜索什么。
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式对模糊搜索有很强的支持，并且可以使用特殊字符获得灵活的搜索结果。另一方面，由于模糊性，有时很难从正则表达式的模式本身看出代码正在搜索什么。
 - en: 下面的例子尝试判断从`/`开始到`/`结束的字符串。这个判断分别使用了正则表达式和 String 方法来实现（这是一个故意不利于正则表达式的例子）。
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的例子尝试判断从`/`开始到`/`结束的字符串。这个判断分别使用了正则表达式和 String 方法来实现（这是一个故意不利于正则表达式的例子）。
 - en: 在正则表达式的情况下，即使看到`/^\/.*\/$/`这样的模式，也很难一眼看出想要做什么。而在 String 方法的情况下，可以直接将判断是否以`/`开头并以`/`结尾的内容表达为代码。
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 在正则表达式的情况下，即使看到`/^\/.*\/$/`这样的模式，也很难一眼看出想要做什么。而在 String 方法的情况下，可以直接将判断是否以`/`开头并以`/`结尾的内容表达为代码。
 - en: '[PRE53]'
+  id: totrans-250
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: 正则表达式灵活且方便，但很容易在代码中失去意图。因此，在处理正则表达式时，最好使用注释或变量名来说明具体意图。
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式灵活且方便，但很容易在代码中失去意图。因此，在处理正则表达式时，最好使用注释或变量名来说明具体意图。
 - en: 回到“使用 String 方法和正则表达式获得相同结果时应该选择哪个？”的疑问。建议在可以使用 String 方法表达的情况下使用 String 方法，而在需要灵活性或模糊搜索时，建议使用带有注释和变量名的正则表达式。
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 回到“使用 String 方法和正则表达式获得相同结果时应该选择哪个？”的疑问。建议在可以使用 String 方法表达的情况下使用 String 方法，而在需要灵活性或模糊搜索时，建议使用带有注释和变量名的正则表达式。
 - en: '要了解更多关于正则表达式的信息，请参考[MDN 的正则表达式文档](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Regular_Expressions
     "正则表达式 - JavaScript | MDN")或者可以在控制台中尝试的[regex101](https://regex101.com/ "Online
     regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript")等网站。'
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: '要了解更多关于正则表达式的信息，请参考[MDN 的正则表达式文档](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Regular_Expressions
+    "正则表达式 - JavaScript | MDN")或者可以在控制台中尝试的[regex101](https://regex101.com/ "Online
+    regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript")等网站。'
 - en: '[](#replace-delete)*替换/删除字符串*'
+  id: totrans-254
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#replace-delete)*替换/删除字符串*'
 - en: '*要替换或删除字符串的一部分，可以使用 String 的`replace`方法。正如在“数据类型和字面量”中所述，作为不可变的原始类型，字符串无法删除部分字符。'
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: '*要替换或删除字符串的一部分，可以使用 String 的`replace`方法。正如在“数据类型和字面量”中所述，作为不可变的原始类型，字符串无法删除部分字符。'
 - en: 换句话说，`delete`运算符不能用于字符串。在严格模式下，如果尝试删除无法删除的属性，将会导致错误。在非严格模式下，将会被忽略而不会报错（详细信息请参考“JavaScript
     是什么”中的严格模式）。
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，`delete`运算符不能用于字符串。在严格模式下，如果尝试删除无法删除的属性，将会导致错误。在非严格模式下，将会被忽略而不会报错（详细信息请参考“JavaScript
+    是什么”中的严格模式）。
 - en: '[PRE54]'
+  id: totrans-257
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: 相反，String 的`replace`方法可以通过返回删除所需字符的新字符串来表示删除。`replace`方法会将**字符串**中与第一个参数`搜索字符串`或正则表达式匹配的部分替换为第二个��数`替换字符串`。���一个参数可以是字符串也可以是正则表达式。
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，String 的`replace`方法可以通过返回删除所需字符的新字符串来表示删除。`replace`方法会将**字符串**中与第一个参数`搜索字符串`或正则表达式匹配的部分替换为第二个参数`替换字符串`。一个参数可以是字符串也可以是正则表达式。
 - en: '[PRE55]'
+  id: totrans-259
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: 如下所示，通过将要删除的部分替换为空字符串，可以删除字符串。
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 如下所示，通过将要删除的部分替换为空字符串，可以删除字符串。
 - en: '[PRE56]'
+  id: totrans-261
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: '`replace`方法也可以指定正则表达式。通过传递启用`g`标志的正则表达式，可以替换字符串中与模式匹配的所有内容。'
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: '`replace`方法也可以指定正则表达式。通过传递启用`g`标志的正则表达式，可以替换字符串中与模式匹配的所有内容。'
 - en: '[PRE57]'
+  id: totrans-263
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: 当需要将字符串中所有匹配搜索字符串的内容全部替换时，可以使用 ES2021 中新增的 String 的`replaceAll`方法。在`replace`方法中，只会替换第一个匹配的内容，而在`replaceAll`方法中，会替换所有匹配的内容。
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 当需要将字符串中所有匹配搜索字符串的内容全部替换时，可以使用 ES2021 中新增的 String 的`replaceAll`方法。在`replace`方法中，只会替换第一个匹配的内容，而在`replaceAll`方法中，会替换所有匹配的内容。
 - en: 与使用 String 的`replace`和带有`g`标志的正则表达式的区别在于，String 的`replaceAll`方法可以使用字符串而不是正则表达式来替换所有内容。因此，在`replaceAll`方法中，甚至可以直接将具有特殊含义的字符（如`?`）作为搜索字符串写入并进行替换。
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 与使用String的`replace`方法和带有`g`标志的正则表达式的区别在于，String的`replaceAll`方法可以使用字符串而不是正则表达式来替换所有内容。因此，在`replaceAll`方法中，甚至可以直接将具有特殊含义的字符（如`?`）作为搜索字符串写入并进行替换。
 - en: '[PRE58]'
+  id: totrans-266
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE58]'
 - en: 在`replace`方法和`replaceAll`方法中，可以使用捕获的字符串执行复杂的替换操作。
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`replace`方法和`replaceAll`方法中，可以使用捕获的字符串执行复杂的替换操作。
 - en: 可以将回调函数传递给`replace`方法和`replaceAll`方法的第二个参数。与第一个参数`模式`匹配的部分将被回调函数的返回值替换。回调函数的第一个参数是整个匹配的字符串，第二个参数及以后是按顺序捕获的字符串。
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以将回调函数传递给`replace`方法和`replaceAll`方法的第二个参数。与第一个参数`模式`匹配的部分将被回调函数的返回值替换。回调函数的第一个参数是整个匹配的字符串，后续参数是按顺序捕获的字符串。
 - en: '[PRE59]'
+  id: totrans-269
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE59]'
 - en: 举例来说，让我们写一个处理将`2017-03-01`替换为`2017 年 03 月 01 日`的过程。
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 举例来说，让我们写一个将`2017-03-01`替换为`2017 年 03 月 01 日`的过程。
 - en: '`/(\d{4})-(\d{2})-(\d{2})/g`这个正则表达式将匹配`"2017-03-01"`这个字符串。`year`、`month`、`day`分别包含捕获的字符串，整个匹配的字符串将被回调函数的返回值替换。'
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式`/(\d{4})-(\d{2})-(\d{2})/g`将匹配字符串`"2017-03-01"`。`year`、`month`、`day`分别包含捕获的字符串，整个匹配的字符串将被回调函数的返回值替换。
 - en: '[PRE60]'
+  id: totrans-272
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE60]'
 - en: '[](#built)*构建字符串*'
+  id: totrans-273
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#built)*构建字符串*'
 - en: '*最后让我们来看看如何构建字符串。正如本章开头所述，本章的目的是“学会自由地构建字符串”。'
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: '*最后让我们来看看如何构建字符串。正如本章开头所述，本章的目的是“学会自由地构建字符串”。'
 - en: 通过简单地连接或替换字符串，我们可以创建新的字符串。然而，在处理结构化字符串时，仅仅简单地连接可能会导致意义不同。
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过简单地连接或替换字符串，我们可以创建新的字符串。然而，在处理结构化字符串时，仅仅简单地连接可能会导致意义不同。
 - en: ここでの構造的な文字列とは、URL 文字列やファイルパス文字列といった文字列中にコンテキストを持っているものを指します。 たとえば、URL 文字列は次のような構造を持っており、それぞれの要素に入る文字列の種類などが決められています（詳細は「[URL
     Standard](https://url.spec.whatwg.org/ "URL Standard")」を参照）。
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，所说的结构化字符串是指字符串中包含有上下文的字符串，例如URL字符串具有以下结构，其中每个元素进入的字符串类型等都有规定（详细信息请参考「[URL标准](https://url.spec.whatwg.org/
+    "URL Standard")」）。
 - en: '[PRE61]'
+  id: totrans-277
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE61]'
 - en: これらの文字列を作成する場合は、文字列結合演算子（`+`）で単純に結合するよりも専用の関数を用意するほうが安全です。
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 在创建这些字符串时，与使用简单的字符串连接运算符（`+`）相比，使用专门的函数会更安全。
 - en: たとえば、次のように`baseURL`と`pathname`を渡し、それらを結合したURLにあるリソースを取得する`getResource`関数があるとします。
     この`getResource`関数には、ベースURL(`baseURL`)とパス（`pathname`）を引数に渡して利用します。
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，假设存在一个`getResource`函数，该函数通过传递`baseURL`和`pathname`来获取连接后的URL中的资源。这个`getResource`函数接受基础URL(`baseURL`)和路径（`pathname`）作为参数。
 - en: '[PRE62]'
+  id: totrans-280
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE62]'
 - en: しかし、人によっては、`baseURL`の末尾には`/`が含まれると考える場合もあります。 `getResource`関数は、`baseURL`の末尾に`/`が含まれているケースを想定していませんでした。
     そのため、意図しないURLからリソースを取得するという問題が発生します。
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，有些人可能会认为`baseURL`的末尾应该包含`/`。`getResource`函数没有考虑到`baseURL`末尾包含`/`的情况。因此，可能会出现从意外的URL获取资源的问题。
 - en: '[PRE63]'
+  id: totrans-282
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE63]'
 - en: この問題が難しいところは、結合してできた`url`は文字列としては正しいため、エラーではないということです。 つまり、一見すると問題ないように見えますが、実際に動かしてみて初めてわかるような問題が生じやすいのです。
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个问题的难点在于，连接生成的`url`在字符串层面上是正确的，因此不会产生错误。也就是说，表面上看起来没有问题，但只有在实际运行时才会发现的问题。
 - en: そのため、このような構造的な文字列を扱う場合は、専用の関数や専用のオブジェクトを作ることで安全に文字列を処理します。
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，在处理此类结构化字符串时，通过创建专门的函数或对象来安全地处理字符串。
 - en: 先ほどのような、URL 文字列の結合を安全に行うには、入力される`baseURL`文字列の表記揺れを吸収する仕組みを作成します。 次の`baseJoin`関数はベースURLとパスを結合した文字列を返しますが、ベースURLの末尾に`/`があるかの揺れを吸収しています。
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了安全地执行类似之前的URL文字串连接，需要创建一个能够吸收输入的`baseURL`文字串表示差异的机制。接下来的`baseJoin`函数会返回基础URL和路径连接后的字符串，同时吸收基础URL末尾`/`的差异。
 - en: '[PRE64]'
+  id: totrans-286
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE64]'
 - en: ECMAScriptの範囲ではありませんが、URLやファイルパスといった典型的なものに対してはすでに専用のものがあります。 URLを扱うものとしてウェブ標準
     APIである[URL](https://developer.mozilla.org/ja/docs/Web/API/URL "URL - Web API インターフェイス
     | MDN")オブジェクト、ファイルパスを扱うものとしてはNode.jsのコアモジュールである[Path](https://nodejs.org/api/path.html
     "Path | Node.js v7.9.0 Documentation")モジュールなどがあります。専用の仕組みがある場合は、直接`+`演算子で結合するような文字列処理は避けるべきです。
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然ECMAScript范围之外，但对于URL或文件路径等典型情况，已经存在专用的处理方式。例如，处理URL的Web标准API对象[URL](https://developer.mozilla.org/ja/docs/Web/API/URL
+    "URL - Web API インターフェイス | MDN")、处理文件路径的Node.js核心模块[Path](https://nodejs.org/api/path.html
+    "Path | Node.js v7.9.0 Documentation")等。如果存在专用机制，应避免直接使用`+`运算符进行字符串连接。
 - en: '[](#tagged-template-function)*[ES2015] タグつきテンプレート関数*'
+  id: totrans-288
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#tagged-template-function)*[ES2015] 标签模板函数*'
 - en: '*JavaScriptでは、テンプレートとなる文字列に対して一部分だけを変更する処理を行う方法として、タグつきテンプレート関数があります。 タグつきテンプレート関数とは、`関数`テンプレート``
     という形式で記述する関数とテンプレートリテラルを合わせた表現です。 関数の呼び出しに`関数(`テンプレート`)`ではなく、`関数`テンプレート`` という書式を使っていることに注意してください。'
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: '*JavaScript中，对于模板字符串，可以通过标签模板函数来执行只更改一部分的处理。标签模板函数是函数和模板字面量结合的表达式。请注意，在调用函数时使用的是`関数(`模板`)`而不是`関数`模板`関数`的形式。'
 - en: 通常の関数として呼び出した場合、関数の引数にはただの文字列が渡ってきます。
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常作为普通函数调用时，函数的参数只是简单的字符串。
 - en: '[PRE65]'
+  id: totrans-291
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE65]'
 - en: しかし、`()`ではなく `関数`テンプレート`` と記述することで、`関数`が受け取る引数にはタグつきテンプレート向けの値が渡ってきます。 このとき、関数の第一引数にはテンプレートの中身が`${}`で区切られた文字列の配列、第二引数以降は`${}`の中に書いた式の評価結果が順番に渡されます。
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是，通过使用`関数`模板`関数`而不是`()`来调用函数，`関数`接收的参数是针对标签模板的值。这时，函数的第一个参数是模板中`${}`分隔的字符串数组，后续参数是按顺序传递的`${}`中表达式的计算结果。
 - en: '[PRE66]'
+  id: totrans-293
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE66]'
 - en: どちらも同じ関数ですが、`関数`テンプレート`` という書式で呼び出すと渡される引数が特殊な形になります。 そのため、タグつきテンプレートで利用する関数のことを**タグ関数**（Tag
     function）と呼び分けることにします。
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两个都是相同的函数，但是以`関数`模板`関数`的形式调用时，传递的参数形式是特殊的。因此，将用于标签模板的函数称为**标签函数**（Tag function）。
 - en: まずは引数をどう扱うかを見ていくために、タグつきテンプレートの内容をそのまま結合して返す`stringRaw`というタグ関数を実装してみます。 Arrayの`reduce`メソッドを使うことで、テンプレートの文字列と変数を順番に結合できます（`reduce`メソッドについては「配列」の章を参照）。
+  id: totrans-295
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，为了了解如何处理参数，实现了一个名为`stringRaw`的标签函数，该函数将标签模板的内容直接连接并返回。使用Array的`reduce`方法可以按顺序连接模板字符串和变量（关于`reduce`方法，请参考“数组”章节）。
 - en: '[PRE67]'
+  id: totrans-296
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE67]'
 - en: ここで実装した`stringRaw`タグ関数と同様のものが、`String.raw`メソッド^([ES2015])として提供されています。
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里实现的`stringRaw`标签函数与`String.raw`方法([ES2015])类似。
 - en: '[PRE68]'
+  id: totrans-298
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE68]'
 - en: タグつきテンプレート関数を利用することで、テンプレートとなる文字列に対して特定の形式に変換し���データを埋め込むといったテンプレート処理が行えます。
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过使用标签模板函数，可以对模板字符串进行特定形式的转换并嵌入数据，从而执行模板处理。
 - en: 次のコードでは、テンプレート中の変数をURLエスケープしてから埋め込むタグつきテンプレート関数を定義しています。 `encodeURIComponent`関数は引数の値をURLエスケープする関数です。
     `escapeURL`では受け取った変数を`encodeURIComponent`関数でURLエスケープしてから埋め込んでいます。
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的代码中，定义了一个将模板中的变量URL编码后嵌入的标签模板函数。`encodeURIComponent`函数是用于URL编码的函数。`escapeURL`函数则是使用`encodeURIComponent`函数对传入的变量进行URL编码后嵌入。
 - en: '[PRE69]'
+  id: totrans-301
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE69]'
 - en: このようにタグつきテンプレートリテラルを使うことで、コンテキストに応じた処理をつけ加えることができます。 この機能はJavaScript 内にHTMLなどの別の言語やDSL（ドメイン固有言語）を埋め込む際に利用されることが多いです。
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过使用标签模板字面量，可以添加与上下文相关的处理。这个功能在JavaScript内嵌入HTML等其他语言或DSL（领域特定语言）时经常被使用。
 - en: '[](#string-summary)*終わりに*'
+  id: totrans-303
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#string-summary)*终わりに*'
 - en: '*この章では、JavaScriptにおける文字列(`String`オブジェクト)について紹介しました。 文字列処理するStringメソッドにはさまざまなものがあり、正規表現と組み合わせて使うものも含まれます。'
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: '*本章介绍了JavaScript中的字符串（`String`对象）。用于处理字符串的String方法有很多，其中也包括与正则表达式结合使用的方法。'
 - en: 正規表現は、正規表現のみで1 冊の本が作れるようなJavaScript 言語内にある別言語です。 詳細は[MDNの正規表現ドキュメント](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Regular_Expressions
     "正規表現 - JavaScript | MDN")なども参照してください。
+  id: totrans-305
   prefs: []
   type: TYPE_NORMAL
+  zh: 正则表达式是JavaScript语言内的一种独立语言，几乎可以用它来编写一本书。有关详细信息，请参考[MDN的正则表达式文档](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Regular_Expressions
+    "正規表現 - JavaScript | MDN")等。
 - en: 文字列は一見すると単純に見えますが、URLやパスといったコンテキストを持つものもあります。 それらの文字列を安全に扱うためには、コンテキストに応じた処理が必要になります。
     また、タグつきテンプレートリテラルを利用することで、テンプレート中の変数を自動でエスケープするといった処理を実現できます。
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: 文字列看起来可能很简单，但也有一些包含URL或路径等上下文信息的。为了安全地处理这些字符串，需要根据上下文进行相应的处理。此外，通过使用带标签的模板字面量，可以实现自动转义模板中的变量等功能。
 - en: ¹. 这是从[Unicode 片假名列表](https://unicode-table.com/jp/#katakana)中提取的表格。 ↩*****************************
+  id: totrans-307
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: ¹. 这是从[Unicode 片假名列表](https://unicode-table.com/jp/#katakana)中提取的表格。 ↩*****************************

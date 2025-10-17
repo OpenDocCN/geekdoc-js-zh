@@ -1,262 +1,428 @@
 - en: '[ES2015] ECMAScriptモジュール'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '[ES2015] ECMAScriptモジュール'
 - en: 原文：[`jsprimer.net/basic/module/`](https://jsprimer.net/basic/module/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/basic/module/`](https://jsprimer.net/basic/module/)
 - en: モジュールとは、変数や関数などをまとめたものです。 JavaScriptにおいては、1つのモジュールは1つのJavaScriptファイルに対応します。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: モジュールとは、変数や関数などをまとめたものです。JavaScriptにおいては、1つのモジュールは1つのJavaScriptファイルに対応します。
 - en: モジュールについてはNode.jsでCLIアプリのユースケースやTodoアプリのユースケースで実際に動かしながら学ぶため、ここでは構文の説明とモジュールのイメージをつかむのが目的です。
     この章のサンプルコードを実際に動かすためにはローカルサーバーなどの準備が必要です。 そのため、ユースケースの章を先に読んでから戻ってきてもかまいません。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: モジュールについてはNode.jsでCLIアプリのユースケースやTodoアプリのユースケースで実際に動かしながら学ぶため、ここでは構文の説明とモジュールのイメージをつかむのが目的です。この章のサンプルコードを実際に動かすためにはローカルサーバーなどの準備が必要です。そのため、ユースケースの章を先に読んでから戻ってきてもかまいません。
 - en: モジュールは、保守性・名前空間・再利用性のために使われます。
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: モジュールは、保守性・名前空間・再利用性のために使われます。
 - en: '保守性: 依存性の高いコードの集合を一箇所にまとめ、それ以外のモジュールへの依存性を減らせます'
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '保守性: 依存性の高いコードの集合を一箇所にまとめ、それ以外のモジュールへの依存性を減らせます'
 - en: '名前空間: モジュールごとに分かれたスコープがあり、グローバルの名前空間を汚染しません'
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '名前空間: モジュールごとに分かれたスコープがあり、グローバルの名前空間を汚染しません'
 - en: '再利用性: 便利な変数や関数を複数の場所にコピーアンドペーストせず、モジュールとして再利用できます'
+  id: totrans-7
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '再利用性: 便利な変数や関数を複数の場所にコピーアンドペーストせず、モジュールとして再利用できます'
 - en: モジュールは変数や関数などをモジュール外部にエクスポートできます。また、モジュールからエクスポートされた変数や関数などをインポートして利用できます。 モジュールに処理を分けることで、コードの見通しが良くなったり、特定のことに関する処理をモジュールにまとめたり、処理を再利用できるようになります。
     それによって、コードの行数が増えてきた場合にも、一度にみるコードの量をモジュールで分割できるようになり、メンテナンス性がよくなります。
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: モジュールは変数や関数などをモジュール外部にエクスポートできます。また、モジュールからエクスポートされた変数や関数などをインポートして利用できます。モジュールに処理を分けることで、コードの見通しが良くなったり、特定のことに関する処理をモジュールにまとめたり、処理を再利用できるようになります。それによって、コードの行数が増えてきた場合にも、一度にみるコードの量をモジュールで分割できるようになり、メンテナンス性がよくなります。
 - en: この章では、**ECMAScriptモジュール（ESモジュール、JavaScriptモジュールとも呼ばれる）** について見ていきます。 ECMAScriptモジュールは、ES2015��導入されたJavaScriptファイルをモジュール化する言語標準の機能です。
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: この章では、**ECMAScriptモジュール（ESモジュール、JavaScriptモジュールとも呼ばれる）**について見ていきます。ECMAScriptモジュールは、ES2015で導入されたJavaScriptファイルをモジュール化する言語標準の機能です。
 - en: '[](#es-module-syntax)*ECMAScriptモジュールの構文*'
+  id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#es-module-syntax)*ECMAScriptモジュールの構文*'
 - en: '*ECMAScriptモジュールは、[export 文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)によって変数や関数などをエクスポートできます。
     また、[import 文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)を使って別のモジュールからエクスポートされたものをインポートできます。
     インポートとエクスポートはそれぞれに **名前つき** と **デフォルト** という2 種類の方法があります。'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*ECMAScriptモジュールは、[export 文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)によって変数や関数などをエクスポートできます。また、[import
+    文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)を使って別のモジュールからエクスポートされたものをインポートできます。インポートとエクスポートはそれぞれに
+    **名前つき** と **デフォルト** という2 種類の方法があります。'
 - en: まずは名前つきエクスポート／インポート文について見ていきましょう。
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: まずは名前つきエクスポート／インポート文について見ていきましょう。
 - en: '[](#named-export-import)*名前つきエクスポート／インポート*'
+  id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#named-export-import)*名前つきエクスポート／インポート*'
 - en: '***名前つきエクスポート**は、モジュールごとに複数の変数や関数などをエクスポートできます。 次の例では、`foo`変数と`bar`関数をそれぞれ名前つきエクスポートしています。
     `export`文のあとに続けて`{}`を書き、その中にエクスポートする変数を入れることで、宣言済みの変数を名前つきエクスポートできます。'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '***名前つきエクスポート**は、モジュールごとに複数の変数や関数などをエクスポートできます。次の例では、`foo`変数と`bar`関数をそれぞれ名前つきエクスポートしています。`export`文のあとに続けて`{}`を書き、その中にエクスポートする変数を入れることで、宣言済みの変数を名前つきエクスポートできます。'
 - en: named-export.js
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: named-export.js
 - en: '[PRE0]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: また、名前つきエクスポートでは`export`文を宣言の前につけると、宣言と同時に名前つきエクスポートできます。
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: また、名前つきエクスポートでは`export`文を宣言の前につけると、宣言と同時に名前つきエクスポートできます。
 - en: named-export-declare.js
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: named-export-declare.js
 - en: '[PRE1]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '**名前つきインポート**は、指定したモジュールから名前を指定して選択的にインポートできます。 次の例では `my-module.js`から名前つきエクスポートされたオブジェクトの名前を指定して名前つきインポートしています。
     `import`文のあとに続けて`{}`を書き、その中にインポートしたい名前つきエクスポートの名前を入れます。 複数の値をインポートしたい場合は、それぞれの名前をカンマで区切ります。'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '**名前つきインポート**は、指定したモジュールから名前を指定して選択的にインポートできます。次の例では `my-module.js`から名前つきエクスポートされたオブジェクトの名前を指定して名前つきインポートしています。`import`文のあとに続けて`{}`を書き、その中にインポートしたい名前つきエクスポートの名前を入れます。複数の値をインポートしたい場合は、それぞれの名前をカンマで区切ります。'
 - en: my-module.js
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: my-module.js
 - en: '[PRE2]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: named-import.js
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: named-import.js
 - en: '[PRE3]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '[](#named-export-import-alias)*名前つきエクスポート／インポートのエイリアス*'
+  id: totrans-25
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#named-export-import-alias)*名前つきエクスポート／インポートのエイリアス*'
 - en: '*名前つきエクスポート／インポートには**エイリアス**の仕組みがあります。 エイリアスを使うと、宣言済みの変数を違う名前で名前つきエクスポートできます。
     エイリアスをつけるには、次のように`as`のあとにエクスポートしたい名前を記述します。'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*名前つきエクスポート／インポートには**エイリアス**の仕組みがあります。エイリアスを使うと、宣言済みの変数を違う名前で名前つきエクスポートできます。エイリアスをつけるには、次のように`as`のあとにエクスポートしたい名前を記述します。'
 - en: named-export-alias.js
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: named-export-alias.js
 - en: '[PRE4]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: また、名前つきインポートしたオブジェクトにも別名をつけることができます。 インポートでも同様に、`as`のあとに別名を記述します。
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: また、名前つきインポートしたオブジェクトにも別名をつけることができます。インポートでも同様に、`as`のあとに別名を記述します。
 - en: named-import-alias.js
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: named-import-alias.js
 - en: '[PRE5]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '[](#default-export-import)*デフォルトエクスポート／インポート*'
+  id: totrans-32
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#default-export-import)*デフォルトエクスポート／インポート*'
 - en: '*次に、デフォルトエクスポート／インポートについて見ていきましょう。 **デフォルトエクスポート**は、モジュールごとに1つしかエクスポートできない特殊なエクスポートです。
     次の例は、すでに宣言されている変数をデフォルトエクスポートしています。 `export default`文で、後に続く式の評価結果をデフォルトエクスポートします。'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '*次に、デフォルトエクスポート／インポートについて見ていきましょう。**デフォルトエクスポート**は、モジュールごとに1つしかエクスポートできない特殊なエクスポートです。次の例は、すでに宣言されている変数をデフォルトエクスポートしています。`export
+    default`文で、後に続く式の評価結果をデフォルトエクスポートします。'
 - en: default-export.js
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: default-export.js
 - en: '[PRE6]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: また、`export`文を宣言の前につけると、宣言と同時にデフォルトエクスポートできます。 このとき関数やクラスの名前を省略できます。
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: また、`export`文を宣言の前につけると、宣言と同時にデフォルトエクスポートできます。このとき関数やクラスの名前を省略できます。
 - en: '[PRE7]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ただし、変数宣言は宣言とデフォルトエクスポートを同時に行うことはできません。 なぜなら、変数宣言はカンマ区切りで複数の変数を定義できてしまうためです。
     次の例は実行できない不正なコードです。
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: ただし、変数宣言は宣言とデフォルトエクスポートを同時に行うことはできません。なぜなら、変数宣言はカンマ区切りで複数の変数を定義できてしまうためです。次の例は実行できない不正なコードです。
 - en: '[PRE8]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '**デフォルトインポート**は、指定したモジュールのデフォルトエクスポートに名前をつけてインポートします。 次の例では `my-module.js`のデフォルトエクスポートに`myModule`という名前をつけてインポートしています。
     `import`文のあとに任意の名前をつけることで、デフォルトエクスポートをインポートできます。'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '**デフォルトインポート**は、指定したモジュールのデフォルトエクスポートに名前をつけてインポートします。次の例では `my-module.js`のデフォルトエクスポートに`myModule`という名前をつけてインポートしています。`import`文のあとに任意の名前をつけることで、デフォルトエクスポートをインポートできます。'
 - en: my-module.js
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: my-module.js
 - en: '[PRE9]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: default-import.js
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: default-import.js
 - en: '[PRE10]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 実はデフォルトエクスポートは、`default`という固有の名前による名前つきエクスポートと同じものです。 そのため、名前つきエクスポートで`as default`とエイリアスをつけることでデフォルトエクスポートすることもできます。
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 実はデフォルトエクスポートは、`default`という固有の名前による名前つきエクスポートと同じものです。そのため、名前つきエクスポートで`as default`とエイリアスをつけることでデフォルトエクスポートすることもできます。
 - en: default-export-alias.js
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: default-export-alias.js
 - en: '[PRE11]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 类似地，在命名导入中，名称`default`对应默认导入。通过以下方式，在命名导入中指定`default`，您可以进行默认导入。但请注意，`default`是保留字，因此您必须使用`as`语法为其指定别名。
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 同じように、在命名导入中，名称`default`对应默认导入。通过以下 way，in 命名导入中 specify `default`，You can perform
+    default import. But please note that `default` is a reserved word, so you must
+    use `as` syntax to specify an alias.
 - en: default-import-alias.js
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: default-import-alias.js
 - en: '[PRE12]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 此外，命名导入和默认导入的语法可以同时编写。您可以用逗号连接两种语法，如下所示。
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: それに、命名导入和默认导入的语法 can be written simultaneously. You can connect the two grammars
+    with a comma, as shown below.
 - en: default-import-with-named.js
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: default-import-with-named.js
 - en: '[PRE13]'
+  id: totrans-53
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 在 ECMAScript 模块中，未导出的内容无法被导入。这是因为在 JavaScript 的解析阶段解析 ECMAScript 模块时，如果无法解析出要导入的内容，则会导致解析错误。默认导入要求导入目标模块导出默认导出。类似地，命名导入要求导入目标模块导出指定的命名导出。*
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 ECMAScript 模块中，未导出的内容无法被导入。这是因为在 JavaScript 的解析阶段解析 ECMAScript 模块时，如果无法解析出要导入的内容，则会导致解析错误。默认导入要求导入目标模块导出默认导出。类似地，命名导入要求导入目标模块导出指定的命名导出。*
 - en: '[](#other-syntax)*其他语法*'
+  id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#other-syntax)*其他语法*'
 - en: '*ECMAScript 模块还具有除了命名导入和默认导入之外的其他一些语法。*'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '*ECMAScript 模块还具有除了命名导入和默认导入之外的其他一些语法。*'
 - en: '[](#re-export)*再导出*'
+  id: totrans-57
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#re-export)*再导出*'
 - en: '*再导出是指，重新从另一个模块导入的内容，再次从自身导出。它通常用于创建包含从多个模块导出的内容的模块。*'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '*再导出是指，重新从另一个模块导入的内容，再次从自身导出。它通常用于创建包含从多个模块导出的内容的模块。*'
 - en: 再导出的语法如下，在`export`关键字后面跟着`from`，然后指定另一个模块名。
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 再导出的语法如下，在`export`关键字后面跟着`from`，然后指定另一个模块名。
 - en: '[PRE14]'
+  id: totrans-60
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '[](#namespace-import)*导入所有内容*'
+  id: totrans-61
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#namespace-import)*导入所有内容*'
 - en: '*`import * as`语法会导入所有命名导出。使用这种方法，你声明了一个对象，该对象成为了模块的 **命名空间** 。要访问导出的变量或函数等，您需要使用该命名空间对象的属性。此外，正如前文所述，使用名为
     `default` 的关键字，您还可以访问默认导出。*'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '*`import * as`语法会导入所有命名导出。使用这种方法，你声明了一个对象，该对象成为了模块的 **命名空间** 。要访问导出的变量或函数等，您需要使用该命名空间对象的属性。此外，正如前文所述，使用名为
+    `default` 的关键字，您还可以访问默认导出。*'
 - en: my-module.js
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: my-module.js
 - en: '[PRE15]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: namespace-import.js
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: namespace-import.js
 - en: '[PRE16]'
+  id: totrans-66
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: '[](#import-for-side-effect)*用于副作用的导入*'
+  id: totrans-67
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: '[](#import-for-side-effect)*用于副作用的导入*'
 - en: '*有些模块仅执行全局代码，而不导出任何内容。例如，用于操作全局变量的模块等。*'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '*有些模块仅执行全局代码，而不导出任何内容。例如，用于操作全局变量的模块等。*'
 - en: side-effects.js
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: side-effects.js
 - en: '[PRE17]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 要导入此类模块，您需要使用用于副作用的导入语法。使用此语法，您只需加载并执行指定的模块，而不导入任何内容。
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 要导入此类模块，您需要使用用于副作用的导入语法。使用此语法，您只需加载并执行指定的模块，而不导入任何内容。
 - en: '[PRE18]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '[](#run-es-modules)*执行 ECMAScript 模块*'
+  id: totrans-73
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#run-es-modules)*执行 ECMAScript 模块*'
 - en: '*要执行创建的 ECMAScript 模块，您需要将起始 JavaScript 文件作为 ECMAScript 模块加载到 Web 浏览器中。Web
     浏览器会使用`script`元素加载和执行 JavaScript 文件。通过为`script`元素添加`type="module"`属性，Web 浏览器会将
     JavaScript 文件视为 ECMAScript 模块加载。*'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '*要执行创建的 ECMAScript 模块，您需要将起始 JavaScript 文件作为 ECMAScript 模块加载到 Web 浏览器中。Web
+    浏览器会使用`script`元素加载和执行 JavaScript 文件。通过为`script`元素添加`type="module"`属性，Web 浏览器会将
+    JavaScript 文件视为 ECMAScript 模块加载。*'
 - en: '[PRE19]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: 如果没有添加`type="module"`属性，则会被视为普通脚本，不会启用 ECMAScript 模块的功能。如果在加载的 JavaScript 中使用了`import`或`export`语句，将会导致语法错误。
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果没有添加`type="module"`属性，则会被视为普通脚本，不会启用 ECMAScript 模块的功能。如果在加载的 JavaScript 中使用了`import`或`export`语句，将会导致语法错误。
 - en: 在 Web 浏览器环境中，导入的模块是通过网络解析的。因此，模块名称应该指定 JavaScript 文件的绝对 URL 或相对 URL。有关详细信息，请参阅
     Todo 应用程序用例。*
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Web 浏览器环境中，导入的模块是通过网络解析的。因此，模块名称应该指定 JavaScript 文件的绝对 URL 或相对 URL。有关详细信息，请参阅
+    Todo 应用程序用例。*
