@@ -1,65 +1,102 @@
 - en: 用例：Node.js CLI 应用程序
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 用例：Node.js 命令行应用程序
 - en: 原文：[`jsprimer.net/use-case/nodecli/`](https://jsprimer.net/use-case/nodecli/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/use-case/nodecli/`](https://jsprimer.net/use-case/nodecli/)
 - en: 在这里，我们将开发一个在 Node.js 中使用 CLI（命令行界面）的应用程序。 作为 CLI 的用例，我们将创建一个将 Markdown 格式的文本文件转换为
     HTML 文本的工具。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们将开发一个在 Node.js 中使用 CLI（命令行界面）的应用程序。 作为 CLI 的用例，我们将创建一个将 Markdown 格式的文本文件转换为
+    HTML 文本的工具。
 - en: 所创建的应用程序应满足以下要求：
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 所创建的应用程序应满足以下要求：
 - en: 接收转换目标文件路径作为命令行参数
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 接收转换目标文件路径作为命令行参数
 - en: 读取 Markdown 格式的文件，并将转换后的 HTML 显示在标准输出中
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 读取 Markdown 格式的文件，并将转换后的 HTML 显示在标准输出中
 - en: 可以通过命令行参数提供转换设置选项
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以通过命令行参数提供转换设置选项
 - en: '[](#summary)*目录*'
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#summary)*目录*'
 - en: '*### [](#helloworld)*Node.jsでHello World*'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '*### [](#helloworld)*使用 Node.js 实现 Hello World*'
 - en: '*通过 Hello World 应用程序学习 Node.js CLI 应用程序的基础知识。'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*通过 Hello World 应用程序学习 Node.js 命令行应用程序的基础知识。'
 - en: '[](#argument-parse)*处理命令行参数*'
+  id: totrans-10
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#argument-parse)*处理命令行参数*'
 - en: '*学习如何接收命令行参数并将其解析为应用程序易于使用的形式。'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*学习如何接收命令行参数并将其解析为应用程序易于使用的形式。'
 - en: '[](#read-file)*读取文件*'
+  id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#read-file)*读取文件*'
 - en: '*学习使用 Node.js 的`fs`模块来读取文件。'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '*学习使用 Node.js 的`fs`模块来读取文件。'
 - en: '[](#md-to-html)*将 Markdown 转换为 HTML*'
+  id: totrans-14
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#md-to-html)*将 Markdown 转换为 HTML*'
 - en: '*使用 marked 包将 Markdown 文件转换为 HTML。'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '*使用 marked 包将 Markdown 文件转换为 HTML。'
 - en: '[](#refactor-and-unittest)*编写单元测试*'
+  id: totrans-16
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#refactor-and-unittest)*编写单元测试*'
 - en: '*引入单元测试并对源代码进行重构和模块化。******'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: '*引入单元测试并对源代码进行重构和模块化。******'

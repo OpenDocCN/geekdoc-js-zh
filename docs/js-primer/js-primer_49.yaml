@@ -1,75 +1,118 @@
 - en: 用例：Todo 应用
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 用例：Todo 应用
 - en: 原文：[`jsprimer.net/use-case/todoapp/`](https://jsprimer.net/use-case/todoapp/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/use-case/todoapp/`](https://jsprimer.net/use-case/todoapp/)
 - en: 在这里，我们将创建一个在浏览器中运行的 Web 应用程序（以下简称应用）的用例，即 Todo 应用。 我们将创建的 Todo 应用允许输入任务，并通过复选框管理任务的完成状态。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们将创建一个在浏览器中运行的 Web 应用程序（以下简称应用）的用例，即 Todo 应用。 我们将创建的 Todo 应用允许输入任务，并通过复选框管理任务的完成状态。
 - en: 在 Ajax 通信的用例中，仅从 GitHub 获取数据并显示，因此几乎没有管理状态的部分。 但是，这个 Todo 应用需要管理任务的状态，因此需要管理应用的状态。
     通过这个用例，我们将看到如何管理状态，以及创建应用所需的设计和思维方式，包括如何更改显示和处理。
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Ajax 通信的用例中，仅从 GitHub 获取数据并显示，因此几乎没有管理状态的部分。 但是，这个 Todo 应用需要管理任务的状态，因此需要管理应用的状态。
+    通过这个用例，我们将看到如何管理状态，以及创建应用所需的设计和思维方式，包括如何更改显示和处理。
 - en: 创建的应用需满足以下要求：
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建的应用需满足以下要求：
 - en: 可以添加 Todo 项目
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以添加 Todo 项目
 - en: 可以更新 Todo 项目的完成状态
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以更新 Todo 项目的完成状态
 - en: 可以删除 Todo 项目
+  id: totrans-7
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以删除 Todo 项目
 - en: '[](#summary)*目录*'
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#summary)*目录*'
 - en: '*### [](#entrypoint)*入口点*'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*### [](#entrypoint)*入口点*'
 - en: '*使用 HTML 和 JavaScript 模块创建应用程序中最初调用的入口点。'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '*使用 HTML 和 JavaScript 模块创建应用程序中最初调用的入口点。'
 - en: '[](#app-structure)*应用的结构要素*'
+  id: totrans-11
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#app-structure)*应用的结构要素*'
 - en: '*我们将查看即将实现的 Todo 应用的功能和组件。'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我们将查看即将实现的 Todo 应用的功能和组件。'
 - en: '[](#form-event)*实现 Todo 项目的添加*'
+  id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#form-event)*实现 Todo 项目的添加*'
 - en: '*创建一个表单，用于向 Todo 应用添加 Todo 项目。我们将看到如何处理输入内容和提交事件。'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '*创建一个表单，用于向 Todo 应用添加 Todo 项目。我们将看到如何处理输入内容和提交事件。'
 - en: '[](#event-model)*事件和模型*'
+  id: totrans-15
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#event-model)*事件和模型*'
 - en: '*我们将探讨如何使用“模型”和“事件”来改善操作和更新之间紧密耦合导致难以更改的问题。'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我们将探讨如何使用“模型”和“事件”来改善操作和更新之间紧密耦合导致难以更改的问题。'
 - en: '[](#update-delete)*实现 Todo 项目的更新和删除*'
+  id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#update-delete)*实现 Todo 项目的更新和删除*'
 - en: '*我们将实现 Todo 应用的剩余功能，即“更新 Todo 项目”和“删除 Todo 项目”。'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我们将实现 Todo 应用的剩余功能，即“更新 Todo 项目”和“删除 Todo 项目”。'
 - en: '[](#final)*Todo 应用的重构*'
+  id: totrans-19
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#final)*Todo 应用的重构*'
 - en: '*由于将处理集中在一个文件中会降低可维护性，因此我们将对 Todo 应用的显示元素进行重构，将其分割为组件。*******'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '*由于将处理集中在一个文件中会降低可维护性，因此我们将对 Todo 应用的显示元素进行重构，将其分割为组件。*******'

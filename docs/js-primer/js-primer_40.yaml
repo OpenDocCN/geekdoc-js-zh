@@ -1,143 +1,235 @@
 - en: HTTP 通信
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: HTTP 通信
 - en: 原文：[`jsprimer.net/use-case/ajaxapp/http/`](https://jsprimer.net/use-case/ajaxapp/http/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/use-case/ajaxapp/http/`](https://jsprimer.net/use-case/ajaxapp/http/)
 - en: ローカルサーバーでアプリケーションが実行できるようになったので、次はGitHubのAPIを呼び出す処理を実装していきます。 GitHubのAPIを呼び出すためにはHTTP
     通信をする必要があります。 ウェブブラウザ上でJavaScriptからHTTP 通信するために、[Fetch API](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API)という機能を使います。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: ローカルサーバーでアプリケーションが実行できるようになったので、次はGitHubのAPIを呼び出す処理を実装していきます。 GitHubのAPIを呼び出すためにはHTTP
+    通信をする必要があります。 ウェブブラウザ上でJavaScriptからHTTP 通信するために、[Fetch API](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API)という機能を使います。
 - en: '[](#fetch-api)*Fetch API*'
+  id: totrans-3
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#fetch-api)*Fetch API*'
 - en: '***Fetch API**はHTTP 通信を行ってリソースを取得するためのAPIです。 Fetch APIを使うことで、ページ全体を再読み込みすることなく指定したURLからデータを取得できます。
     Fetch APIは同じくHTTP 通信を扱う[XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest)と似たAPIですが、より強力で柔軟な操作が可能です。'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '***Fetch API**はHTTP 通信を行ってリソースを取得するためのAPIです。 Fetch APIを使うことで、ページ全体を再読み込みすることなく指定したURLからデータを取得できます。
+    Fetch APIは同じくHTTP 通信を扱う[XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest)と似たAPIですが、より強力で柔軟な操作が可能です。'
 - en: リクエストを送信するためには、`fetch`メソッドを利用します。 `fetch`メソッドは引数で指定したURLに対して、HTTPリクエストを行えます。
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: リクエストを送信するためには、`fetch`メソッドを利用します。 `fetch`メソッドは引数で指定したURLに対して、HTTPリクエストを行えます。
 - en: GitHubにはユーザー情報を取得するAPIとして、`https://api.github.com/users/GitHubユーザーID`というURLが用意されています。
     GitHubのユーザーIDには、英数字と`-`（ハイフン）以外は利用できないため、ユーザーIDは`encodeURIComponent`関数を使ってエスケープしたものを結合します。`encodeURIComponent`は`/`や`%`などURLとして特殊な意味を持つ文字列をただの文字列として扱えるようにエスケープする関数です。
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: GitHubにはユーザー情報を取得するAPIとして、`https://api.github.com/users/GitHubユーザーID`というURLが用意されています。
+    GitHubのユーザーIDには、英数字と`-`（ハイフン）以外は利用できないため、ユーザーIDは`encodeURIComponent`関数を使ってエスケープしたものを結合します。`encodeURIComponent`は`/`や`%`などURLとして特殊な意味を持つ文字列をただの文字列として扱えるようにエスケープする関数です。
 - en: 次のコードでは、指定したGitHubユーザーIDの情報を取得するURLに対して`fetch`メソッドで、GETのHTTPリクエストを行っています。
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のコードでは、指定したGitHubユーザーIDの情報を取得するURLに対して`fetch`メソッドで、GETのHTTPリクエストを行っています。
 - en: '[PRE0]'
+  id: totrans-8
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '[](#receive-response)*レスポンスの受け取り*'
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#receive-response)*レスポンスの受け取り*'
 - en: '*GitHubのAPIに対してHTTPリクエストを送信しましたが、まだレスポンスを受け取る処理を書いていません。 次はサーバーから返却されたレスポンスのログをコンソールに出力する処理を実装します。'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '*GitHubのAPIに対してHTTPリクエストを送信しましたが、まだレスポンスを受け取る処理を書いていません。 次にサーバーから返却されたレスポンスのログをコンソールに出力する処理を実装します。'
 - en: '`fetch`メソッドは`Promise`を返します。この`Promise`インスタンスはリクエストのレスポンスを表す`Response`オブジェクトでresolveされます。
     送信したリクエストにレスポンスが返却されると、`then`コールバックが呼び出されます。'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '`fetch`メソッドは`Promise`を返します。この`Promise`インスタンスはリクエストのレスポンスを表す`Response`オブジェクトでresolveされます。
+    送信したリクエストにレスポンスが返却されると、`then`コールバックが呼び出されます。'
 - en: 次のように、`Response`オブジェクトの`status`プロパティからは、HTTPレスポンスのステータスコードが取得できます。 また、`Response`オブジェクトの`json`メソッドも`Promise`を返します。これは、HTTPレスポンスボディをJSONとしてパースしたオブジェクトでresolveされます。
     ここでは、書籍用に用意した`js-primer-example`というGitHubアカウントのユーザー情報を取得しています。
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 次のように、`Response`オブジェクトの`status`プロパティからは、HTTPレスポンスのステータスコードが取得できます。 また、`Response`オブジェクトの`json`メソッドも`Promise`を返します。これは、HTTPレスポンスボディをJSONとしてパースしたオブジェクトでresolveされます。
+    ここでは、書籍用に用意した`js-primer-example`というGitHubアカウントのユーザー情報を取得しています。
 - en: '[PRE1]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '[](#error-handling)*エラーハンドリング*'
+  id: totrans-14
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#error-handling)*エラーハンドリング*'
 - en: '*HTTP 通信にはエラーがつきものです。 そのためFetch APIを使った通信においても、エラーをハンドリングする必要があります。 たとえば、サーバーとの通信に際してネットワークエラーが発生した場合は、ネットワークエラーを表す`NetworkError`オブジェクトでrejectされた`Promise`が返されます。
     すなわち、`then`メソッドの第二引数か`catch`メソッドのコールバック関数が呼び出されます。'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '*HTTP 通信にはエラーがつきものです。 そのためFetch APIを使った通信においても、エラーをハンドリングする必要があります。 たとえば、サーバーとの通信に際してネットワークエラーが発生した場合は、ネットワークエラーを表す`NetworkError`オブジェクトでrejectされた`Promise`が返されます。
+    すなわち、`then`メソッドの第二引数か`catch`メソッドのコールバック関数が呼び出されます。'
 - en: '[PRE2]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 一方で、リクエストが成功したかどうかは`Response`オブジェクトの`ok`プロパティで認識できます。 `ok`プロパティは、HTTPステータスコードが200
     番台であれば`true`を返し、それ以外の400や500 番台などなら`false`を返します。 次のように、`ok`プロパティが`false`となるエラーレスポンスをハンドリングできます。
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 一方で、リクエストが成功したかどうかは`Response`オブジェクトの`ok`プロパティで認識できます。 `ok`プロパティは、HTTPステータスコードが200
+    番台であれば`true`を返し、それ以外の400や500 番台などなら`false`を返します。 次のように、`ok`プロパティが`false`となるエラーレスポンスをハンドリングできます。
 - en: '[PRE3]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ここまでの内容をまとめ、GitHubからユーザー情報を取得する関数を`fetchUserInfo`という名前で定義します。
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: ここまでの内容をまとめ、GitHubからユーザー情報を取得する関数を`fetchUserInfo`という名前で定義します。
 - en: '[PRE4]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: index.jsでは関数を定義しているだけで、呼び出しは行っていません。
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: index.jsでは関数を定義しているだけで、呼び出しは行っていません。
 - en: ページを読み込むたびにGitHubのAPIを呼び出すと、呼び出し回数の制限を超えるおそれがあります。 呼び出し回数の制限を超えると、APIからの��スポンスがステータスコード403のエラーになってしまいます。
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: ページを読み込むたびにGitHubのAPIを呼び出すと、呼び出し回数の制限を超えるおそれがあります。 呼び出し回数の制限を超えると、APIからのレスポンスがステータスコード403のエラーになってしまいます。
 - en: そのため、HTMLドキュメント側に手動で`fetchUserInfo`関数を呼び出すためのボタンを追加します。 ボタンのclickイベントで`fetchUserInfo`関数を呼び出し、取得したいユーザーIDを引数として与えています。
     例として`js-primer-example`という書籍用に用意したGitHubアカウントを指定しています。
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: そのため、HTMLドキュメント側に手動で`fetchUserInfo`関数を呼び出すためのボタンを追加します。 ボタンのclickイベントで`fetchUserInfo`関数を呼び出し、取得したいユーザーIDを引数として与えています。
+    例として`js-primer-example`という書籍用に用意したGitHubアカウントを指定しています。
 - en: '[PRE5]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 準備ができたら、ローカルサーバーを立ち上げてindex.htmlにアクセスしましょう。 ボタンを押すとHTTP 通信が行われ、コンソールにステータスコードとレスポンスのログが出力されます。
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 準備ができたら、ローカルサーバーを立ち上げてindex.htmlにアクセスしましょう。 ボタンを押すとHTTP 通信が行われ、コンソールにステータスコードとレスポンスのログが出力されます。
 - en: '![Fetchで取得したデータの表示](img/abc872124a3f79edde61bd3a1a5801ae.png)'
+  id: totrans-26
   prefs: []
   type: TYPE_IMG
+  zh: '![Fetchで取得したデータの表示](img/abc872124a3f79edde61bd3a1a5801ae.png)'
 - en: また、開発者ツールのネットワークパネルを開くと、GitHubのサーバーに対してHTTP 通信が行われていることを確認できます。
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: また、開発者ツールのネットワークパネルを開くと、GitHubのサーバーに対してHTTP 通信が行われていることを確認できます。
 - en: '![開発者ツールでHTTP 通信の記録を確認する](img/b10d033108210bd45e985650a174f69d.png)'
+  id: totrans-28
   prefs: []
   type: TYPE_IMG
+  zh: '![開発者ツールでHTTP 通信の記録を確認する](img/b10d033108210bd45e985650a174f69d.png)'
 - en: '[](#xhr)*[コラム] XMLHttpRequest*'
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#xhr)*[コラム] XMLHttpRequest*'
 - en: '*[XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest)（**XHR**）はFetch
     APIと同じくHTTP 通信を行うためのAPIです。 Fetch APIが標準化される以��は、ブラウザとサーバーの間で通信するにはXHRを使うのが一般的でした。
     このセクションで扱ったFetch APIによる`fetchUserInfo`関数は、XHRを使うと次のように書けます。'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[XMLHttpRequest](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest)（**XHR**）はFetch
+    APIと同じくHTTP 通信を行うためのAPIです。 Fetch APIが標準化される以前は、ブラウザとサーバーの間で通信するにはXHRを使うのが一般的でした。
+    このセクションで扱ったFetch APIによる`fetchUserInfo`関数は、XHRを使うと次のように書けます。'
 - en: '[PRE6]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: Fetch API 是为了取代 XHR 而创建的，大多数情况下不再需要使用 XHR。 另外，由于旧浏览器不支持 Fetch API，为了保持浏览器兼容性，有时会继续使用
     XHR。 有关 XHR 的详细用法，请参考[XHR 的使用文档](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest)。
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: Fetch API 是为了取代 XHR 而创建的，大多数情况下不再需要使用 XHR。 另外，由于旧浏览器不支持 Fetch API，为了保持浏览器兼容性，有时会继续使用
+    XHR。 有关 XHR 的详细用法，请参考[XHR 的使用文档](https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest)。
 - en: '[](#section-checklist)*本节的检查清单*'
+  id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#section-checklist)*本节的检查清单*'
 - en: '**使用[Fetch API](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API)发送
     HTTP 请求'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '**使用[Fetch API](https://developer.mozilla.org/ja/docs/Web/API/Fetch_API)发送
+    HTTP 请求'
 - en: 将从 GitHub API 获取的用户信息的 JSON 对象输出到控制台
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将从 GitHub API 获取的用户信息的 JSON 对象输出到控制台
 - en: 对 Fetch API 的调用进行错误处理
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对 Fetch API 的调用进行错误处理
 - en: 声明`fetchUserInfo`函数，并在按钮的点击事件中调用它
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 声明`fetchUserInfo`函数，并在按钮的点击事件中调用它
 - en: 您可以在以下 URL 中查看到目前的应用程序。
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以在以下 URL 中查看到目前的应用程序。
 - en: '[`jsprimer.net/use-case/ajaxapp/http/example/`](https://jsprimer.net/use-case/ajaxapp/http/example/)'
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[`jsprimer.net/use-case/ajaxapp/http/example/`](https://jsprimer.net/use-case/ajaxapp/http/example/)'
