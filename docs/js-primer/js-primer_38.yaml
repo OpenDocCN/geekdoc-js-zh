@@ -1,57 +1,89 @@
 - en: 用例：Ajax 通信
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 用例：Ajax 通信
 - en: 原文：[`jsprimer.net/use-case/ajaxapp/`](https://jsprimer.net/use-case/ajaxapp/)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[`jsprimer.net/use-case/ajaxapp/`](https://jsprimer.net/use-case/ajaxapp/)
 - en: 在这里，我们将创建一个应用程序，作为在 Web 浏览器上进行 Ajax 通信的用例，从 GitHub 的用户 ID 中获取个人资料信息。
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们将创建一个应用程序，作为在 Web 浏览器上进行 Ajax 通信的用例，从 GitHub 的用户 ID 中获取个人资料信息。
 - en: 应用程序需满足以下要求：
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用程序需满足以下要求：
 - en: 可以在文本框中输入 GitHub 的用户 ID
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以在文本框中输入 GitHub 的用户 ID
 - en: 根据输入的 GitHub 用户 ID 获取用户信息
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 根据输入的 GitHub 用户 ID 获取用户信息
 - en: 在应用程序中显示获取的用户信息
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在应用程序中显示获取的用户信息
 - en: '[](#summary)*目录*'
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '[](#summary)*目录*'
 - en: '*### [](#entrypoint)*入口点*'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '*### [](#entrypoint)*入口点*'
 - en: '*创建应用程序中最先调用的入口点。'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*创建应用程序中最先调用的入口点。'
 - en: '[](#http-communication)*HTTP 通信*'
+  id: totrans-10
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#http-communication)*HTTP 通信*'
 - en: '*使用 Web 标准的 Fetch API 进行 HTTP 通信，并调用 GitHub 的 API。'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*使用 Web 标准的 Fetch API 进行 HTTP 通信，并调用 GitHub 的 API。'
 - en: '[](#display)*显示数据*'
+  id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#display)*显示数据*'
 - en: '*使用 Fetch API 获取数据，构建 HTML 并在浏览器上显示。'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '*使用 Fetch API 获取数据，构建 HTML 并在浏览器上显示。'
 - en: '[](#promise)*利用 Promise*'
+  id: totrans-14
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '[](#promise)*利用 Promise*'
 - en: '*利用 Promise，整理源代码并处理错误。*****'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '*利用 Promise，整理源代码并处理错误。*****'
