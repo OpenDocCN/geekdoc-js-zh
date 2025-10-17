@@ -9,7 +9,7 @@
 +   [Google JavaScript 风格指南](docs/gl-js-styl-gd/README.md)
 +   [如何实现自己的 jQuery](docs/howto-impl-jq/README.md)
 +   [如何编写 jQuery 插件](docs/howto-wrt-jq-plgn/README.md)
-+   [笨办法学 Python3](docs/js-primer/README.md)
++   [JavaScript 入门书（Primer）](docs/js-primer/README.md)
 +   [Javascript 秘密花园](docs/js-scr-gdn/README.md)
 +   [JavaScript 标准参考](docs/js-spec-ref/README.md)
 +   [Javascript 学习手册](docs/lrn-js/README.md)
