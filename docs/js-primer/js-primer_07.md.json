@@ -1,0 +1,1 @@
+["```\n// `name`という名前の変数を宣言\nconst name = \"azu\";\n// `NAME`という名前の変数を宣言\nconst NAME = \"azu\"; \n```", "```\n// 式や文の間にスペースがいくつあっても同じ意味となる\n1 + 1;\n1   +   1; \n```", "```\n\"use strict\";\n// このコードはstrict modeで実行される \n```", "```\n\"use strict\";\nmistypedVariable = 42; // => ReferenceError \n```"]

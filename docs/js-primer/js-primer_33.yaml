@@ -1,0 +1,262 @@
+- en: '[ES2015] ECMAScriptモジュール'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/module/`](https://jsprimer.net/basic/module/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: モジュールとは、変数や関数などをまとめたものです。 JavaScriptにおいては、1つのモジュールは1つのJavaScriptファイルに対応します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: モジュールについてはNode.jsでCLIアプリのユースケースやTodoアプリのユースケースで実際に動かしながら学ぶため、ここでは構文の説明とモジュールのイメージをつかむのが目的です。
+    この章のサンプルコードを実際に動かすためにはローカルサーバーなどの準備が必要です。 そのため、ユースケースの章を先に読んでから戻ってきてもかまいません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: モジュールは、保守性・名前空間・再利用性のために使われます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '保守性: 依存性の高いコードの集合を一箇所にまとめ、それ以外のモジュールへの依存性を減らせます'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '名前空間: モジュールごとに分かれたスコープがあり、グローバルの名前空間を汚染しません'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '再利用性: 便利な変数や関数を複数の場所にコピーアンドペーストせず、モジュールとして再利用できます'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: モジュールは変数や関数などをモジュール外部にエクスポートできます。また、モジュールからエクスポートされた変数や関数などをインポートして利用できます。 モジュールに処理を分けることで、コードの見通しが良くなったり、特定のことに関する処理をモジュールにまとめたり、処理を再利用できるようになります。
+    それによって、コードの行数が増えてきた場合にも、一度にみるコードの量をモジュールで分割できるようになり、メンテナンス性がよくなります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: この章では、**ECMAScriptモジュール（ESモジュール、JavaScriptモジュールとも呼ばれる）** について見ていきます。 ECMAScriptモジュールは、ES2015��導入されたJavaScriptファイルをモジュール化する言語標準の機能です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#es-module-syntax)*ECMAScriptモジュールの構文*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*ECMAScriptモジュールは、[export 文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/export)によって変数や関数などをエクスポートできます。
+    また、[import 文](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/import)を使って別のモジュールからエクスポートされたものをインポートできます。
+    インポートとエクスポートはそれぞれに **名前つき** と **デフォルト** という2 種類の方法があります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: まずは名前つきエクスポート／インポート文について見ていきましょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#named-export-import)*名前つきエクスポート／インポート*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '***名前つきエクスポート**は、モジュールごとに複数の変数や関数などをエクスポートできます。 次の例では、`foo`変数と`bar`関数をそれぞれ名前つきエクスポートしています。
+    `export`文のあとに続けて`{}`を書き、その中にエクスポートする変数を入れることで、宣言済みの変数を名前つきエクスポートできます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: named-export.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、名前つきエクスポートでは`export`文を宣言の前につけると、宣言と同時に名前つきエクスポートできます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: named-export-declare.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '**名前つきインポート**は、指定したモジュールから名前を指定して選択的にインポートできます。 次の例では `my-module.js`から名前つきエクスポートされたオブジェクトの名前を指定して名前つきインポートしています。
+    `import`文のあとに続けて`{}`を書き、その中にインポートしたい名前つきエクスポートの名前を入れます。 複数の値をインポートしたい場合は、それぞれの名前をカンマで区切ります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: my-module.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: named-import.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#named-export-import-alias)*名前つきエクスポート／インポートのエイリアス*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*名前つきエクスポート／インポートには**エイリアス**の仕組みがあります。 エイリアスを使うと、宣言済みの変数を違う名前で名前つきエクスポートできます。
+    エイリアスをつけるには、次のように`as`のあとにエクスポートしたい名前を記述します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: named-export-alias.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、名前つきインポートしたオブジェクトにも別名をつけることができます。 インポートでも同様に、`as`のあとに別名を記述します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: named-import-alias.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#default-export-import)*デフォルトエクスポート／インポート*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*次に、デフォルトエクスポート／インポートについて見ていきましょう。 **デフォルトエクスポート**は、モジュールごとに1つしかエクスポートできない特殊なエクスポートです。
+    次の例は、すでに宣言されている変数をデフォルトエクスポートしています。 `export default`文で、後に続く式の評価結果をデフォルトエクスポートします。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: default-export.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、`export`文を宣言の前につけると、宣言と同時にデフォルトエクスポートできます。 このとき関数やクラスの名前を省略できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ただし、変数宣言は宣言とデフォルトエクスポートを同時に行うことはできません。 なぜなら、変数宣言はカンマ区切りで複数の変数を定義できてしまうためです。
+    次の例は実行できない不正なコードです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '**デフォルトインポート**は、指定したモジュールのデフォルトエクスポートに名前をつけてインポートします。 次の例では `my-module.js`のデフォルトエクスポートに`myModule`という名前をつけてインポートしています。
+    `import`文のあとに任意の名前をつけることで、デフォルトエクスポートをインポートできます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: my-module.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: default-import.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 実はデフォルトエクスポートは、`default`という固有の名前による名前つきエクスポートと同じものです。 そのため、名前つきエクスポートで`as default`とエイリアスをつけることでデフォルトエクスポートすることもできます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: default-export-alias.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 类似地，在命名导入中，名称`default`对应默认导入。通过以下方式，在命名导入中指定`default`，您可以进行默认导入。但请注意，`default`是保留字，因此您必须使用`as`语法为其指定别名。
+  prefs: []
+  type: TYPE_NORMAL
+- en: default-import-alias.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 此外，命名导入和默认导入的语法可以同时编写。您可以用逗号连接两种语法，如下所示。
+  prefs: []
+  type: TYPE_NORMAL
+- en: default-import-with-named.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 在 ECMAScript 模块中，未导出的内容无法被导入。这是因为在 JavaScript 的解析阶段解析 ECMAScript 模块时，如果无法解析出要导入的内容，则会导致解析错误。默认导入要求导入目标模块导出默认导出。类似地，命名导入要求导入目标模块导出指定的命名导出。*
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#other-syntax)*其他语法*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ECMAScript 模块还具有除了命名导入和默认导入之外的其他一些语法。*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#re-export)*再导出*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*再导出是指，重新从另一个模块导入的内容，再次从自身导出。它通常用于创建包含从多个模块导出的内容的模块。*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 再导出的语法如下，在`export`关键字后面跟着`from`，然后指定另一个模块名。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#namespace-import)*导入所有内容*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*`import * as`语法会导入所有命名导出。使用这种方法，你声明了一个对象，该对象成为了模块的 **命名空间** 。要访问导出的变量或函数等，您需要使用该命名空间对象的属性。此外，正如前文所述，使用名为
+    `default` 的关键字，您还可以访问默认导出。*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: my-module.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: namespace-import.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#import-for-side-effect)*用于副作用的导入*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*有些模块仅执行全局代码，而不导出任何内容。例如，用于操作全局变量的模块等。*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: side-effects.js
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 要导入此类模块，您需要使用用于副作用的导入语法。使用此语法，您只需加载并执行指定的模块，而不导入任何内容。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#run-es-modules)*执行 ECMAScript 模块*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*要执行创建的 ECMAScript 模块，您需要将起始 JavaScript 文件作为 ECMAScript 模块加载到 Web 浏览器中。Web
+    浏览器会使用`script`元素加载和执行 JavaScript 文件。通过为`script`元素添加`type="module"`属性，Web 浏览器会将
+    JavaScript 文件视为 ECMAScript 模块加载。*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: 如果没有添加`type="module"`属性，则会被视为普通脚本，不会启用 ECMAScript 模块的功能。如果在加载的 JavaScript 中使用了`import`或`export`语句，将会导致语法错误。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在 Web 浏览器环境中，导入的模块是通过网络解析的。因此，模块名称应该指定 JavaScript 文件的绝对 URL 或相对 URL。有关详细信息，请参阅
+    Todo 应用程序用例。*
+  prefs: []
+  type: TYPE_NORMAL

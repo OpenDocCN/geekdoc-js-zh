@@ -1,0 +1,1025 @@
+- en: 文字列
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/string/`](https://jsprimer.net/basic/string/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: この章ではJavaScriptにおける文字列について学んでいきます。 まずは、文字列の作成方法や文字列の操作方法について見ていきます。 そして、文字列を編集して自由に文字列を作れるようになることがこの章の目的です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#create)*文字列を作成する*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列を作成するには、文字列リテラルを利用します。 「データ型とリテラル」の章でも紹介しましたが、文字列リテラルには`"`（ダブルクォート）、`''`（シングルクォート）、[PRE0]'
+  prefs: []
+  type: TYPE_NORMAL
+- en: const double = "文字列";
+  prefs: []
+  type: TYPE_NORMAL
+- en: console.log(double); // => "文字列"
+  prefs: []
+  type: TYPE_NORMAL
+- en: const single = '文字列';
+  prefs: []
+  type: TYPE_NORMAL
+- en: console.log(single); // => '文字列'
+  prefs: []
+  type: TYPE_NORMAL
+- en: // どちらも同じ文字列
+  prefs: []
+  type: TYPE_NORMAL
+- en: console.log(double === single);// => true
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]（バッククォート）が追加されました。 [PRE2]'
+  prefs: []
+  type: TYPE_NORMAL
+- en: const multiline = `1 行目
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2 行目
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3 行目`;
+  prefs: []
+  type: TYPE_NORMAL
+- en: // \n は改行を意味する
+  prefs: []
+  type: TYPE_NORMAL
+- en: console.log(multiline); // => "1 行目\n2 行目\n3 行目"
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: const str = "This book is \"js-primer\"";
+  prefs: []
+  type: TYPE_NORMAL
+- en: console.log(str); // => 'This book is "js-primer"'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: // JavaScriptエンジンが構文として解釈できないため、SyntaxErrorとなる
+  prefs: []
+  type: TYPE_NORMAL
+- en: const invalidString = "1 行目
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2 行目
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3 行目";
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]（バッククォート）すべての文字列リテラルの中で利用できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| エスケープシーケンス | 意味 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\''` | シングルクォート |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\"` | ダブルクォート |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\`` | バッククォート |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\\` | バックスラッシュ(`\`そのものを表示する) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\n` | 改行 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\t` | タブ |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\uXXXX` | Code Unit(`\u`と4 桁のHexDigit) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `\u{X}` ... `\u{XXXXXX}` | Code Point（`\u{}`のカッコ中にHexDigit） |'
+  prefs: []
+  type: TYPE_TB
+- en: このエスケープシーケンスを利用することで、先ほどの`"`（ダブルクォート）の中に改行（`\n`）を入力できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、`\`からはじまる文字は自動的にエスケープシーケンスとして扱われます。 しかし、`\a`のように定義されていないエスケープシーケンスは、`\`が単に無視され`a`という文字列として扱われます。
+    これにより、`\`（バックスラッシュ）そのものを入力していたつもりが、その文字がエスケープシーケンスとして扱われてしまう問題があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`\_`という組み合わせのエスケープシーケンスはないため、`\`が無視された文字列として評価されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`\`（バックスラッシュ）そのものを入力したい場合は、`\\`のようにエスケープする必要があります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#concat)*文字列を結合する*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列を結合する簡単な方法は文字列結合演算子（`+`）を使う方法です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 変数と文字列を結合したい場合も文字列結合演算子で行えます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 特定の書式に文字列を埋め込むには、テンプレートリテラルを使うとより宣言的に書けます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: テンプレートリテラル中に`${変数名}`で書かれた変数は評価時に展開されます。 つまり、先ほどの文字列結合は次のように書けます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#get-char)*文字へのアクセス*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列の特定の位置にある文字にはインデックスを指定してアクセスできます。 これは、配列における要素へのアクセスにインデックスを指定するのと同じです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 文字列では`文字列[インデックス]`のように指定した位置（インデックス）の文字へアクセスできます。 インデックスの値は`0`以上`2⁵³ - 1`未満の整数が指定できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、存在しないインデックスへのアクセスでは配列やオブジェクトと同じように`undefined`を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#string-at)*[ES2022] `String.prototype.at`*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ES2022から`String.prototype.at`メソッドが追加されています。 Stringの`at`メソッドは、Arrayの`at`メソッドと同じく、相対的なインデックスを渡してその位置の文字へアクセスできます。
+    `at`メソッドへ`-1`のようにマイナスのインデックスを渡した場合は、末尾から数えた位置の文字へアクセスできます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#what-is-string)*文字列とは*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*今まで何気なく「文字列」という言葉を利用していましたが、ここでいう文字列とはどのようなものでしょうか？　コンピュータのメモリ上に文字列の「ア」といった文字をそのまま保存できないため、0と1からなるビット列へ変換する必要があります。
+    この文字からビット列へ変換することを符号化（エンコード）と呼びます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 一方で、変換後のビット列が何の文字なのかを管理する表が必要になります。 この文字に対応するIDの一覧表のことを符号化文字集合と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次の表は、Unicodeという文字コードにおける符号化文字集合からカタカナの一部分を取り出したものです。^(1) Unicodeはすべての文字に対してID（Code
+    Point）を振ることを目的に作成されている仕様です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+    | --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 30A0 | ゠ | ァ | ア | ィ | イ | ゥ | ウ | ェ | エ | ォ | オ | カ | ガ | キ | ギ | ク |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 30B0 | グ | ケ | ゲ | コ | ゴ | サ | ザ | シ | ジ | ス | ズ | セ | ゼ | ソ | ゾ | タ |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 30C0 | ダ | チ | ヂ | ッ | ��� | ヅ | テ | デ | �� | ド | ナ | ニ | ヌ | ネ | ノ | ハ |'
+  prefs: []
+  type: TYPE_TB
+- en: JavaScript（ECMAScript）は文字コードとしてUnicodeを採用し、文字をエンコードする方式としてUTF-16を採用しています。 UTF-16とは、それぞれの文字を16ビットのビット列に変換するエンコード方式です。
+    Unicodeでは1 文字を表すのに使う最小限のビットの組み合わせを**Code Unit**（符号単位）と呼び、UTF-16では各 Code Unitのサイズが16ビット（2バイト）です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードは、文字列を構成するCode Unitをhex 値（16 進数）にして表示する例です。 Stringの`charCodeAt`メソッドは、文字列の指定インデックスのCode
+    Unitを整数として返します。 そのCode Unitの整数値をNumberの`toString`メソッドでhex 値（16 進数）にしています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 逆に、Code Unitをhex 値（16 進数）から文字へと変換するには`String.fromCharCode`メソッドを使います。 次のコードでは、16
+    進数の整数リテラルである`0x`で記述したCode Unitから文字列へと変換しています （`0x`リテラルについては「データ型とリテラル」の章を参照）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: これらの結果をまとめると、この文字列と文字列を構成するUTF-16のCode Unitとの関係は次のようになります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| インデックス | 0 | 1 | 2 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 文字列 | ア | オ | イ |'
+  prefs: []
+  type: TYPE_TB
+- en: '| UTF-16のCode Unit（16 進数） | 0x30A2 | 0x30AA | 0x30A4 |'
+  prefs: []
+  type: TYPE_TB
+- en: このように、JavaScriptにおける文字列は16ビットのCode Unitが順番に並んだものとして内部的に管理されています。 これは、ECMAScriptの内部表現としてUTF-16を採用しているだけで、JavaScriptファイル（ソースコードを書いたファイル）のエンコーディングとは関係ありません。そのため、JavaScriptファイル自体のエンコードは、UTF-16
+    以外の文字コードであっても問題ありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: UTF-16を利用していることはJavaScriptの内部的な表現であるため、気にする必要がないようにも思えます。 しかし、このJavaScriptがUTF-16を利用していることは、これから見ていくStringのAPIにも影響しています。
+    このUTF-16と文字列については、次の章である「文字列とUnicode」で詳しく見ていきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ここでは、「JavaScriptの文字列の各要素はUTF-16のCode Unitで構成されている」ということだけを覚えておけば問題ありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#split-join)*文字列の分解と結合*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列を配列へ分解するにはStringの`split`メソッドを利用できます。 一方、配列の要素を結合して文字列にするにはArrayの`join`メソッドを利用できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: この２つはよく組み合わせて利用されるため、合わせて見ていきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stringの`split`メソッドは、第一引数に指定した区切り文字で文字列を分解した配列を返します。 次のコードでは、文字列を`・`で区切った配列を作成しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 分解してできた文字列の配列を結合して文字列を作る際に、Arrayの`join`メソッドが利用できます。 Arrayの`join`メソッドの第一引数には区切り文字を指定し、その区切り文字で結合した文字列を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: この２つを合わせれば、区切り文字を`・`から`、`へ変換する処理を次のように書くことができます。 `・`で文字列を分割（`split`）してから、区切り文字を`、`にして結合（`join`）すれば変換できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: Stringの`split`メソッドの第一引数には正規表現も指定できます。 これを利用すると、次のように文字列をスペースで区切るような処理を簡単に書けます。
+    `/\s+/`は1つ以上のスペースにマッチする正規表現オブジェクトを作成する正規表現リテラルです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#length)*文字列の長さ*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Stringの`length`プロパティは文字列の要素数を返します。 文字列の構成要素はCode Unitであるため、`length`プロパティはCode
+    Unitの個数を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次の文字列は3つの要素（Code Unit）が並んだものであるため、`length`プロパティは`3`を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、空文字列は要素数が`0`であるため、`length`プロパティの結果も`0`となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#compare)*文字列の比較*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列の比較には`===`（厳密比較演算子）を利用します。 次の条件を満たしていれば同じ文字列となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 文字列の要素であるCode Unitが同じ順番で並んでいるか
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 文字列の長さ（length）は同じか
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 難しく書いていますが、同じ文字列同士なら`===`（厳密比較演算子）の結果は`true`となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、`===`などの比較演算子だけではなく、 `>`、`<`、`>=`、`<=`など大小の関係演算子で文字列同士の比較もできます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: これらの関係演算子も、文字列の要素であるCode Unit 同士を先頭から順番に比較します。 文字列からCode Unitの数値を取得するには、Stringの`charCodeAt`メソッドを利用できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`ABC`と`ABD`を比較した場合にどちらが大きい（Code Unitの値が大きい）かを比較しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように、関係演算子での文字列比較はCode Unit 同士を比較しています。 この結果を予測することは難しく、また直感的ではない結果が生まれることも多いです。
+    文字の順番は国や言語によっても異なるため、国際化（Internationalization）に関する知識も必要です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: JavaScriptにおいても、[ECMA-402](https://www.ecma-international.org/publications-and-standards/standards/ecma-402/
+    "Standard ECMA-402")というECMAScriptと関連する別の仕様として国際化についての取り決めがされています。 この国際化に関するAPIを定義した[Intl](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Intl)というビルトインオブジェクトもありますが、このAPIについての詳細は省略します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#slice)*文字列の一部を取得*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列からその一部を取り出したい場合には、Stringの`slice`メソッドや`substring`メソッドが利用できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`slice`メソッドについては、すでに配列で学んでいますが、基本的な動作は文字列でも同様です。 まずは`slice`メソッドについて見ていきます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stringの`slice`メソッドは、第一引数の開始位置から第二引数の終了位置（終了位置の要素は含まない）までの範囲を取り出した新しい文字列を返します。
+    第二引数は省略でき、省略した場合は文字列の末尾まで含んだ新しい文字列を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 位置にマイナスの値を指定した場合は文字列の末尾から数えた位置となります。 また、第一引数の位置が第二引数の位置より大きい場合、常に空の文字列を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: そのため、メソッドの引数の扱い方は配列の`slice`メソッドと同様です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: Stringの`substring`メソッドは、`slice`メソッドと同じく第一引数に開始位置、第二引数に終了位置を指定し、その範囲を取り出して新しい文字列を返します。
+    第二引数を省略した場合の挙動も同様で、省略した場合は文字列の末尾が終了位置となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`slice`メソッドとは異なる点として、位置にマイナスの値を指定した場合は常に`0`として扱われます。 また、第一引数の位置が第二引数の位置より大きい場合、第一引数と第二引数が入れ替わるという予想しにくい挙動となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように、マイナスの位置や引数が交換される挙動はわかりやすいものとは言えません。 そのため、`slice`メソッドと`substring`メソッドに指定する引数は、どちらとも同じ結果となる範囲に限定したほうが直感的な挙動となります。
+    つまり、指定するインデックスは0 以上にして、第二引数を指定する場合は`第一引数の位置 < 第二引数の位置`にするということです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stringの`slice`メソッドは、`indexOf`メソッドなどの位置を取得するものと組み合わせて使うことが多いでしょう。 次のコードでは、`?`の位置を`indexOf`メソッドで取得し、それ以降の文字列を`slice`メソッドで切り出しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、配列とは異なりプリミティブ型の値である文字列は、`slice`メソッドと`substring`メソッド共に非破壊的です。 機能的な違いがほとんどないため、どちらを利用するかは好みの問題となるでしょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#search)*文字列の検索*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列の検索方法として、大きく分けて文字列による検索と正規表現による検索があります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 指定した文字列が文字列中に含まれているかを検索する方法として、Stringメソッドには取得したい結果ごとにメソッドが用意���れています。 ここでは、次の3
+    種類の結果を取得する方法について文字列と正規表現それぞれの検索方法を見ていきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: マッチした箇所のインデックスを取得
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: マッチした文字列の取得
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: マッチしたかどうかの真偽値を取得
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[](#search-by-string)*文字列による検索*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`String`オブジェクトには、指定した文字列で検索するメソッドが用意されています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#search-index-by-string)*文字列によるインデックスの取得*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*Stringの`indexOf`メソッドと`lastIndexOf`メソッドは、指定した文字列で検索し、その文字列が最初に現れたインデックスを返します。
+    これらは配列のArrayの`indexOf`メソッドと同じで、厳密等価演算子（`===`）で文字列を検索します。 一致する文字列がない場合は`-1`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`文字列.indexOf("検索文字列")`: 先頭から検索し、指定された文字列が最初に現れたインデックスを返す'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`文字列.lastIndexOf("検索文字列")`: 末尾から検索し、指定された文字列が最初に現れたインデックスを返す'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: どちらのメソッドも一致する文字列が複数個ある場合でも、指定した検索文字列を最初に見つけた時点で検索は��了します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#match-by-string)*文字列にマッチした文字列の取得*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*文字列を検索してマッチした文字列は、検索文字列そのものになるので自明です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは`"Script"`という文字列で検索していますが、その検索文字列にマッチする文字列はもちろん`"Script"`になります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#test-by-string)*真偽値の取得*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*「文字列」に「検索文字列」が含まれているかを検索する方法がいくつか用意されています。 次の3つのメソッドはES2015で導入されました。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`String.prototype.startsWith(検索文字列)`^([ES2015]): 検索文字列が先頭にあるかの真偽値を返す'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`String.prototype.endsWith(検索文字列)`^([ES2015]): 検索文字列が末尾にあるかの真偽値を返す'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`String.prototype.includes(検索文字列)`^([ES2015]): 検索文字列を含むかの真偽値を返す'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 具体的な例をいくつか見てみましょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#regexp-object)*正規表現オブジェクト*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*文字列による検索では、固定の文字列にマッチするものしか検索できません。 一方で正規表現による検索では、あるパターン（規則性）にマッチするという柔軟な検索ができます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 正規表現は正規表現オブジェクト（`RegExp`オブジェクト）として表現されます。 正規表現オブジェクトはマッチする範囲を決める`パターン`と正規表現の検索モードを指定する`フラグ`の2つで構成されます。
+    正規表現のパターン内では、次の文字は**特殊文字**と呼ばれ、特別な意味を持ちます。特殊文字として解釈されないように入力する場合には`\`（バックスラッシュ）でエスケープする必要があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: 正規表現オブジェクトを作成するには、正規表現リテラルと`RegExp`コンストラクタを使う2つの方法があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: 正規表現リテラルは、`/`と`/`のリテラル内に正規表現のパターンを書くことで、正規表現オブジェクトを作成できます。 次のコードでは、`+`という1 回以上の繰り返しを意味する特殊文字を使い、`a`が1
+    回以上連続する文字列にマッチする正規表現オブジェクトを作成しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: 正規表現オブジェクトを作成するもうひとつの方法として`RegExp`コンストラクタがあります。 `RegExp`コンストラクタでは、文字列から正規表現オブジェクトを作成できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`RegExp`コンストラクタを使って`a`が1 文字以上連続している文字列にマッチする正規表現オブジェクトを作成しています。 これは先ほどの正規表現リテラルで作成した正規表現オブジェクトと同じ意味になります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#difference-regexp-literal-regexp-constructor)*正規表現リテラルと`RegExp`コンストラクタの違い*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*正则表达式字面量和`RegExp`构造函数的区别在于正则表达式模式的评估时机不同。正则表达式字面量在源代码加载（解析）阶段评估正则表达式模式。另一方面，`RegExp`构造函数与普通函数一样，只有调用`RegExp`构造函数时才会评估正则表达式模式。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 以单独的`[`为例，这是一个无效的模式正则表达式，我们来看看评估时机的不同之处。由于`[`需要与`]`配对使用，因此在正则表达式模式中单独使用会导致语法错误异常。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 正则表达式字面量在代码加载时会评估正则表达式模式，因此，即使没有调用`main`函数，也会导致语法错误（`SyntaxError`）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: 另一方面，`RegExp`构造函数在运行时评估正则表达式模式，因此只有调用`main`函数时才会出现语法错误（`SyntaxError`）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: 这意味着，正则表达式字面量是在编写代码时创建固定模式的正则表达式对象。另一方面，`RegExp`构造函数可以创建在运行时可能变化的模式的正则表达式对象，例如与变量结合使用。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 例如，我们将比较使用正则表达式对象匹配连续空格的情况。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，使用正则表达式字面量创建一个匹配连续 3 个空格的正则表达式对象。`\s`匹配空格或制表符等空白字符。另外，`{number}`表示重复指定次数的特殊字符。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: 正则表达式字面量在加载时评估正则表达式模式，因此无法动态更改`\s`连续出现的次数。另一方面，`RegExp`构造函数在运行时评估正则表达式模式，因此可以创建包含变量的正则表达式对象。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，使用`RegExp`构造函数根据变量`spaceCount`的数量创建一个匹配连续空格的正则表达式对象。需要注意的是，`\`（反斜杠）本身在字符串中是转义字符，请注意在`RegExp`构造函数的模式字符串中，以`\`（反斜杠）开头的特殊字符需要转义。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: 因此，`RegExp`构造函数可以从字符串创建正则表达式对象，但需要对特殊字符进行转义。因此，在可以使用正则表达式字面量的情况下，最好使用字面量，因为它更简洁且性能更好。当需要在正则表达式模式中使用变量时，可以使用`RegExp`构造函数。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[*通过正则表达式搜索*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*通过正则表达式搜索，使用与 String 对象或 RegExp 对象对应的方法。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#search-index-by-regexp)*通过正则表达式获取索引*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*String 的`indexOf`方法的正则表达式版本是 String 的`search`方法。`search`方法返回与正则表达式模式匹配的位置的索引，如果没有匹配的字符串，则返回`-1`。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`String.prototype.indexOf(searchString)`: 返回匹配的字符串的索引'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`String.prototype.search(/pattern/)`: 返回与指定正则表达式模式匹配的位置的索引'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 在下面的代码中，搜索连续 3 个数字，并返回匹配位置的索引。`\d`是匹配单个数字（`0`到`9`）的特殊字符。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#match-by-regexp)*通过正则表达式匹配的字符串获取*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*通过字符串搜索，搜索到的字符串本身就是匹配的字符串。然而，使用`search`方法的正则表达式搜索是基于正则表达式模式的搜索，因此搜索到的匹配字符串的长度是不固定的。换句话说，即使只获取`search`方法返回的匹配索引，实际匹配的字符串也无法得知。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: 因此，提供了获取匹配字符串的 String 的`match`方法和`matchAll`方法。此外，这些方法通过正则表达式的全局匹配`g`标志来改变行为。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#match)*匹配的字符串获取*'
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+- en: '*首先，让我们从 String 的`match`方法开始查看获取匹配的字符串。`match`方法用于在正则表达式`/pattern/`与`"string"`匹配时返回有关匹配字符串的信息。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: 如果使用`match`方法搜索，但没有匹配正则表达式的字符串，则返回`null`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: 当使用不带`g`标志的正则表达式模式进行搜索时，`match`方法会在找到第一个匹配项时结束搜索。此时，`match`方法的返回值是一个特殊数组，包含`index`属性和`input`属性。`index`属性包含匹配字符串的起始索引，`input`属性包含整个搜索字符串。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码中的`/[a-zA-Z]+/`正则表达式将匹配一个或多个连续的`a`到`Z`之间的字符。这个正则表达式匹配的字符串可以通过索引访问返回的数组中获取。没有`g`标志时，只有一个匹配项时搜索会结束，因此返回的数组只包含一个元素。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`match`方法在使用带有`g`标志的正则表达式模式进行搜索时，将返回包含所有匹配字符串的数组。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码中的`/[a-zA-Z]+/g`正则表达式将匹配一个或多个连续的`a`到`Z`之间的字符。这个正则表达式匹配的位置是"ABC"和"DE"，因此`match`方法返回的数组中包含
+    2 个元素。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: 在这种情况下，`match`方法返回的数组不包含`index`和`input`属性。 这是因为在多个匹配位置的情况下，单个`index`属性无法唯一确定意义。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 总结 String 的`match`方法的行为如下。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 如果没有匹配，则返回`null`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 如果匹配成功，则返回包含匹配字符串的特殊数组
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 当使用正则表达式的`g`标志时，返回包含所有匹配结果的普通数组
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 在 ES2020 中，引入了 String 的`matchAll`方法，用于使用正则表达式的`g`标志进行重复匹配。 `matchAll`方法返回一个
+    Iterator，其中包含匹配的结果。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码获取了与字母匹配的结果的 Iterator 对象。 Iterator 对象可以通过`for...of`语法进行迭代处理，从而逐个获取 Iterator
+    中的值进行处理（有关详细信息，请参阅“循环和迭代”章节）。 在这种迭代处理中，可以获取每个匹配的字符串以及具有`index`和`input`属性的特殊数组。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: 因此，当使用正则表达式的`g`标志进行重复匹配时，应该使用`matchAll`方法，而不是`match`方法。 另外，由于`matchAll`方法不支持没有`g`标志的正则表达式，因此如果传递没有`g`标志的正则表达式，则会引发异常。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#match-capture-by-regexp)*获取匹配字符串的一部分*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*String 的`match`方法和`matchAll`方法都支持正则表达式的捕获。 捕获是指在正则表达式中使用`/pattern1(pattern2)/`这样的括号括起来的部分。
+    通过这种捕获，可以提取正则表达式匹配的部分。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`match`方法和`matchAll`方法都将匹配结果作为数组返回。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 如果匹配的模式中包含捕获，则返回的数组将逐渐添加捕获的部分。 数组的开头包含整个匹配的字符串，然后按顺序包含捕获（用`(`和`)`括起来的部分）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: 下面的代码尝试提取`ECMAScript 数字`中的`数字`部分。 通过 String 的`match`方法和捕获，提取了与数字(`\d+`)匹配的部分。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: 当使用正则表达式的`g`标志重复匹配字符串时，应该使用`matchAll`方法。 正如前面介绍的那样，`match`方法无法在重复匹配时获取各自独立的匹配信息。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码尝试提取`ES 数字`中的数字(`\d+`)。 通过迭代处理`matchAll`的返回值，可以提取每个匹配的捕获。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#regexp-exec)*[专栏] 使用 RegExp.prototype.exec 进行 String.prototype.matchAll*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*String 的`matchAll`方法是在 ES2020 中引入的方法。 在那之前，我们使用类似于 String 的`match`方法的 RegExp
+    的`exec`方法来实现类似于 String 的`matchAll`方法的表达。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: RegExp 的`exec`方法是接受字符串参数的方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: 当使用没有`g`标志的模式进行搜索时，RegExp 的`exec`方法将返回一个包含仅匹配的第一个结果的特殊数组。 在这种情况下，返回的数组具有添加了`index`属性和`input`属性的特殊数组，与
+    String 的`match`方法类似。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: 即使在使用具有`g`标志的模式进行搜索时，RegExp 的`exec`方法也将返回一个包含仅匹配的第一个结果的特殊数组。 这一点与 String 的`match`方法不同。
+    此外，它还将匹配的字符串末尾索引记录在正则表达式对象的`lastIndex`属性中。 然后再次调用`exec`方法时，将从最后一个匹配的末尾索引（`lastIndex`属性位置）开始搜索。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: 总结 RegExp 的`exec`方法的行为如下。 如果正则表达式没有`g`标志，则结果与 String 的`match`方法相同。 另一方面，如果正则表达式有`g`标志，则行为与
+    String 的`match`方法不同。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 如果没有匹配，则返回`null`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 如果匹配成功，则返回包含匹配字符串的特殊数组
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 当使用正则表达式的`g`标志时，返回包含匹配字符串的特殊数组，并将匹配的末尾索引记录在正则表达式对象的`lastIndex`属性中
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 利用正则表达式的`g`标志和`exec`方法进行搜索时，可以利用`lastIndex`属性在每次搜索时更新，从而获取所有匹配的结果。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码使用了 RegExp 的`exec`方法，将匹配字母的结果存储在`matches`中。 在具有`g`标志的情况下，`exec`方法会记录最后一个匹配位置，因此在`while`循环中进行迭代处理并从上次匹配的位置继续搜索。
+    此外，由于`exec`方法在没有匹配时会返回`null`，因此一旦没有匹配项，就会自动退出 while 循环。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE51]'
+  prefs: []
+  type: TYPE_PRE
+- en: 使用 RegExp 的`exec`方法和正则表达式的`g`标志，实现了类似于 String 的`matchAll`方法的迭代处理。 RegExp 的`exec`方法是一种在引入迭代处理对象之前就存在的方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 与 String 的`matchAll`方法处理 Iterator 的直观迭代相比，RegExp 的`exec`方法需要手动编写`while`循环等迭代处理，因此不够直观。
+    因此，在可以使用 String 的`matchAll`方法的情况下，就不需要使用 RegExp 的`exec`方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#test-by-regexp)*获取布尔值*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*使用正则表达式对象，可以使用 RegExp 的`test`方法来测试是否匹配该模式。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 正则表达式的模式中有指定位置的特殊字符。因此，“基于字符串的搜索”中提到的方法可以使用特殊字符和 RegExp 的`test`方法来表示。
+  prefs: []
+  type: TYPE_NORMAL
+- en: String 的`startsWith`等效于：`/^pattern/.test(string)`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`^`表示匹配开头的特殊字符'
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: String 的`endsWith`等效于：`/pattern$/.test(string)`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`$`表示匹配末尾的特殊字符'
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: String 的`includes`等效于：`/pattern/.test(string)`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 让我们看一个具体的例子。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE52]'
+  prefs: []
+  type: TYPE_PRE
+- en: 此外，正则表达式还可以使用重复和字符集等特殊字符来实现灵活的搜索。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#string-or-regexp)*使用字符串还是正则表达式*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*我们已经知道，正则表达式和 String 方法可以实现相同的搜索。当 String 方法和正则表达式可以获得相同结果时，应该选择哪一个呢？'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 正则表达式对模糊搜索有很强的支持，并且可以使用特殊字符获得灵活的搜索结果。另一方面，由于模糊性，有时很难从正则表达式的模式本身看出代码正在搜索什么。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的例子尝试判断从`/`开始到`/`结束的字符串。这个判断分别使用了正则表达式和 String 方法来实现（这是一个故意不利于正则表达式的例子）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在正则表达式的情况下，即使看到`/^\/.*\/$/`这样的模式，也很难一眼看出想要做什么。而在 String 方法的情况下，可以直接将判断是否以`/`开头并以`/`结尾的内容表达为代码。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE53]'
+  prefs: []
+  type: TYPE_PRE
+- en: 正则表达式灵活且方便，但很容易在代码中失去意图。因此，在处理正则表达式时，最好使用注释或变量名来说明具体意图。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 回到“使用 String 方法和正则表达式获得相同结果时应该选择哪个？”的疑问。建议在可以使用 String 方法表达的情况下使用 String 方法，而在需要灵活性或模糊搜索时，建议使用带有注释和变量名的正则表达式。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '要了解更多关于正则表达式的信息，请参考[MDN 的正则表达式文档](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Regular_Expressions
+    "正则表达式 - JavaScript | MDN")或者可以在控制台中尝试的[regex101](https://regex101.com/ "Online
+    regex tester and debugger: PHP, PCRE, Python, Golang and JavaScript")等网站。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#replace-delete)*替换/删除字符串*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*要替换或删除字符串的一部分，可以使用 String 的`replace`方法。正如在“数据类型和字面量”中所述，作为不可变的原始类型，字符串无法删除部分字符。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 换句话说，`delete`运算符不能用于字符串。在严格模式下，如果尝试删除无法删除的属性，将会导致错误。在非严格模式下，将会被忽略而不会报错（详细信息请参考“JavaScript
+    是什么”中的严格模式）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE54]'
+  prefs: []
+  type: TYPE_PRE
+- en: 相反，String 的`replace`方法可以通过返回删除所需字符的新字符串来表示删除。`replace`方法会将**字符串**中与第一个参数`搜索字符串`或正则表达式匹配的部分替换为第二个��数`替换字符串`。���一个参数可以是字符串也可以是正则表达式。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE55]'
+  prefs: []
+  type: TYPE_PRE
+- en: 如下所示，通过将要删除的部分替换为空字符串，可以删除字符串。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE56]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`replace`方法也可以指定正则表达式。通过传递启用`g`标志的正则表达式，可以替换字符串中与模式匹配的所有内容。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE57]'
+  prefs: []
+  type: TYPE_PRE
+- en: 当需要将字符串中所有匹配搜索字符串的内容全部替换时，可以使用 ES2021 中新增的 String 的`replaceAll`方法。在`replace`方法中，只会替换第一个匹配的内容，而在`replaceAll`方法中，会替换所有匹配的内容。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 与使用 String 的`replace`和带有`g`标志的正则表达式的区别在于，String 的`replaceAll`方法可以使用字符串而不是正则表达式来替换所有内容。因此，在`replaceAll`方法中，甚至可以直接将具有特殊含义的字符（如`?`）作为搜索字符串写入并进行替换。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE58]'
+  prefs: []
+  type: TYPE_PRE
+- en: 在`replace`方法和`replaceAll`方法中，可以使用捕获的字符串执行复杂的替换操作。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 可以将回调函数传递给`replace`方法和`replaceAll`方法的第二个参数。与第一个参数`模式`匹配的部分将被回调函数的返回值替换。回调函数的第一个参数是整个匹配的字符串，第二个参数及以后是按顺序捕获的字符串。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE59]'
+  prefs: []
+  type: TYPE_PRE
+- en: 举例来说，让我们写一个处理将`2017-03-01`替换为`2017 年 03 月 01 日`的过程。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`/(\d{4})-(\d{2})-(\d{2})/g`这个正则表达式将匹配`"2017-03-01"`这个字符串。`year`、`month`、`day`分别包含捕获的字符串，整个匹配的字符串将被回调函数的返回值替换。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE60]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#built)*构建字符串*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*最后让我们来看看如何构建字符串。正如本章开头所述，本章的目的是“学会自由地构建字符串”。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 通过简单地连接或替换字符串，我们可以创建新的字符串。然而，在处理结构化字符串时，仅仅简单地连接可能会导致意义不同。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ここでの構造的な文字列とは、URL 文字列やファイルパス文字列といった文字列中にコンテキストを持っているものを指します。 たとえば、URL 文字列は次のような構造を持っており、それぞれの要素に入る文字列の種類などが決められています（詳細は「[URL
+    Standard](https://url.spec.whatwg.org/ "URL Standard")」を参照）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE61]'
+  prefs: []
+  type: TYPE_PRE
+- en: これらの文字列を作成する場合は、文字列結合演算子（`+`）で単純に結合するよりも専用の関数を用意するほうが安全です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: たとえば、次のように`baseURL`と`pathname`を渡し、それらを結合したURLにあるリソースを取得する`getResource`関数があるとします。
+    この`getResource`関数には、ベースURL(`baseURL`)とパス（`pathname`）を引数に渡して利用します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE62]'
+  prefs: []
+  type: TYPE_PRE
+- en: しかし、人によっては、`baseURL`の末尾には`/`が含まれると考える場合もあります。 `getResource`関数は、`baseURL`の末尾に`/`が含まれているケースを想定していませんでした。
+    そのため、意図しないURLからリソースを取得するという問題が発生します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE63]'
+  prefs: []
+  type: TYPE_PRE
+- en: この問題が難しいところは、結合してできた`url`は文字列としては正しいため、エラーではないということです。 つまり、一見すると問題ないように見えますが、実際に動かしてみて初めてわかるような問題が生じやすいのです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: そのため、このような構造的な文字列を扱う場合は、専用の関数や専用のオブジェクトを作ることで安全に文字列を処理します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 先ほどのような、URL 文字列の結合を安全に行うには、入力される`baseURL`文字列の表記揺れを吸収する仕組みを作成します。 次の`baseJoin`関数はベースURLとパスを結合した文字列を返しますが、ベースURLの末尾に`/`があるかの揺れを吸収しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE64]'
+  prefs: []
+  type: TYPE_PRE
+- en: ECMAScriptの範囲ではありませんが、URLやファイルパスといった典型的なものに対してはすでに専用のものがあります。 URLを扱うものとしてウェブ標準
+    APIである[URL](https://developer.mozilla.org/ja/docs/Web/API/URL "URL - Web API インターフェイス
+    | MDN")オブジェクト、ファイルパスを扱うものとしてはNode.jsのコアモジュールである[Path](https://nodejs.org/api/path.html
+    "Path | Node.js v7.9.0 Documentation")モジュールなどがあります。専用の仕組みがある場合は、直接`+`演算子で結合するような文字列処理は避けるべきです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#tagged-template-function)*[ES2015] タグつきテンプレート関数*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*JavaScriptでは、テンプレートとなる文字列に対して一部分だけを変更する処理を行う方法として、タグつきテンプレート関数があります。 タグつきテンプレート関数とは、`関数`テンプレート``
+    という形式で記述する関数とテンプレートリテラルを合わせた表現です。 関数の呼び出しに`関数(`テンプレート`)`ではなく、`関数`テンプレート`` という書式を使っていることに注意してください。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 通常の関数として呼び出した場合、関数の引数にはただの文字列が渡ってきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE65]'
+  prefs: []
+  type: TYPE_PRE
+- en: しかし、`()`ではなく `関数`テンプレート`` と記述することで、`関数`が受け取る引数にはタグつきテンプレート向けの値が渡ってきます。 このとき、関数の第一引数にはテンプレートの中身が`${}`で区切られた文字列の配列、第二引数以降は`${}`の中に書いた式の評価結果が順番に渡されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE66]'
+  prefs: []
+  type: TYPE_PRE
+- en: どちらも同じ関数ですが、`関数`テンプレート`` という書式で呼び出すと渡される引数が特殊な形になります。 そのため、タグつきテンプレートで利用する関数のことを**タグ関数**（Tag
+    function）と呼び分けることにします。
+  prefs: []
+  type: TYPE_NORMAL
+- en: まずは引数をどう扱うかを見ていくために、タグつきテンプレートの内容をそのまま結合して返す`stringRaw`というタグ関数を実装してみます。 Arrayの`reduce`メソッドを使うことで、テンプレートの文字列と変数を順番に結合できます（`reduce`メソッドについては「配列」の章を参照）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE67]'
+  prefs: []
+  type: TYPE_PRE
+- en: ここで実装した`stringRaw`タグ関数と同様のものが、`String.raw`メソッド^([ES2015])として提供されています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE68]'
+  prefs: []
+  type: TYPE_PRE
+- en: タグつきテンプレート関数を利用することで、テンプレートとなる文字列に対して特定の形式に変換し���データを埋め込むといったテンプレート処理が行えます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、テンプレート中の変数をURLエスケープしてから埋め込むタグつきテンプレート関数を定義しています。 `encodeURIComponent`関数は引数の値をURLエスケープする関数です。
+    `escapeURL`では受け取った変数を`encodeURIComponent`関数でURLエスケープしてから埋め込んでいます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE69]'
+  prefs: []
+  type: TYPE_PRE
+- en: このようにタグつきテンプレートリテラルを使うことで、コンテキストに応じた処理をつけ加えることができます。 この機能はJavaScript 内にHTMLなどの別の言語やDSL（ドメイン固有言語）を埋め込む際に利用されることが多いです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#string-summary)*終わりに*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*この章では、JavaScriptにおける文字列(`String`オブジェクト)について紹介しました。 文字列処理するStringメソッドにはさまざまなものがあり、正規表現と組み合わせて使うものも含まれます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 正規表現は、正規表現のみで1 冊の本が作れるようなJavaScript 言語内にある別言語です。 詳細は[MDNの正規表現ドキュメント](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Regular_Expressions
+    "正規表現 - JavaScript | MDN")なども参照してください。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 文字列は一見すると単純に見えますが、URLやパスといったコンテキストを持つものもあります。 それらの文字列を安全に扱うためには、コンテキストに応じた処理が必要になります。
+    また、タグつきテンプレートリテラルを利用することで、テンプレート中の変数を自動でエスケープするといった処理を実現できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ¹. 这是从[Unicode 片假名列表](https://unicode-table.com/jp/#katakana)中提取的表格。 ↩*****************************
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL

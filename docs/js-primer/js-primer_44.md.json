@@ -1,0 +1,1 @@
+["```\nconsole.log(\"Hello World!\"); \n```", "```\n# `cd`コマンドでnodecli/ディレクトリに移動する\n$ cd nodecli/\n# `node`コマンドで`main.js`を実行する\n$ node main.js\nHello World! \n```"]

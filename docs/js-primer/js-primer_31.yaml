@@ -1,0 +1,186 @@
+- en: 日期
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/date/`](https://jsprimer.net/basic/date/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 本章将学习如何在 JavaScript 中处理日期和时间的[Date](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date)。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#date-object)*日期对象*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*`Date`对象与`String`、`Array`等一样，是在 ECMAScript 中定义的内置对象。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 通过实例化`Date`对象，可以获得表示特定时间的对象。 在`Date`中，“时间”以相对毫秒形式保留，以 UTC（协调世界时）的 1970 年 1 月
+    1 日 0 时 0 分 0 秒为基准。 本章将这个毫秒值称为“时间值”。 `Date`对象的实例各自具有一个时间值，并提供用于处理日期、小时和分钟等的方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#create-instance)*创建实例*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`Date`对象的实例始终使用 new 运算符创建。 创建`Date`对象的实例有两种主要方法。 一种是实例化当前时间，另一种是实例化任意时间。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#instance-current-time)*实例化当前时间*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*如果在 new 时不传递构造函数参数，则创建的实例将表示当前时间。 如果只需要当前时间的时间值而不是`Date`对象的实例，则可以使用`Date.now`方法的返回值。
+    创建的实例的时间值可以通过`getTime`方法获取。 此外，使用`toISOString`方法可以将时间转换为 UTC 的[ISO 8601](https://ja.wikipedia.org/wiki/ISO_8601)格式的字符串��
+    ISO 8601 是一种国际标准的字符串格式，表示时间和时区信息，例如`2006-01-02T15:04:05.999+09:00`。 由于这种格式易于理解，因此被广泛使用。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#instance-any-time)*实例化任意时间*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*通过传递构造函数参数，可以创建表示任意时间的实例。 `Date`的构造函数根据传递的数据类型和参数来确定时间的指定方法。 `Date`支持以下 3
+    种参数。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 传递时间值
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 传递表示时间的字符串
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 通过数字分别传递时间部分（年、月、日等）
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 第一种方法是在构造函数中传递表示毫秒的数字类型参数时应用。 将传递的数字视为相对于 UTC 的 1970 年 1 月 1 日 0 时 0 分 0 秒的时间值。
+    由于此方法的基准时间和时区是固定的，因此不会受执行环境时区的影响，因此很安全。 因此，与其他两种方法不同，不需要考虑时区。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 第二种方法是在传递字符串类型的参数时应用。 当传递符合[RFC2822](https://www.rfc-editor.org/rfc/rfc2822#section-3.3)或[ISO
+    8601](https://ja.wikipedia.org/wiki/ISO_8601)格式的字符串时，将解析该字符串并使用得到的时间值创建`Date`的实例。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码将传递 ISO 8601 格式的字符串以创建`Date`的实例。 如果字符串包含时区，则将计算该时区的时间值。 如果无法从字符串中读取时区，则需要注意根据执行环境的时区计算时间值。
+    此外，由于不同的浏览器可能返回不同的结果，因此要注意 ISO 8601 格式以外的字符串解析。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 第三种方法是逐个指定时间，例如年、月、日等的部分数字。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 当向构造函数传递两个以上的参数时，将使用此方法创建`Date`实例。 表示月内日期的第三个参数（`day`）及其后的参数是可选的。 如果省略这些参数，每个参数的默认值为`0`，但是表示日期（`day`）的第三个参数的默认值为`1`。
+    此外，要注意月份（`month`）的第二个参数对应于 1 月的`0`，并且月份是以`0`到`11`的数字指定的。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 与前述的两种方法不同，此方法无法指定时区。 传递的数字始终被视为本地时区的时间。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 由于结果取决于执行环境，基本上不应该使用这种方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 如果要逐个指定时间，则最好使用[Date.UTC](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Date/UTC)方法。
+    参数的格式相同，但`Date.UTC`方法将传递的数字视为 UTC 时间，并返回该时间值。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: 请注意，如果传递的参数不符合任何重载，或者传递的字符串无法解析为时间，则将创建`Date`的实例。 但是，由于该实例的时间是无效的，因此`getTime`方法将返回`NaN`，`toString`方法将返回`Invalid
+    Date`字符串。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#instance-method)*Date 实例方法*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`Date`对象的实例具有许多方法，但大多数是用于获取和更新时间各部分的方法，如`getHours`和`setHours`。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码将日期转换为特定格式的字符串。 要注意像`getMonth`和`setMonth`这样以数字表示月份的方法，需要注意月份是从 0 到 11 的数字。
+    要显示`Date`实例的时间是哪个月，需要将`getMonth`方法的返回值加 1。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`getTimezoneOffset`メソッドは、実行環境のタイムゾーンのUTC**からの**オフセット値を**分**単位の数値で返します。 たとえばAsia/TokyoタイムゾーンはUTC+9
+    時間なのでオフセット値は-9 時間となり、`getTimezoneOffset`メソッドの返り値は`-540`です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#usecase)*現実のユースケースとDate*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*ここまで`Date`オブジェクトとインスタンスメソッドについて述べましたが、 多くのユースケースにおいては機能が不十分です。 たとえば次のような場合に、`Date`では直感的に記述できません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 任意の書式の文字列から時刻に変換するメソッドがない
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 「時刻を1 時間進める」のように時刻を前後にずらす操作を提供するメソッドがない
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 任意のタイムゾーンにおける時刻を計算するメソッドがない
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`YYYY/MM/DD HH:mm`のよ��なフォーマットに��づいた文字列への変換を提供するメソッドがない'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: そのため、JavaScriptにおける日付・時刻の処理は、標準のDateではなくライブラリを使うことが一般的になっています。 代表的なライブラリとしては、[Day.js](https://day.js.org/)、[date-fns](https://date-fns.org/)、[js-joda](https://github.com/js-joda/js-joda)、[moment.js](https://momentjs.com/)の後継である[Luxon](https://github.com/moment/luxon/)などがあります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#conclusion)*まとめ*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*この章では、Dateオブジェクトについて学びました。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Date`オブジェクトのインスタンスはある特定の時刻を表すビルトインオブジェクト'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Date`における「時刻」は、UTC（協定世界時）の1970 年 1 月 1 日 0 時 0 分 0 秒を基準とした相対的なミリ秒として保持されている'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Date`コンストラクタで任意の時間を表す`Date`インスタンスを作成できる'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Date`インスタンスメソッドにはさまざまなものがあるが、現実のユースケースでは機能が不十分になりやすい'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ビルトインオブジェクトの`Date`のみではなく、ライブラリも合わせて利用するのが一般的*******
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

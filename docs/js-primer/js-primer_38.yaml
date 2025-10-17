@@ -1,0 +1,57 @@
+- en: 用例：Ajax 通信
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/use-case/ajaxapp/`](https://jsprimer.net/use-case/ajaxapp/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 在这里，我们将创建一个应用程序，作为在 Web 浏览器上进行 Ajax 通信的用例，从 GitHub 的用户 ID 中获取个人资料信息。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 应用程序需满足以下要求：
+  prefs: []
+  type: TYPE_NORMAL
+- en: 可以在文本框中输入 GitHub 的用户 ID
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 根据输入的 GitHub 用户 ID 获取用户信息
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 在应用程序中显示获取的用户信息
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[](#summary)*目录*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*### [](#entrypoint)*入口点*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*创建应用程序中最先调用的入口点。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#http-communication)*HTTP 通信*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*使用 Web 标准的 Fetch API 进行 HTTP 通信，并调用 GitHub 的 API。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#display)*显示数据*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*使用 Fetch API 获取数据，构建 HTML 并在浏览器上显示。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#promise)*利用 Promise*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*利用 Promise，整理源代码并处理错误。*****'
+  prefs: []
+  type: TYPE_NORMAL

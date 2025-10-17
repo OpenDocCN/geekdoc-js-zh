@@ -1,0 +1,135 @@
+- en: ラッパーオブジェクト
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/wrapper-object/`](https://jsprimer.net/basic/wrapper-object/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: JavaScriptのデータ型はプリミティブ型とオブジェクトに分けられます（詳細は「データ型とリテラル」を参照）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは文字列リテラルでプリミティブ型の値である文字列を定義しています。 プリミティブ型の値である文字列は`String`オブジェクトのインスタンスではありません。
+    しかし、プリミティブ型の文字列においても、`String`オブジェクトのインスタンスメソッドである`toUpperCase`メソッドを呼び出せます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: プリミティブ型である文字列が`String`のインスタンスメソッドを呼び出せるのは一見不思議です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: この章では、プリミティブ型の値がなぜオブジェクトのメソッドを呼び出せるのかについて解説します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#primitive-type-and-wrapper-object)*プリミティブ型とラッパーオブジェクト*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*プリミティブ型のデータのうち、真偽値（Boolean）、数値（Number） 、BigInt、文字列（String）、シンボル（Symbol）にはそれぞれ対応するオブジェクトが存在します。たとえば、文字列に対応するオブジェクトとして、`String`オブジェクトがあります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: この`String`オブジェクトを`new`することで`String`オブジェクトのインスタンスを作れます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: このようにインスタンス化されたものは、プリミティブ型の値を包んだ（ラップした）オブジェクトと言えます。 そのため、このようなオブジェクトをプリミティブ型の値に対しての**ラッパーオブジェクト**と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ラッパーオブジェクトとプリミティブ型の対応は次のとおりです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| ラッパーオブジェクト | プリミティブ型 | 例 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `Boolean` | 真偽値 | `true`や`false` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `Number` | 数値 | `1`や`2` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `BigInt` | 大整数 | `1n`や`2n` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `String` | 文字列 | `"文字列"` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `Symbol` | シンボル | `Symbol("説明")` |'
+  prefs: []
+  type: TYPE_TB
+- en: '注記: `undefined`と`null`に対応するラッパーオブジェクトはありません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 注意点として、ラッパーオブジェクトは名前のとおりオブジェクトです。 そのため、次のように`typeof`演算子でラッパーオブジェクトを見ると`"object"`です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#convert-primitive-to-wrapper)*プリミティブ型の値からラッパーオブジェクトへの自動変換*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*JavaScriptでは、プリミティブ型の値に対してプロパティアクセスするとき、自動で対応するラッパーオブジェクトに変換されます。 たとえば`"string"`という文字列は、自動的に`new
+    String("string")`のようなラッパーオブジェクトへ変換されています。 これにより、プリミティブ型の値である文字列が`String`のインスタンスメソッドを呼び出せるようになります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように、プリミティブ型の値からラッパーオブジェクト���の変換は自動的に行われます。^(1)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 一方、明示的に作成したラッパーオブジェクトからプリミティブ型の値を取り出すこともできます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`ラッパーオブジェクト.valueOf`メソッドを呼び出すことで、ラッパーオブジェクトから値を取り出せます。 たとえば、次のように文字列のラッパーオブジェクトから`valueOf`メソッドで文字列を取り出せます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: JavaScriptには、リテラルを使ったプリミティブ型の文字列とラッパーオブジェクトを使った文字列オブジェクトがあります（真偽値や数値についても同様です）。
+    この2つを明示的に使い分ける利点はないため、常にリテラルを使うことを推奨します。 理由として次の3つが挙げられます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 必要に応じて、プリミティブ型の文字列は自動的にラッパーオブジェクトに変換されるため
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`new String("string")`のようにラッパーオブジェクトのインスタンスを扱う利点がないため'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ラッパーオブジェクトを`typeof`演算子で評価した結果が、プリミティブ型ではなく`"object"`となり混乱を生むため
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: これらの理由などから、プリミティブ型のデータにはリテラルを使います。 常にリテラルを使うことでラッパーオブジェクトを意識する必要がなくなります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#wrapper-object-summary)*まとめ*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*この章では、プリミティブ型の値がなぜメソッド呼び出しできるのかについて解説しました。 その仕組みの背景にはプリミティブ型に対応したラッパーオブジェクトの存在があります。
+    プリミティブ型の値のプロパティへアクセスする際に、自動的にラッパーオブジェクトへ変換されることでメソッド呼び出しなどが可能となっています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 「JavaScriptはすべてがオブジェクトである」と言われることがあります。 プリミティブ型はオブジェクトではありませんが、プリミティブ型に対応したラッパーオブジェクトが用意されています（`null`と`undefined`を除く）。
+    そのため、「すべてがオブジェクトのように見える」というのが正しい認識となるでしょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ¹. このようなプリミティブ型からオブジェクト型への変換はボックス化（ボクシング）、逆にオブジェクト型からプリミティブ型への変換はボックス化解除（アンボクシング）と呼ばれます。
+    ↩***
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL

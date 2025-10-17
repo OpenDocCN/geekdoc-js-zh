@@ -1,0 +1,352 @@
+- en: '[ES2015] Map/Set'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/map-and-set/`](https://jsprimer.net/basic/map-and-set/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: JavaScriptでデータの集まり（コレクション）を扱うビルトインオブジェクトは、ObjectやArrayだけではありません。 この章では、ES2015で導入されたマップ型のコレクションである`Map`と、セット型のコレクションである`Set`について学びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#map)*Map*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*[Map](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Map)はマップ型のコレクションを扱うためのビルトインオブジェクトです。
+    マップとは、キーと値の組み合わせからなる抽象データ型です。 他のプログラミング言語の文脈では辞書やハッシュマップ、連想配列などと呼ばれることもあります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#map-new)*マップの作成と初期化*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`Map`オブジェクトを`new`することで、新しいマップを作成できます。 作成されたばかりのマップは何も持っていません。 そのため、マップが持つ要素の数を返す`size`プロパティは`0`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Map`オブジェクトを`new`で初期化するときに、コンストラクタに初期値を渡せます。 コンストラクタ引数として渡せるのは**エントリー**の配列です。
+    エントリーとは、1つのキーと値の組み合わせを`[キー, 値]`という形式の配列で表現したものです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、Mapに初期値となるエントリー（配列）の配列を渡しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#map-read-and-write)*要素の追加と取り出し*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`Map`には新しい要素を`set`メソッドで追加でき、追加した要素を`get`メソッドで取り出せます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`set`メソッドは特定のキーと値を持つ要素をマップに追加します。 ただし、同じキーで複数回`set`メソッドを呼び出した際は、後から追加された値で上書きされます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`get`メソッドは特定のキーにひもづいた値を取り出します。 また、特定のキーにひもづいた値を持っているかを確認する`has`メソッドがあります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`delete`メソッドはマップから要素を削除します。 `delete`メソッドに渡されたキーと、そのキーにひもづいた値がマップから削除されます。 また、マップが持つすべての要素を削除するための`clear`メソッドがあります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#map-iteration)*マップの反復処理*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*マップが持つ要素を列挙するメソッドとして、`forEach`、`keys`、`values`、`entries`があります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`forEach`メソッドはマップが持つすべての要素を、マップへの挿入順に反復処理します。 コールバック関数には引数として値、キー、マップの3つが渡されます。
+    配列の`forEach`メソッドと似ていますが、インデックスの代わりにキーが渡されます。 配列はインデックスにより要素を特定しますが、マップはキーにより要素を特定するためです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`keys`メソッドはマップが持つすべての要素のキーを挿入順に並べた**Iterator**オブジェクトを返します。 同様に、`values`メソッドはマップが持つすべての要素の値を挿入順に並べたIteratorオブジェクトを返します。
+    これらの返り値はIteratorオブジェクトであって配列ではありません。 そのため、次の例のように`for...of`文で反復処理を行ったり、`Array.from`メソッドに渡して配列に変換して使ったりします。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`entries`メソッドはマップが持つすべての要素をエントリーとして挿入順に並べたIteratorオブジェクトを返します。 先述のとおりエントリーは`[キー,
+    値]`の配列です。 そのため、配列の分割代入を使うとエントリーからキーと値を簡単に取り出せます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、マップ自身もiterableなオブジェクトなので、`for...of`文で反復処理できます。 マップを`for...of`文で反復したときは、すべての要素をエントリーとして挿入順に反復処理します。
+    つまり、`entries`メソッドの返り値を反復処理するときと同じ結果が得られます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#object-and-map)*マップとしてのObjectとMap*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ES2015で`Map`が導入されるまで、JavaScriptにおいてマップ型を実現するために`Object`が利用されてきました。 何かをキーにして値にアクセスするという点で、`Map`と`Object`はよく似ています。
+    ただし、マップとしての`Object`にはいくつかの問題があります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Object`の`prototype`オブジェクトから継承されたプロパティによって、意図しないマッピングを生じる危険性がある'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: また、プロパティとしてデータを持つため、キーとして使えるのは文字列か`Symbol`に限られる
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Object`には`prototype`オブジェクトがあるため、いくつかのプロパティは初期化されたときから存在します。 `Object`をマップとして使うと、そのプロパティと同じ名前のキーを使おうとしたときに問題となります
+    （詳細は「オブジェクト」の章の「プロパティの存在を確認する」を参照）。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: たとえば`constructor`という文字列は`Object.prototype.constructor`プロパティと衝突してしまいます。 そのため`constructor`のような文字列をオブジェクトのキーに使うことで意図しないマッピングを生じる危険性があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: このマップとして使うオブジェクトの問題は、`Object`のインスタンスを`Object.create(null)`のように初期化して作ることで回避されてきました
+    （詳細は「プロトタイプオブジェクト」の章の「`Object.prototype`を継承しないオブジェクト」を参照）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ES2015では、これらの問題を根本的に解決する`Map`が導入されました。 `Map`はプロパティとは異なる仕組みでデータを格納します。 そのため、`Map`のプロトタイプが持つメソッドやプロパティとキーが衝突することはありません。
+    また、`Map`ではマップのキーとしてあらゆるオブジェクトを使えます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ほかにも`Map`には次のような利点があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: マップのサイズを簡単に知ることができる
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: マップが持つ要素を簡単に列挙できる
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: オブジェクトをキーにすると参照ごとに違うマッピングができる
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: たとえばショッピングカートのような仕組みを作るとき、次のように`Map`を使って商品のオブジェクトと注文数をマッピングできます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Object`をマップとして使うときに起きる多くの問題は、`Map`オブジェクトを使うことで解決しますが、 常に`Map`が`Object`の代わりになるわけではありません。
+    マップとしての`Object`には次のような利点があります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: リテラル表現があるため作成しやすい
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 規定のJSON 表現があるため、`JSON.stringify`関数を使ってJSONに変換するのが簡単
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ネイティブAPI・外部ライブラリを問わず、多くの関数がマップとして`Object`を渡される設計になっている
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 次の例では、ログインフォームのsubmitイベントを受け取ったあと、サーバーにPOSTリクエストを送信しています。 サーバーにJSON 文字列を送るために、`JSON.stringify`関数を使います。
+    そのため、`Object`のマップを作ってフォームの入力内容を持たせています。 このような簡易なマップにおいては、`Object`を使うほうが適切でしょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#weakmap)*WeakMap*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*[WeakMap](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)は、`Map`と同じくマップを扱うためのビルトインオブジェクトです。
+    `Map`と違う点は、キーを**弱い参照**（Weak Reference）で持つことです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[弱い参照](https://ja.wikipedia.org/wiki/%E5%BC%B1%E3%81%84%E5%8F%82%E7%85%A7)とは、ガベージコレクション（GC）によるオブジェクトの解放を妨げないための特殊な参照です。
+    本来、GCによりメモリから解放できるオブジェクトは、どこからも参照されていないものだけです。 弱い参照は例外的に、該当するオブジェクトへの弱い参照があったとしても、GCはそのオブジェクトを解放できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: そのため、弱い参照は不要になったオブジェクトを参照し続けて発生してしまうメモリリークを防ぐために使われます。 `WeakMap`では不要になったキーとそれにひもづいた値が自動的に削除されるため、メモリリークを引き起こす心配がありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、最初に`obj`には`{}`を設定し、`WeakMap`ではその`obj`をキーにして値（`"value"`）を設定しています。 次に`obj`に別の値（ここでは`null`）を代入すると、`obj`が元々参照していた`{}`という値はどこからも参照されなくなります。
+    このとき`WeakMap`は`{}`への弱い参照を持っていますが、弱い参照はGCを妨げないため、`{}`は不要になった値としてGCによりメモリから解放されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 同時に、`WeakMap`は解放されたオブジェクト（`{}`）をキーにしてひもづいていた値（`"value"`）を破棄できます。 ただし、どのタイミングで実際にメモリから解放するかは、JavaScriptエンジンの実装に依存します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`WeakMap`は`Map`と似ていますがiterableではありません。 そのため、キーを列挙する`keys`メソッドや、データの数を返す`size`プロパティなどは存在しません。
+    また、キーを弱い参照で持つ特性上、キーとして使えるのは参照型のオブジェクトと`Symbol`^(es2023)だけです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`WeakMap`の主な使い方のひとつは、クラスにプライベートの値を格納することです。 `this` （クラスインスタンス） を `WeakMap`
+    のキーにすることで、インスタンスの外からはアクセスできない値を保持できます。 また、クラスインスタンスが参照されなくなったときには自動的に解放されます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、オブジェクトが発火するイベントのリスナー関数（イベントリスナー）を `WeakMap` で管理しています。 イベントリスナーとは、イベントが発生したときに呼び出される関数のことです。
+    このマップを`Map`で実装してしまうと、明示的に削除されるまでイベントリスナーはメモリ上に残り続けます。 ここで`WeakMap`を使うと、`addListener`
+    メソッドに渡された`listener`は `EventEmitter` インスタンスが参照されなくなった際、自動的に解放されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、あるオブジェクトから計算した結果を一時的に保存する用途でもよく使われます。 次の例ではHTML 要素の高さを計算した結果を保存して、2 回目以降に同じ計算をしないようにしています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#key-and-nan)*[コラム] キーの等価性とNaN*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`Map`に値をセットする際のキーにはあらゆるオブジェクトが使えます。 このときのマップが特定のキーをすでに持っているか、つまり挿入と上書きの判定は基本的に`===`演算子と同じです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ただし、キーが`NaN`の扱いだけが例外的に違います。`Map`におけるキーの比較では、`NaN`同士は常に等価であるとみなされます。 この挙動は[Same-value-zero](https://developer.mozilla.org/ja/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality)アルゴリズムと呼ばれます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`NaN`同士の`===`の比較結果が`false`になるのに対して、`Map`のキーでは`NaN`同士の比較結果が一致していることがわかります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#set)*Set*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*[Set](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Set)はセット型のコレクションを扱うためのビルトインオブジェクトです。
+    セットとは、重複する値がないことを保証したコレクションのことを言います。 `Set`は追加した値を列挙できるので、値が重複しないことを保証する配列のようなものとしてよく使われます。
+    ただし、配列と違って要素は順序を持たず、インデックスによるアクセスはできません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#set-new)*セットの作成と初期化*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`Set`オブジェクトを`new`することで、新しいセットを作れます。 作成されたばかりのセットは何も持っていません。 そのため、セットが持つ要素の数を返す`size`プロパティは0を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Set`オブジェクトを`new`で初期化するときに、コンストラクタに初期値を渡せます。 コンストラクタ引数として渡せるのはiterableオブジェクトです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードではiterableオブジェクトである配列を初期値として渡しています。 また、`Set`では重複する同じ値を持たないことを保証するため、同じ値は1つのみ格納されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#set-read-and-write)**値の追加と取り出し**'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*作成したセットに値を追加するには、`add`メソッドを使います。 先述のとおり、セットは重複する値を持たないことが保証されます。 そのため、すでにセットが持っている値を`add`メソッドに渡した際は無視されます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: また、セットが特定の値を持っているかどうかを確認する`has`メソッドがあります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: セットから値を削除するには、`delete`メソッドを使います。 `delete`メソッドに渡された値がセットから削除されます。 また、セットが持つすべての値を削除するための`clear`メソッドがあります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#set-iteration)**セットの反復処理**'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*セットが持つ値を反復処理するには、`forEach`メソッドが利用できます。 `forEach`メソッドではセットが持つすべての要素を、セットへの挿入順に反復します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: セットからIteratorオブジェクトを作成するメソッドとして`keys`、`values`、`entries`があります。 これらは**Map**との類似性のために存在しますが、セットには**Map**におけるキー相当のものがありません。
+    そのため、`keys`メソッドは`values`メソッドのエイリアスになっており、セットが持つすべての値を挿入順に列挙するIteratorオブジェクトを返します。
+    また、`entries`メソッドは`[値, 値]`という形のエントリーを挿入順に列挙するIteratorオブジェクトを返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Set`オブジェクト自身もiterableなオブジェクトであるため`for...of`文で反復処理できます。 `for...of`文で`Set`オブジェクトを反復処理したときも、セットへの挿入順に値が取り出されます。
+    `keys`、`values`、`entries`メソッドはどれも取得できる情報は同じであるため、基本的には`Set`オブジェクト自体を反復処理することで代用できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#weakset)**WeakSet**'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*[WeakSet](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)*は弱い参照で値を持つセットです。
+    `WeakSet`は`Set`と似ていますが、iterableではないので追加した値を反復処理できません。 つまり、`WeakSet`は値の追加と削除、存在確認以外のことができません。
+    データの格納ではなく、データの一意性を確認することに特化したセットと言えるでしょう。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: また、弱い参照で値を持つ特性上、**WeakSet**の値として使えるのは参照型のオブジェクトと**Symbol**^(es2023)だけです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#conclusion)**まとめ**'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: この章では**Map**と**Set**について学びました。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Map`はキーと値の組み合わせからなるコレクションを扱うビルトインオブジェクト'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**Map**のキーはプロトタイプオブジェクトのプロパティと名前が衝突しないため意図しないマッピングを避けられる'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`WeakMap`はキーを弱い参照で持つ`Map`と同様のビルトインオブジェクト'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Set`は重複する値がないことを保証した順序を持たないコレクションを扱うビルトインオブジェクト'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`WeakSet`は値を弱い参照で持つ`Set`と同様のビルトインオブジェクト'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ^(es2023). ES2023で**Symbol**も扱えるように仕様が変更されています。 ↩*************
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL

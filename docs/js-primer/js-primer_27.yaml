@@ -1,0 +1,276 @@
+- en: 例外処理
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/error-try-catch/`](https://jsprimer.net/basic/error-try-catch/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: この章ではJavaScriptにおける例外処理について学びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#try-catch)*try...catch 構文*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*[try...catch](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch)構文は例外が発生しうるブロックをマークし、例外が発生したときの処理を記述するための構文です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: try...catch 構文の`try`ブロック内で例外が発生すると、`try`ブロック内のそれ以降の処理は実行されず、`catch`節に処理が移行します。
+    `catch`節は、`try`ブロック内で例外が発生すると、発生したエラーオブジェクトとともに呼び出されます。 `finally`節は、`try`ブロック内で例外が発生したかどうかには関係なく、必ず`try`文の最後に実行されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`try`ブロックで例外が発生し、`catch`節の処理が実行され、最後に`finally`節の処理が実行されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、`catch`節と`finally`節のうち、片方が存在していれば、もう片方の節は省略できます。 `finally`節のみを書いた場合は例外がキャッチされないため、`finally`節を実行後に例外が発生します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#throw)*throw 文*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*[throw](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/throw)文を使うとユーザーが例外を投げることができます。
+    例外として投げられたオブジェクトは、`catch`節で関数の引数のようにアクセスできます。 `catch`節でオブジェクトを参照できる識別子を[例外識別子](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/try...catch#The_exception_identifier)と呼びます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`catch`節の`error`識別子でキャッチしたエラーオブジェクトを参照しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#error-object)*エラーオブジェクト*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*`throw`文ではエラーオブジェクトを例外として投げることができます。 ここでは、`throw`文で例外として投げられるエラーオブジェクトについて見ていきます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#error)*Error*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*`Error`オブジェクトのインスタンスは`new Error("エラーメッセージ")`で作成します。 コンストラクタの第一引数には、エラーメッセージとなる文字列を渡します。
+    渡したエラーメッセージはErrorの`message`プロパティで参照できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`assertPositiveNumber`関数でエラーオブジェクトを作成し、例外として`throw`しています。 投げられたオブジェクトはcatch
+    節の例外識別子（`error`）から取得でき、エラーメッセージが確認できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`throw`文はあらゆるオブジェクトを例外として投げられますが、基本的に`Error`オブジェクトのインスタンスを投げることを推奨します。 その理由は後述する**スタックトレース**のためです。
+    `Error`オブジェクトはインスタンスの作成時に、そのインスタンスが作成されたファイル名や行数などのデバッグに役立つ情報を持っています。 文字列のような`Error`オブジェクトではないオブジェクトを投げてしまうと、スタックトレースが得られません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: そのため、次のように`throw`文で`Error`オブジェクトではないものを投げるのは非推奨です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#built-in-error)*ビルトインエラー*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*エラーには状況に合わせたいくつかの種類があり、これらはビルトインエラーとして定義されています。 ビルトインエラーとは、ECMAScript 仕様や実行環境に組み込みで定義されているエラーオブジェクトです。
+    ビルトインエラーとして投げられるエラーオブジェクトは、すべて`Error`オブジェクトを継承したオブジェクトのインスタンスです。 そのため、ユーザーが定義したエラーと同じように例外処理できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ビルトインエラーにはいくつか種類がありますが、ここでは代表的なものを紹介します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#reference-error)*ReferenceError*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*[ReferenceError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError)は存在しない変数や関数などの識別子が参照された場合のエラーです。
+    次のコードでは、存在しない変数を参照しているため`ReferenceError`例外が投げられます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#syntax-error)*SyntaxError*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*[SyntaxError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError)は構文的に不正なコードを解釈しようとした場合のエラーです。
+    基本的に`SyntaxError`例外は、JavaScriptを実行する前のパース段階で発生します。 そのため、実行前に発生する例外である`SyntaxError`は、実行時のエラーをキャッチする`try...catch`文ではcatchできません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 次のコードでは、`eval`関数を使って実行時に`SyntaxError`を無理やり発生させ、構文エラーが`SyntaxError`であることを確認しています。
+    `eval`関数は渡した文字列をJavaScriptとして実行する関数です。 実行時に発生した`SyntaxError`は、`try...catch`文でもcatchできます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#type-error)*TypeError*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*[TypeError](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/TypeError)は値が期待される型ではない場合のエラーです。
+    次のコードでは、関数ではないオブジェクトを関数呼び出ししているため、`TypeError`例外が投げられます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#throw-built-in-error)*ビルトインエラーを投げる*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*可以创建内置错误的实例，并将该实例作为异常抛出。与普通的`Error`对象一样，可以通过`new`每个内置错误对象来创建实例。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 例如，如果要限制函数参数为字符串，可以抛出`TypeError`异常。即使不查看消息，仅凭错误名称就可以立即了解与类型相关的异常。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#error-and-debug)*错误和调试*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*在 JavaScript 开发中，理解调试过程中发生的错误非常重要。通过利用错误提供的信息，可以了解源代码中发生异常的位置和类型。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 所有错误都是由扩展自`Error`对象的对象声明的。也就是说，错误具有表示名称的`name`属性和表示内容的`message`属性。通过检查这两个属性，可以在许多情况下提供开发帮助。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，未包含在`try...catch`块中的部分发生了异常。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 加载此脚本后，控制台将输出有关抛出异常的日志。以下是 Firefox 中的执行示例。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![控制台中的错误显示（Firefox）](img/fa3c3b721816f38fb58865327e9ee6c3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 此错误日志包含以下信息。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| 消息 | 含义 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ReferenceError: x is not defined` | 错误类型为`ReferenceError`，表示`x`未定义。 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `error.js:3:5` | 异常发生在`error.js`的第 3 行第 5 列。也就是`x++;`。 |'
+  prefs: []
+  type: TYPE_TB
+- en: 此外，消息后面还显示了异常的堆栈跟踪。堆栈跟踪记录了程序执行过程，指出了哪些处理导致错误。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 堆栈跟踪的第一行是实际发生异常的位置。也就是说，在第 3 行的 `x++;` 发生了异常
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 接下来的行记录了该代码的调用者。也就是说，执行第 3 行代码的是第 5 行的`fn`函数调用
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 堆栈跟踪记录了调用者的信息。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 控制台显示的错误日志包含大量信息。MDN 的[JavaScript 错误参考](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Errors)详细列出了浏览器抛出的内置错误类型和消息。在开发过程中遇到内置错误时，查阅参考以寻找解决方法是一个好习惯。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#console.error)*`console.error`和堆栈跟踪*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*`console.error`方法可以将消息与堆栈跟踪一起输出到控制台。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 运行以下代码，比较`console.log`和`console.error`的输出结果。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 在 Firefox 中运行此代码，控制台输出将如下图所示。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![console.log 和 console.error 的输出结果](img/0acbabe37f577404122b0b87f7220370.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '`console.log`只有消息，而`console.error`除了消息外还输出堆栈跟踪。因此，在控制台输出错误消息时，使用`console.error`可以更容易进行调试。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 此外，大多数浏览器都提供了过滤`console.log`和`console.error`输出的功能。通过使用`console.log`进行普通日志输出，使用`console.error`进行与错误相关的日志输出，可以更容易区分日志的重要性。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#error-cause)*[ES2022] 错误原因*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*通过捕获错误并重新抛出带有新消息的另一个错误，可以提供有用的调试信息。通过创建新的 Error 对象并抛出来实现。但是，这种方法会导致原始错误的堆栈跟踪丢失。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 要解决堆栈跟踪丢失的问题，可以使用 ES2022 中引入的 Error 的`cause`选项。在创建新错误对象时，通过将原始错误对象传递给第二个参数的`cause`选项，可以保留原始的堆栈跟踪。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 加载此脚本后，控制台将输出带有从`sumNumsStrings`到`safeParseInt`抛出的堆栈跟踪的错误日志。以下是 Firefox 中的执行示例。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![包含 safeParseInt 堆栈跟踪的 console.error 输出结果](img/82ca3eb6268226652f98a961bfcdbfb8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '[](#conclusion)*总结*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*本章介绍了异常处理和错误对象。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`try...catch`语法可以处理`try`块中发生的异常'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`catch`块和`finally`块可以同时或单独编写'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`throw`语句可以抛出异常，将`Error`对象作为异常抛出'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Error`对象包含了在 ECMAScript 规范和执行环境中定义的内置错误'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Error`对象中记录了堆栈跟踪，对调试非常有用'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 使用 Error Cause，可以创建一个新错误，继承另一个错误的堆栈跟踪*************
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

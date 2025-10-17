@@ -1,0 +1,950 @@
+- en: 演算子
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/operator/`](https://jsprimer.net/basic/operator/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 演算子はよく利用する演算処理を記号などで表現したものです。 たとえば、足し算をする `+` も演算子の一種です。これ以外にも演算子には多くの種類があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 演算子は演算する対象を持ちます。この演算子の対象のことを**被演算子（オペランド）**と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`+`演算子が値同士を足し算する加算演算を行っています。 このとき、`+`演算子の対象となっている`1`と`2`という2つの値がオペランドです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: このコードでは`+`演算子に対して、前後に合計 2つのオペランドがあります。 このように、2つのオペランドを取る演算子を**二項演算子**と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、1つの演算子に対して1つのオペランドだけを取るものもあります。 たとえば、数値をインクリメントする`++`演算子は、次のように前後どちらか一方にオペランドを置きます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように、1つのオペランドを取る演算子を**単項演算子**と呼びます。 単項演算子と二項演算子で同じ記号を使うことがあるため、呼び方を変えています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: この章では、演算子ごとにそれぞれの処理について学んでいきます。 また、演算子の中でも比較演算子は、JavaScriptでも特に挙動が理解しにくい**暗黙的な型変換**という問題と密接な関係があります。
+    そのため、演算子をひととおり見た後に、暗黙的な型変換と明示的な型変換について学んでいきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 演算子の種類は多いため、すべての演算子の動作をここで覚える必要はありません。 必要となったタイミングで、改めてその演算子の動作を見るのがよいでしょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#binary-operator)*二項演算子*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*四則演算など基本的な二項演算子を見ていきます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#plus-operator)*プラス演算子（`+`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*2つの数値を加算する演算子です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: JavaScriptでは、数値は内部的にIEEE 754 方式の浮動小数点数として表現されています （ データ型とリテラルを参照）。 そのため、整数と浮動小数点数の加算もプラス演算子で行えます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#string-combination-operator)*文字列結合演算子（`+`）*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*数値の加算に利用したプラス演算子（`+`）は、文字列の結合に利用できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 文字列結合演算子（`+`）は、2つの文字列を結合した文字列を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: つまり、プラス演算子（`+`）は数値同士と文字列同士の演算をします。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#minus-operator)*マイナス演算子（`-`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*2つの数値を減算する演算子です。左オペランドから右オペランドを減算した値を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#multiplication-operator)*乗算演算子（`*`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*2つの数値を乗算する演算子です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#division-operator)*除算演算子（`/`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*2つの数値を除算する演算子です。左オペランドを右オペランドで除算した値を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ただし、任意の数値を`0`で除算した結果は、無限大を表す数値である`Infinity`となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#modulus-operator)*剰余演算子（`%`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*2つの数値を除算したあまりを求める演算子です。左オペランドを右オペランドで除算したあまりを返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#pow-operator)*[ES2016] べき乗演算子（`**`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*2つの数値のべき乗を求める演算子です。 左オペランドを右オペランドでべき乗した値を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: べき乗演算子と同じ動作をする`Math.pow`メソッドがあります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: べき乗演算子はES2016で後から追加された演算子であるため、関数と演算子がそれぞれ存在しています。 一方、他の二項演算子は演算子が先に存在していたため、`Math`には対応するメソッドがありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#unary-operator)*単項演算子（算術）*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*単項演算子は、1つのオペランドを受け取り処理する演算子です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#unary-plus-operator)*単項プラス演算子（`+`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*単項演算子の`+`はオペランドを数値に変換します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、数値の`1`を数値へ変換するため、結果は変わらず数値の`1`です。 `+数値`のように数値に対して、単項プラス演算子をつけるケースはほぼ無いでしょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、単項プラス演算子は、数値以外も数値へと変換します。 次のコードでは、数字（文字列）を数値へ変換しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 一方、数値に変換できない文字列などは`NaN`という特殊な値へと変換されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`NaN`は"Not-a-Number"の略称で、数値ではないがNumber 型の値を表現しています。 `NaN`はどの値とも（NaN 自身に対しても）一致しない特性があり、`Number.isNaN`メソッドを使うことで`NaN`の判定を行えます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: しかし、単項プラス演算子は文字列から数値への変換に使うべきではありません。 なぜなら、`Number`コンストラクタ関数や`parseInt`関数などの明示的な変換方法が存在するためです。
+    詳しくは「暗黙的な型変換」の章で解説します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#unary-minus-operator)*単項マイナス演算子（`-`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*単項マイナス演算子はマイナスの数値を記述する場合に利用します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: たとえば、マイナスの1という数値を `-1` と書くことができるのは、単項マイナス演算子を利用しているからです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、単項マイナス演算子はマイナスの数値を反転できます。 そのため、"マイナスのマイナスの数値"はプラスの数値となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 単項マイナス演算子も文字列などを数値へ変換します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、数値へ変換できない文字列などをオペランドに指定した場合は、`NaN`という特殊な値になります。 そのため、単項プラス演算子と同じく、文字列から数値への変換に単項マイナス演算子を使うべきではありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#increment-operator)*インクリメント演算子（`++`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*インクリメント演算子（`++`）は、オペランドの数値を`+1`する演算子です。 オペランドの前後どちらかにインクリメント演算子を置くことで、オペランドに対して値を`+1`した値を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: インクリメント演算子（`++`）は、オペランドの前後どちらに置くかによって評価の順番が異なります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 後置インクリメント演算子（`num++`）は、次のような順で処理が行われます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`num`の評価結果を返す'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '`num`に対して`+1`する'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: そのため、`num++`が返す値は`+1`する前の値となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 一方、前置インクリメント演算子（`++num`）は、次のような順で処理が行われます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`num`に対して`+1`する'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '`num`の評価結果を返す'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: そのため、`++num`が返す値は`+1`した後の値となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: この2つの使い分けが必要となる場面は多くありません。 そのため、評価の順番が異なることだけを覚えておけば問題ないと言えます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#decrement-operator)*デクリメント演算子（`--`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*デクリメント演算子（`--`）は、オペランドの数値を`-1`する演算子です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: デクリメント演算子は、インクリメント演算子と同様に、オペランドの前後のどちらかに置くことができます。 デクリメント演算子も、前後どちらに置くかで評価の順番が変わります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#comparison-operator)*比較演算子*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*比較演算子はオペランド同士の値を比較し、真偽値を返す演算子です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#strict-equal-operator)*厳密等価演算子（`===`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*厳密等価演算子は、左右の2つのオペランドを比較します。 同じ型で同じ値である場合に、`true`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、オペランドがどちらもオブジェクトであるときは、 オブジェクトの参照が同じである場合に、`true`を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、空のオブジェクトリテラル(`{}`)同士を比較しています。 オブジェクトリテラルは、新しいオブジェクトを作成します。 そのため、異なるオブジェクトを参照する変数を`===`で比較すると`false`を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#strict-not-equal-operator)*厳密不等価演算子（`!==`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*厳密不等価演算子は、左右の2つのオペランドを比較します。 異なる型または異なる値である場合に、`true`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`===`を反転した結果を返す演算子となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#equal-operator)*等価演算子（`==`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*等価演算子（`==`）は、2つのオペランドを比較します。 同じデータ型のオペランドを比較する場合は、厳密等価演算子（`===`）と同じ結果になります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: しかし、等価演算子（`==`）はオペランド同士が異なる型の値であった場合に、 同じ型となるように**暗黙的な型変換**をしてから比較します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: そのため、次のような、見た目からは結果を予測できない挙動が多く存在します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: 意図しない挙動となることがあるため、暗黙的な型変換が行われる等価演算子（`==`）を使うべきではありません。 代わりに、厳密等価演算子（`===`）を使い、異なる型を比較したい場合は明示的に型を合わせるべきです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 例外的に、等価演算子（`==`）が使われるケースとして、`null`と`undefined`の比較があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のように、比較したいオペランドが `null` または `undefined` であることを判定したい場合に、 厳密等価演算子（`===`）では二度比較する必要があります。
+    等価演算子（`==`）では`null`と`undefined`の比較結果は`true`となるため、一度の比較でよくなります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように等価演算子（`==`）を使う例外的なケースはありますが、 等価演算子（`==`）は暗黙的な型変換をするため、バグを引き起こしやすいです。 そのため、仕組みを理解するまでは常に厳密等価演算子（`===`）を利用することを推奨します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#not-equal-operator)*不等価演算子（`!=`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*不等価演算子（`!=`）は、2つのオペランドを比較し、等しくないなら`true`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: 不等価演算子も、等価演算子（`==`）と同様に異なる型のオペランドを比較する際に、暗黙的な型変換をしてから比較します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: そのため、不等価演算子（`!=`）は、利用するべきではありません。 代わりに暗黙的な型変換をしない厳密不等価演算子（`!==`）を利用します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#more-than)*大なり演算子/より大きい（`>`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*大なり演算子は、左オペランドが右オペランドより大きいならば、`true`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#more-than-equal)*大なりイコール演算子/以上（`>=`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*大なりイコール演算子は、左オペランドが右オペランドより大きいまたは等しいならば、`true`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#less-than)*小なり演算子/より小さい（`<`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*小なり演算子は、左オペランドが右オペランドより小さいならば、`true`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#less-than-equal)*小なりイコール演算子/以下（`<=`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*小なりイコール演算子は、左オペランドが右オペランドより小さいまたは等しいならば、`true`を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#bit-operator)*ビット演算子*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*ビット演���子では、オペランドである数値を符号付き32ビット整数（`0`と`1`からなる32 個のビットの集合）として扱います。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: たとえば、`1`という数値は符号付き32ビット整数のビットでは、`00000000000000000000000000000001` として表現されます。
+    わかりやすく4ビットごとに区切ると `0000_0000_0000_0000_0000_0000_0000_0001` のような32ビットの集合となります。
+    符号付き32ビット整数では、先頭の最上位ビット（一番左のビット）は符号を表し、`0`の場合は正の値、`1`の場合は負の値であることを示しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![1の符号付き32bit 整数での表現](img/298ae64ae40417ba6ef446a8fec80f2b.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 符号付き32ビット整数では負の数値は、2の補数形式という形式で表現されます。 2の補数とは、それぞれのビットを反転して1ビットを足した値となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: たとえば、`-1` という数値の符号付き32ビット整数は、次のように2の補数で求められます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10 進数の`1`は、符号付き32ビット整数では`0000_0000_0000_0000_0000_0000_0000_0001`となる
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`0000_0000_0000_0000_0000_0000_0000_0001` の各ビットを反転すると `1111_1111_1111_1111_1111_1111_1111_1110`
+    となる'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: これに1ビットを足すと `1111_1111_1111_1111_1111_1111_1111_1111` となる
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: これによって、`-1`の符号付き32ビット整数は `1111_1111_1111_1111_1111_1111_1111_1111` となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![-1の符号付き32ビット整数での表現](img/68ca86456c854787fdff42f3f3afef06.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 符号付き32ビット整数で表現できる数値の範囲は、`1000_0000_0000_0000_0000_0000_0000_0000`から`0111_1111_1111_1111_1111_1111_1111_1111`までとなります。
+    10 進数に直すと`-(2³¹)`（2の31 乗の負の数）から `(2³¹) - 1`（2の31 乗から1 引いた数）までとなります。 32ビットを超える数値については、32ビットをはみ出るビットが最上位（一番左）から順番に捨てられます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: これから見ていくビット演算子はオペランドを符号付き32ビット整数として扱い、その演算結果を10 進数の数値として返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#bit-and)*ビット論理積（`&`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ビット論理積演算子（`&`）はビットごとの**AND**演算した結果を返します。 AND 演算では、オペランドの各ビットがどちらも`1`の場合は`1`となり、それ以外の場合は`0`となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、10 進数の`15`と`9`をAND 演算しています。 `15`は、符号付き32ビット整数では`0000_0000_0000_0000_0000_0000_0000_1111`となります。
+    `9`は、符号付き32ビット整数では`0000_0000_0000_0000_0000_0000_0000_1001`となります。 これらをAND 演算した結果は`0000_0000_0000_0000_0000_0000_0000_1001`となり、10
+    進数の値である`9`を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#bit-or)*ビット論理和（`|`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ビット論理和演算子（`|`）はビットごとの**OR**演算した結果を返します。 OR 演算では、オペランドの各ビットがどちらか片方でも`1`の場合は`1`となり、両方とも`0`の場合は`0`となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#bit-xor)*ビット排他的論理和（`^`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ビット排他的論理和演算子（`^`）はビットごとの**XOR**演算した結果を返します。 XOR 演算では、オペランドのビットが異なるなら`1`、両方とも同じなら`0`となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#bit-not)*ビット否定（`~`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*単項演算子の否定演算子（`~`）はオペランドの各ビットを反転した値を返します。 これは1の補数として知られている値と同じものです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、10 進数で`15`を否定演算子（`~`）で各ビットを反転させた値を得ています。 `15` は `0000_0000_0000_0000_0000_0000_0000_1111`です。
+    各ビットを反転させると`1111_1111_1111_1111_1111_1111_1111_0000`になり、10 進数では`-16` となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`~x`のように`x`をビット否定演算子で演算した結果は、`-(x + 1)`となります。 この性質を利用する形で、ビット否定演算子（`~`）はビット演算以外でも使われていることがあります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 文字列（Stringオブジェクト）が持つ`indexOf`メソッドは、マッチする文字列を見つけて、そのインデックス（位置）を返すメソッドです。 この`indexOf`メソッドは、検索対象が見つからない場合には`-1`を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: 否定演算子（`~`）は1の補数を返すため、`~(-1)`は`0`となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: JavaScriptでは`0`も、if 文では`false`として扱われます。 そのため、`~indexOfの結果`が`0`となるのは、その文字列が見つからなかった場合だけとなります。
+    次のコードのように否定演算子（`~`）と`indexOf`メソッドを使ったイディオムが一部では使われていました。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: ES2015では、文字列（Stringオブジェクト）に`includes`メソッドが実装されました。 `includes`メソッドは指定した文字列が含まれているかを真偽値で返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: そのため、否定演算子（`~`）と`indexOf`メソッドを使ったイディオムは、`includes`メソッドに置き換えられます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#left-shift)*左シフト演算子（`<<`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*左シフト演算子は、数値である`num`を`bit`の数だけ左へシフトします。 左にあふれたビットは破棄され、`0`のビットを右から詰めます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: 次のコードでは、`9`を2ビット分だけ左へシフトしています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#right-shift)*右シフト演算子（`>>`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*右シフト演算子は、数値である`num`を`bit`の数だけ右へシフトします。 右にあふれたビットは破棄され、左端のビットのコピーを左から詰めます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: 次のコードでは、`-9`を2ビット分だけ右へシフトしています。 左端のビットのコピーを使うため、常に符号は維持されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#fill-zero-right-shift)*ゼロ埋め右シフト演算子（`>>>`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ゼロ埋め右シフト演算子は、数値である`num`を`bit`の数だけ右へシフトするのは右シフト演算子（`>>`）と同じです。 異なる点としては右にあふれたビットは破棄され、`0`のビットを左から詰めます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`-9`を2ビット分だけゼロ埋め右シフトしています。 左端のビットは`0`となるため、常に正の値となります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#assignment-operator)*代入演算子（`=`）*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*代入演算子（`=`）は変数に対して値を代入します。 代入演算子については「変数と宣言」の章も参照してください。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE51]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、代入演算子は二項演算子と組み合わせて利用できます。 `+=`、`-=`、`*=`、`/=`、`%=`、`<<=`、`>>=`、`>>>=`、`&=`、`^=`、`|=`、`**=`のように、演算した結果を代入できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE52]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#destructuring-assignment)*[ES2015] 分割代入（Destructuring assignment）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*今まで見てきた代入演算子は1つの変数に値を代入するものでした。 分割代入を使うことで、配列やオブジェクトの値を複数の変数へ同時に代入できます。 分割代入は短縮記法のひとつでES2015から導入された構文です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 分割代入は、代入演算子（`=`）を使うのは同じですが、左辺のオペランドが配列リテラルやオブジェクトリテラルとなります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、右辺の配列の値を、左辺の配列リテラルの対応するインデックスに書かれた変数名へ代入します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE53]'
+  prefs: []
+  type: TYPE_PRE
+- en: これは、次のように書いたのと同じ結果になります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE54]'
+  prefs: []
+  type: TYPE_PRE
+- en: 同様にオブジェクトも分割代入に対応しています。 オブジェクトの場合は、右辺のオブジェクトのプロパティ値を、左辺に対忈するプロパティ名へ代入します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE55]'
+  prefs: []
+  type: TYPE_PRE
+- en: これは、次のように書いたのと同��結果になります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE56]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#logical-operator)*論理演算子*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*論理演算子は基本的に真偽値を扱う演算子でAND（かつ）、OR（または）、NOT（否定）を表現できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#and-operator)*AND 演算子（`&&`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*AND 演算子（`&&`）は、左辺の値の評価結果が`true`ならば、右辺の評価結果を返します。 一方で、左辺の値の評価結果が`false`ならば、そのまま左辺の値を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE57]'
+  prefs: []
+  type: TYPE_PRE
+- en: AND 演算子（`&&`）は、左辺の評価が`false`の場合、オペランドの右辺は評価されません。 次のように、左辺が`false`の場合は、右辺に書いた`console.log`関数自体が実行されません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE58]'
+  prefs: []
+  type: TYPE_PRE
+- en: このような値が決まった時点でそれ以上評価しないことを**短絡評価**と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: また、AND 演算子は左辺を評価する際に、左辺を真偽値へと暗黙的な型変換をしてから判定します。 真偽値への暗黙的な型変換では、次に挙げる値は`false`へ変換されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`false`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`undefined`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`null`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`0`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`0n`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`NaN`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`""`（空文字列）'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 暗黙的な型変換によって`false`に変換されるこれらの値をまとめて**falsy**な値と呼びます。 falsyではない値は、`true`へと変換されます。
+    `true`へと変換される値の種類は多いため、`false`へと変換されない値は`true`となることは覚えておくとよいです。 このオペランドを真偽値に変換してから評価するのはAND、OR、NOT
+    演算子で共通の動作です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のように、AND 演算子（`&&`）は左辺を真偽値へと変換した結果が`true`の場合に、右辺の評価結果を返します。 つまり、左辺がfalsyの場合は、右辺は評価されません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE59]'
+  prefs: []
+  type: TYPE_PRE
+- en: AND 演算子は、if 文と組み合わせて利用することが多い演算子です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のように、`value`がString 型で **かつ** 値が`"str"`である場合という条件をひとつの式として書くことができます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE60]'
+  prefs: []
+  type: TYPE_PRE
+- en: このときに、`value`がString 型でない場合は、その時点でif 文の条件式は`false`となります。 そのため、`value`がString
+    型ではない場合は、AND 漮算子（`&&`）の右辺は評価されずに、if 文の中身も実行されません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: AND 演算子（`&&`）を使うと、if 文のネストに比べて短く書くことができます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: しかし、if 文が3 重 4 重にネストしているのは複雑なのと同様に、 AND 演算子やOR 演算子が3つ4つ連続すると複雑で読みにくいコードとなります。
+    その場合は抽象化ができないかを検討するべきサインとなります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#or-operator)*OR 演算子（`||`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*OR 演算子（`||`）は、左辺の値の評価結果が`true`ならば、そのまま左辺の値を返します。 一方で、左辺の値の評価結果が`false`であるならば、右辺の評価結果を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE61]'
+  prefs: []
+  type: TYPE_PRE
+- en: OR 演算子（`||`）は、左辺の評価が`true`の場合、オペランドの右辺を評価しません。 これは、AND 演算子（`&&`）と同様の短絡評価となるためです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE62]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、OR 演算子は左辺を評価する際に、左辺を真偽値へと暗黙的な型変換をします。 次のように、OR 演算子は左辺がfalsyの場合には右辺の値を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE63]'
+  prefs: []
+  type: TYPE_PRE
+- en: OR 演算子は、if 文と組み合わせて利用することが多い演算子です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のように、`value`が`0`**または**`1`の場合にif 文の中身が実行されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE64]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#not-operator)*NOT 演算子（`!`）*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*NOT 演算子（`!`）は、`オペランド`の評価結果が`true`ならば、`false`を返します。 一方で、`オペランド`の評価結果が`false`ならば、`true`を返します。
+    つまり、オペランドの評価結果を反転した真偽値を返します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE65]'
+  prefs: []
+  type: TYPE_PRE
+- en: NOT 演算子（`!`）もAND 演算子（`&&`）とOR 演算子（`||`）と同様に真偽値へと暗黙的な型変換します。 falsyである値は`true`へ変換され、falsyではない値は`false`へと変換されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE66]'
+  prefs: []
+  type: TYPE_PRE
+- en: NOT 演算子は必ず真偽値を返すため、次のように2つNOT 演算子を重ねて真偽値へ変換するという使い方も見かけます。 たとえば、`!!falsyな値`のように2
+    度反転すれば`false`になります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE67]'
+  prefs: []
+  type: TYPE_PRE
+- en: このようなケースの多くは、比較演算子���使うなどより明示的な方法で、真偽値を得ることができます。 安易に`!!`による変換に頼るよりは別の方法を探してみるのがいいでしょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE68]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#nullish-coalescing-operator)*[ES2020] Nullish coalescing 演算子(`??`)*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Nullish coalescing 演算子(`??`)は、左辺の値が**nullish**であるならば、右辺の評価結果を返します。 **nullish**とは、評価結果が`null`または`undefined`となる値のことです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE69]'
+  prefs: []
+  type: TYPE_PRE
+- en: Nullish coalescing 演算子(`??`)とOR 演算子（`||`）は、値のデフォルト値を指定する場合によく利用されています。 OR 演算子（`||`）は左辺がfalsyの場合に右辺を評価するため、意図しない結果となる場合があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードは、`inputValue`が未定義だった場合に、`value`に対するデフォルト値をOR 演算子（`||`）で指定しています。 `inputValue`が未定義(`undefined`)の場合は、意図したようにOR
+    演算子（`||`）の右辺で指定した`42`が入ります。 しかし、`inputValue`が`0`という値であった場合は、`0`はfalsyであるため`value`には右辺の`42`が入ります。
+    これでは`0`という値が扱えないため、意図しない動作となっています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE70]'
+  prefs: []
+  type: TYPE_PRE
+- en: この問題を解決するためにES2020でNullish coalescing 演算子(`??`)が導入されています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: Nullish coalescing 演算子(`??`)では、左辺がnullishの場合のみ、`value`に右辺で指定した`42`が入ります。 そのため、`inputValue`が`0`という値が入った場合は、`value`にはそのまま`inputValue`の値である`0`が入ります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE71]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#ternary-operator)*条件（三項）演算子（`?`と`:`）*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*条件演算子（`?`と`:`）は三項をとる演算子であるため、三項演算子とも呼ばれます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 条件演算子は`条件式`を評価した結果が`true`ならば、`Trueのとき処理する式`の評価結果を返します。 `条件式`が`false`である場合は、`Falseのとき処理する式`の評価結果を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE72]'
+  prefs: []
+  type: TYPE_PRE
+- en: if 文との違いは、条件演算子は式として書くことができるため値を返すという点です。 たとえば、次のよう��`条件式`の評価結果により`"A"` または
+    `"B"` どちらかを返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE73]'
+  prefs: []
+  type: TYPE_PRE
+- en: 条件分岐による値を返せるため、条件によって変数の初期値が違う場合などに使われます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的示例中，我们编写了一个函数，该函数将一个前缀字符串添加到`text`字符串的开头。如果第二个参数`prefix`被省略或者不是一个字符串，则会使用默认的`prefix`。如果省略了第二个参数，则`prefix`将被设为`undefined`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 条件运算符的评估结果会返回一个值，因此可以使用`const`进行声明和赋值。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE74]'
+  prefs: []
+  type: TYPE_PRE
+- en: 如果使用 if 语句，需要分开声明和赋值，因此无法使用`const`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE75]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#group-operator)*分组运算符（`(`和`)`）*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*分组运算符是一种可以明确表示多个二元运算符组合的运算符的优先级的运算符。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 例如，由于首先处理了由分组运算符括起来的部分，因此结果也会发生变化。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE76]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[运算符优先级](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#Table
+    "运算符优先级 - JavaScript | MDN")由 ECMAScript 规范定义，但记住所有运算符的优先级是困难的。 在运算符优先级中，分组运算符的优先级较高，使用分组运算符可以明确优先级。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 让我们看看不使用分组运算符编写的代码。 当`x`为`true`或`y`和`z`均为`true`时进行处理。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE77]'
+  prefs: []
+  type: TYPE_PRE
+- en: 如果一个表达式中出现多种类型的运算符，往往会变得难以阅读。 在这种情况下，可以使用分组运算符并明确结合顺序进行编写。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE78]'
+  prefs: []
+  type: TYPE_PRE
+- en: 但是，与其在一个表达式中进行多个运算，不如将表达式本身分开可能更易读。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 让我们考虑一下当`a`和`b`是字符串类型或者`x`和`y`是数值类型时的 if 语句。 虽然可以使用分组运算符直接编写为一个条件表达式，但这会使代码难以阅读。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE79]'
+  prefs: []
+  type: TYPE_PRE
+- en: 与其勉强写成一个表达式（一行），不如将条件表达式分解并将每个结果定义为变量更易于阅读。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE80]'
+  prefs: []
+  type: TYPE_PRE
+- en: 因此，与其使用分组运算符将所有条件组合在一起，不如将每个条件分解并赋予名称（作为变量定义）同样重要。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#comma-operator)*逗号运算符（`,`）*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*逗号运算符（`,`）会依次评估用逗号（`,`）分隔的表达式， 并返回最后一个表达式的评估结果。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的示例中，将依次评估`expression1`、`expression2`和`expression3`，并返回`expression3`的评估结果。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE81]'
+  prefs: []
+  type: TYPE_PRE
+- en: 到目前为止，我们已经看到，逗号分隔的概念也出现在使用`const`声明变量等地方。 在从左到右执行方面，逗号运算符的行为与其相同，但语法不同。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE82]'
+  prefs: []
+  type: TYPE_PRE
+- en: 通常情况下，很少会使用逗号运算符，因此只需知道“逗号分隔的表达式会从左到右进行评估”就可以了。^(1)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#conclusion)*总结*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*本章介绍了运算符。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 运算符是用符号等表示常用运算操作的符号
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 有各种类型的运算符，如四则运算和逻辑运算
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 运算符有优先级，可以通过分组运算符来明确
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ¹. 使用逗号运算符的技巧之一是间接调用。[`2ality.com/2014/01/eval.html`](https://2ality.com/2014/01/eval.html)
+    ↩
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL

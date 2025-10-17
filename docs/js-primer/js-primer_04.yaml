@@ -1,0 +1,129 @@
+- en: 読みはじめる前の事前準備
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/intro/preparation/`](https://jsprimer.net/intro/preparation/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: この書籍は、すでに何かしらのプログラミング言語を触ったことがある人向けに書かれています。 そのため、この書籍でプログラミング言語を初めて学ぶ場合には、まずコードに慣れる必要があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: JavaScriptのコードは、ブラウザがあれば実行できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のJavaScriptのサンプルコードを書き写して、ブラウザでJavaScriptを実行するところから始めてみましょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#samplecode)*サンプルコード*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*次のコードが書き写して実行するサンプルコードです。 今はまだコードの内容が理解できなくても問題ありません。 まずは、実際にコードを実行してみることが重要です。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#editor)*エディター*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*このサンプルコードを、次のエディターに書き写して"実行"ボタンを押して、JavaScriptを実行してみてください。 `"`と`"`で囲まれた`名前`という文字列は、自分の名前に書き換えてみてください。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 実行した結果として、次のようなメッセージが表示されているなら実行成功です （メッセージの`名前`の部分は、自分で書いた名前に書き換えて読んでください）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: こんにちは名前さん
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '"ログをクリア"ボタンを押すと、表示されているログを削除できます。 "終了"ボタンを押すとエディターを終了できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '"実行"ボタンを押して異なるメッセージがでた場合は、次の注意事項を読んでもう一度挑戦してみてくだ���い。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#caution)*注意事項*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*"実行"したときに、`SyntaxError`というようなエラーが表示されたなら、コードのどこかを書き間違えています。 次の点に気をつけて成功するまで試してみてください。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: コードは日本語入力をオフにして入力します
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`"`と`"`で囲まれた部分以外は、すべて半角の英数字で入力してください'
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`"`（ダブルクォート）、`;`（セミコロン）、カッコ、スペースなどの記号も半角になっているかを確認してください'
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 1 行入力するごとに`Enter`キーを押すことで改行できます
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 大文字と小文字は区別されます
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: このサンプルコードでは小文字の英数字しか利用していません
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: コードの意味はまだわからなくても問題ありません
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 正しくコードを入力して、実行できることが重要です
+  prefs:
+  - PREF_IND
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*SyntaxError: illegal character*や*SyntaxError: Invalid or unexpected token*のようなエラーメッセージが出ている場合は、
+    どこかに全角の記号や全角の英数字が混ざっています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 一度すべてのコードを消してから、もう一度入力してみましょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#failure)*コードを実行できない*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*どうしても実行できない場合は、まだこの書籍を読むには少し早いのかもしれません。 また、書籍は文字を中心とした解説になるため、初めてのプログラミン��ではイメージするのが難しいこともあります。
+    そのため、書籍より情報量の多い動画などを見て、まずはコードを実行できるようにすることからはじめるのがよいかもしれません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`"JavaScript 入門 動画"`といったキーワードで検索し、映像で学んで見てからでも遅くはありません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: また、もっとも効率的なのは、身近な知り合いに聞くことです。 一人で学ぼうとすると、思わぬところで詰まってしまい進めなくなる場合があります。 特に新しいことは最初の出発点が一番難しいです。
+    ほかの人に手伝ってもらうことで意外と簡単に進めるようになるはずです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#welcome-to-javascript)*ようこそJavaScriptへ*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*サンプルコードが実行できたなら、おそらくこの書籍は読めるはずです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: この書籍は、JavaScriptというプログラミング言語の基本的な文法から、実際のウェブアプリケーションで使われるようなパターンについてを学んでいく書籍です。
+    JavaScriptという言語は、常に変化している言語としても知られています。 その意味は、古いコードが動かなくなるのではなく、新しいやり方が常に増えていくという意味での変化です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: この書��では、そのような変化していくJavaScriptの学び方についても学んでいきます。*****
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,937 @@
+- en: クラス
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[`jsprimer.net/basic/class/`](https://jsprimer.net/basic/class/)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 「クラス」と一言にいってもさまざまであるため、こ��では**構造**、**動作**、**状態**を定義できるものを指すことにします。 また、この章では概念を示す場合は**クラス**と呼び、クラスに関する構文（記述するコード）のことを`class`構文と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**クラス**とは**動作**や**状態**を定義した**構造**です。 クラスからはインスタンスと呼ばれるオブジェクトを作成でき、インスタンスはクラスに定義した**動作**を継承し、**状態**は動作によって変化します。
+    とても抽象的なことに思えますが、これは今までオブジェクトや関数を使って表現してきたものです。 JavaScriptではES2015より前までは`class`構文はなく、関数を使ってクラスのようなものを表現して扱っていました。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ES2015でクラスを表現するための`class`構文が導入されましたが、この`class`構文で定義したクラスは関数オブジェクトの一種です。 `class`構文ではプロトタイプベースの継承の仕組みを使って関数でクラスを表現しています。
+    そのため、`class`構文はクラスを作るための関数定義や継承をパターン化した書き方と言えます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: また、関数の定義方法として関数宣言文と関数式があるように、クラスにもクラス宣言文とクラス式があります。 このように関数とクラスは似ている部分が多いです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: この章では、`class`構文でのクラスの定義や継承、クラスの性質について学んでいきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#class-declaration)*クラスの定義*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*クラスを定義するには`class`構文を使います。 クラスの定義方法にはクラス宣言文とクラス式があります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: まずは、クラス宣言文によるクラスの定義方法を見ていきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: クラス宣言文では`class`キーワードを使い、`class クラス名{ }`のようにクラスの**構造**を定義できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: クラスは必ずコンストラクタを持ち、`constructor`という名前のメソッドとして定義します。 コンストラクタとは、そのクラスからインスタンスを作成する際にインスタンスに関する**状態**の初期化を行うメソッドです。
+    `constructor`メソッドに定義した処理は、クラスをインスタンス化したときに自動的に呼び出されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: もうひとつの定義方法であるクラス式は、クラスを値として定義する方法です。 クラス式ではクラス名を省略できます。これは関数式における無名関数と同じです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: コンストラクタ関数内で、何も処理がない場合はコンストラクタの記述を省略できます。 省略した場合でも自動的に空のコンストラクタが定義されるため、クラスにはコンストラクタが必ず存在します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#class-instance)*クラスのインスタンス化*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*クラスは`new`演算子でインスタンスであるオブジェクトを作成できます。 `class`構文で定義したクラスからインスタンスを作成することを**インスタンス化**と呼びます。
+    あるインスタンスが指定したクラスから作成されたものかを判定するには`instanceof`演算子が利用できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: このままでは何も処理がない空のクラスなので、値を持ったクラスを定義してみましょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: クラスではインスタンスの初期化処理をコンストラクタ関数で行います。 コンストラクタ関数は`new`演算子でインスタンス化する際に自動的に呼び出されます。
+    コンストラクタ関数内での`this`はこれから新しく作るインスタンスオブジェクトとなります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`x`座標と`y`座標の値を持つ`Point`というクラスを定義しています。 コンストラクタ関数（`constructor`）の中でインスタンスオブジェクト（`this`）の`x`と`y`プロパティに値を代入して初期化しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: この`Point`クラスのインスタンスを作成するには`new`演算子を使います。 `new`演算子には関数呼び出しと同じように引数を渡すことができます。
+    `new`演算子の引数はクラスの`constructor`メソッド（コンストラクタ関数）の仮引数に渡されます。 そして、コンストラクタの中ではインスタンスオブジェクト（`this`）の初期化処理を行います。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: このようにクラスからインスタンスを作成するには必ず`new`演算子を使います。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 一方、クラスは通常の関数として呼ぶことができません。 これは、クラスのコンストラクタはインスタンス（`this`）を初期化する場所であり、通常の関数とは役割が異なるためです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、コンストラクタ関数は`return`文で任意のオブジェクトを返すことが可能ですが、行うべきではありません。 なぜなら、クラスを`new`演算子で呼び出し、その評価結果はクラスのインスタンスを期待するのが一般的であるためです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードのようにコンストラクタで返した値が`new`演算子で呼び出した際の返り値となります。 このような書き方は混乱を生むため避けるべきです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#class-name-start-upper-case)*[Note] クラス名は大文字ではじめる*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*JavaScriptでは慣習としてクラス名には大文字ではじまる名前をつけます。 これは、変数名にキャメルケースを使う慣習があるのと同じで、名前自体に特別なルールがあるわけではありません。
+    クラス名を大文字にしておき、そのインスタンスは小文字で開始すれば名前が被らないという合理的な理由で好まれています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#class-vs-function)*[コラム] `class`構文と関数でのクラスの違い*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ES2015より前はこれらのクラスを`class`構文ではなく、関数で表現していました。 その表現方法は人によってさまざまで、これも`class`構文という統一した記法が導入された理由の1つです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードは、関数でクラスを実装した1つの例です。 この関数でのクラス表現は、継承の仕組みなどは省かれていますが、`class`構文とよく似ています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 大きな違いとして、`class`構文で定義したクラスは関数として呼び出すことができません。 クラスは`new`演算子でインスタンス化して使うものなので、これはクラスの誤用を防ぐ仕様です。
+    一方、関数でのクラス表現はただの関数なので、当然関数として呼び出せます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように、関数でクラスのようなものを実装した場合には、関数として呼び出せてしまう問題があります。 このような問題を避けるためにもクラスは`class`構文を使って実装します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#class-prototype-method-definition)*クラスのプロトタイプメソッドの定義*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*クラスの**動作**はメソッドによって定義できます。 `constructor`メソッドは初期化時に呼ばれる特殊なメソッドですが、`class`構文ではクラスに対して自由にメソッドを定義できます。
+    このクラスに定義したメソッドは作成したインスタンスが持つ動作となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のように`class`構文ではクラスに対してメソッドを定義できます。 メソッドの中からクラスのインスタンスを参照するには、`constructor`メソッドと同じく`this`を使います。
+    このクラスのメソッドにおける`this`は「関数とthis」の章で学んだメソッドと同じくベースオブジェクトを参照します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'クラスのプロトタイプメソッド定義では、オブジェクトにおけるメソッドとは異なり`key : value`のように`:`区切りでメソッドを定義できないことに注意してください。
+    つまり、次のような書き方は構文エラー（`SyntaxError`）となります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: このメソッド定義の構文でクラスに対して定義したメソッドは、クラスの各インスタンスから**共有されるメソッド**となります。 このインスタンス間で共有されるメソッドのことを**プロトタイプメソッド**と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`Counter`クラスに`increment`メソッドを定義しています。 このときの`Counter`クラスのインスタンスは、それぞれ別々の状態（`count`プロパティ）を持ちます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: このときの`increment`メソッドはプロトタイプメソッドとして定義されています。 プロトタイプメソッドは各インスタンス間(`counterA`と`counterB`)で共有されます。
+    そのため、次のように各インスタンスの`increment`メソッドの参照先は同じとなっていることがわかります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: プロトタイプメソッドがなぜインスタンス間で共有されているのかは、クラスの継承の仕組みと密接に関係しています。 プロトタイプメソッドの仕組みについては後ほど解説します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ここでは、次のような構文でクラスにメソッドを定義すると、各インスタンスで共有されるプロトタイプメソッドとして定義されるということが理解できていれば問題ありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#class-accessor-property)*クラスのアクセッサプロパティの定義*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*クラスに対してメソッドを定義できますが、メソッドは`インスタンス名.メソッド名()`のように呼び出す必要があります。 クラスでは、プロパティの参照（getter）、プロパティへの代入（setter）時に呼び出される特��なメソッドを定義できます。
+    このメソッドはプロパティのように振る舞うため**アクセッサプロパティ**と呼ばれます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、プロパティの参照（getter）、プロパティへの代入（setter）に対するアクセッサプロパティを定義しています。 アクセッサプロパティはメソッド名（プロパティ名）の前に`get`または`set`をつけるだけです。
+    getter（`get`）には仮引数はありませんが、必ず値を返す必要があります。 setter（`set`）の仮引数にはプロパティへ代入する値が入りますが、値を返す必要はありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 次のコードでは、`NumberWrapper`クラスの`value`プロパティをアクセッサプロパティとして定義しています。 `value`プロパティへアクセスした際にそれぞれ定義したgetterとsetterが呼ばれているのがわかります。
+    このアクセッサプロパティで実際に読み書きされているのは、`NumberWrapper`インスタンスの`_value`プロパティとなります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#underbar-private-property)*[コラム] `_`（アンダーバー）から始まるプロパティ名*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*NumberWrapperの`value`のアクセッサプロパティで実際に読み書きしているのは、`_value`プロパティです。 このように、外から直接読み書きしてほしくないプロパティを`_`（アンダーバー）から始まる名前にするのはただの習慣であるため、構文としての意味はありません。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ECMAScript 2022から、外から直接読み書きしてほしくないプライベートなプロパティを定義するPrivateクラスフィールド構文が追加されました。
+    Privateクラスフィールド構文では`#`（ハッシュ）記号をプロパティ名の前につけます。 そのため、外から直接読み書きしてほしくないプロパティを`_`からはじめるという慣習は、Privateクラスフィールド構文の利用が進むにつれて使われなくなっていくと考えています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: Privateクラスフィールド構文については、この後に解説します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#array-like-length)*`Array.prototype.length`をアクセッサプロパティで再現する*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*getterやsetterを利用しないと実現が難しいものとして、`Array.prototype.length`プロパティがあります。 Arrayの`length`プロパティへ値を代入すると、そのインデックス以降の要素は自動的に削除される仕様になっています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、配列の要素数（`length`プロパティ）を小さくすると配列の要素が削除されています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: この`length`プロパティの挙動を再現する`ArrayLike`クラスを実装してみます。 Arrayの`length`プロパティは、`length`プロパティへ値を代入した際に次のようなことを行っています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 現在要素数より小さな**要素数**が指定された場合、その**要素数**を変更し、配列の末尾の要素を削除する
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 現在要素数より大きな**要素数**が指定された場合、その**要素数**だけを変更し、配列の実際の要素はそのままにする
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: ArrayLikeの`length`プロパティのsetterで要素の追加や削除を実装することで、配列のような`length`プロパティを実装できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: このようにアクセッサプロパティでは、プロパティのようでありながら実際にアクセスした際には他のプロパティと連動する動作を実現できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#public-class-fields)*[ES2022] Publicクラスフィールド*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*クラスでは、`constructor`メソッドの中でクラスの状態であるインスタンスのプロパティを初期化することを紹介しました。 先ほども紹介した`Counter`クラスでは、`constructor`メソッドの中で`count`プロパティの初期値を`0`として定義しています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: この`Counter`では`new`演算子で何も引数を渡すことなく初期化するため、`constructor`メソッドには仮引数を定義していません。 このような場合でも、`constructor`メソッドを書かないとプロパティの初期化ができないためわずらわしいという問題がありました。
+  prefs: []
+  type: TYPE_NORMAL
+- en: ES2022で，クラスのインスタンスが持つプロパティの初期化をわかりやすく宣言的にする構文として，**クラスフィールド**構文が追加されました。
+  prefs: []
+  type: TYPE_NORMAL
+- en: クラスフィールドは，クラスのインスタンスが持つプロパティを定義する次のような構文です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: クラスフィールドを使って先ほどの`Counter`クラスを書き直してみると次のようになります。 `count`プロパティをクラスフィールドとして定義して，その初期値は`0`としています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: クラスフィールドで定義するのは，クラスのインスタンスが持つプロパティです。 そのため，`constructor`メソッドの中で`this.count =
+    0`のように定義した場合と結果的にはほとんど同じ意味となります。 クラスフィールドで定義したプロパティは，クラス内から他のプロパティと同じように`this.プロパティ名`で参照できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: クラスフィールドは`constructor`メソッドでの初期化と併用が可能です。 次のコードでは，クラスフィールドと`constructor`メソッドでそれぞれインスタンスのプロパティを定義しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: また，クラスフィールドでの初期化処理が行われ，そのあと`constructor`でのプロパティの定義という処理順となります。 そのため，同じプロパティ名への定義がある場合は，`constructor`メソッド内での定義でプロパティは上書きされます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: この`publicField`プロパティのように，クラスの外からアクセスできるプロパティを定義するクラスフィールドを**Publicクラスフィールド**と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#declare-class-fields)*クラスフィールドを使ってプロパティの存在を宣言する*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*クラスフィ��ルドでは，プロパティの初期値は省略可能となっています。 そのため，次のように初期値を省略したPublicクラスフィールドも定義できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: このときの`myProperty`は`undefined`で初期化されます。 この初期値を省略したクラスフィールドの定義は，クラスのインスタンスが持つプロパティを明示するために利用できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次の`Loader`クラスは，`load`メソッドを呼び出すまでは，`loadedContent`プロパティの値は`undefined`です。 クラスフィールドを使えば，`Loader`クラスのインスタンスは，`loadedContent`というプロパティを持っていることを宣言的に表現できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: JavaScriptでは，オブジェクトのプロパティは初期化時に存在していなくても，後から代入すれば作成できてしまいます。 そのため，次のように`Loader`クラスを実装しても意味は同じです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: しかし，このように実装してしまうと`Loader`クラスを利用する側は，`loadedContent`プロパティの存在を`load`メソッドの中まで読まないとわからないという問題があります。
+    これに対して，クラスフィールドを使って「`Loader`クラスは`loadedContent`というプロパティを持っている」ということを宣言的に表現できます。
+    宣言的にプロパティを定義することで，エディターでのコード補完が可能になったり，コードを読む人に優しいというメリットがあります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#this-in-class-fields)*クラスフィールドでの`this`はクラスのインスタンスを示す*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*クラスフィールドの初期値には任意の式が書け，`this`も利用できます。 クラスフィールドでの`this`は，そのクラスのインスタンスを参照します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは，`up`フィールドの初期値に`increment`メソッドを指定しています。 JavaScriptでは関数も値として扱えるため，`up`メソッドを呼び出すと`increment`メソッドが呼び出されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: クラスフィールドでの`this`は，Arrow Functionと組み合わせると強力です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは，`up`メソッドをArrow Functionとして定義し，関数内では`this.increment`メソッドを呼び出しています。 Arrow
+    Functionで定義した関数における`this`は，どのような呼び出し方をしても変化しません（「Arrow Functionでコールバック関数を扱う」を参照）。
+    そのため，`up`メソッドはどのような呼び方をした場合でも`this`がクラスのインスタンスとなるため，確実に`increment`メソッドを呼び出せます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#difference-between-class-fields-and-instance-property)*[コラム] クラスフィールドとインスタンスのプロパティの違い*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*クラスフィールドで定義したプロパティやメソッドは，クラスのインスタンスにプロパティとして定義されます。 そのため，クラスフィールドは，`constructor`の中で`this`に対してプロパティを追加するのと意味的にはほぼ同じで，見た目がわかりやすくな���た構文と捉えることができます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: しかし，厳密にはこのふたつのプロパティ定義には異なる点はあります。 次のように，クラスフィールドと`constructor`の中で`this`に追加するプロパティ名に対するsetterを定義してみるとこの違いがわかります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: クラスフィールド名に対するsetterは呼び出されないのに対して，`this.property`への代入に対するsetterは呼び出されています。 これは，クラスフィールドは`=`を使った代入で定義されるのではなく，[Object.defineProperty](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)メソッドを使ってプロパティが定義されるという違いがあります。
+    `Object.defineProperty`を使ったプロパティの定義では，setterは無視してプロパティが定義されます。 setterは`=`での代入に反応します。そのため，`constructor`の中での`this.property`への代入に対してはsetterが呼び出されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 同じプロパティの定義であっても，プロパティの定義の仕組みが微妙に異なる点から，このような挙動の違いが存在しています。 しかし，この違いを意識するようなコードを書くことは避けたほうが安全です。
+    実際に見た目からこの違いを意識するのは難しく，それを意識させるようなコードは複雑性が高いためです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#private-class-fields)*[ES2022] Privateクラスフィールド*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*クラスフィールド構文で次のように書くと、定義したプロパティはクラスをインスタンス化した後に外からも参照できます。 そのため、Publicクラスフィールドと呼ばれます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: 一方で外からアクセスされたくないインスタンスのプロパティも存在します。 そのようなプライベートなプロパティを定義する構文もES2022で追加されています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: Privateクラスフィールドは、次のように`#`をフィールド名の前につけたクラスフィールドを定義します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: 定義したPrivateクラスフィールドは、`this.#フィールド名`で参照できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: もう少し具体的なPrivateクラスフィールドの使い方を見ていきます。 アクセッサプロパティの例でも登場した`NumberWrapper`をPrivateクラスフィールドを使って書き直してみます。
+    元々の`NumberWrapper`クラスでは、`_value`プロパティに実際の値を読み書きしていました。 この場合、`_value`プロパティは、外からもアクセスできてしまうため、定義したgetterとsetterが無視できてしまいます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: Privateクラスフィールドでは、外からアクセスされたくないプロパティを`#`をつけてクラスフィールドとして定義します。 次のコードでは、`#value`はプライベートプロパティとなっているため、構文エラーが発生し外からアクセスできなくなることが確認できます。
+    Privateクラスフィールドを使うことで、クラスを利用する際はgetterとsetterを経由しないと`#value`を参照できなくなりました。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: Privateクラスフィールドを使うことで、クラスの外からアクセスさせたくないプロパティを宣言できます。 これは、実装したクラスの意図しない使われ方を防いだり、クラスの外からプロパティの状態を直接書き換えるといった行為を防げます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: また、Privateクラスフィールドでは、途中から値が入る場合でもフィールドの宣言が必須となっています。 次のコードでは、`#loadedContent`に実際に値が入るのは`load`メソッドが呼び出されたときです。
+    Publicクラスフィールドではフィールドの定義は省略可能でしたが、Privateクラスフィールドでは`#loadedContent`フィールドの定義が必須となっています。
+    言い換えると、Privateクラスフィールドでは、クラスを定義した段階でクラスに存在するすべてのPrivateクラスフィールドを明示する必要があります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#static-method)*静的メソッド*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*インスタンスメソッドは、クラスをインスタンス化して利用します。 一方、クラスをインスタンス化せずに利用できる静的メソッド（クラスメソッド）もあります。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 静的メソッドの定義方法はメソッド名の前に、`static`をつけるだけです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: 次のコードでは、配列をラップする`ArrayWrapper`というクラスを定義しています。 `ArrayWrapper`はコンストラクタの引数として配列を受け取って初期化しています。
+    このクラスに配列ではなく要素そのものを引数に受け取ってインスタンス化できる`ArrayWrapper.of`という静的メソッドを定義します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: クラスの静的メソッドにおける`this`は、そのクラス自身を参照します。 そのため、先ほどのコードは`new ArrayWrapper`の代わりに`new
+    this`と書くこともできます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように静的メソッドでの`this`はクラス自身を参照するため、クラスのインスタンスは参照できません。 そのため静的メソッドは、クラスのインスタンスを作成する処理やクラスに関係する処理を書くために利用されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#static-class-fields)*[ES2022] 静的クラスフィールド*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*ES2022で追加されたクラスフィールドでは、インスタンスではなくクラス自体に定義する静的クラスフィールドも利用できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 静的クラスフィールドは、フィールドの前に`static`をつけるだけです。 静的クラスフィールドで定義したプロパティは、クラス自体のプロパティとして定義されます。
+    次のコードでは、Public 静的クラスフィールドを使って`Colors`クラス自体にプロパティを定義しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: また、Privateクラスフィールドも静的に利用できます。 Private 静的クラスフィールドは、クラス自体にプロパティを定義したいが、そのプロパティを外から参照されたくない場合に利用します。
+    Private 静的クラスフィールドはフィールドの前に、`static`をつけるだけです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#two-instance-method-definition)*プロトタ��プに定義したメソッドとインスタンスに定義したメソッドの違い*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*ここまでで、プロトタイプメソッドの定義とクラスフィールドを使ったインスタンスに対するメソッドの定義の2 種類を見てきました。 プロトタイプメソッドの定義方法は、メソッドをプロトタイプオブジェクトという特殊なオブジェクトに定義します。
+    一方で、クラスフィールドで定義したメソッドは、クラスのインスタンスに対してメソッドを定義します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: どちらのメソッド定義方法でも、`new`演算子でインスタンス化したオブジェクトからメソッドを呼び出すことができる点は同じです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: しかしこの2つのメソッドの定義方法は、メソッドの定義先となるオブジェクトが異なります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: まず、この2 種類のメソッドがそれぞれ別の場所へと定義されていることを見ていきます。 次のコードでは、`ConflictClass`クラスに`method`という同じ名前のメソッドをプロトタイプメソッドとインスタンスに対してそれぞれ定義しています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: 結論から述べると、この場合はインスタンスオブジェクトに定義した`method`が呼び出されます。 このとき、インスタンスの`method`プロパティを`delete`演算子で削除すると、今度はプロトタイプメソッドの`method`が呼び出されます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: この実行結果から次のことがわかります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: プロトタイプメソッドとインスタンスオブジェクトのメソッドは上書きされずにどちらも定義されている
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: インスタンスオブジェクトの��ソッドがプロトタイプオブジェクトのメソッドよりも優先して呼ばれている
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: どちらも注意深く意識しないと気づきにくいですが、この挙動はJavaScriptの重要な仕組みであるため理解することは重要です。
+  prefs: []
+  type: TYPE_NORMAL
+- en: この挙動は**プロトタイプオブジェクト**と呼ばれる特殊なオブジェクトと**プロトタイプチェーン**と呼ばれる仕組みで成り立っています。 どちらも**プロトタイプ**とついていることからわかるように、2つで1
+    組のような仕組みです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のセクションでは、**プロトタイプオブジェクト**と**プロトタイプチェーン**とはどのような仕組みなのかを見ていきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#prototype)*プロトタイプオブジェクト*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '***プロトタイプメソッド**と**インスタンスオブジェクトのメソッド**を同時に定義しても、互いのメソッドは上書きされるわけでありません。 なぜなら、プロトタイプメソッドは**プロトタイプオブジェクト**へ、インスタンスオブジェクトのメソッドは**インスタンスオブジェクト**へそれぞれ定義されるためです。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: プロトタイプオブジェクトについては「プロトタイプオブジェクト」の章で簡単に紹介していましたが、改めて解説していきます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**プロトタイプオブジェクト**とは、JavaScriptの関数オブジェクトの`prototype`プロパティに自動的に作成される特殊なオブジェクトです。
+    クラスも一種の関数オブジェクトであるため、自動的に`prototype`プロパティにプロトタイプオブジェクトが作成されています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、関数やクラス自身の`prototype`プロパティに、プロトタイプオブジェクトが自動的に作成されていることがわかります。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`class`構文のメソッド定義は、このプロトタイプオブジェクトのプロパティとして定義されます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、クラスのメソッドがプロトタイプオブジェクトに定義されていることを確認できます。 また、クラスには`constructor`メソッド（コンストラクタ）が必ず定義されます。
+    この`constructor`メソッドもプロトタイプオブジェクトに定義されており、この`constructor`プロパティはクラス自身を参照します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように、プロトタイプメソッドはプロトタイプオブジェクトに定義され、インスタンスオブジェクトのメソッドとは異なるオブジェクトに定義されています。そのため、それぞれの方法でメソッドを定義しても、上書きされることはありません。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#prototype-chain)*プロトタイプチェーン*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*`class`構文で定義したプロトタイプメソッドはプロトタイプオブジェクトに定義されます。 しかし、インスタンス（オブジェクト）にはメソッドが定義されていないのに、インスタンスからクラスのプロトタイプメソッドを呼び出せます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: インスタンスからプロトタイプメソッドを呼び出せるのは**プロトタイプチェーン**と呼ばれる仕組みによるものです。 プロトタイプチェーンは2つの処理から成り立ちます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: インスタンス作成時に、インスタンスの`[[Prototype]]`内部プロパティへプロトタイプオブジェクトの参照を保存する処理
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: インスタンスからプロパティ（またはメソッド）を参照するときに、`[[Prototype]]`内部プロパティまで探索する処理
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[](#write-prototype-chain)*インスタンス作成とプロトタイプチェーン*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*クラスから`new`演算子によってインスタンスを作成する際に、インスタンスにはクラスのプロトタイプオブジェクトへの参照が保存されます。 こ���とき、インスタンスからクラスのプロトタイプオブジェクトへの参照は、インスタンスオブジェクトの`[[Prototype]]`という内部プロパティに保存されます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`[[Prototype]]`内部プロパティはECMAScriptの仕様で定められた内部的な表現であるため、通常のプロパティのようにはアクセスできません。
+    ここでは説明のために、`[[プロパティ名]]`という書式でECMAScriptの仕様上に存在する内部プロパティを表現しています。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`[[Prototype]]`内部プロパティへプロパティのようにはアクセスできませんが、`Object.getPrototypeOf`メソッドで`[[Prototype]]`内部プロパティを参照できます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 次のコードでは、`instance`オブジェクトの`[[Prototype]]`内部プロパティを取得しています。 その取得した結果がクラスのプロトタイプオブジェクトを参照していることを確認できます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: ここで重要なのは、インスタンスはどのクラスから作られたかやそのクラスのプロトタイプオブジェクトを知っているということです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#inner-property)*[Note] `[[Prototype]]`内部プロパティを読み書きする*'
+  prefs:
+  - PREF_H4
+  type: TYPE_NORMAL
+- en: '*`Object.getPrototypeOf(オブジェクト)`で`オブジェクト`の`[[Prototype]]`を読み取ることができます。 一方、`Object.setPrototypeOf(オブジェクト,
+    プロトタイプオブジェクト)`で`オブジェクト`の`[[Prototype]]`に`プロトタイプオブジェクト`を設定できます。 また、`[[Prototype]]`内部プロパティを通常のプロパティのように扱え���`__proto__`という特殊なアクセッサプロパティが存在します。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: しかし、これらの`[[Prototype]]`内部プロパティを直接読み書きすることは通常の用途では行いません。 また、既存のビルトインオブジェクトの動作なども変更できるため、不用意に扱うべきではないでしょう。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#read-prototype-chain)*プロパティの参照とプロトタイプチェーン*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*プロトタイプオブジェクトのプロパティがどのようにインスタンスから参照されるかを見ていきます。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: オブジェクトのプロパティを参照するときに、オブジェクト自身がプロパティを持っていない場合でも、そこで探索が終わるわけではありません。 オブジェクトの`[[Prototype]]`内部プロパティ（仕様上の内部的なプロパティ）の参照先であるプロトタイプオブジェクトに対しても探索を続けます。
+    これは、スコープに指定した識別子の変数がなかった場合に外側のスコープへと探索するスコープチェーンと良く似た仕組みです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: つまり、オブジェクトがプロパティを探索するときは次のような順番で、それぞれのオブジェクトを調べます。 すべてのオブジェクトにおいて見つからなかった場合の結果は`undefined`を返します。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`instance`オブジェクト自身'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '`instance`オブジェクトの`[[Prototype]]`の参照先（プロトタイプオブジェクト）'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: どこにもなかった場合は`undefined`
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 次のコードでは、インスタンスオブジェクト自身は`method`プロパティを持っていません。 そのため、実際に参照しているのはクラスのプロトタイプオブジェクトの`method`プロパティです。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: このように、インスタンスオブジェクトに`method`が定義されていなくても、クラスのプロトタイプオブジェクトの`method`を呼び出すことができます。
+    このプロパティを参照する際に、オブジェクト自身から`[[Prototype]]`内部プロパティへと順番に探す仕組みのことを**プロトタイプチェーン**と呼びます。
+  prefs: []
+  type: TYPE_NORMAL
+- en: プロトタイプチェーンの仕組みを疑似的なコードとして表現すると次のような動きをしています。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE51]'
+  prefs: []
+  type: TYPE_PRE
+- en: 通过原型链机制，我们可以从原型对象中定义的原型方法中调用实例。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 普通情况下，无需关注原型对象或原型链等机制。 `class`语法是为了让我们在不关注这些原型的情况下使用类而引入的语法。 但是，在基于原型的 JavaScript
+    中，了解类是如何通过原型来表示是有好处的。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#extends)*继承*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*通过使用`extends`关键字，您可以继承现有的类。 继承是指定义一个新类，该类继承了父类的**结构**和**功能**。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#class-extends)*继承的类定义*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*通过使用`extends`关键字来定义继承自父类（基类）的**子类**（派生类）。 通过在`class`语法的右侧使用`extends`关键字指定要继承的**父类**（基类），可以定义继承自父类的**子类**（派生类）。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE52]'
+  prefs: []
+  type: TYPE_PRE
+- en: 在下面的代码中，我们定义了继承自`Parent`类的`Child`类。 实例化子类`Child`类与普通类一样使用`new`运算符。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE53]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#class-super)*`super`*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*要从使用`extends`定义的子类引用父类，需要使用名为`super`的关键字。 我们将看到使用最简单的`super`的示例，以查看构造函数的处理。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 就像在`class`语法中介绍的那样，类必须具有`constructor`方法（构造函数）。 这也适用于继承的子类。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，在`Child`类的构造函数中，我们调用了`super()`。 `super()`会调用父类的`constructor`方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE54]'
+  prefs: []
+  type: TYPE_PRE
+- en: 在`class`语法中，如果`constructor`方法（构造函数）不执行任何操作，则可以省略它。 这也适用于继承的子类。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，`Child`类的构造函数没有执行任何操作。 因此，可以省略`Child`类的`constructor`方法的定义。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE55]'
+  prefs: []
+  type: TYPE_PRE
+- en: 如果在子类中省略了`constructor`，则与下面的代码相同。 接收`constructor`方法的所有参数，并将它们按顺序传递给`super`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE56]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#constructor-order)*构造函数的处理顺序是从父类到子类*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*构造函数的处理顺序是从父类到子类。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在`class`语法中，必须首先执行父类的构造函数处理（调用`super()`），然后执行子类的构造函数处理。 在子类的构造函数中，在引用`this`之前必须先调用`super()`以调用父类的构造函数处理，否则会导致`ReferenceError`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，我们分别在`Parent`和`Child`中写入了实例（`this`）的`name`属性。 在子类中，必须先调用`super()`，然后才能引用`this`。
+    因此，构造函数的处理顺序被限制为从`Parent`到`Child`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE57]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#class-fields-inheritance)*类字段继承*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Public 类字段与构造函数的处理顺序相同，即在初始化父类字段之后初始化子类字段。 Public 类字段是一种定义实例对象属性的语法。 因此，父类中定义的字段也会被定义为实际实例化的对象的属性。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE58]'
+  prefs: []
+  type: TYPE_PRE
+- en: 如果存在相同名称的字段，则将在子类的字段定义中进行覆盖。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE59]'
+  prefs: []
+  type: TYPE_PRE
+- en: Public 类字段会将父类中定义的字段也定义在子类中。 另一方面，Private 类字段不会将父类中定义的字段定义在子类中。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，我们试图从子类中引用在父类中定义的 Private 类字段。 但是，我们发现`#parentField`无法被引用，导致语法错误。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE60]'
+  prefs: []
+  type: TYPE_PRE
+- en: 这是因为 Private 类字段的 Private 旨在保护每个类的 Private，因此从继承的类中可以使用 Private 类字段，这会导致 Private
+    信息泄漏给子类。 在 JavaScript 中，没有一种语���可以定义既不想公开给类外部又想让子类使用的中间限制属性。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 这样，严格拒绝从子类外部访问的 Private 称为 hard private。 JavaScript 中的 Private 类字段被视为 hard private。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 另一方面，允许子类访问或允许类外部访问的 Private 称为 soft private。 在 JavaScript 中，soft private 需要用户自己使用
+    WeakMap 或 WeakSet 来实现（请参考“Map/Set”章节）。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#prototype-inheritance)*原型继承*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*在下面的代码中，我们使用`extends`关键字定义了继承自`Parent`类的`Child`类。 由于`Parent`类定义了`method`，因此可以从继承该方法的`Child`类的实例中调用。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE61]'
+  prefs: []
+  type: TYPE_PRE
+- en: 这样，通过原型链机制，子类的实例也可以调用父类的原型方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 通过`extends`继承时，子类的原型对象的`[[Prototype]]`内部属性将设置为父类的原型对象。 在此代码中，`Child.prototype`对象的`[[Prototype]]`内部属性将设置为`Parent.prototype`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 这样，当引用属性时，会按照以下顺序搜索对象。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`instance`对象本身'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '`Child.prototype`（指向`instance`对象的`[[Prototype]]`）'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '`Parent.prototype`（指向`Child.prototype`对象的`[[Prototype]]`）'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 通过这种原型链的机制，`method`属性引用了在`Parent.prototype`对象中定义的方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 通过 JavaScript 的`class`语法和`extends`关键字，可以继承类的**功能**。`class`语法通过引用原型对象来实现继承。因此，这种继承机制被称为**原型继承**。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#static-inheritance)*静态方法的继承*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*在实例与类的原型对象之间存在原型链。类本身（类的构造函数）也与其父类本身（父类的构造函数）之间存在原型链。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 简而言之，静态方法也会被继承。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE62]'
+  prefs: []
+  type: TYPE_PRE
+- en: 当通过`extends`进行继承时，子类构造函数的`[[Prototype]]`内部属性会被设置为父类构造函数。在这段代码中，`Child`构造函数的`[[Prototype]]`内部属性会被设置为`Parent`构造函数。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 换句话说，在先前的代码中，如果引用了`Child.hello`属性，将按照以下顺序搜索对象。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Child`构造函数'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: '`Parent`构造函数（指向`Child`构造函数的`[[Prototype]]`）'
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 由于类的构造函数之间也存在原型链的机制，子类可以调用父类的静态方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#super-property)*`super`属性*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*子类调用父类构造函数的处理需要使用`super()`。同样地，从子类的原型方法中，可以通过`super.属性名`来引用父类的原型方法。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 在下面的代码中，通过在`Child.prototype.method`中编写`super.method()`，调用了`Parent.prototype.method`。因此，可以通过子类引用父类的原型方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE63]'
+  prefs: []
+  type: TYPE_PRE
+- en: 我们介绍了原型链的概念，该链从实例到类，然后到父类，以搜索方法。在这段代码中，由于`Child.prototype.method`被定义，因此`child.method`将调用`Child.prototype.method`。然后，由于`Child.prototype.method`调用了`super.method`，因此将调用`Parent.prototype.method`。
+  prefs: []
+  type: TYPE_NORMAL
+- en: 类的静态方法之间也可以通过`super.method()`来调用。在下面的代码中，从继承了`Parent`的`Child`中调用了父类的静态方法。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE64]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[](#instanceof)*继承的判定*'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*通过使用`instanceof`运算符，可以确定一个类是否继承了指定的类。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码确认了`Child`的实例是一个继承了`Child`类和`Parent`类的对象。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE65]'
+  prefs: []
+  type: TYPE_PRE
+- en: 更具体的继承用法将在"使用案例:Todo 应用"章节中介绍。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#extends-built-in)*内置对象的继承*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*到目前为止，我们已经学习了如何继承自己定义的类，但是内置对象的构造函数也可以继承。内置对象包括`Array`、`String`、`Object`、`Number`、`Error`、`Date`等。这些内置对象的构造函数可以通过`class`语法进行继承。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 下面的代码定义了一个继承自内置对象`Array`并添加了自定义方法的`MyArray`类。继承的`MyArray`类继承了`Array`的方法和状态管理机制。除了继承的性质外，MyArray
+    类还添加了`first`和`last`等访问器属性。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE66]'
+  prefs: []
+  type: TYPE_PRE
+- en: 继承自`Array`的`MyArray`可以使用`Array`原先具有的`length`属性和`Array.from`方法等。
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[](#conclusion)*总结*'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*在本章中，我们学习了有关类的内容。'
+  prefs: []
+  type: TYPE_NORMAL
+- en: JavaScript 的类是基于原型的
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 类可以使用`class`语法来定义
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 在类中定义的方法可以通过原型对象和原型链的机制来调用
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 类实例的属性定义可以使用类字段
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 使用私有类字段可以定义不希望从外部访问的属性
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 通过定义 getter 和 setter 方法，访问器属性可以像属性一样使用
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 类可以通过`extends`来进行继承
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 类的原型方法和静态方法都会被继承********************************
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
