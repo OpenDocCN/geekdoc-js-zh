@@ -1,59 +1,85 @@
 - en: Chapter 15 Garbage Collection
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第15章 垃圾回收
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/15-garbage-collection](https://keleshev.com/compiling-to-assembly-from-scratch/15-garbage-collection)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/15-garbage-collection](https://keleshev.com/compiling-to-assembly-from-scratch/15-garbage-collection)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由 [Vladimir Keleshev](/)
 - en: So far, we have used `malloc` to allocate memory dynamically, but we have never
     released it back to the operating system. You would need to call `free` to achieve
     that, otherwise your program’s memory consumption will only grow.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们使用 `malloc` 来动态分配内存，但我们从未将其释放回操作系统。你需要调用 `free` 来实现这一点，否则你的程序内存消耗只会增长。
 - en: When a programmer needs to deallocate memory manually, it’s called *manual memory
     management*. For some languages that might be appropriate. However, most languages
     offer *automatic memory management* in the form of *garbage collection*.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 当程序员需要手动释放内存时，这被称为 *手动内存管理*。对于某些语言来说，这可能很合适。然而，大多数语言以 *垃圾回收* 的形式提供 *自动内存管理*。
 - en: '**Well, actually…**'
+  id: totrans-6
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，**'
 - en: ''
+  id: totrans-7
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Garbage collection is one several approaches to automatic memory management.
     The others are *reference counting* and *region-based memory management*.
+  id: totrans-8
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 垃圾回收是自动内存管理中的一种方法。其他方法包括 *引用计数* 和 *基于区域的内存管理*。
 - en: The easiest way to incorporate a garbage collector into your compiler is to
     use an off-the-shelf component, such as Boehm–Demers–Weiser garbage collector
     (or Boehm GC) which is available as a library. You can link this library and replace
     all the calls to `malloc` with `GC_malloc` from Boehm GC, and you’re done!
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 将垃圾回收器集成到你的编译器中最简单的方法是使用现成的组件，例如 Bohm–Demers–Weiser 垃圾回收器（或 Bohm GC），它作为一个库可用。你可以链接这个库，并将所有对
+    `malloc` 的调用替换为 Bohm GC 中的 `GC_malloc`，然后你就完成了！
 - en: But you are here not for the easy answers, are you? Right! Then, let’s implement
     a simple garbage collector from scratch.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 但你在这里不是为了寻找简单的答案，对吧？对！那么，让我们从头开始实现一个简单的垃圾回收器。
 - en: Cheney’s algorithm
+  id: totrans-11
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Cheney 算法
 - en: We will be implementing a garbage collection algorithm called Cheney’s algorithm,
     named after Chris J. Cheney. Here’s a simplified description of it. We will get
     to more details in the following sections.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将实现一个名为 Cheney 算法的垃圾回收算法，该算法以 Chris J. Cheney 命名。以下是它的简化描述。我们将在接下来的章节中了解更多细节。
 - en: At program startup, a large memory area is allocated (for example, using `malloc`
     from `libc`). This area is referred to as a *semi-space*. You will see why shortly.
     Our existing use of `malloc` for allocating arrays is replaced with a new function,
@@ -67,69 +93,102 @@
     keep ahead of time. Examples of such pointers are pointers on the stack and in
     global variables. When all live objects are copied to the to-space, the from-space
     is discarded (for example, using `free`).
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 在程序启动时，会分配一个大的内存区域（例如，使用 `libc` 中的 `malloc`）。这个区域被称为 *半空间*。你很快就会明白为什么。我们现有的使用
+    `malloc` 分配数组的方式被一个新的函数所取代，我们称之为 `allocate`，它将分配（也称为 *块*）一个接一个地放置在半空间中。一旦半空间中没有足够的内存进行分配，就会运行一个我们称之为
+    `collect` 的函数。它分配一个新的半空间，并将旧半空间中的仅 *活动* 对象复制到那里。旧半空间被称为 *from-space*，新的一半空间被称为
+    *to-space*。如果对象可以从所谓的 *根*（通过指针）访问，则它们是 *活动* 的。*根* 是指向我们事先知道想要保留的对象的指针。这样的指针示例包括堆栈中的指针和全局变量中的指针。当所有活动对象都复制到
+    to-space 中时，from-space 就会被丢弃（例如，使用 `free`）。
 - en: When we run out of space again, we `malloc` a new semi-space. Now the old semi-space
     that used to be the to-space becomes the from-space, and the process repeats.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们再次用完空间时，我们 `malloc` 一个新的半空间。现在，之前作为 to-space 的旧半空间变成了 from-space，然后这个过程重复。
 - en: The first challenge is to figure out which objects are live. The other challenge
     is that when we copy blocks their addresses change, and that means that we need
     to update all pointers that point to those objects.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个挑战是确定哪些对象是活动的。另一个挑战是，当我们复制块时，它们的地址会改变，这意味着我们需要更新指向那些对象的指针。
 - en: Allocation and collection
+  id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 分配和收集
 - en: We will start by writing a custom allocator function that will replace our current
     use of `malloc`. Instead of calling `malloc` for each allocation, we will allocate
     a larger memory region and then will allocate many arrays (or other objects) there.
     Such a memory region is usually—confusingly—called a *heap*, but in the context
     of Cheney’s algorithm, it is typically referred to as a *semi-space*.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将首先编写一个自定义分配器函数来替换我们当前对`malloc`的使用。我们不会为每次分配调用`malloc`，而是分配一个更大的内存区域，然后在其中分配许多数组（或其他对象）。这样的内存区域通常——令人困惑地——被称为*堆*，但在Cheney算法的上下文中，它通常被称为*半空间*。
 - en: When talking about garbage collectors, we call individual spans of memory *blocks*.
     Our flat, non-resizable arrays are precisely one block each. Still, more complicated
     data structures (such as resizable arrays that we also talked about) could be
     implemented as several blocks connected with pointers. In this chapter, we’ll
     use the term *block*, even though for our simple language it is synonymous with
     an array.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 当谈论垃圾收集器时，我们称内存的各个跨度为*块*。我们的平坦、不可调整的数组恰好是每个块。尽管如此，更复杂的数据结构（例如我们也曾提到的可调整大小的数组）可以通过指针连接的多个块来实现。在本章中，我们将使用术语*块*，尽管对于我们的简单语言来说，它与数组同义。
 - en: 'At program startup, we allocate a large space using `malloc`. We need to manage
     three pointers:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 在程序启动时，我们使用`malloc`分配一个大的空间。我们需要管理三个指针：
 - en: The pointer returned by `malloc` that we will call *semi-space start*.
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`malloc`返回的指针，我们将称之为*半空间起始*。'
 - en: The *allocation pointer* which points to the first word in a space that is not
     occupied by a block.
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 指向一个空间中第一个未被块占据的字的*分配指针*。
 - en: The pointer to the end of the semi-space (which is *semi-space start* plus the
     size of the space) that we’ll call *semi-space end*.
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 指向半空间末尾的指针（即*半空间起始*加上空间的大小），我们将称之为*半空间末尾*。
 - en: We can store these pointers in a `.data` section of our program. We can also
     store one or two of them in call-preserved registers.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以在程序的`.data`部分存储这些指针。我们也可以将其中之一或两个存储在调用保留寄存器中。
 - en: '![State of the program at startup](../Images/dbff5fe86ab437619200b560c34e1c48.png)'
+  id: totrans-24
   prefs: []
   type: TYPE_IMG
+  zh: '![程序启动时的状态](../Images/dbff5fe86ab437619200b560c34e1c48.png)'
 - en: State of the program at startup
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 程序启动时的状态
 - en: '**Note**'
+  id: totrans-26
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**注意**'
 - en: ''
+  id: totrans-27
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -140,91 +199,125 @@
     it is a call-preserved register. Registers are a precious resource, but sometimes
     it makes sense to reserve one of them for something important. It is common to
     assign the *allocation pointer* to a register this way.
+  id: totrans-28
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 我们还没有讨论过以这种方式使用调用保留寄存器，但它们可以用来存储全局变量。例如，我们可以预留，比如说`r10`来存储特定的全局变量。我们可以同意在我们的代码生成器中不会使用这个寄存器做其他任何事情。外函数也会保持它的位置，因为它是调用保留寄存器。寄存器是一种宝贵的资源，但有时为某些重要的事情预留一个寄存器是有意义的。将*分配指针*分配给寄存器的方式是常见的。
 - en: The start and end pointers will not change until we create a new space. The
     allocation pointer, however, will change with each allocation. It starts out pointing
     at the same address as the semi-space start, and with each allocation moves towards
     the semi-space end.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们创建一个新的空间之前，起始和结束指针不会改变。然而，分配指针会随着每次分配而改变。它最初指向与半空间起始相同的地址，并且随着每次分配而向半空间末尾移动。
 - en: Now we can implement the `allocate` function. When it is called (with a number
     of bytes to allocate), we check if the area between the allocation pointer and
     the space end is enough to hold it. Then, we increment the allocation pointer
     by the requested number of bytes and return the previous value of the allocation
     pointer as the result. In other words, with each allocation, we pack blocks one
     after another from semi-space start to semi-space end.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们可以实现`allocate`函数。当它被调用（带有要分配的字节数）时，我们检查分配指针和空间末尾之间的区域是否足够容纳它。然后，我们将分配指针增加请求的字节数，并返回分配指针的前一个值作为结果。换句话说，每次分配时，我们从半空间起始到半空间末尾依次打包块。
 - en: After several allocations, the state of our program may look like in the figure
     on the next page.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 经过几次分配后，我们程序的状态可能如图下一页所示。
 - en: '![The state of our program: stack and heap](../Images/97b13acd62b7ef4f41925233b236478d.png)'
+  id: totrans-32
   prefs: []
   type: TYPE_IMG
+  zh: '![程序的状态：栈和堆](../Images/97b13acd62b7ef4f41925233b236478d.png)'
 - en: 'The state of our program: stack and heap'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 程序的状态：栈和堆
 - en: Here, we have a stack with three frames allocated. The frames are connected
     using frame pointers. The frames contain several pointers to the blocks that were
     previously allocated in our semi-space. Those blocks have pointers between them
     (for example, an array with a nested array). The pointers may have cycles (an
     array element points to the array itself). The non-pointer words (left blank)
     hold some scalar data like numbers or booleans (both on the stack and in the semi-space).
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里，我们有一个包含三个帧分配的栈。帧通过帧指针连接。帧包含指向之前在半空间中分配的块的几个指针。这些块之间有指针（例如，嵌套数组）。指针可能有循环（数组元素指向数组本身）。非指针字（左侧空白）持有一些标量数据，如数字或布尔值（在栈中和半空间中都有）。
 - en: The blocks have their length as the first word (as we did with arrays). We call
     such word in a block a *header*. (Headers usually occupy one or two words and
     can contain more data, such as object type, for example.) In the figure, we denote
     each header with a letter “`H`” and group the words in the same block using rounded
     corners, so we can see the length of the block. From the figure, you can see that
     we have allocated five blocks with lengths two and three words.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 块的长度作为第一个单词（就像我们对数组所做的那样）。我们称块中的这样的单词为**头部**。（头部通常占用一个或两个单词，可以包含更多数据，例如对象类型。）在图中，我们用字母“`H`”表示每个头部，并使用圆角将同一块中的单词分组，这样我们就可以看到块的长度。从图中，你可以看到我们分配了五个块，长度为两个和三个单词。
 - en: '![The two semi-spaces and their pointers](../Images/f2101d60b53cccab5cc30e0eb66e180f.png)'
+  id: totrans-36
   prefs: []
   type: TYPE_IMG
+  zh: '![两个半空间及其指针](../Images/f2101d60b53cccab5cc30e0eb66e180f.png)'
 - en: The two semi-spaces and their pointers
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个半空间及其指针
 - en: Let’s say that the program wants to allocate a block of four words now. However,
     there’s not enough space in the semi-space (from the allocation pointer to the
     end of the semi-space). When the `allocate` function is running, this condition
     must trigger garbage collection.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设程序现在想要分配一个包含四个单词的块。然而，半空间中（从分配指针到半空间末尾）没有足够的空间。当`allocate`函数运行时，这个条件必须触发垃圾回收。
 - en: 'We start by allocating a new semi-space called the *to-space*, while we refer
     to the old one as the *from-space*. They are named that because blocks are copied
     *from* the from-space *to* the to-space during collection. In the figure, you
     can see the two semi-spaces. They both use three pointers: *start*, *allocation*,
     and *end* pointers.'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们首先分配一个新的半空间，称为**to-space**，同时我们将旧的称为**from-space**。它们之所以这样命名，是因为在收集过程中块是从from-space**复制到**to-space的。在图中，你可以看到两个半空间。它们都使用三个指针：**start**、**allocation**和**end**指针。
 - en: 'We will walk down the stack, frame-by-frame, and look at each word in a frame:
     is it a pointer or not? With our existing tagging scheme, we can easily distinguish
     pointers from scalars. This process is called *scanning*, and we use the *scan
     pointer* to track where we are right now in the scanning process.'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将逐帧向下走栈，查看帧中的每个单词：它是指针还是不是？使用我们现有的标记方案，我们可以很容易地区分指针和标量。这个过程被称为**扫描**，我们使用**扫描指针**来跟踪我们现在在扫描过程中的位置。
 - en: In the figure, you can see the *scan pointer* and the newly allocated *to-space*.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 在图中，你可以看到扫描指针和新建的**to-space**。
 - en: '![Scanninng the stack: first pointer](../Images/48edf3a9fd85838b6d62457c9553d68e.png)'
+  id: totrans-42
   prefs: []
   type: TYPE_IMG
+  zh: '![扫描栈：第一个指针](../Images/48edf3a9fd85838b6d62457c9553d68e.png)'
 - en: 'Scanninng the stack: first pointer'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 扫描栈：第一个指针
 - en: 'As we scan down the stack, we encounter our first pointer. We copy the corresponding
     block to the to-space and bump the value of the to-space allocation pointer. In
     the figure, you can see the two-word block copied to the to-space. The pointer
     on the stack is updated to point to the new block. (The previous value of the
     pointer is shown with a dashed line.) We also update the same block in the from-space:
     we replace the header word with a so-called *forwarding pointer*, shown in grey.'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们向下扫描栈时，我们遇到了第一个指针。我们将相应的块复制到to-space，并增加to-space分配指针的值。在图中，你可以看到复制到to-space的两个单词块。栈上的指针被更新以指向新的块。（指针的先前值用虚线表示。）我们还更新了from-space中的相同块：我们用所谓的**转发指针**（以灰色显示）替换了头部单词。
 - en: If in future we encounter other pointers pointing to the block that we just
     moved, we will need to update them. That’s why we store the forwarding pointer
     in the old block that points to the new block. It’s like when you move to a new
@@ -233,110 +326,158 @@
     with the header (a number) or a forwarding pointer (a pointer) using our tagging
     scheme. Of course, the block length is lost, but we won’t need it for the old
     block.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果在未来我们遇到指向我们刚刚移动的块的另一个指针，我们需要更新它们。这就是为什么我们在指向新块的旧块中存储转发指针。这就像当你搬到一个新地址并在旧地址留下便条，以便你的邮件可以转发一样。当我们到达一个块时，我们也可以使用我们的标记方案来区分它是从头部（一个数字）开始还是从转发指针（一个指针）开始。当然，块长度丢失了，但我们不会需要它来处理旧块。
 - en: '![Scanninng the stack: second pointer](../Images/1051f8807113e427054a781d03f97099.png)'
+  id: totrans-46
   prefs: []
   type: TYPE_IMG
+  zh: '![扫描栈：第二个指针](../Images/1051f8807113e427054a781d03f97099.png)'
 - en: 'Scanninng the stack: second pointer'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 扫描栈：第二个指针
 - en: In the same frame, we skip over one word which holds a scalar, and encounter
     another pointer. By following that pointer, we discover that it starts with a
     forwarding pointer instead of a header. You can recognize that it’s the same block
     that we have just moved. This time, we do not copy the block. Instead, we update
     the value on the stack with the value of the forwarding pointer.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 在相同的框架中，我们跳过一个包含标量的单词，遇到另一个指针。通过跟随那个指针，我们发现它以一个转发指针而不是头部开始。你可以认出那正是我们刚刚移动过的同一个块。这次，我们并没有复制这个块。相反，我们用转发指针的值更新栈上的值。
 - en: 'Stacks also hold values of the saved link registers. We know that their location
     is next to the saved frame pointers and can ignore them. Or, in our case, we don’t
     need special handling for them: since link registers are not tagged, they will
     be interpreted as scalars and skipped anyway.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 栈还保存了保存的链接寄存器的值。我们知道它们的位置在保存的帧指针旁边，可以忽略它们。或者，在我们的情况下，我们不需要对它们进行特殊处理：因为链接寄存器没有标记，它们将被解释为标量并跳过。
 - en: Another question is—how far down the stack should we go? At some point, we’ll
     need to stop. At the start of the program, in `main`, we can allocate a zero word
     on the stack and point the frame pointer there. This way, we can find out which
     is the last frame in our program and stop. There are also ways to achieve that
     without frame pointers.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个问题是我们应该扫描栈多深？在某个时候，我们需要停止。在程序的开始，在`main`函数中，我们可以在栈上分配一个零字并让帧指针指向那里。这样，我们可以找出我们程序中的最后一个帧并停止。也有没有使用帧指针实现这一点的办法。
 - en: '![Scanninng the stack: third pointer](../Images/caf8af2e3bc1ee4b51cf606f2b528d8c.png)'
+  id: totrans-51
   prefs: []
   type: TYPE_IMG
+  zh: '![扫描栈：第三个指针](../Images/caf8af2e3bc1ee4b51cf606f2b528d8c.png)'
 - en: 'Scanninng the stack: third pointer'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 扫描栈：第三个指针
 - en: We move to the next (and last) frame and start scanning again. We encounter
     our last pointer on the stack. Same as before, we copy the pointed block from
     the from-space to the to-space and replace the old block’s header with a forwarding
     pointer. The forwarding pointer is in grey, and the old value of the pointer is
     shown with a dashed line.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们移动到下一个（也是最后一个）帧并再次开始扫描。我们在栈上遇到了我们的最后一个指针。和之前一样，我们将指向的块从源空间复制到目标空间，并用转发指针替换旧块的头。
 - en: We have scanned the whole stack, and we should do similarly with other roots,
     such as global variables and registers. To scan registers, we can save them on
     the stack before scanning the stack.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经扫描了整个栈，我们也应该以类似的方式扫描其他根，例如全局变量和寄存器。为了扫描寄存器，我们可以在扫描栈之前将它们保存在栈上。
 - en: 'However, we are not finished: there’s a block in the to-space that points to
     another block in the from-space.'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，我们还没有完成：在目标空间中有一个块指向源空间中的另一个块。
 - en: '![Scanninng the to-space: first pointer](../Images/26fc50931eb7a56435fda8daa4877676.png)'
+  id: totrans-56
   prefs: []
   type: TYPE_IMG
+  zh: '![扫描目标空间：第一个指针](../Images/26fc50931eb7a56435fda8daa4877676.png)'
 - en: 'Scanninng the to-space: first pointer'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 扫描目标空间：第一个指针
 - en: Similarly to how we scanned the stack, we now start scanning the to-space by
     looking at one word at-a-time and checking if it’s a pointer. If it’s a pointer
     to a header—we copy the block to the to-space. If it’s a pointer to a forwarding
     pointer, we update the pointer to that value.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似于我们扫描栈的方式，我们现在开始通过逐个查看一个单词并检查它是否是一个指针来扫描目标空间。如果它是指向头部的指针——我们将块复制到目标空间。如果它是指向转发指针的指针，我们更新那个指针的值。
 - en: As we scan, we encounter our first pointer. We allocate the pointed block on
     the to-space, update the pointer to point to the newly allocated block, and store
     a forwarding pointer (grey) in the old block.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们扫描时，我们遇到了第一个指针。我们在to-space上分配了指向的块，更新指针以指向新分配的块，并在旧块中存储一个转发指针（灰色）。
 - en: You can see that, as we continued scanning the to-space, it grew by one block,
     so now we have more scanning to do.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以看到，当我们继续扫描to-space时，它增加了一个块，所以我们现在有更多的扫描要做。
 - en: '![Scanninng the to-space: second pointer](../Images/131b0fef04457ffc112deee299e8e144.png)'
+  id: totrans-61
   prefs: []
   type: TYPE_IMG
+  zh: '![扫描to-space：第二个指针](../Images/131b0fef04457ffc112deee299e8e144.png)'
 - en: 'Scanninng the to-space: second pointer'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 扫描to-space：第二个指针
 - en: As we scan the newly-copied block, we encounter another pointer. It points to
     a block in the from-space that has a forwarding pointer, so we only update the
     pointer to the new value, without copying, since that block has already been copied.
     Once we finish that, there are no more blocks to scan—we have completed the collection
     phase.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们扫描新复制的块时，我们遇到了另一个指针。它指向一个在from-space中的块，该块有一个转发指针，所以我们只需更新指针到新值，而不需要复制，因为该块已经被复制。一旦我们完成这个，就没有更多的块要扫描了——我们已经完成了收集阶段。
 - en: We can see that there are two blocks in the from-space (now highlighted grey)
     that were not copied. That means they are garbage. Now we can dispose the from-space
     (using `free`) and, finally, allocate that four-word block that we wanted to allocate
     in the very beginning, before the collection started. The program may now resume.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以看到from-space中有两个块（现在突出显示为灰色）没有被复制。这意味着它们是垃圾。现在我们可以处理from-space（使用`free`），最后，分配我们最初在收集开始之前想要分配的四个字节的块。程序现在可以继续运行。
 - en: In the last figure, you can see the state of the program after the collection
     has finished and the from-space has been deallocated.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 在最后一个图中，你可以看到收集完成后程序的状态以及from-space已经被释放。
 - en: '![The state of our program after collection](../Images/365b84365b481b5981270033b1217149.png)'
+  id: totrans-66
   prefs: []
   type: TYPE_IMG
+  zh: '![我们的程序收集后的状态](../Images/365b84365b481b5981270033b1217149.png)'
 - en: The state of our program after collection
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们程序收集后的状态
 - en: Tagging
+  id: totrans-68
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 标签
 - en: 'We have used tagging to distinguish between scalar values and pointers to blocks.
     If we didn’t use tagging, we could check if a word’s numeric value is between
     the from-space start and the from-space end. If it’s within that range, we can
@@ -346,102 +487,145 @@
     memory that are garbage. This is usually not a problem, in practice. Garbage collectors
     that are not *precise* are called *conservative*. Boehm GC is an example of such
     collector.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经使用标记来区分标量值和指向块的指针。如果我们没有使用标记，我们可以检查一个单词的数值是否在from-space的开始和结束之间。如果是这个范围内的，我们可以得出结论，这个值是一个指针；如果不是——我们将其视为标量。这并不总是精确的：我们的程序可能处理一些恰好在这个范围内的数值。在这种情况下，算法可能会在内存中保留垃圾块。在实践中，这通常不是问题。不精确的垃圾收集器被称为*保守型*。Boehm
+    GC就是这样一个收集器的例子。
 - en: Headers
+  id: totrans-70
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 头部
 - en: Our implementation stored block length in the first word of the block, the header,
     matching our array layout. However, often headers hold additional data for the
     garbage collector. For example, a tag in the header can mean that the whole block
     consists only of scalars and should be skipped by the collector to save time.
     This is relevant, for example, for handling large strings.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在块的第一词中存储了块长度，即头部，与我们的数组布局相匹配。然而，通常头部会为垃圾收集器持有额外的数据。例如，头部中的一个标签可以表示整个块只包含标量，并且应该被收集器跳过以节省时间。这对于处理大型字符串来说很重要。
 - en: Also, when pointer tagging is not used, each block (and frame) can hold a field
     with information about which word is a pointer and which one is not. This could
     be done in the form of a bit map, with one bit per word. In other words, the tagging
     bits can be moved from each word to a central location in a block.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，当不使用指针标记时，每个块（和帧）都可以包含一个字段，其中包含有关哪个单词是指针以及哪个不是指针的信息。这可以通过位图的形式完成，每个单词一个位。换句话说，标记位可以从每个单词移动到块中的中央位置。
 - en: Discussion
+  id: totrans-73
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 讨论
 - en: In this example, our semi-spaces were only 16 words or 64 bytes. In reality,
     we need to allocate a larger area, and the larger it is, the fewer times we will
     need to collect garbage.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个例子中，我们的半空间只有16个单词或64个字节。实际上，我们需要分配更大的区域，而且区域越大，我们收集垃圾的次数就越少。
 - en: Now that we had an in-depth overview of Cheney’s algorithm let’s discuss some
     of the properties of such garbage collector.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们对Cheney算法有了深入的了解，让我们讨论一下这种垃圾收集器的某些特性。
 - en: First, it offers fast allocation. Most of the time, allocation only needs to
     check that there’s enough space left, and increment the allocation pointer—that’s
     it! This can be implemented in a hand-full of instructions and can be made even
     faster if the allocation pointer is assigned a dedicated call-preserved register.
     Compare this to `malloc` where a typical implementation needs to execute 50 to
     200 instructions before returning.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，它提供了快速的分配。大多数时候，分配只需要检查是否有足够的空间，然后增加分配指针——就这样！这可以通过少量指令实现，如果分配指针被分配了一个专用的调用保留寄存器，还可以使其更快。相比之下，`malloc`的典型实现需要执行50到200条指令才能返回。
 - en: Second, it’s a *compacting* or *moving* collector. After the collection phase,
     all the blocks are allocated one-after-another without holes or fragmentation.
     This is good for data locality and cache performance.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，它是一个*压缩*或*移动*收集器。在收集阶段之后，所有块都是依次分配的，没有空隙或碎片。这对数据局部性和缓存性能有利。
 - en: But not everything is perfect with this algorithm.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 但这个算法并不完美。
 - en: It is a *stop-the-world*, *non-concurrent* collector. When collection happens,
     the program is paused until the collection finishes. In a concurrent collector,
     the collection happens a-little–at-a-time with each allocation, to avoid long
     pauses.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 它是一个*停止世界*，*非并发*收集器。当发生收集时，程序会暂停，直到收集完成。在并发收集器中，收集会在每次分配时一点点发生，以避免长时间的暂停。
 - en: Another property of this algorithm is that during the collection, when both
     semi-spaces are allocated the amount of memory consumed is twice as high.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个算法的另一个特性是在收集期间，当两个半空间都分配时，消耗的内存量是两倍。
 - en: Our collector is also *non-generational*.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的收集器也是*非代*的。
 - en: Generational garbage collection
+  id: totrans-82
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 代垃圾收集
 - en: It is observed that new blocks often become garbage fast. And then some blocks
     stay around for a long time. We want to scan new blocks more frequently to reclaim
     memory and scan older blocks more rarely, since they are less likely to become
     garbage. This can be achieved with *generational* collectors.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 观察到新块往往很快变成垃圾。然后一些块会长时间存在。我们希望更频繁地扫描新块以回收内存，并更少地扫描旧块，因为它们不太可能变成垃圾。这可以通过*代*收集器实现。
 - en: 'For example, a collector with two generations G0 and G1 may have two heaps
     or spaces: a smaller one for G0 and a larger one for G1\. Collections happen more
     frequently in G0 and more rarely in G1\. They can also use different algorithms.
     All new objects are allocated in G0, and after G0 collection happens, the blocks
     that remained are copied to G1.'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，具有两个代G0和G1的收集器可能有两个堆或空间：一个较小的用于G0，一个较大的用于G1。G0中的收集发生得更频繁，而G1中的收集则更少。它们也可以使用不同的算法。所有新对象都在G0中分配，G0收集发生后，剩余的块会被复制到G1。
 - en: Cheney’s algorithm is a good fit for G0 collectors because of fast allocation
     and because it is a moving collector. In such generational collector, we would
     copy blocks into G1 heap, and not into another semi-space.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于快速分配和它是移动收集器，Cheney算法非常适合G0收集器。在这样的代收集器中，我们会将块复制到G1堆中，而不是另一个半空间。
 - en: '* * *'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: And with this, our journey comes to an end. We have learned about parser combinators
     and made a parser for our language; learned about ARM assembly to implement the
     code generator; dipped our toes into static and dynamic typing, and learned a
     grabage collection algorithm.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 有了这些，我们的旅程就结束了。我们学习了解析器组合器并为我们自己的语言创建了一个解析器；学习了ARM汇编以实现代码生成器；涉足静态和动态类型，还学习了一个垃圾收集算法。
 - en: We hope that you’ve enjoyed the journey, and—who knows—maybe we’ll see each
     other again!
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们希望你喜欢这次旅程，而且——谁知道呢——也许我们还会再次见面！
 - en: '[![](../Images/baad23f02ae86b11d033e078d97a825e.png)](./)'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '[![](../Images/baad23f02ae86b11d033e078d97a825e.png)](./)'

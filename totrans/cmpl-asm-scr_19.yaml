@@ -1,196 +1,293 @@
 - en: Appendix A Running ARM Programs
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 附录A 运行ARM程序
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/appendix-a-running-arm-programs](https://keleshev.com/compiling-to-assembly-from-scratch/appendix-a-running-arm-programs)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/appendix-a-running-arm-programs](https://keleshev.com/compiling-to-assembly-from-scratch/appendix-a-running-arm-programs)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由[Vladimir Keleshev](/)
 - en: 32-bit Linux on ARM (e.g. Raspberry Pi)
+  id: totrans-4
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 32位ARM Linux（例如Raspberry Pi）
 - en: If you’re a lucky owner of an ARM board like Raspberry Pi, you don’t need any
     special steps. You can use the built-in `gcc` toolchain and run the produced executables
     natively, as discussed in the book. Just make sure to run a 32-bit operating system.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您是幸运的ARM板（如Raspberry Pi）的拥有者，您不需要任何特殊步骤。您可以使用内置的`gcc`工具链并本地运行生成的可执行文件，正如书中所讨论的那样。只需确保运行32位操作系统即可。
 - en: 'For example, assuming you have an assembly listing `hello.s` from *Part I*,
     you can assemble it like this:'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，假设您从*第一部分*中有一个`hello.s`汇编列表，您可以像这样汇编它：
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'And then, you can run the produced executable natively:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，您就可以本地运行生成的可执行文件：
 - en: '[PRE1]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Even though modern Raspberry Pi boards have a 64-bit–capable processor, they
     can perfectly well run 32-bit operating systems.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使现代的Raspberry Pi板具有64位处理器，它们也可以完美地运行32位操作系统。
 - en: If you want to run a 64-bit OS on Raspberry Pi, you can still execute 32-bit
     code. In that case the instructions that follow apply.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您想在Raspberry Pi上运行64位操作系统，您仍然可以执行32位代码。在这种情况下，以下说明适用。
 - en: 64-bit Linux on ARM
+  id: totrans-12
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 64位ARM Linux
 - en: 'The following instructions are relevant in case you’re running 64-bit Linux
     on an ARM device, for example:'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您在ARM设备上运行64位Linux，以下说明适用：
 - en: a newer Raspberry Pi,
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 更新的Raspberry Pi，
 - en: an ARM laptop, such as Pinebook Pro,
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一款ARM笔记本电脑，例如Pinebook Pro，
 - en: an ARM development board,
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一款ARM开发板，
 - en: an ARM server or compute instance.
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一款ARM服务器或计算实例。
 - en: The good news is that most 64-bit ARM processors are backwards-compatible and
     can run 32-bit ARM executables natively.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 好消息是，大多数64位ARM处理器都是向后兼容的，并且可以本地运行32位ARM可执行文件。
 - en: '**Well, actually…**'
+  id: totrans-19
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，……**'
 - en: ''
+  id: totrans-20
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: There are cases when chip manufactures disable 32-bit support to save costs.
     Most notably, this is the case for Apple Silicon.
+  id: totrans-21
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 有时候，芯片制造商为了节省成本而禁用了32位支持。最著名的是苹果的Silicon芯片。
 - en: 'Note, in the case of 64-bit Linux on ARM, the built-in `gcc` toolchain supports
     only the 64-bit version of ARM assembly, which is different from the 32-bit assembly
     used in this book. That means you need to install a version of the `gcc` toolchain
     that targets 32-bit ARM. Assuming a Debian-based Linux distro with `apt-get` package
     manager, you can install it as follows:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，在64位ARM Linux的情况下，内置的`gcc`工具链仅支持ARM汇编的64位版本，这与本书中使用的32位汇编不同。这意味着您需要安装一个针对32位ARM的`gcc`工具链版本。假设您有一个基于Debian的Linux发行版和`apt-get`包管理器，您可以按照以下方式安装：
 - en: '[PRE2]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'Now, whenever the book uses `gcc`, you need to use `arm-linux-gnueabihf-gcc
     -static` instead. For example, assuming you have an assembly listing `hello.s`
     from *Part I*, you can assemble it like this:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，每当书中使用`gcc`时，您需要使用`arm-linux-gnueabihf-gcc -static`代替。例如，假设您从*第一部分*中有一个`hello.s`汇编列表，您可以像这样汇编它：
 - en: '[PRE3]'
+  id: totrans-25
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'But then, you can run the produced executable natively:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 但然后，你可以本地运行生成的可执行文件：
 - en: '[PRE4]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Linux on x86-64 using QEMU
+  id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 在x86-64上使用QEMU的Linux
 - en: This guide assumes that you don’t have access to an ARM Linux machine like a
     Raspberry Pi or a Pinebook Pro, but only to a good old x86-64 computer based on
     an AMD or Intel processor.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 本指南假设您无法访问像Raspberry Pi或Pinebook Pro这样的ARM Linux机器，而只有基于AMD或Intel处理器的老式x86-64计算机。
 - en: The following has been tested on Ubuntu 20.04 LTS, but it should work the same
     on all Debian-based Linux distros. For other distros, you might need to use a
     different package manager. The package names could be slightly different, as well.
+  id: totrans-30
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 以下操作已在Ubuntu 20.04 LTS上测试过，但应在所有基于Debian的Linux发行版上以相同的方式工作。对于其他发行版，您可能需要使用不同的包管理器。包名可能会有所不同。
 - en: 'On an x86-64 Linux machine, the default `gcc` toolchain expects x86-64 assembly,
     which is quite different from the 32-bit assembly described in this book. That
     means you need to install a version of the `gcc` toolchain that targets 32-bit
     ARM. Assuming a Debian-based Linux distro with `apt-get` package manager, you
     can install it as follows:'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 在x86-64 Linux机器上，默认的`gcc`工具链期望x86-64汇编，这与本书中描述的32位汇编有很大不同。这意味着您需要安装一个针对32位ARM的`gcc`工具链版本。假设您有一个基于Debian的Linux发行版和`apt-get`包管理器，您可以按照以下方式安装：
 - en: '[PRE5]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'Now, whenever the book uses `gcc`, you need to use `arm-linux-gnueabihf-gcc
     -static` instead. For example, assuming you have an assembly listing `hello.s`
     from *Part I*, you can assemble it like this:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，每当书中使用`gcc`时，你需要使用`arm-linux-gnueabihf-gcc -static`代替。例如，假设你从*第一部分*中有一个汇编列表`hello.s`，你可以这样汇编它：
 - en: '[PRE6]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'However, you can’t just run this executable because it is made for an ARM processor:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，你不能直接运行这个可执行文件，因为它是为ARM处理器制作的：
 - en: '[PRE7]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: To run it, we need to install QEMU—a piece of software that allows emulating
     different processors, including ARM. There are several ways to use it. The `qemu-user`
     package enables emulation for individual executables, instead of emulating the
     whole operating system.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 要运行它，我们需要安装QEMU——一款允许模拟不同处理器的软件，包括ARM。使用它的方法有好几种。`qemu-user`软件包允许对单个可执行文件进行模拟，而不是模拟整个操作系统。
 - en: '[PRE8]'
+  id: totrans-38
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'Now, the next step is no mistake:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，下一步没有错误：
 - en: '[PRE9]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'What just happened? How are we running an ARM binary on x86-64? It turns out
     `qemu-user` has a smart mechanism: when installed, it configures itself to handle
     ARM binary files (which is not unlike how we can run shell scripts as if they
     were binaries). However, on some Linux configurations, this won’t work, and you
     need to be a little bit more explicit about invoking QEMU:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 刚才发生了什么？我们是如何在x86-64上运行ARM二进制的？结果是`qemu-user`有一个智能机制：当安装时，它会配置自己来处理ARM二进制文件（这和我们像运行二进制文件一样运行shell脚本的方式类似）。然而，在某些Linux配置中，这不会工作，你需要更明确地调用QEMU：
 - en: '[PRE10]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: Note that even though the package name is `qemu-user`, the executable name that
     we’re interested in is `qemu-arm`, since ARM is one of several possible target
     of QEMU.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，尽管软件包的名称是`qemu-user`，但我们感兴趣的可执行文件名称是`qemu-arm`，因为ARM是QEMU的几个可能目标之一。
 - en: Windows on x86-64 using WSL and QEMU
+  id: totrans-44
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 在x86-64的Windows上使用WSL和QEMU
 - en: Follow the steps to enable Windows Subsystem for Linux (WSL). Ubuntu 20.04 LTS
     has been tested for this purpose.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 按照步骤启用Windows Subsystem for Linux (WSL)。Ubuntu 20.04 LTS已为此目的进行了测试。
 - en: '*[https://ubuntu.com/wsl](https://ubuntu.com/wsl)*'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[https://ubuntu.com/wsl](https://ubuntu.com/wsl)*'
 - en: Now, open a WSL terminal and follow the steps described in the previous section,
     *Linux on x86-64 using QEMU*.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，打开WSL终端，按照上一节中描述的步骤操作，*在x86-64上使用QEMU的Linux*。
 - en: '* * *'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

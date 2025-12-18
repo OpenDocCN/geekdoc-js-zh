@@ -1,61 +1,91 @@
 - en: Chapter 14 Dynamic Typing
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第14章 动态类型
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/14-dynamic-typing](https://keleshev.com/compiling-to-assembly-from-scratch/14-dynamic-typing)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/14-dynamic-typing](https://keleshev.com/compiling-to-assembly-from-scratch/14-dynamic-typing)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由 [Vladimir Keleshev](/) 提供
 - en: With dynamic typing, you expect to be able to query the data type of any variable,
     using `instanceof` or some other mechanism. Right now we can’t distinguish at
     run time between a number and (a pointer to) an array. With the static type system
     we have, it doesn’t matter, because such comparison is disallowed at run time.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 在动态类型中，你期望能够查询任何变量的数据类型，使用 `instanceof` 或其他机制。目前我们无法在运行时区分数字和（指向数组的）指针。在我们所拥有的静态类型系统中，这并不重要，因为这种比较在运行时是不允许的。
 - en: So, how do we distinguish a pointer from a number, a false from zero, and so
     on? This is typically achieved with *tagging*.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，我们如何区分指针和数字，false和零等等？这通常是通过 *标签* 来实现的。
 - en: Tagging
+  id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 标签
 - en: Tagging is reserving one or more bits in every word for a particular purpose,
     for example, to distinguish its type.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 标签是在每个字中为特定目的保留一个或多个位，例如，用于区分其类型。
 - en: For our compiler, we will adopt a two-bit tagging scheme described in the following
     figure.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于我们的编译器，我们将采用以下图中描述的两位标签方案。
 - en: '![Our two-bit tagging scheme](../Images/b09eab6a73f6e677f3e9d1a02bb4ccf8.png)'
+  id: totrans-9
   prefs: []
   type: TYPE_IMG
+  zh: '![我们的两位标签方案](../Images/b09eab6a73f6e677f3e9d1a02bb4ccf8.png)'
 - en: Our two-bit tagging scheme
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的两位标签方案
 - en: But how do we exactly “afford” these two bits? Doesn’t it change the actual
     numeric or pointer value?
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 但我们如何“承担”这两个位？这不会改变实际的数值或指针值吗？
 - en: Let’s talk about pointers first.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们先谈谈指针。
 - en: Pointer tag
+  id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 指针标签
 - en: We expect pointers to be word-aligned. That means that the last two bits in
     a word will always be `0b00`. That means we can store a two-bit tag there to distinguish
     pointers.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们期望指针是字对齐的。这意味着字中的最后两位总是 `0b00`。这意味着我们可以在那里存储一个两位标签来区分指针。
 - en: 'The simplest way to deal with that is to select the tag `0b00`. And that’s
     what many implementations do. But we can also select a different tag, like `0b01`,
     as we did. In the general case, when we want to operate on a pointer, we can remove
@@ -65,27 +95,41 @@
     This way `ldr r0, [r1]` becomes `ldr r0, [r1, #-1]`, and `ldr r0, [r1, #4]` becomes
     `ldr r0, [r1, #3]` and so on! This means that not much is lost. At worst, it takes
     one instruction to clear the tag.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '处理这个问题最简单的方法是选择标签 `0b00`。这正是许多实现所做的事情。但我们也可以选择不同的标签，比如 `0b01`，就像我们做的那样。在一般情况下，当我们想要操作一个指针时，我们可以移除标签，执行操作，如果需要的话再放回去。然而，拥有
+    `0b01` 的标签仅仅意味着我们指向字中的第二个字节。因此，为了加载第一个字，我们可以在偏移量 `-1` 处加载，而不是在偏移量 `0` 处加载。这样 `ldr
+    r0, [r1]` 就变成了 `ldr r0, [r1, #-1]`，而 `ldr r0, [r1, #4]` 就变成了 `ldr r0, [r1, #3]`
+    等等！这意味着我们并没有失去太多。最坏的情况下，只需要一条指令来清除标签。'
 - en: The only kind of pointers we handle right now are array pointers. To distinguish
     them from other heap-allocated objects, it is common to encode information about
     the object type in the data structure itself.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前我们处理的唯一类型的指针是数组指针。为了将它们与其他堆分配的对象区分开来，通常会在数据结构本身中编码关于对象类型的信息。
 - en: Next, let’s talk about integers.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，让我们谈谈整数。
 - en: Integer tag
+  id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 整数标签
 - en: If we dedicate two bits for tagging, that means that our integers shrink from
     32-bit ones to 30-bit ones. That’s an oddly-sized integer! However, in dynamically-typed
     languages, integers are often silently promoted to floating-point numbers or arbitrary-precision
     numbers. That means the fact that an integer is 30-bit is not exposed to the user
     of the language. These oddly-sized integers are called *small integers*.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们为标签分配两个位，这意味着我们的整数从32位缩小到30位。这是一个奇数大小的整数！然而，在动态类型语言中，整数通常默默地提升为浮点数或任意精度数。这意味着整数是30位的这一事实并没有暴露给语言的用户。这些奇数大小的整数被称为
+    *小整数*。
 - en: So, of course, to deal with small integers we can remove the tags, perform an
     operation and then add the tag. However, that’s not always necessary either. We
     have selected the tag `0b00` for integers. That means that most arithmetic and
@@ -95,16 +139,23 @@
     exception to this is multiplication, which requires one instruction—shift right—to
     fix it up, and even then there are ways to incorporate that shift “for free” as
     a part of another instruction.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，当然，为了处理小整数，我们可以移除标记，执行操作，然后添加标记。然而，这并不总是必要的。我们选择了标记`0b00`用于整数。这意味着大多数算术和逻辑操作将直接在标记整数上工作。例如，`3
+    + 4 = 7`以前是`0b11 + 0b100 = 0b111`，但现在它是`0b11_00 + 0b100_00 = 0b111_00`。（我们使用了下划线在视觉上分隔标记和值。）一个值得注意的例外是乘法，它需要一个指令——右移——来修复它，即使这样，也有方法将这个移位“免费”地作为另一个指令的一部分。
 - en: By selecting this tag, we can achieve decent performance and avoid changing
     our code generation pass too much.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过选择这个标记，我们可以实现良好的性能，并避免过多地改变我们的代码生成过程。
 - en: Truthy and falsy tags
+  id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 真值和假值标记
 - en: 'We have two more tags available: `0b10` and `0b11`. And we use them for all
     the falsy and truthy values, correspondingly. This is to highlight the fact that
     tags are often selected in creative ways to simplify common operations. We only
@@ -112,150 +163,231 @@
     values `0b1_11`, `0b1_10`, and `0b0_10`, correspondingly. This also allows us
     to quickly check if a value is boolean by checking that the bits `0b1_10` are
     set.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们还有两个可用的标记：`0b10`和`0b11`。我们分别用它们表示所有假值和真值。这是为了强调标记通常以创造性的方式选择，以简化常见操作。在我们的语言中，我们只剩下`true`、`false`和`undefined`。我们将分别将它们赋值为`0b1_11`、`0b1_10`和`0b0_10`。这也允许我们通过检查位`0b1_10`是否设置来快速检查一个值是否为布尔值。
 - en: Code generation
+  id: totrans-24
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 代码生成
 - en: 'Now, we will modify our code generation pass to adapt to our new tagging strategy.
     But first, let’s introduce some useful constants. We start with the four tags:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们将修改我们的代码生成过程以适应我们新的标记策略。但首先，让我们介绍一些有用的常量。我们开始于四个标记：
 - en: '[PRE0]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'Then the bit patterns of our literal values `true`, `false`, and `undefined`:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后我们文字值`true`、`false`和`undefined`的位模式：
 - en: '[PRE1]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'And a helper function to convert an integer to a small integer (in other words,
     to add a tag to an integer):'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 以及一个辅助函数，用于将整数转换为小整数（换句话说，为整数添加一个标记）：
 - en: '[PRE2]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'And finally, a bitmask that will help us extract the tag from a word:'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，一个掩码，它将帮助我们从一个单词中提取标记：
 - en: '[PRE3]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: Now, onto the code generation pass.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们继续到代码生成过程。
 - en: Literals
+  id: totrans-34
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 文字
 - en: 'Generating an integer number now uses the `toSmallInteger` helper:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在生成整数数现在使用`toSmallInteger`辅助函数：
 - en: '[PRE4]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 'Boolean and undefined values use the defined constants:'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 布尔值和未定义值使用定义的常量：
 - en: '[PRE5]'
+  id: totrans-38
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Operators
+  id: totrans-39
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 运算符
 - en: Previously, the type system enforced that the operators are used with the right
     data types. For example, the addition was only allowed on numbers. Now, we need
     to define addition so that it works (to some extent) with any types. For instance,
     JavaScript has complicated coercion rules. If you add an empty array `[]` and
     a number `1` the result is a string `"1"`. For our compiler, we’ll adopt simplified
     coercion rules. If the two operands are numbers, the result is a number, otherwise—`undefined`.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 以前，类型系统强制要求运算符与正确的数据类型一起使用。例如，加法只允许在数字上使用。现在，我们需要定义加法，以便它在某种程度上与任何类型一起工作。例如，JavaScript有复杂的强制规则。如果你将一个空数组`[]`和一个数字`1`相加，结果是字符串`"1"`。对于我们的编译器，我们将采用简化的强制规则。如果两个操作数都是数字，结果是数字，否则——`undefined`。
 - en: 'Using addition as our example, we can implement such operators like this:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 以加法为例，我们可以这样实现这样的运算符：
 - en: '[PRE6]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: To implement the negation operator, we need to handle truthiness and falseness
     for the first time. With our tagging system, a word is falsy if it is zero, or
     ends with a falsy tag `0b10`. That’s why we need to perform two comparisons.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 要实现否定运算符，我们第一次需要处理真值和假值。在我们的标记系统中，如果一个单词为零，或者以假值标记`0b10`结尾，那么它就是假的。这就是为什么我们需要进行两次比较。
 - en: '[PRE7]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'We will need to do the falsy check in more places, so let’s extract it into
     a helper method:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们需要在更多的地方进行假值检查，所以让我们将其提取到一个辅助方法中：
 - en: '[PRE8]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'Conditionals in `If` and `While` nodes will need to use `emitCompareFalsy`
     in palce of `cmp r0, #0` too.'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '在`If`和`While`节点中的条件将需要使用`emitCompareFalsy`代替`cmp r0, #0`。'
 - en: Arrays
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数组
 - en: 'Array literals are mostly as before, with two exceptions. First, the length
     is now stored as a small integer. Second, a pointer tag is added as follows. Previously,
     `mov r0, r4` moved our call-preserved pointer to the return register `r0`. Now,
     we accomplish the same and add a `0b01` tag at the same time using `add r0, r4,
     #1`. We can do this because `malloc` will only return us word-aligned pointers
     with last two bits being `0b00`.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '数组字面量与之前基本相同，但有两大例外。首先，长度现在存储为一个小的整数。其次，添加了一个指针标签，如下所示。之前，`mov r0, r4` 将我们的调用保留指针移动到返回寄存器
+    `r0`。现在，我们通过使用 `add r0, r4, #1` 同时完成相同操作并添加一个 `0b01` 标签。我们可以这样做，因为 `malloc` 只会返回最后两位为
+    `0b00` 的字对齐指针。'
 - en: '[PRE9]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: Array length primitive is almost the same as before, except that we load with
     a `-1` offset to cancel the tag out.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 数组长度原语几乎与之前相同，只是我们使用 `-1` 偏移量来取消标签。
 - en: '[PRE10]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: For array lookup, we don’t use any tricks to remove the overhead of tagging
     and simply issue an additional instruction to remove the tag before the lookup.
     Also, we return `undefined` instead of zero if bounds checking fails.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于数组查找，我们不使用任何技巧来消除标签的开销，而是简单地发出一个额外的指令在查找之前移除标签。此外，如果边界检查失败，我们返回 `undefined`
+    而不是零。
 - en: '[PRE11]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Notice an interesting coincidence. Since we now store array length as a small
     integer, we don’t need to shift left to convert array length to byte offset. Small
     integers are already shifted left by two thanks for the `0b00` tag.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意一个有趣的巧合。由于我们现在将数组长度存储为一个小整数，我们不需要左移来将数组长度转换为字节偏移。小整数由于 `0b00` 标签已经左移了两位。
 - en: '* * *'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: 'Code generation for the `Function` node needs a small adjustment: it needs
     to return `undefined` instead of zero when a function ends with no return statement.
     The rest of the nodes (`Call`, `Return`, `Id`, `Assign`, `Var`, `Block`) do not
     require changes in code generation to adapt to dynamic typing.'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Function` 节点的代码生成需要稍作调整：当函数以没有返回语句结束时要返回 `undefined` 而不是零。其余的节点（`Call`、`Return`、`Id`、`Assign`、`Var`、`Block`）在代码生成中不需要更改以适应动态类型。'
 - en: 'With type checking turned on, our existing test suite should succeed unmodified.
     The only observable change is that integers are now 30-bit instead of 32-bit.
     However, if we turn the type checking off, we can express many more interesting
     programs, like the following one:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 当启用类型检查时，我们的现有测试套件应该无需修改即可成功。唯一可观察到的变化是整数现在为 30 位而不是 32 位。然而，如果我们关闭类型检查，我们可以表达更多有趣的程序，如下所示：
 - en: '[PRE12]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '[Next: Chapter 15\. Garbage Collection](./15-garbage-collection)'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第15章 垃圾回收](./15-garbage-collection)'
 - en: '* * *'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

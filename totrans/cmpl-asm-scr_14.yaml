@@ -1,109 +1,165 @@
 - en: Chapter 12 Visitor Pattern
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第12章 访问者模式
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/12-visitor-pattern](https://keleshev.com/compiling-to-assembly-from-scratch/12-visitor-pattern)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/12-visitor-pattern](https://keleshev.com/compiling-to-assembly-from-scratch/12-visitor-pattern)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由[Vladimir Keleshev](/)编写
 - en: 'We are about to add more passes to our compiler: type checking, and code generation
     for dynamic typing. What we could do is extend the AST interface with new methods,
     one for each pass. It can look something like this:'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们即将向我们的编译器添加更多传递：类型检查和动态类型代码生成。我们可以做的是通过新的方法扩展AST接口，每个传递一个。它可以看起来像这样：
 - en: '[PRE0]'
+  id: totrans-5
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: And this is perfectly fine. However, this way, code for each pass is intertwined
     with code for every other pass. In other words, code is grouped by an AST node
     and not by a pass.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 这完全没问题。然而，这种方式，每个传递的代码都与每个其他传递的代码交织在一起。换句话说，代码是按AST节点而不是按传递分组。
 - en: 'Using the *visitor pattern* we can group the code for each pass together under
     a separate class. The visitor pattern allows us to decouple our passes from AST
     by using indirection. Instead of having a method *per pass, per AST node* we add
     a single method *per AST node* called `visit` that delegates the action to a class
     that implements the *visitor interface*. The *visitor interface* has one method
     per AST node: `visitAssert`, `visitLength`, `visitNumber`, etc.'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用*访问者模式*，我们可以将每个传递的代码组合在一起，放在一个单独的类下。访问者模式允许我们通过间接方式解耦我们的传递与AST。而不是为每个传递、每个AST节点有一个方法，我们添加一个名为`visit`的单个方法，它将操作委托给实现*访问者接口*的类。*访问者接口*对每个AST节点有一个方法：`visitAssert`、`visitLength`、`visitNumber`等。
 - en: '[PRE1]'
+  id: totrans-8
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Each AST node implements the new `AST` interface by calling the corresponding
     visitor method. For example, `Assert` calls `visitAssert`, `Length` calls `visitLength`,
     etc.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个AST节点通过调用相应的访问者方法实现新的`AST`接口。例如，`Assert`调用`visitAssert`，`Length`调用`visitLength`等。
 - en: '[PRE2]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: The visitor interface `Visitor<T>` is generic. That means it can be used to
     implement passes that return different things. For example, `Visitor<AST>` produces
     an `AST` node, `Visitor<void>` can emit code as a side-effect.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 访问者接口`Visitor<T>`是泛型的。这意味着它可以用来实现返回不同结果的传递。例如，`Visitor<AST>`生成一个`AST`节点，`Visitor<void>`可以作为副作用生成代码。
 - en: Let’s convert our existing code generation pass into a visitor. Since our existing
     `emit` method returned `void`, our new visitor will implement `Visitor<void>`.
     Instead of having a separate `Environment` class, we make the visitor constructor
     take all the environment parameters. In a way, the visitor becomes the environment.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们将现有的代码生成传递转换为访问者。由于我们现有的`emit`方法返回`void`，我们的新访问者将实现`Visitor<void>`。我们不再有单独的`Environment`类，而是让访问者构造函数接受所有环境参数。从某种意义上说，访问者变成了环境。
 - en: '[PRE3]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: We copy the body of each method, like `Assert.emit` and `Length.emit` into the
     visitor methods, like `visitAssert` and `visitLength`.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将每个方法的主体，如`Assert.emit`和`Length.emit`复制到访问者方法中，如`visitAssert`和`visitLength`。
 - en: 'In `emit` methods we used to call `emit` recursively for inner nodes, like
     this:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`emit`方法中，我们曾经为内部节点递归地调用`emit`，如下所示：
 - en: '[PRE4]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Now, instead, we call the `visit` method on them.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，相反，我们在它们上调用`visit`方法。
 - en: '[PRE5]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Previously `this` referred to the AST node, but now the node is passed as the
     parameter called `node`. Now, `this` refers to the visitor itself, which we pass
     instead of the `env` parameter.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 之前`this`指的是AST节点，但现在节点是通过名为`node`的参数传递的。现在，`this`指的是访问者本身，我们传递它而不是`env`参数。
 - en: In rare places where we created a new environment, we create a new visitor instead
     with the updated environment. Here’s an example from `visitFunction`.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们创建新环境的一些罕见地方，我们用更新后的环境创建一个新的访问者。以下是从`visitFunction`的一个例子。
 - en: 'Before:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 之前：
 - en: '[PRE6]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'After:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 之后：
 - en: '[PRE7]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: As you can see, converting from an AST-based pass to a visitor-based pass is
     a purely mechanical transformation. New passes that we will introduce will also
     be based on the visitor pattern.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 如您所见，从基于AST的传递转换为基于访问者的传递是一个纯粹机械的转换。我们将引入的新传递也将基于访问者模式。
 - en: '[Next: Chapter 13\. Static Type Checking and Inference](./13-static-type-checking-and-inference)'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第13章 静态类型检查和推断](./13-static-type-checking-and-inference)'
 - en: '* * *'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

@@ -1,76 +1,118 @@
 - en: Chapter 11 Arrays and Heap Allocation
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第 11 章 数组和堆分配
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/11-arrays-and-heap-allocation](https://keleshev.com/compiling-to-assembly-from-scratch/11-arrays-and-heap-allocation)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/11-arrays-and-heap-allocation](https://keleshev.com/compiling-to-assembly-from-scratch/11-arrays-and-heap-allocation)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从零开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由 [Vladimir Keleshev](/) 提供
 - en: 'Let’s implement simple arrays that can be created using literal notation: `[10,
     20, 30]`. We want to be able to extract elements by indexing into an array (`a[0]`),
     and to query for array’s length (`length(a)`).'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们实现可以使用字面量表示法创建的简单数组：`[10, 20, 30]`。我们希望能够通过索引访问数组中的元素（`a[0]`），以及查询数组的长度（`length(a)`）。
 - en: '[PRE0]'
+  id: totrans-5
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: We would also like to implements bounds checking. In other words, if we ask
     for an index that is out of bounds, we don’t want a segmentation fault. In this
     case, in JavaScript, we expect `undefined` to be returned. In other languages,
     it could be `null` or an exception can be raised. We ignore the fact that `undefined`
     is nothing but a glorified `0` until later.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们还希望实现边界检查。换句话说，如果我们请求一个超出边界的索引，我们不希望出现段错误。在这种情况下，在 JavaScript 中，我们期望返回 `undefined`。在其他语言中，它可能是
+    `null` 或者可以抛出异常。我们暂时忽略 `undefined` 仅仅是美化过的 `0` 这一事实。
 - en: To cover this functionality, we need three new AST nodes, listed in the following
     table.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了实现这一功能，我们需要三个新的抽象语法树（AST）节点，如下表所示。
 - en: Summary of AST constructor signatures with examples
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: AST 构造函数签名摘要及示例
 - en: '| AST Constructor Signature | Example |'
+  id: totrans-9
   prefs: []
   type: TYPE_TB
+  zh: '| AST 构造函数签名 | 示例 |'
 - en: '| --- | --- |'
+  id: totrans-10
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `ArrayLiteral(args: Array<AST>)``ArrayLookup(array: AST, index: AST)``Length(array:
     AST)` | `[a1, a2, a3]``array[index]``length(array)` |'
+  id: totrans-11
   prefs: []
   type: TYPE_TB
+  zh: '| `ArrayLiteral(args: Array<AST>)` `ArrayLookup(array: AST, index: AST)` `Length(array:
+    AST)` | `[a1, a2, a3]` `array[index]` `length(array)` |'
 - en: We have picked the name `ArrayLiteral` as opposed to `Array` in order not to
     clash with JavaScript built-in `Array` class that we already use a lot in the
     implementation. We decided to use a `length` function as opposed to a method (like
     in JavaScript) since we don’t have support for methods yet. However, we could
     have a special syntax for `x.length` just for this purpose.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们选择了 `ArrayLiteral` 这个名字，而不是 `Array`，是为了避免与我们在实现中已经大量使用的 JavaScript 内置 `Array`
+    类冲突。我们决定使用一个 `length` 函数而不是一个方法（如 JavaScript 中的那样），因为我们还没有支持方法。然而，我们可以为 `x.length`
+    这个特定目的提供一个特殊的语法。
 - en: 'We add two new tokens: `LEFT_BRACKET` and `RIGHT_BRACKET` standing for “`[`”
     and “`]`”. We also extend our grammar (and parser) with two new rules that we
     integrate into the `atom` rule.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们添加了两个新的标记：`LEFT_BRACKET` 和 `RIGHT_BRACKET`，分别代表 “`[`” 和 “`]`”。我们还扩展了我们的语法（和解析器）并添加了两个新的规则，我们将它们集成到
+    `atom` 规则中。
 - en: '[PRE1]'
+  id: totrans-14
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: There are several ways to lay out an array in memory. The simplest is the layout
     of a fixed-size array. Such array is represented as a pointer to a single stretch
     of memory containing array length and the elements. In the following figure, you
     can see such array layout for an example array `[10, 20, 30]`.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在内存中布局数组有多种方式。最简单的是固定大小数组的布局。这种数组表示为一个指向包含数组长度和元素的单一内存块的指针。在下面的图中，你可以看到一个示例数组
+    `[10, 20, 30]` 的数组布局。
 - en: '![Word-diagram of a fixed-sized array layout](../Images/9c7748769afe1802b02a494fc713f270.png)'
+  id: totrans-16
   prefs: []
   type: TYPE_IMG
+  zh: '![固定大小数组布局的词图](../Images/9c7748769afe1802b02a494fc713f270.png)'
 - en: Word-diagram of a fixed-sized array layout
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 固定大小数组布局的词图
 - en: However, fixed-size arrays are, well, fixed-size. To implement growable or resizable
     arrays, we need a more sophisticated layout, like the one in the following figure.
     It stores array length and its *capacity*, as well as a pointer to the actual
@@ -78,81 +120,126 @@
     the capacity is larger than the length. This way, elements could be added to the
     array without memory allocation (to some extent). When an array grows beyond capacity,
     a new span of memory is allocated for the elements.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，固定大小数组是，嗯，固定大小的。为了实现可增长或可调整大小的数组，我们需要一个更复杂的布局，如下面的图所示。它存储数组长度和其 *容量*，以及指向实际元素数组的指针。想法是在某种程度上
+    *超额分配* 数组，使得容量大于长度。这样，元素可以添加到数组中而不需要内存分配（在某种程度上）。当一个数组超出容量时，为元素分配一个新的内存块。
 - en: '![Word-diagram of a resizable array layout](../Images/b757793282193066c44158e7efed93ff.png)'
+  id: totrans-19
   prefs: []
   type: TYPE_IMG
+  zh: '![可调整大小数组布局的词图](../Images/b757793282193066c44158e7efed93ff.png)'
 - en: Word-diagram of a resizable array layout
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 可调整大小数组布局的词图
 - en: Let’s look at code generation for fixed-size arrays.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看固定大小数组的代码生成。
 - en: Array literals
+  id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数组字面量
 - en: We start with code generation for array literals.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们从数组字面量的代码生成开始。
 - en: '[PRE2]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: First, we call `malloc` to allocate enough memory to store the length of the
     array and the elements. Since `malloc` takes the number of *bytes* to be allocated
     we need to multiply the length by four and add one more word to store the length
     itself.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们调用`malloc`来分配足够的内存以存储数组的长度和元素。由于`malloc`接受要分配的字节数，我们需要将长度乘以四，并额外加一个字来存储长度本身。
 - en: '[PRE3]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: Then, `malloc` returns a pointer to the freshly-allocated memory in `r0`. However,
     `r0` is a lousy register for this. As we emit code for each array element, `r0`
     will be clobbered. Thus, let’s use `r4` for this, which is a call-preserved register.
     But before we do that we need to save the previous value of `r4` on the stack.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，`malloc`返回指向新分配内存的指针到`r0`。然而，`r0`不是一个好的寄存器来执行这个操作。由于我们为每个数组元素生成代码，`r0`将被覆盖。因此，让我们使用调用保留寄存器`r4`，但在这之前，我们需要在堆栈上保存`r4`的先前值。
 - en: '[PRE4]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Next, we store array length in the first word of the allocated span of memory.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们将数组长度存储在分配的内存空间的第一字中。
 - en: '[PRE5]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: After that, we emit code for each element and store it into the corresponding
     memory slot.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 之后，我们为每个元素生成代码并将其存储在相应的内存槽中。
 - en: '[PRE6]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: We finish by returning the pointer in `r0` and restoring the call-preserved
     `r4`.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们通过返回`r0`中的指针并恢复调用保留的`r4`来完成。
 - en: '[PRE7]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: Array lookup
+  id: totrans-35
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数组查找
 - en: Next is code generation for array lookup.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来是数组查找的代码生成。
 - en: '[PRE8]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: First, we store the array pointer in `r1` and array index in `r0`.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们将数组指针存储在`r1`中，将数组索引存储在`r0`中。
 - en: '[PRE9]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: Then, we load array length into `r2` and compare it with the array index to
     perform bounds checking. If array index is out of bounds, we do a conditional
     `mov` with `hs` suffix and return zero. If it succeeds, then we execute three
@@ -160,37 +247,55 @@
     into byte offset. We add 4 to skip over the length slot, and we do *logical shift
     left* or `lsl` to convert from word offset to byte offset. Shifting left by two
     is virtually the same as multiplying by 4.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，我们将数组长度加载到`r2`中，并与数组索引进行比较以执行边界检查。如果数组索引超出范围，我们执行带有`hs`后缀的条件`mov`并返回零。如果成功，则执行带有`lo`后缀的三条指令。在这三条指令中，我们将数组索引转换为字偏移量。我们加4以跳过长度槽，并执行*逻辑左移*或`lsl`以将字偏移量转换为字节数。左移两位实际上等同于乘以4。
 - en: '[PRE10]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'However, using some of the ARM assembly language features that we have not
     covered in the book (like auto-increment and barrel shifter) we can shortern the
     same code to this:'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，使用一些我们在书中没有涵盖的ARM汇编语言特性（如自动递增和桶形移位器），我们可以将相同的代码缩短为以下形式：
 - en: '[PRE11]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Which is an elegant way to do a bounds check and convert array index into a
     byte offset at the same time.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一种同时执行边界检查并将数组索引转换为字节数的优雅方式。
 - en: Array length
+  id: totrans-45
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数组长度
 - en: Array length can be obtained by following the slot directly pointed by the array.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 数组长度可以通过直接跟随数组指向的槽来获得。
 - en: '[PRE12]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Strings
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 字符串
 - en: Strings can be thought as arrays of bytes with a particular encoding. They can
     be implemented similarly to arrays, but using byte variants of the load and store
     instructions, `ldrb` and `strb`, instead of the regular `ldr` and `str`. However,
@@ -199,11 +304,17 @@
     time, or its dynamic type (or tag) by inspecting the data-structure at run time.
     But before we jump into that, we need to learn about one particular pattern that
     will help us maintain our code better.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 字符串可以被视为具有特定编码的字节数组。它们可以像数组一样实现，但使用加载和存储指令的字变体，即`ldrb`和`strb`，而不是常规的`ldr`和`str`。然而，当我们看到`a[i]`时，我们需要知道它是一个数组还是一个字符串以执行正确的代码。我们要么需要在编译时知道变量的静态类型，要么通过检查数据结构在运行时知道其动态类型（或标记）。但在我们深入之前，我们需要了解一个特定的模式，这将帮助我们更好地维护代码。
 - en: '[Next: Chapter 12\. Visitor Pattern](./12-visitor-pattern)'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一节：第12章 访问者模式](./12-visitor-pattern)'
 - en: '* * *'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

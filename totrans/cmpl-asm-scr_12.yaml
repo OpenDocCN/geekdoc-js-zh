@@ -1,82 +1,131 @@
 - en: Chapter 10 Primitive Scalar Data Types
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第10章 基本标量数据类型
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/10-primitive-scalar-data-types](https://keleshev.com/compiling-to-assembly-from-scratch/10-primitive-scalar-data-types)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/10-primitive-scalar-data-types](https://keleshev.com/compiling-to-assembly-from-scratch/10-primitive-scalar-data-types)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由 [Vladimir Keleshev](/)
 - en: When we say *scalar data types* we mean data types that fit into a single machine
     word, which is not a pointer but carries a value in itself. We already have one
     scalar data type for integer numbers.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们提到 *标量数据类型* 时，我们指的是可以适应单个机器字的数据类型，它不是一个指针，而是自身携带一个值。我们已经有了一个用于整数数字的标量数据类型。
 - en: 'Let’s introduce a boolean data type. First, we need an AST node for it:'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们引入一个布尔数据类型。首先，我们需要为它创建一个 AST 节点：
 - en: '[PRE0]'
+  id: totrans-6
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: We emit it the same way as integers 1 and 0 (for `true` and `false`).
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们以与整数 1 和 0 相同的方式发出它（对于 `true` 和 `false`）。
 - en: 'In the parser, we introduce new tokens for `true` and `false`, and compose
     them to create a `boolean` parser:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在解析器中，我们引入了新的 `true` 和 `false` 令牌，并将它们组合起来创建一个 `boolean` 解析器：
 - en: '[PRE1]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'We can extend the `atom` rule of the expression grammar by adding a `boolean`
     alternative. A good idea at this point is to introduce an additional `scalar`
     rule:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以通过添加一个 `boolean` 选项来扩展表达式语法的 `atom` 规则。在这个阶段，引入一个额外的 `scalar` 规则是好主意：
 - en: '[PRE2]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'Then, after implementing this grammar as a parser we get booleans in our extended
     baseline language:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，在将此语法作为解析器实现之后，我们将在扩展的基础语言中获得布尔值：
 - en: '[PRE3]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: However, they behave exactly like integers `1` and `0`, so `assert(true == 1)`
     will succeed. Under static typing, this comparison would be rejected by the compiler.
     Under dynamic typing, this would evaluate to `false` at run-time.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，它们的行为与整数 `1` 和 `0` 完全相同，所以 `assert(true == 1)` 将会成功。在静态类型中，这个比较会被编译器拒绝。在动态类型中，这将在运行时评估为
+    `false`。
 - en: '* * *'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: Similarly, we can add other scalars, such as `undefined`, `null` (that compile
     to 0, like `false`), or a character type, which could compile to the integer value
     of its ASCII code (though, JavaScript and TypeScript treat characters as strings).
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，我们可以添加其他标量，例如 `undefined`，`null`（编译为 0，就像 `false` 一样），或者字符类型，它可能编译为其 ASCII
+    码的整数值（尽管，JavaScript 和 TypeScript 将字符视为字符串）。
 - en: Summary of AST constructor signatures with examples
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: AST 构造函数签名摘要及示例
 - en: '| AST Constructor Signature | Example |'
+  id: totrans-18
   prefs: []
   type: TYPE_TB
+  zh: '| AST 构造函数签名 | 示例 |'
 - en: '| --- | --- |'
+  id: totrans-19
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `Boolean(value: boolean)``Undefined()``Null()` | `true``undefined``null`
     |'
+  id: totrans-20
   prefs: []
   type: TYPE_TB
+  zh: '| `Boolean(value: boolean)` `Undefined()` `Null()` | `true` `undefined` `null`
+    |'
 - en: '[Next: Chapter 11\. Arrays and Heap Allocation](./11-arrays-and-heap-allocation)'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第11章 数组和堆分配](./11-arrays-and-heap-allocation)'
 - en: '* * *'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

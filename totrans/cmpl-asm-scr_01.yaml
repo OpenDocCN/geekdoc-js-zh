@@ -1,90 +1,130 @@
 - en: Chapter 1 Introduction
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第一章 简介
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/01-introduction](https://keleshev.com/compiling-to-assembly-from-scratch/01-introduction)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/01-introduction](https://keleshev.com/compiling-to-assembly-from-scratch/01-introduction)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由 [Vladimir Keleshev](/)
 - en: It is not the gods who make our pots
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 不是神创造了我们的罐子
 - en: '*Ancient proverb*'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: '*古谚语*'
 - en: Welcome to the wonderful journey of writing your own compiler!
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 欢迎加入编写你自己的编译器的奇妙之旅！
 - en: 'Picking up this book, you are probably already quite convinced that you want
     to understand how compilers work, and maybe even want to write one. Nevertheless,
     here’s a list of some of the reasons to do it:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 拿起这本书，你可能已经非常确信你想要了解编译器是如何工作的，甚至可能想要编写一个。尽管如此，这里列出了做这件事的一些原因：
 - en: Writing a compiler is the ultimate step in understanding how computers work
     and how they execute our programs.
+  id: totrans-8
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 编写编译器是理解计算机工作原理以及它们如何执行我们的程序这一过程的最终步骤。
 - en: By writing a small compiler, you can see that they are programs, just like others,
     and they are not magic made by gods.
+  id: totrans-9
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过编写一个小型编译器，你可以看到它们就像其他程序一样，它们不是由神创造的魔法。
 - en: By understanding assembly and how compilers translate your programs to it, you
     can better grasp the performance of the programs you write.
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过理解汇编以及编译器如何将你的程序转换为汇编，你可以更好地掌握你编写的程序的性能。
 - en: It will allow you to see the trade-offs of different language features more
     clearly, so you are better informed when to use them and how to use them effectively.
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它将使你更清晰地看到不同语言特性的权衡，因此你在决定何时以及如何有效使用它们时将更加了解。
 - en: Learning about parsing will help you deal with unstructured data, like scraping,
     or dealing with a data format for which you don’t have a library.
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 了解解析将帮助你处理非结构化数据，如抓取数据，或者处理没有库的数据格式。
 - en: It will also prepare you for making your own domain-specific languages, when
     necessary, for the tasks at hand.
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它还将为你在必要时创建自己的领域特定语言，完成手头的任务做好准备。
 - en: It may be a first step into the field of compiler engineering, a lucrative and
     exciting job.
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这可能是进入编译器工程领域的第一步，一份既有利可图又令人兴奋的工作。
 - en: And finally, it will allow you to experience the fun and excitement of creating
     and experimenting with a language of your own making!
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 最后，它将让你体验创造和实验你自己的语言带来的乐趣和兴奋！
 - en: The topic of compiler construction is the single most researched topic in computer
     science. Nothing else comes close. So there’s a massive amount of useful techniques
     and algorithms in compiler literature. And it turns out, a lot of it is very applicable
     to our day-to-day programming. There’s also a school of thought that, in the end,
     maybe all programs are compilers. Maybe we are not writing web apps, for example,
     but compilers from DOM nodes to JSON and from JSON to SQL, who knows!
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 编译器构造的主题是计算机科学中研究最深入的主题。没有其他主题能与之相比。因此，编译器文献中有大量的有用技术和算法。而且，事实证明，其中很多非常适合我们日常编程。还有一种观点认为，最终，可能所有程序都是编译器。也许我们不是在编写Web应用，而是在编写从DOM节点到JSON，从JSON到SQL的编译器，谁知道呢！
 - en: Structure of the book
+  id: totrans-17
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 书的结构
 - en: The book describes the design and implementation of a compiler written in TypeScript,
     which compiles a small language to 32-bit ARM assembly.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书描述了使用TypeScript编写的编译器的设计和实现，该编译器将一个小型语言编译成32位ARM汇编。
 - en: The book consists of two parts.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书分为两部分。
 - en: '*Part I* describes the design and development of a minimal *baseline compiler*
     in great detail. We call it a *baseline compiler* because it lays the foundation
     for developing more advanced features introduced in *Part II*. The *implementation
@@ -94,126 +134,186 @@
     arithmetic and comparison operators, integer numbers, functions, conditional statements
     and loops, local variables, and assignments. We call this language the *baseline
     language*. It can express simple programs and functions, like this one, for example:'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '*第一部分* 详细描述了最小 *基线编译器* 的设计和开发。我们称之为 *基线编译器*，因为它为在 *第二部分* 中引入的更高级功能奠定了基础。编译器的
+    *实现语言* 是 TypeScript。但编译器的 *源语言* 或 *输入语言* 是 TypeScript 的一个 *子集*（或是一个简化的版本）。这个子集包括任何实用编程语言的共同点，而不是
+    TypeScript 特有的：算术和比较运算符、整数、函数、条件语句和循环、局部变量和赋值。我们称这种语言为 *基线语言*。它可以表达简单的程序和函数，例如：'
 - en: '[PRE0]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '*Part II* builds upon the *baseline compiler* and describes various *compiler
     extensions* in lesser detail. Those extensions are often mutually exclusive (like
     static typing and dynamic typing), but they all use the baseline compiler as the
     foundation.'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '*第二部分* 建立在 *基线编译器* 的基础上，并简要描述了各种 *编译器扩展*。这些扩展通常是相互排斥的（例如静态类型和动态类型），但它们都使用基线编译器作为基础。'
 - en: '*Appendix A* describes how to run the ARM assembly code the compiler produces.
     You can skip this if you’re developing your compiler on a computer which is based
     on an ARM processor with a 32-bit operating system like Raspberry Pi OS (formerly
     Raspbian). However, if you are running an x86-64 system like those from Intel
     and AMD, you need to see *Appendix A*.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '*附录 A* 描述了如何运行编译器生成的 ARM 汇编代码。如果你在基于 ARM 处理器且运行 32 位操作系统（如 Raspberry Pi OS，以前称为
+    Raspbian）的计算机上开发编译器，你可以跳过这部分。然而，如果你运行的是 Intel 和 AMD 等公司的 x86-64 系统，你需要查看 *附录 A*。'
 - en: '*Appendix B* describes the differences between the two mainstream ARM assembly
     syntaxes: the GNU assembler (GAS) syntax, and the legacy ARMASM syntax.'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '*附录 B* 描述了两种主流 ARM 汇编语法的差异：GNU 汇编器（GAS）语法和传统的 ARMASM 语法。'
 - en: Why ARM?
+  id: totrans-25
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 为什么是 ARM？
 - en: In many ways, the ARM instruction set is what makes this book possible.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 在许多方面，ARM 指令集是这本书成为可能的原因。
 - en: Compared to Intel x86-64, the ARM instruction set is a work of art.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 Intel x86-64 相比，ARM 指令集是一件艺术品。
 - en: Intel x86-64 is the result of evolution from an 8-bit processor, to a 16-bit
     one, then to a 32-bit one, and finally to a 64-bit one. At each step of the evolution,
     it accumulated complexity and cruft. At each step, it tried to satisfy conflicting
     requirements.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: Intel x86-64 是从 8 位处理器，到 16 位，再到 32 位，最后到 64 位的演变结果。在演变的每个阶段，它都积累了复杂性和冗余。在每一个阶段，它都试图满足相互冲突的要求。
 - en: Intel x86-64 is based on *Complex Instruction Set Architecture* (CISC), which
     was initially optimized for writing assembly by hand.
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Intel x86-64 基于 *复杂指令集架构* (CISC)，最初是为了手动编写汇编代码而优化的。
 - en: ARM, on the other hand, is based on *Reduced Instruction Set Architecture* (RISC),
     which is optimized for writing compilers.
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 另一方面，ARM 基于 *精简指令集架构* (RISC)，它优化了编写编译器的过程。
 - en: '*Guess which one is an easier target for a compiler?*'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '*猜猜哪一个对编译器来说更容易成为目标？*'
 - en: If this book targeted x86-64 instead of ARM, it would have been two times as
     long and—more likely—never written. Also, with *hundreds* of *billions* devices
     shipped, we better get used to the fact that ARM is the dominant instruction set
     architecture today.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果这本书的目标是 x86-64 而不是 ARM，它将会是两倍长，而且更有可能永远不会被写成书。此外，考虑到 *数百* 亿的设备已经发货，我们最好习惯这样一个事实：ARM
+    是今天占主导地位的指令集架构。
 - en: In other words, ARM is a good start. After learning it, you will be better equipped
     for moving to x86-64 or the newer ARM64.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，ARM 是一个好的起点。学习它之后，你将更有能力迁移到 x86-64 或更新的 ARM64。
 - en: Why TypeScript?
+  id: totrans-34
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 为什么是 TypeScript？
 - en: This book describes the design and development of a compiler written in TypeScript,
     which compiles a small language that also uses TypeScript syntax.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书描述了用 TypeScript 编写的编译器的设计和开发，该编译器编译了一种也使用 TypeScript 语法的较小语言。
 - en: The compiler doesn’t have to be written in TypeScript. It could be written in
     any language, but I had to pick. I have used a straightforward subset of TypeScript
     for the examples, to make it readable for anyone who knows one or more mainstream
     languages.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 编译器不必用TypeScript编写。它可以是用任何语言编写的，但我必须选择。我使用了TypeScript的一个简单子集来编写示例，以便让任何了解一种或多种主流语言的人都能阅读。
 - en: The next chapter, *TypeScript Basics*, gives you a quick overview of the language.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一章，*TypeScript基础知识*，为您提供了该语言的快速概述。
 - en: How to read this book
+  id: totrans-38
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 如何阅读这本书
 - en: '*Part I* is structured linearly, with each chapter building upon the previous
     one. However, don’t feel guilty skipping chapters if you are already familiar
     with a topic.'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '*第一部分*的结构是线性的，每一章都是基于前一章的。然而，如果您已经熟悉某个主题，跳过章节也没有关系。'
 - en: If you plan to follow along and implement the compiler described in this book
     (or a similar one), I recommend first to read *Part I* without writing any code.
     Then you can go back to the beginning and start implementing the compiler while
     skimming *Part I* again.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您计划跟随本书（或类似书籍）中描述的编译器进行实现，我建议首先在不编写任何代码的情况下阅读*第一部分*。然后您可以回到开始处，在浏览*第一部分*的同时开始实现编译器。
 - en: The book uses the *parser combinators* approach to create the parser; however,
     if you know a different technique, feel free to use it instead.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书使用*解析器组合器*方法创建解析器；然而，如果您知道不同的技术，请随意使用它。
 - en: The book is also sprinkled with the tree types of notes.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 书中还穿插了三种类型的注释。
 - en: '**Note**'
+  id: totrans-43
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**注意**'
 - en: ''
+  id: totrans-44
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: These are general notes.
+  id: totrans-45
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 这些是通用注释。
 - en: '* * *'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: '**Explore**'
+  id: totrans-47
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**探索**'
 - en: ''
+  id: totrans-48
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -221,41 +321,60 @@
     own. You might find them useful for practicing and building your confidence, or
     you might find it more fitting to have a minimal working compiler first, and only
     then optionally come back to these.
+  id: totrans-49
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**探索**注释包含建议和尝试自己动手实践的方法。您可能会发现它们对练习和建立信心很有用，或者您可能会觉得先有一个最小的工作编译器更合适，然后才可选地回到这些内容。'
 - en: '* * *'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: '**Well, actually…**'
+  id: totrans-51
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，……**'
 - en: ''
+  id: totrans-52
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: These contain some pedantic notes which are beside the point, but the book would
     be incomplete without them.
+  id: totrans-53
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 这些包含了一些与主题无关的繁琐注释，但如果没有它们，这本书将不完整。
 - en: We will also use *code folding* in the code snippets. We will use ellipsis (`…`)
     to denote that some code in a snippet was omitted, usually because it was already
     shown before.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们还将在代码片段中使用*代码折叠*。我们将使用省略号（`…`）来表示片段中省略了一些代码，通常是因为这些代码之前已经展示过了。
 - en: '[PRE1]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '*Part II* is structured in mostly independent sections. Feel free to reach
     just for the parts you are interested in. No need to read both about *static typing*
     and *dynamic typing* if you want to focus only on one of these topics.'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '*第二部分*主要分为独立的部分。您可以自由地只阅读您感兴趣的部分。如果您只想专注于静态类型或动态类型中的一个，就没有必要同时阅读关于这两个主题的内容。'
 - en: '[Next: Chapter 2\. TypeScript Basics](./02-typescript-basics)'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第2章 TypeScript基础知识](./02-typescript-basics)'
 - en: '* * *'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

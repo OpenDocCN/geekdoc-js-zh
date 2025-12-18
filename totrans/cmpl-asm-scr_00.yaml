@@ -1,7 +1,11 @@
 - en: Compiling to Assembly from Scratch
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 从零开始编译到汇编
 - en: 来源：[https://keleshev.com/compiling-to-assembly-from-scratch/#table-of-contents](https://keleshev.com/compiling-to-assembly-from-scratch/#table-of-contents)
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 来源：[https://keleshev.com/compiling-to-assembly-from-scratch/#table-of-contents](https://keleshev.com/compiling-to-assembly-from-scratch/#table-of-contents)

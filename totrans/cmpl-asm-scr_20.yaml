@@ -1,41 +1,63 @@
 - en: Appendix B GAS v. ARMASM Syntax
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 附录B GAS与ARMASM语法比较
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/appendix-b-gas-v-armasm-syntax](https://keleshev.com/compiling-to-assembly-from-scratch/appendix-b-gas-v-armasm-syntax)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/appendix-b-gas-v-armasm-syntax](https://keleshev.com/compiling-to-assembly-from-scratch/appendix-b-gas-v-armasm-syntax)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从零开始汇编编译](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: by [Vladimir Keleshev](/)
 - en: Two different syntaxes are used for ARM assembly. The first one is the GNU Assembler
     (GAS) syntax. It is also supported by the official ARM toolchain based on Clang
     called `armclang`.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: ARM汇编使用了两种不同的语法。第一种是GNU汇编器（GAS）语法。它也被基于Clang的官方ARM工具链`armclang`所支持。
 - en: The other one is the legacy ARMASM syntax. Most likely, you will not need to
     deal with it, but I include a small Rosetta Stone–style (side-by-side) comparison
     cheat sheet for completeness.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个则是传统的ARMASM语法。你很可能不需要处理它，但我为了完整性，包括了一个小型的罗塞塔石碑风格（并列）比较速查表。
 - en: GNU Assembler Syntax
+  id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: GNU汇编器语法
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Legacy ARMASM Syntax
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 传统的ARMASM语法
 - en: '[PRE1]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: '* * *'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

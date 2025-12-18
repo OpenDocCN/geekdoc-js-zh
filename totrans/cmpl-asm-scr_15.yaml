@@ -1,445 +1,682 @@
 - en: Chapter 13 Static Type Checking and Inference
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第13章 静态类型检查和推断
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/13-static-type-checking-and-inference](https://keleshev.com/compiling-to-assembly-from-scratch/13-static-type-checking-and-inference)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/13-static-type-checking-and-inference](https://keleshev.com/compiling-to-assembly-from-scratch/13-static-type-checking-and-inference)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: by [弗拉基米尔·凯列舍夫](/)
 - en: 'In this chapter, we will implement a type checker for our language with *local
     type inference*. Local type inference means that local variables do not need a
     type annotation, so you can write the following:'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我们将为我们的语言实现一个带有 *局部类型推断* 的类型检查器。局部类型推断意味着局部变量不需要类型注解，因此你可以编写如下代码：
 - en: '[PRE0]'
+  id: totrans-5
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: The type of `a` will be inferred as `Array<number>`.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '`a` 的类型将被推断为 `Array<number>`。'
 - en: 'Our type checker will cover such types as `number`, `boolean`, `void`, and
     `Array<T>` where `T` could be any other type, for example `Array<Array<boolean>>`.
     We will also deal with function types, such as `(x: boolean, y: number) => number`,
     when type checking function calls.'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: '我们的类型检查器将涵盖 `number`、`boolean`、`void` 和 `Array<T>` 等类型，其中 `T` 可以是任何其他类型，例如
+    `Array<Array<boolean>>`。在类型检查函数调用时，我们还将处理函数类型，如 `(x: boolean, y: number) => number`。'
 - en: First, we need to refer to different types to manipulate them. We will represent
     them similarly to AST nodes, with an interface called `Type` and one class that
     implements it per type.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们需要引用不同的类型来操作它们。我们将以类似 AST 节点的方式表示它们，使用一个名为 `Type` 的接口，并为每种类型实现一个类。
 - en: '[PRE1]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: We will need equality and a `toString` method to be able to display type errors.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将需要相等性和一个 `toString` 方法来能够显示类型错误。
 - en: Summary of Type constructor signatures with examples
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 类型构造函数签名摘要及示例
 - en: '| Type Constructor Signature | Example |'
+  id: totrans-12
   prefs: []
   type: TYPE_TB
+  zh: '| 类型构造函数签名 | 示例 |'
 - en: '| --- | --- |'
+  id: totrans-13
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '|'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE2]'
+  id: totrans-15
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: '|'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE3]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '|'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-19
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE4]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: '|'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE5]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '|'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-25
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE6]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '|'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE7]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '|'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-31
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE8]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '|'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE9]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '|'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-37
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE10]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '|'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE11]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '|'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: 'Implementing `toString` and `equals` for these data classes is straightforward.
     However, `FunctionType` requires some comments:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 为这些数据类实现 `toString` 和 `equals` 是直接的。然而，`FunctionType` 需要一些注释：
 - en: First, `Map` in JavaScript preserves the order of elements, which is important
     to be able to match parameter positions at a call site.
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 首先，JavaScript 中的 `Map` 保留了元素的顺序，这对于在调用点匹配参数位置非常重要。
 - en: 'When comparing two instances of `FunctionType` it makes sence to ignore parameter
     names, since `(x: boolean, y: number) => number` is the same type as `(p1: boolean,
     p2: number) => number`.'
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '当比较两个 `FunctionType` 的实例时，忽略参数名称是有意义的，因为 `(x: boolean, y: number) => number`
+    与 `(p1: boolean, p2: number) => number` 是相同的类型。'
 - en: 'Our language will change to allow functions to be type-annotated. We will first
     change our `Function` AST node to store its signature as `FunctionType`, instead
     of just parameter names:'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的语言将改变以允许函数进行类型注解。我们首先将我们的 `Function` AST 节点更改为存储其签名作为 `FunctionType`，而不是仅参数名称：
 - en: '[PRE12]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: We will also need to change our grammar and parser. After introducing the necessary
     tokens, we can define the following grammar for types.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们还需要更改我们的语法和解析器。在引入必要的标记后，我们可以为类型定义以下语法。
 - en: '[PRE13]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: The `type` rule is recursive, just like `expression` and `statement`.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`type` 规则是递归的，就像 `expression` 和 `statement` 一样。'
 - en: 'Next, we need to change the grammar and parser for functions, to include optional
     type annotations:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们需要更改函数的语法和解析器，以包含可选的类型注解：
 - en: '[PRE14]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: We allow optional type annotations for function parameters and function return
     type. Why optional? Some languages do infer parameter and return types, but we
     do it so we can use the same parser unmodified later with dynamic types. If a
     type annotation is missing, we default it to `number`, which also gives us some
     backwards compatibility with our test suite.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们允许函数参数和函数返回类型具有可选的类型注解。为什么是可选的？一些语言可以推断参数和返回类型，但我们这样做是为了以后可以不修改地使用相同的解析器与动态类型一起使用。如果缺少类型注解，我们将其默认为
+    `number`，这也为我们与测试套件的向后兼容性提供了一些支持。
 - en: 'Now, the parser will accept functions with type annotations, like the following:'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，解析器将接受具有类型注解的函数，如下所示：
 - en: '[PRE15]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'For such function, the parser will produce a `Function` node with `FunctionType`
     signature like this:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于此类函数，解析器将生成一个具有 `FunctionType` 签名的 `Function` 节点，如下所示：
 - en: '[PRE16]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'Next, for type checking, we will use a function that asserts that two types
     are the same and otherwise raises an exception to signal an error. We call it
     `assertType`:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，对于类型检查，我们将使用一个函数来断言两个类型相同，否则抛出异常以指示错误。我们称之为 `assertType`：
 - en: '[PRE17]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: It uses both the `equals` method and the `toString` method, which is invoked
     implicitly for template string variables. Here, we are slightly abusing the built-in
     `TypeError` exception, which has a different purpose (run-time type errors); it
     is better to define a custom exception type.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 它使用`equals`方法和`toString`方法，后者在模板字符串变量上隐式调用。在这里，我们稍微滥用内置的`TypeError`异常，它有不同的用途（运行时类型错误）；最好定义一个自定义的异常类型。
 - en: Our `TypeChecker` pass will walk the AST and will either abort with a `TypeError`,
     or will return the inferred `Type` of an expression. Thus, `TypeChecker` implements
     `Visitor<Type>`.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的`TypeChecker`遍历AST，要么通过抛出`TypeError`来终止，要么返回表达式的推断`Type`。因此，`TypeChecker`实现了`Visitor<Type>`。
 - en: '[PRE18]'
+  id: totrans-62
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'It maintains two environments:'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 它维护两个环境：
 - en: '`locals`—an environment that stores types of local variables in a function,
     and'
+  id: totrans-64
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`locals`——一个存储函数中局部变量类型的环境，'
 - en: '`functions`—an environment that stores signatures of each function.'
+  id: totrans-65
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`functions`——一个存储每个函数签名的环境。'
 - en: 'We need two separate environments for these since functions are not first-class
     in our language: they cannot be assigned to a variable and passed around. So,
     when we encounter a `Call`, we will search for a function in the `functions` map,
     and when we encounter an `Id`, we will search for a non-function type in the `locals`
     map.'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于在我们的语言中函数不是一等公民：它们不能被赋值给变量并传递，因此我们需要为这些变量提供两个独立的环境。所以，当我们遇到一个`Call`时，我们将在`functions`映射中查找函数，当我们遇到一个`Id`时，我们将在`locals`映射中查找非函数类型。
 - en: We also maintain an instance variable `currentFunctionReturnType` which will
     help us type-check `Return` statements.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们还维护一个实例变量`currentFunctionReturnType`，它将帮助我们检查`Return`语句的类型。
 - en: Now, we get to the actual type checking and inference.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们进入实际的类型检查和推断。
 - en: Scalars
+  id: totrans-69
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 标量
 - en: The type of literal scalars is the easiest to infer. We know that the type of
     a number literal is `number`, the type of a boolean node is `boolean`, and so
     forth.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 文字标量的类型最容易推断。我们知道数字字面量的类型是`number`，布尔节点类型是`boolean`等等。
 - en: '[PRE19]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: In TypeScript the `void` type is inferred for expressions or statements that
     return `undefined`.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 在TypeScript中，表达式或语句返回`undefined`时，会推断出`void`类型。
 - en: '[PRE20]'
+  id: totrans-73
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: Operators
+  id: totrans-74
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 运算符
 - en: 'Now, let’s look at the most straightforward operator—negation. That’s not exactly
     how it works in TypeScript, but let’s assume that the negation operator expects
     strictly boolean parameter. To enforce that, we first infer the inner term’s type
     by calling the `visit` method on it. Then we assert that it is boolean:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们看看最直接的运算符——否定。在TypeScript中，这并不完全是这样工作的，但让我们假设否定运算符期望严格的布尔参数。为了强制执行这一点，我们首先通过在它上调用`visit`方法来推断内部项的类型。然后我们断言它是布尔类型：
 - en: '[PRE21]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: We return the `boolean` type since this will always be the result of negation.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们返回`boolean`类型，因为否定操作的结果总是这个类型。
 - en: To type-check numeric operators like `Add`, we infer the type of `left` and
     `right` parameters and assert that they are both numbers. Then we return `number`
     as the resulting type.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了检查数值运算符如`Add`的类型，我们推断`left`和`right`参数的类型，并断言它们都是数字。然后我们返回`number`作为结果类型。
 - en: '[PRE22]'
+  id: totrans-79
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: 'Now we get to something more interesting. Operations such as equality are generic:
     they can work with any type as long as the type on the left-hand side is the same
     as the one on the right-hand side. We infer the types on both sides by visiting
     them, and then assert that the two are the same.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们来探讨一些更有趣的内容。例如，等式这样的操作是通用的：只要左侧的类型与右侧的类型相同，它们就可以与任何类型一起工作。我们通过访问它们来推断两边的类型，然后断言它们是相同的。
 - en: '[PRE23]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: Variables
+  id: totrans-82
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 变量
 - en: For a new variable defined with `var`, we infer its type by visiting its value,
     and then we add that type to the `locals` environment.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于使用`var`定义的新变量，我们通过访问其值来推断其类型，然后将该类型添加到`locals`环境中。
 - en: '[PRE24]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: When we encounter a variable, we look it up in the `locals` environment and
     return its type. If the variable is not defined—we raise a `TypeError`.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们遇到一个变量时，我们将在`locals`环境中查找它并返回其类型。如果变量未定义，我们将抛出一个`TypeError`。
 - en: '[PRE25]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: When assigning a new value to a variable, we check that the variable was previously
     defined, and that the assignment does not change the type of the variable.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 当为一个变量赋新值时，我们检查该变量之前是否已定义，并且赋值操作不会改变变量的类型。
 - en: '[PRE26]'
+  id: totrans-88
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: Arrays
+  id: totrans-89
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数组
 - en: Inferring the type of array literals is a bit trickier than the other literals
     that we’ve covered. We know that any array literal is of type `Array<T>`, but
     we need to figure out what `T` is. First of all, we can’t infer the type of an
     empty array—there’s simply not enough information at this point. There are bi-directional
     type inference algorithms that handle this, but often this is solved by requiring
     a type annotation.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 推断数组字面量的类型比我们之前覆盖的其他字面量要复杂一些。我们知道任何数组字面量都是`Array<T>`类型，但我们需要找出`T`是什么。首先，我们无法推断空数组的类型——在这个阶段信息不足。有一些双向类型推断算法可以处理这个问题，但通常这是通过要求类型注释来解决的。
 - en: If the array is non-empty, we infer the type of each element and then assert
     pair-wise that they are the same type.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果数组非空，我们会推断每个元素的类型，然后断言它们是相同类型的成对存在。
 - en: '[PRE27]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: For something like our array length primitive, we need to assert that the parameter
     type is an array, but we don’t care about the element type. So, instead of using
     `assertType` we manually check that the type is an instance of `ArrayType`, and
     raise a `TypeError` otherwise. The inferred type of such expression is `number`.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于像我们的数组长度原语这样的东西，我们需要断言参数类型是数组，但我们不关心元素类型。因此，我们不是使用`assertType`，而是手动检查类型是否是`ArrayType`的实例，如果不是则抛出`TypeError`。这种表达式的推断类型是`number`。
 - en: '[PRE28]'
+  id: totrans-94
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: 'When handling array lookup, we assert that the `index` is a number, and that
     the `array` is of type array:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 当处理数组查找时，我们断言`index`是一个数字，并且`array`是数组类型：
 - en: '[PRE29]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: Functions
+  id: totrans-97
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 函数
 - en: When encountering a function, we add its signature to the `functions` environment.
     We do not need to infer it, because it is parsed from the source. Before type-checking
     the body of the function, we create a new visitor with a modified environment.
     Since we use mutable maps, we need to pass a new `Map` to each function, to avoid
     modifying the wrong function’s environment. We also set the `currentFunctionReturnType`
     to the one in the signature.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 当遇到一个函数时，我们将它的签名添加到`functions`环境中。我们不需要推断它，因为它是从源代码中解析出来的。在类型检查函数体之前，我们创建一个新的访问者，并修改环境。由于我们使用可变映射，我们需要为每个函数传递一个新的`Map`，以避免修改错误函数的环境。我们还设置了`currentFunctionReturnType`为签名中的类型。
 - en: '[PRE30]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: When visiting a `Call`, we fetch that function’s signature from the `functions`
     environment. Then we infer the type of the function being called and compare it
     to the type from the environment. When inferring the type of the function we visit
     each argument, and since `FunctionType` requires a name for each parameter, we
     assign them dummy names, such as `x0`, `x1`, `x2`, etc. When it comes to the function’s
     return type, we use the one from the type annotation.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 当访问`Call`时，我们从`functions`环境中获取该函数的签名。然后我们推断被调用的函数的类型，并将其与环境中的类型进行比较。在推断函数类型时，我们访问每个参数，由于`FunctionType`要求每个参数都有一个名称，我们给它们分配了虚拟名称，例如`x0`、`x1`、`x2`等。当涉及到函数的返回类型时，我们使用类型注释中的类型。
 - en: '[PRE31]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: When checking a return statement, we infer the type of the returned value and
     compare it with the one from the function annotation, which we saved conveniently
     in `currentFunctionReturnType` instance variable.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 当检查返回语句时，我们推断返回值的类型，并将其与函数注释中的类型进行比较，我们方便地将这个类型保存在`currentFunctionReturnType`实例变量中。
 - en: '[PRE32]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: If and While
+  id: totrans-104
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: If和While
 - en: When checking `If` and `While` we visit each inner node to make sure that their
     type is checked, but we don’t enforce any type. The `conditional` could be checked
     to be boolean, but in TypeScript (as in many languages) it is not required to
     be such. We could also enforce that the statements inside the branches return
     `void`, but this is not usually required either.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 当检查`If`和`While`时，我们会访问每个内部节点以确保它们的类型被检查，但我们不强制执行任何类型。`conditional`可以被检查为布尔类型，但在TypeScript（以及许多其他语言）中，这并不是必需的。我们也可以强制分支内的语句返回`void`，但这通常也不是必需的。
 - en: '[PRE33]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: However, if we had a ternary conditional operation, we would need to ensure
     that the two branches return the same type.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，如果我们有一个三元条件操作，我们需要确保两个分支返回相同的数据类型。
 - en: Soundness
+  id: totrans-108
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可靠性
 - en: Our type checker is complete. But is it *sound*? A type system is sound if the
     types at compile time are always consistent with run time. Can you find a soundness
     issue in our type checker?
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的类型检查器是完整的。但它是否是*可靠的*？一个类型系统如果是可靠的，那么编译时的类型总是与运行时一致。你能在我们的类型检查器中找到任何可靠性问题吗？
 - en: 'Although we check that each `return` statement is consistent with the annotated
     return type, we don’t check that each control-flow path has a return statement.
     Here’s an example that demonstraits this issue:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然我们检查每个`return`语句与注解的返回类型是否一致，但我们并没有检查每个控制流路径都有一个返回语句。以下是一个说明此问题的例子：
 - en: '[PRE34]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: Checking that each control flow path leads to a return statement requires a
     bit of control-flow analysis which is outside of the scope of this book.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查每个控制流路径都导向一个返回语句需要一点控制流分析，而这超出了本书的范围。
 - en: Error messages
+  id: totrans-113
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 错误信息
 - en: We can improve our error messages by specializing them to each situation instead
     of relying on a generic message produced by `assertType`.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以通过将错误信息专门化到每个情况，而不是依赖于`assertType`生成的通用消息来改进我们的错误信息。
 - en: '[Next: Chapter 14\. Dynamic Typing](./14-dynamic-typing)'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第14章 动态类型](./14-dynamic-typing)'
 - en: '* * *'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

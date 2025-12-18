@@ -1,75 +1,110 @@
 - en: 'Chapter 6 First Pass: The Parser'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第6章：第一次遍历：解析器
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/06-first-pass-the-parser](https://keleshev.com/compiling-to-assembly-from-scratch/06-first-pass-the-parser)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/06-first-pass-the-parser](https://keleshev.com/compiling-to-assembly-from-scratch/06-first-pass-the-parser)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从头开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由 [Vladimir Keleshev](/) 提供
 - en: Now that we’ve got enough parsing machinery working, we can implement the parser
     that produces an AST from source for our compiler.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经拥有了足够的解析机制，我们可以实现从源代码生成抽象语法树（AST）的解析器。
 - en: Whitespace and comments
+  id: totrans-5
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 空白和注释
 - en: First, let’s define parsers for whitespace and comments, which we collectively
     refer to as *ignored*. (When a parser is split into a lexer and a parser, parsing
     whitespace and comments is usually done at the lexer-level.)
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们定义空白和注释的解析器，我们将它们统称为 *ignored*。（当一个解析器被分割成词法分析和解析器时，空白和注释通常在词法分析级别完成。）
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'We allow both single-line (`// …`) and multi-line (`/* … */`) comments. In
     JavaScript regular expressions, the dot matches any character, *except* newline.
     To implement multi-line comments, we need to match newline as well. It is possible
     to alter the meaning of the dot regular expression to match any character *including*
     newline by passing the “dot-all” flag “`s`” alongside the “sticky” flag “`y`”:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们允许单行注释（`// ...`）和多行注释（`/* ... */`）。在JavaScript正则表达式中，点号匹配任何字符，*除了换行符*。为了实现多行注释，我们需要匹配换行符。通过传递“dot-all”标志“`s`”和“sticky”标志“`y`”，我们可以改变点号正则表达式的含义，使其匹配任何字符*包括换行符*：
 - en: '[PRE1]'
+  id: totrans-9
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'We use character classes with a single character like `[*]` as a readable way
     to escape characters that have special meaning in regular expressions. Otherwise,
     they quickly start looking like a broken saw:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们使用单个字符如 `[*]` 的字符类作为在正则表达式中有特殊意义的字符的可读转义方式。否则，它们很快就会看起来像一把损坏的锯子：
 - en: '[PRE2]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Tokens
+  id: totrans-12
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 标记
 - en: Even though our parser is scanerless (or token-less), it is still useful to
     distinguish tokens as our syntactic building blocks. The idea is to build token-like
     parsers from simple character parsers, and only then build full parser on top
     of token-like parsers.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管我们的解析器是无扫描器（或无标记），但仍然有用，因为它可以帮助我们区分标记作为我们的句法构建块。想法是从简单的字符解析器构建标记类似的解析器，然后仅在此基础上构建完整的解析器。
 - en: 'As customary, we will use the naming convention for tokens (in grammar rules
     and parsers): they will be upper-case.'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 按照惯例，我们将使用标记的命名约定（在语法规则和解析器中）：它们将是大写。
 - en: Tokens provide us a higher-level view of our source than single characters.
     They allow us to not deal with minute details like whitespace and comments. And
     this is precisely how we’ll use them here. We’ll define a `token` parser combinator
     (or, more precisely, constructor) that allows us to ignore whitespace and comments
     around our lexemes (or tokens).
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 标记为我们提供了比单个字符更高层次的源代码视图。它们允许我们不必处理像空白和注释这样的细节。这正是我们将如何使用它们的。我们将定义一个 `token`
+    解析器组合器（或更精确地说，构造器），它允许我们忽略词法单元（或标记）周围的空白和注释。
 - en: '[PRE3]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: It takes a regular expression pattern and returns a parser that is a sequence
     of that pattern and an `ignored` rule that we defined previously to handle whitespace
     and comments. It produces the string value matched by the pattern but ignores
@@ -77,88 +112,135 @@
     not around the pattern. The latter would be redundant in all but the first token,
     which we can handle specially. This is a common way to handle whitespace and comments
     in scanerless parsers.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 它接受一个正则表达式模式，并返回一个解析器，该解析器是那个模式的序列和一个我们之前定义的 `ignored` 规则，用于处理空白和注释。它产生与模式匹配的字符串值，但忽略
+    `ignored` 规则的值。我们只在右侧使用 `ignored` 进行“填充”，而不是在模式周围。在除了第一个标记之外的所有情况下，这将是多余的，我们可以特别处理它。这是在无扫描器解析器中处理空白和注释的常见方式。
 - en: 'We’ll start with defining tokens for keywords in our language, like `function`,
     `if`, `else`, `return`, `var`, and `while`:'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将从定义我们语言中的关键字标记开始，如 `function`、`if`、`else`、`return`、`var` 和 `while`：
 - en: '[PRE4]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: We’ve used a word-break escape sequence `\b` to make sure we don’t recognize
     `functional` as a keyword `function` followed by identifier `al`.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们使用了一个单词分隔转义序列 `\b` 来确保我们不将 `functional` 识别为关键字 `function` 后跟标识符 `al`。
 - en: 'Then, tokens for punctuation: commas, parenthesis, etc.:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，定义标点符号的标记：逗号、括号等：
 - en: '[PRE5]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'Our baseline compiler will handle only decimal integer numbers *(base 10)*:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的基本编译器将只处理十进制整数数字（基数10）：
 - en: '[PRE6]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: We map the `[0-9]+` token to convert digits to a JavaScript number using `parseInt`
     JavaScript built-in function that takes a string and a base number (10 for decimal).
     Then we construct a `Number` AST node from it.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将`[0-9]+`标记映射到使用`parseInt` JavaScript内置函数将数字转换为JavaScript数字，该函数接受一个字符串和一个基数（十进制为10）。然后我们从这个字符串构造一个`Number`
+    AST节点。
 - en: Identifiers start with a letter or an underscore and are followed by a number
     of letters, digits, and underscores. In other words, they can’t start with a digit.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 标识符以字母或下划线开头，后跟一定数量的字母、数字和下划线。换句话说，它们不能以数字开头。
 - en: '[PRE7]'
+  id: totrans-27
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: In some cases, it will be useful for us to parse identifiers just for their
     string value, but sometimes it is more convenient to produce the AST node. That’s
     why we create an alias `id`, which is the same as `ID`, but instead of producing
     a string, it produces an AST node `Id`.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 在某些情况下，仅为了解析标识符的字符串值，对我们来说是有用的，但有时更方便的是生成AST节点。这就是为什么我们创建了一个别名`id`，它与`ID`相同，但不是产生一个字符串，而是产生一个AST节点`Id`。
 - en: '[PRE8]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'Now, the operator tokens:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，操作符标记：
 - en: '[PRE9]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: We cannot construct a full AST node out of a single operator, but it will be
     handy to return the class of the AST node.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们不能仅从单个运算符构造一个完整的AST节点，但返回AST节点的类别将会很方便。
 - en: Grammar
+  id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 语法
 - en: 'The grammar for our baseline compiler is split into two parts: *expressions*
     and *statements*. JavaScript (and TypeScript) is pretty relaxed about distinguishing
     the two. In general, expressions are constructs that produce a value like `1 +
     2`, and statements are something that has an effect but does not produce a value,
     like a `while` loop.'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的基础编译器的语法分为两部分：*表达式*和*语句*。JavaScript（以及TypeScript）对区分这两者相对宽松。一般来说，表达式是产生值的构造，例如`1
+    + 2`，而语句是具有影响但不会产生值的操作，例如`while`循环。
 - en: Expression parser
+  id: totrans-35
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 表达式解析器
 - en: We will start by constructing a parser for a single expression. Here is the
     grammar for an expression in the baseline language.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将首先构建一个用于单个表达式的解析器。以下是基线语言中表达式的语法。
 - en: '[PRE10]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: It consists of infix operations such as `==`, `!=`, `+`, `-`, `*`, `/`, unary
     negation `!x`, identifiers, integer numbers, and function calls.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 它包括如`==`、`!=`、`+`、`-`、`*`、`/`、一元否定`!x`、标识符、整数数字和函数调用等中缀操作。
 - en: 'The expression rule is split into several layers in order to handle operator
     precedence. The `expression` itself is just an alias to `comparison`. The `comparison`
     rule represents the operators with the lowest precedence: `==` and `!=`. The `comparison`
@@ -172,330 +254,508 @@
     so precedence doesn’t apply, while `call` and parenthesized expressions have explicit
     delimiters, so precedence doesn’t apply either. The `args` rule is extracted to
     simplify the `call` rule.'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 表达式规则被分成几个层次，以便处理运算符优先级。`expression`本身只是一个`comparison`的别名。`comparison`规则表示具有最低优先级的运算符：`==`和`!=`。`comparison`本身是由具有更高优先级的`sum`构建的，其中运算符有`+`和`-`。`sum`反过来又是由具有最高优先级的`product`规则构建的，这些规则是中缀运算符中的最高优先级：`*`和`/`。这些又是由表示一元运算符的`unary`构建的，其中我们只有否定：`!`。否定在我们的所有运算符中具有最高的优先级。它是建立在称为`atom`的规则之上的。`atom`规则表示那些“原子”的规则，或者由于它们的结构不需要优先级。例如，`ID`和`NUMBER`是单个词素，所以不适用优先级，而`call`和括号表达式有明确的分隔符，所以也不适用优先级。`args`规则被提取出来以简化`call`规则。
 - en: This process of constructing parsers with increasing precedence is sometimes
     compared to adding beads to a rope.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种通过增加优先级来构建解析器的过程有时被比作给绳子添加珠子。
 - en: 'You can probably notice that the lowest-level rules, such as `atom` and `call`
     (via `args`) refer back to `expression`. This means that our grammar is *recursive*.
     This creates a slight problem for constructing a parser for this grammar. While
     JavaScript allows for recursive functions, it does not allow for recursive values.
     Other languages allow for so-called `let-rec` bindings, but not JavaScript. The
     way we handle this is by initially defining `expression` as an `error` parser:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能注意到，最低级别的规则，如`atom`和`call`（通过`args`）都回指`expression`。这意味着我们的语法是**递归的**。这为构建这个语法的解析器创造了一个小问题。虽然JavaScript允许递归函数，但不允许递归值。其他语言允许所谓的`let-rec`绑定，但JavaScript不允许。我们处理这个问题的方法是首先将`expression`定义为`error`解析器：
 - en: '[PRE11]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'Now we are free to use it when constructing our parser. However, we must remember
     to change this parser in-place once we define `comparison` and before we use it:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们可以在构建我们的解析器时自由使用它。然而，我们必须记住在定义`comparison`之后和在使用它之前，就地更改这个解析器：
 - en: '[PRE12]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Call parser
+  id: totrans-45
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 调用解析器
 - en: We need to implement `call` by first implementing `args`.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们需要通过首先实现`args`来实现`call`。
 - en: '[PRE13]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'Mechanically converting the `args` to a parser gives us:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`args`机械地转换为解析器，我们得到：
 - en: '[PRE14]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Like in the case of the `Call` AST node, we called it `args` instead of `arguments`,
     because `arguments` is a special JavaScript object, and we don’t want to clash
     with it.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 就像在`Call` AST节点的情况一样，我们将其称为`args`而不是`arguments`，因为`arguments`是一个特殊的JavaScript对象，我们不希望与之冲突。
 - en: 'We want this parser to return something useful, like an array of AST nodes.
     The `maybe` combinator returns `null` if it doesn’t match, but we want an empty
     array, so let’s replace it with `.or(constant([]))`. We need to bind the first
     expression, then the rest of the expressions, and then concatenate them. By doing
     that we end up with the following:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们希望这个解析器返回一些有用的东西，比如AST节点的数组。`maybe`组合器在不匹配时返回`null`，但我们需要一个空数组，所以让我们用`.or(constant([]))`来替换它。我们需要绑定第一个表达式，然后绑定其余的表达式，然后将它们连接起来。通过这样做，我们最终得到以下内容：
 - en: '[PRE15]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: The expression `zeroOrMore(COMMA.and(expression))` conveniently ignores the
     commas and produces an array of AST nodes.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 表达式`zeroOrMore(COMMA.and(expression))`方便地忽略了逗号，并产生一个AST节点的数组。
 - en: 'Now, implementing `call` mechanically from grammar gives us:'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，从语法中机械地实现`call`，我们得到：
 - en: '[PRE16]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'We bind `ID` (that represents the name of the callee) and `args` to construct
     a `Call` node:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将`ID`（表示被调用者的名称）和`args`绑定来构建一个`Call`节点：
 - en: '[PRE17]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: Atom
+  id: totrans-58
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 原子
 - en: The next parser is `atom`. To ensure that it produces an AST, we need to use
     `id` rule instead of `ID`. We also bind the `expression` to extract its value.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一个解析器是`atom`。为了确保它产生AST，我们需要使用`id`规则而不是`ID`。我们还绑定`expression`以提取其值。
 - en: '[PRE18]'
+  id: totrans-60
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: The order of the choices is important. If the rule started as `ID / call` instead,
     `call` would never match, since `call` itself begins with an `ID`.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择项的顺序很重要。如果规则从`ID / call`开始，那么`call`将永远不会匹配，因为`call`本身以`ID`开头。
 - en: Unary operators
+  id: totrans-62
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 一元运算符
 - en: For unary parser, we bind both `NOT?` and `atom`. If `NOT` operator is present
     we construct the `Not` AST node, otherwise, we produce the underlying node.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于一元解析器，我们绑定`NOT?`和`atom`。如果存在`NOT`运算符，我们构建`Not` AST节点，否则，我们产生底层节点。
 - en: '[PRE19]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: We have bound the value of the `atom` to a name `term`, which we will use as
     a catch-all phrase when binding expressions or statements.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经将`atom`的值绑定到名称`term`上，当绑定表达式或语句时，我们将使用它作为通用的短语。
 - en: Infix operators
+  id: totrans-66
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 中缀运算符
 - en: Infix operators are all constructed similarly, with lower precedence rules building
     upon higher precedence rules.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 中缀运算符都是类似地构建的，低优先级规则建立在高优先级规则之上。
 - en: '[PRE20]'
+  id: totrans-68
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: You can probably remember that we made sure that operator rule parsers produce
     the class of the corresponding AST node. For example, the `EQUAL` token produces
     the `Equal` class. We will use that property.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能记得我们确保了运算符规则解析器产生相应的AST节点的类。例如，`EQUAL`标记产生`Equal`类。我们将使用这个属性。
 - en: 'We’ll start with the `product` parser. Naive mechanical translation gives us:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将首先从`product`解析器开始。直观的机械翻译给我们：
 - en: '[PRE21]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: Binding the first `unary` is easy. However, constructing a nested AST from all
     of this is not.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 绑定第一个`一元`操作符很简单。然而，从所有这些中构建嵌套的AST结构并不容易。
 - en: We can map `(STAR / SLASH) unary` to an intermediate data structure `{operator,
     term}`, which is a pair constructed from `STAR / SLASH` and `unary` values. This
     way, we get an array of operator-term pairs. We bind the `unary` and call its
     value `first`.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以将`(STAR / SLASH) unary`映射到一个中间数据结构`{operator, term}`，这是一个由`STAR / SLASH`和`unary`值构成的配对。这样，我们得到一个操作符-术语对的数组。我们绑定`unary`并调用它的值`first`。
 - en: 'For example, if we were parsing a string `"x * y / z"`, then `first` would
     be `new Id("x")`, while `operatorTerms` would be an array like this:'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，如果我们正在解析字符串`"x * y / z"`，那么`first`将是`new Id("x")`，而`operatorTerms`将是一个如下的数组：
 - en: '[PRE22]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: How do we reduce those into an AST node like the following?
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们如何将这些减少为像以下这样的AST节点？
 - en: '[PRE23]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: 'Turns out that `array.reduce` is precisely the method that can accomplish this!
     Here’s the resulting code:'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果表明`array.reduce`正是可以完成这个任务的方法！以下是相应的代码：
 - en: '[PRE24]'
+  id: totrans-79
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: 'Quite a mouthful! Fortunately, this is the most complicated rule that we will
     encounter. Even better, we can extract this repeating pattern into another parser
     combinator and use it again. We’ll call that combinator `infix`:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 真的很复杂！幸运的是，这是我们将会遇到的最复杂的规则。更好的是，我们可以将这个重复的模式提取到另一个解析器组合器中，并再次使用它。我们将这个组合器称为`infix`：
 - en: '[PRE25]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: 'We changed our `product` rule into a function that takes two parameters: `operatorParser`
     and `termParser`. We replaced `unary` with `termParser` and `STAR.or(SLASH)` with
     `operatorParser`. And now we’ve got a reusable combinator, which we can use not
     only for `product` but also for `sum` and `comparison`.'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将`product`规则改为一个接受两个参数的函数：`operatorParser`和`termParser`。我们将`unary`替换为`termParser`，将`STAR.or(SLASH)`替换为`operatorParser`。现在我们有一个可重用的组合器，我们可以不仅用于`product`，还可以用于`sum`和`comparison`。
 - en: '[PRE26]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: Associativity
+  id: totrans-84
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 结合性
 - en: 'When we parse `"x * y / z"` we want it to be interpreted as `"(x * y) / z"`
     and produce the corresponding AST:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们解析`"x * y / z"`时，我们希望它被解释为`"(x * y) / z"`并产生相应的AST：
 - en: '[PRE27]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: Thus, we say that these operators are left-associative. At the moment we don’t
     have any right-associative operators, but if we did, we would use the same grammar
     rules, but we would have to use `array.reduceBack` instead of `array.reduce` to
     construct the AST, with some adjustments.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，我们说这些运算符是左结合的。目前我们没有任何右结合的运算符，但如果有，我们将使用相同的语法规则，但我们必须使用`array.reduceBack`而不是`array.reduce`来构建AST，并进行一些调整。
 - en: 'Closing the loop: expression'
+  id: totrans-88
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 关闭循环：表达式
 - en: 'Now that we have defined `comparison`, we can finally define `expression` which
     had only a dummy implementation so far. We do that by overwriting the `parse`
     method of `expression`:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经定义了`comparison`，我们可以最终定义`expression`，它迄今为止只有一个伪实现。我们通过覆盖`expression`的`parse`方法来实现这一点：
 - en: '[PRE28]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: Statement
+  id: totrans-91
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 语句
 - en: 'Next up is parsing statements. Here’s the grammar:'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来是解析语句。这是语法：
 - en: '[PRE29]'
+  id: totrans-93
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: 'The high-level structure is very similar, as in the case of expressions. It
     consists of several rules, with `statement` defined recursively. Again, we start
     with a dummy implementation:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 高级结构与表达式的情况非常相似。它由几个规则组成，其中`statement`是递归定义的。再次，我们从伪实现开始：
 - en: '[PRE30]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 'First statement kind is `returnStatment` that produces the `Return` AST node:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一种语句类型是`returnStatement`，它产生`Return` AST节点：
 - en: '[PRE31]'
+  id: totrans-97
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 'The `expressionStatement` is an `expression` delimited with a semicolon:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: '`expressionStatement`是一个用分号分隔的表达式：'
 - en: '[PRE32]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 'The `ifStatement` produces the `If` node:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '`ifStatement`产生`If`节点：'
 - en: '[PRE33]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: 'The `whileStatment` is syntactically similar to the `ifStatement`:'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: '`whileStatement`在语法上与`ifStatement`相似：'
 - en: '[PRE34]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 'The `varStatment` and the `assigmentStatement` are similar as well:'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: '`varStatement`和`assignmentStatement`也非常相似：'
 - en: '[PRE35]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: '[PRE36]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: Technically speaking, in JavaScript, the assignment is an expression, but for
     simplicity, we defined it as a statement. That’s also how it is used most of the
     time.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 从技术上来说，在JavaScript中，赋值是一个表达式，但为了简单起见，我们将其定义为语句。这也是它被大多数时候使用的方式。
 - en: 'The block statement is a list of statements delimited with braces. It produces
     a `Block` node:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 块语句是一系列用大括号分隔的语句。它产生一个`Block`节点：
 - en: '[PRE37]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: 'Function parameters rule is very similar to the `args` rule that we defined
     previously (in terms of parser structure), but the parser produces an `Array<string>`
     instead of `Array<AST>`:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数参数规则与我们之前定义的`args`规则非常相似（就解析器结构而言），但解析器产生的是`Array<string>`而不是`Array<AST>`：
 - en: '[PRE38]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: 'The function definition (which we also refer to as a statement) builds upon
     `parameters` and `blockStatement` to produce a `Function` node:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数定义（我们也将它称为语句）基于`parameters`和`blockStatement`来产生一个`Function`节点：
 - en: '[PRE39]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: We define `statement` as one of the above statements, and we tie the recursive
     knot by modifying the original `statement.parser`.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将`statement`定义为上述语句之一，并通过修改原始的`statement.parser`来解开递归的结：
 - en: '[PRE40]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: '[PRE41]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 'And since our language should accept more than one statement, we need one final
     touch to complete our parser:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于我们的语言应该接受多个语句，我们需要一个最后的修饰来完成我们的解析器：
 - en: '[PRE42]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: It starts with allowing the “ignored” whitespace and comments (which need to
     be explicitly ignored before the first logical token) and follows by zero or more
     statements that we convert to a `Block` node.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 它从允许“忽略”的空白和注释（在第一个逻辑标记之前需要显式忽略）开始，然后是零个或多个我们将其转换为`Block`节点的语句。
 - en: Testing
+  id: totrans-120
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 测试
 - en: 'It is essential to test the parser at each step of the way. The examples from
     the chapter *Abstract Syntax Tree* provide a good source of unit tests. And here’s
     an example of a possible integration test:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 在每一步测试解析器是至关重要的。本章*抽象语法树*中的示例提供了一个良好的单元测试来源。以下是一个可能的集成测试示例：
 - en: '[PRE43]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: '[PRE44]'
+  id: totrans-123
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: '* * *'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: The parser is now complete, and so is the first pass of our compiler.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 解析器现在已经完成，我们的编译器的第一遍也完成了。
 - en: '[Next: Chapter 7\. ARM Assembly Programming](./07-arm-assembly-programming)'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第7章\. ARM汇编编程](./07-arm-assembly-programming)'
 - en: '* * *'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

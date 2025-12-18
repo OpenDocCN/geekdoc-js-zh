@@ -1,71 +1,108 @@
 - en: Chapter 4 Abstract Syntax Tree
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第四章 抽象语法树
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/04-abstract-syntax-tree](https://keleshev.com/compiling-to-assembly-from-scratch/04-abstract-syntax-tree)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[从零开始编译汇编](https://keleshev.com/compiling-to-assembly-from-scratch/04-abstract-syntax-tree)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从零开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由[Vladimir Keleshev](/)编写
 - en: Abstract syntax tree, or AST, is the central concept in compilers.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 抽象语法树，或AST，是编译器的核心概念。
 - en: AST is a data-structure. It’s a *tree* that models the *syntax* of a programming
     language. But it *abstracts* away from the mundane details of syntax, such as
     the exact placement of parenthesis or semicolons.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: AST是一种数据结构。它是一个**树**，它模拟了编程语言的**语法**。但它**抽象**了语法的一些平凡细节，例如括号或分号的精确位置。
 - en: This tree consists of *nodes*, where each node is a data object that represents
     a syntactic construct in the language. A `Return` node could represent a `return`
     statement, an `Add` node can represent a `+` operator, an identifier referring
     to a variable could use an `Id` node, and so on.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 这棵树由**节点**组成，其中每个节点都是一个数据对象，它表示语言中的语法结构。一个`Return`节点可以表示一个`return`语句，一个`Add`节点可以表示`+`运算符，一个引用变量的标识符可以使用`Id`节点，等等。
 - en: 'For example, the following line of code:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，以下代码行：
 - en: '[PRE0]'
+  id: totrans-8
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'Can have an AST like this:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以有如下AST：
 - en: '[PRE1]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: In the next figure you can see a graphical representation of the same tree.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一张图中，你可以看到同一棵树的图形表示。
 - en: '![AST corresponding to n * factorial(n - 1)](../Images/12cdfb9105052361e252391b35466581.png)'
+  id: totrans-12
   prefs: []
   type: TYPE_IMG
+  zh: '![对应于 n * factorial(n - 1) 的AST](../Images/12cdfb9105052361e252391b35466581.png)'
 - en: AST corresponding to `**return**` `n * factorial(n - 1)`
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 对应于`**return**` `n * factorial(n - 1)`的AST
 - en: 'Why use an AST? When working with a language construct, an AST makes it convenient
     to operate on it: to query, construct, and modify.'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 为什么使用抽象语法树（AST）？当处理语言结构时，AST使得对其进行操作变得方便：查询、构建和修改。
 - en: 'We design an AST so that it is convenient for us, depending on what we do with
     it: what kinds of transformations we want to make, which things to query or change.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们设计AST，使其便于我们使用：我们想要进行哪些类型的转换，哪些内容要查询或更改。
 - en: For example, an AST can include source location information for error reporting.
     Or it can include documentation comments if our compiler needs to deal with those.
     Or it can include all comments and some notion of whitespace, if we want to have
     style-preserving transformations, like automatic refactoring.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，AST可以包含源位置信息以进行错误报告。或者，如果我们的编译器需要处理这些，它可以包含文档注释。或者，如果我们想要有风格保留的转换，如自动重构，它可以包含所有注释和一些空白的概念。
 - en: '**Well, actually…**'
+  id: totrans-17
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，**'
 - en: ''
+  id: totrans-18
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -73,773 +110,1250 @@
     the structure and hierarchy down to *each* input symbol. They usually have too
     many details that we don’t care about when writing a compiler. But they are a
     good match for style-preserving transformations.
+  id: totrans-19
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 还有**具体语法树**，也称为**解析树**。它们反映了结构层次直到每个输入符号。它们通常包含太多我们不关心的细节，当我们编写编译器时。但它们非常适合风格保留的转换。
 - en: 'We will represent each kind of node in our AST as a separate class: `Return`,
     `Multiply`, `Id`, etc. However, at the type level, we want to be able to refer
     to “any AST node”. For that TypeScript gives us several tools:'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将代表AST中的每种节点类型作为一个单独的类：`Return`、`Multiply`、`Id`等。然而，在类型级别上，我们希望能够引用“任何AST节点”。为此，TypeScript提供了几个工具：
 - en: interfaces,
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 接口，
 - en: abstract classes,
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 抽象类，
 - en: union types.
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 联合类型。
 - en: 'Either of these works. We will use an interface:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两种方法都有效。我们将使用一个接口：
 - en: '[PRE2]'
+  id: totrans-25
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Each type of AST node will be a class that implements the `AST` interface. It
     starts simple, with `equals` as the only method. We will add methods to this interface
     (and the classes) as needed.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 每种AST节点类型都将是一个实现了`AST`接口的类。它从简单开始，只有`equals`方法。我们将根据需要向此接口（和类）添加方法。
 - en: The `equals` method is mostly useful for unit-testing. The implementation is
     quite mundane, so for the most part, we will omit it and replace its body with
     an ellipsis.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '`equals`方法主要用于单元测试。实现相当平凡，所以大部分情况下，我们将省略它，并用省略号替换其主体。'
 - en: Number node
+  id: totrans-28
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数字节点
 - en: Our first node is `Number`.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的第一个节点是`Number`。
 - en: '[PRE3]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'Here we used the TypeScript shortcut for quickly defining instance variables
     using `public` for the constructor parameter. Remember that it is equivalent to
     the following:'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们使用了TypeScript的快捷方式来快速定义实例变量，使用`public`作为构造函数参数。记住，它等同于以下内容：
 - en: '[PRE4]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: It saves us quite some typing, which will be useful because we need to define
     many types of AST nodes.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 它节省了我们相当多的输入，这将会很有用，因为我们需要定义许多类型的 AST 节点。
 - en: We called our AST node `Number` because the data type in JavaScript and TypeScript
     is called `number`. However, our compiler will handle only unsigned integers.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将我们的 AST 节点命名为 `Number`，因为 JavaScript 和 TypeScript 中的数据类型被称为 `number`。然而，我们的编译器将只处理无符号整数。
 - en: Examples of the `Number` node
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Number` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-36
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-37
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `0` | `new Number(0)` |'
+  id: totrans-38
   prefs: []
   type: TYPE_TB
+  zh: '| `0` | `new Number(0)` |'
 - en: '| `42` | `new Number(42)` |'
+  id: totrans-39
   prefs: []
   type: TYPE_TB
+  zh: '| `42` | `new Number(42)` |'
 - en: Identifier node
+  id: totrans-40
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 标识符节点
 - en: Identifiers, or *id*s for short, refer to variables in the code.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 标识符，或简称为 *id*，指的是代码中的变量。
 - en: '[PRE5]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Examples of the `Id` node
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Id` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-44
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-45
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `x` | `new Id("x")` |'
+  id: totrans-46
   prefs: []
   type: TYPE_TB
+  zh: '| `x` | `new Id("x")` |'
 - en: '| `hello` | `new Id("hello")` |'
+  id: totrans-47
   prefs: []
   type: TYPE_TB
+  zh: '| `hello` | `new Id("hello")` |'
 - en: Operator nodes
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 操作符节点
 - en: The next AST node is `Not`, which stands for the logical negation operator (`!`).
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一个 AST 节点是 `Not`，它代表逻辑否定运算符 (`!`)。
 - en: '[PRE6]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: Examples of the `Not` node
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Not` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-52
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-53
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `!x` | `new Not(new Id("x"))` |'
+  id: totrans-54
   prefs: []
   type: TYPE_TB
+  zh: '| `!x` | `new Not(new Id("x"))` |'
 - en: '| `!42` | `new Not(new Number(42))` |'
+  id: totrans-55
   prefs: []
   type: TYPE_TB
+  zh: '| `!42` | `new Not(new Number(42))` |'
 - en: Negation is the only *prefix operator* (or *unary operator*) that we define.
     However, we define several *infix operators* (or *binary operators*).
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 否定是唯一的一种 *前缀运算符*（或 *一元运算符*）。然而，我们定义了几个 *中缀运算符*（或 *二元运算符*）。
 - en: Equality operator (`==`) and its opposite (`!=`).
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 等于运算符 (`==`) 和其相反运算符 (`!=`)。
 - en: '[PRE7]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '[PRE8]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: Examples of `Equal` and `NotEqual` nodes
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Equal` 和 `NotEqual` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-61
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-62
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `x == y` | `new Equal(new Id("x"), new Id("y"))` |'
+  id: totrans-63
   prefs: []
   type: TYPE_TB
+  zh: '| `x == y` | `new Equal(new Id("x"), new Id("y"))` |'
 - en: '| `10 != 25` | `new NotEqual(new Number(10), new Number(25))` |'
+  id: totrans-64
   prefs: []
   type: TYPE_TB
+  zh: '| `10 != 25` | `new NotEqual(new Number(10), new Number(25))` |'
 - en: 'Addition (`+`), subtraction (`-`), multiplication (`*`), and division (`/`):'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 加法 (`+`)、减法 (`-`)、乘法 (`*`) 和除法 (`/`)：
 - en: '[PRE9]'
+  id: totrans-66
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[PRE10]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: '[PRE11]'
+  id: totrans-68
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[PRE12]'
+  id: totrans-69
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Examples of `Add` and `Multiply` nodes
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Add` 和 `Multiply` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-71
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-72
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `x + y` |'
+  id: totrans-73
   prefs: []
   type: TYPE_TB
+  zh: '| `x + y` |'
 - en: '[PRE13]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '|'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-76
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '| `10 * 25` |'
+  id: totrans-77
   prefs: []
   type: TYPE_TB
+  zh: '| `10 * 25` |'
 - en: '[PRE14]'
+  id: totrans-78
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: '|'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: Note that since the parameters are ASTs themselves, that means they can be arbitrarily
     nested.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，由于参数本身就是 AST，这意味着它们可以任意嵌套。
 - en: 'For example, `42 + !(20 != 10)` will be:'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，`42 + !(20 != 10)` 将变为：
 - en: '[PRE15]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: Not all combinations of AST nodes make sense. Nonetheless, the one above happens
     to be valid in JavaScript.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 并非所有 AST 节点的组合都是有意义的。然而，上述组合在 JavaScript 中恰好是有效的。
 - en: Call node
+  id: totrans-84
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 调用节点
 - en: '`Call` refers to a function name (or *callee*), and an array of arguments.
     For example, `f(x)` becomes: `new Call("f", [new Id("x")])`.'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Call` 指的是函数名（或 *callee*），以及参数数组。例如，`f(x)` 变为：`new Call("f", [new Id("x")])`。'
 - en: '[PRE16]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: The language of our baseline compiler is restricted such that only named functions
     can be called.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的基础编译器的语言限制使得只能调用命名函数。
 - en: We can’t name the arguments array `arguments`, since this clashes with JavaScript
     built-in `arguments` object. So, with some reluctance, let’s call it `args`.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们不能将参数数组命名为 `arguments`，因为这会与 JavaScript 内置的 `arguments` 对象冲突。所以我们有些不情愿地将其称为
+    `args`。
 - en: 'The `Call` node is interesting because it has both a primitive string and an
     array of AST as its members. JavaScript doesn’t have an agreed-upon protocol for
     equality; that’s why `Call` makes an excellent example of how to implement the
     `equals` method in JavaScript:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Call` 节点很有趣，因为它既有原始字符串，又有 AST 数组作为其成员。JavaScript 没有一个统一的协议来处理相等性；这就是为什么 `Call`
+    是实现 JavaScript 中 `equals` 方法的优秀示例：'
 - en: It uses `instanceof` operator to check that the other AST is also a `Call`.
+  id: totrans-90
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它使用 `instanceof` 运算符来检查另一个 AST 是否也是 `Call`。
 - en: It compares the `callee` strings using the `===` operator.
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它使用 `===` 运算符比较 `callee` 字符串。
 - en: It uses the `.equals` method for comparing AST nodes of each argument.
+  id: totrans-92
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它使用每个参数的 `.equals` 方法来比较 AST 节点。
 - en: It compares array by length and checks `every` element.
+  id: totrans-93
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它通过长度比较数组并检查`每个`元素。
 - en: Languages other than JavaScript often have more elegant ways of dealing with
     structural equality.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了 JavaScript 之外的语言通常有更优雅的方式来处理结构相等性。
 - en: Examples of the `Call` node
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Call` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-96
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-97
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `f(x, y)` |'
+  id: totrans-98
   prefs: []
   type: TYPE_TB
+  zh: '| `f(x, y)` |'
 - en: '[PRE17]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '|'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-101
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '| `factorial(n - 1)` |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
+  zh: '| `factorial(n - 1)` |'
 - en: '[PRE18]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: '|'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: Return node
+  id: totrans-105
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 返回节点
 - en: '[PRE19]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: Examples of the `Return` node
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Return` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-108
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-109
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `return 0;` |'
+  id: totrans-110
   prefs: []
   type: TYPE_TB
+  zh: '| `return 0;` |'
 - en: '[PRE20]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: '|'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-113
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '| `return n - 1;` |'
+  id: totrans-114
   prefs: []
   type: TYPE_TB
+  zh: '| `return n - 1;` |'
 - en: '[PRE21]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: '|'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: Block node
+  id: totrans-117
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 块节点
 - en: '`Block` refers to a block of code delimited with curly braces.'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Block` 指的是由花括号分隔的代码块。'
 - en: '[PRE22]'
+  id: totrans-119
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: Examples of the `Block` node
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Block` 节点的示例'
 - en: '| Source | AST |'
+  id: totrans-121
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | 抽象语法树 (AST) |'
 - en: '| --- | --- |'
+  id: totrans-122
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '|'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE23]'
+  id: totrans-124
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: '|'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE24]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: '|'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-128
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE25]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: '|'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE26]'
+  id: totrans-132
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: '|'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: If node
+  id: totrans-134
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: If节点
 - en: 'The `If` node has three branches:'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '`If`节点有三个分支：'
 - en: '`conditional` refers to the expression that is evaluated to either true or
     false,'
+  id: totrans-136
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`conditional`指的是评估为真或假的表达式，'
 - en: '`consequence` is the branch taken in the true case, and'
+  id: totrans-137
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`consequence`是在真情况下采取的分支，并且'
 - en: '`alternative` is the branch taken in the false case.'
+  id: totrans-138
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`alternative`是在假情况下采取的分支。'
 - en: '[PRE27]'
+  id: totrans-139
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: 'This way, the following:'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，以下：
 - en: '[PRE28]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: 'Becomes:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 变成：
 - en: '[PRE29]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: 'Curly braces are optional for if statements, thus, the following:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 大括号对于if语句是可选的，因此以下：
 - en: '[PRE30]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 'Becomes:'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 变成：
 - en: '[PRE31]'
+  id: totrans-147
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 'How do we represent an `if` without the `else` branch? We could have a separate
     node for it, or we can do a simple trick: representing `if (x) y` the same way
     as `if (x) y else {}`. In other words, by placing an empty `Block` as the `alternative`.'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们如何表示没有`else`分支的`if`？我们可以为它创建一个单独的节点，或者我们可以做一个简单的技巧：将`if (x) y`以与`if (x) y
+    else {}`相同的方式表示。换句话说，通过放置一个空的`Block`作为`alternative`。
 - en: Function definition node
+  id: totrans-149
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 函数定义节点
 - en: A function definition consists of a function name, an array of parameters, and
     the function’s body.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数定义由函数名、参数数组以及函数体组成。
 - en: '[PRE32]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: Consider the following function definition.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑以下函数定义。
 - en: '[PRE33]'
+  id: totrans-153
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: When converted to an AST it becomes as follows.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 当转换为AST时，它变成如下所示。
 - en: '[PRE34]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: Notice that in a function definition, the parameters are strings, while in a
     function call, they are ASTs. This fact reflects that function calls can have
     nested expressions, while function definitions simply list the inbound variable
     names.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，在函数定义中，参数是字符串，而在函数调用中，它们是AST。这一事实反映了函数调用可以有嵌套表达式，而函数定义只是简单地列出传入的变量名。
 - en: Variable declaration node
+  id: totrans-157
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 变量声明节点
 - en: '`Var` nodes are for variable declarations. So `var x = 42;` becomes `new Var("x",
     new Number(42))`.'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Var`节点用于变量声明。所以`var x = 42;`变成`new Var("x", new Number(42))`。'
 - en: '[PRE35]'
+  id: totrans-159
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: Assignment node
+  id: totrans-160
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 赋值节点
 - en: An assignment is represented with the node `Assign`.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 赋值用`Assign`节点表示。
 - en: '[PRE36]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: 'Assignment differs from variable declaration in the following way: assignment
     changes the value of an existing variable, and does not define a new one. At least,
     that’s the distinction that we will assume. JavaScript allows assignment of a
     variable that is not defined yet; in such case, it will create a global variable.
     TypeScript, on the other hand, dissallows this error-prone behavior.'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 赋值与变量声明在以下方面有所不同：赋值改变现有变量的值，而不是定义一个新的变量。至少，这是我们将会假设的区分。JavaScript允许对尚未定义的变量进行赋值；在这种情况下，它将创建一个全局变量。另一方面，TypeScript不允许这种可能导致错误的行为。
 - en: Examples of the `Assign` node
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Assign`节点的示例'
 - en: '| Source | AST |'
+  id: totrans-165
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | AST |'
 - en: '| --- | --- |'
+  id: totrans-166
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `x = 42;` |'
+  id: totrans-167
   prefs: []
   type: TYPE_TB
+  zh: '| `x = 42;` |'
 - en: '[PRE37]'
+  id: totrans-168
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: '|'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-170
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '| `y = a + b;` |'
+  id: totrans-171
   prefs: []
   type: TYPE_TB
+  zh: '| `y = a + b;` |'
 - en: '[PRE38]'
+  id: totrans-172
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: '|'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: While loop node
+  id: totrans-174
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: While循环节点
 - en: The last node of our AST and the last construct in our baseline language is
     the while loop.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们AST的最后一个节点和我们的基线语言的最后一个结构是while循环。
 - en: '[PRE39]'
+  id: totrans-176
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: Examples of the `While` node
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '`While`节点的示例'
 - en: '| Source | AST |'
+  id: totrans-178
   prefs: []
   type: TYPE_TB
+  zh: '| 源代码 | AST |'
 - en: '| --- | --- |'
+  id: totrans-179
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '|'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE40]'
+  id: totrans-181
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: '|'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE41]'
+  id: totrans-183
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: '|'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-185
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE42]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: '|'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE43]'
+  id: totrans-189
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: '|'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: Summary
+  id: totrans-191
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: 'Let’s look at a larger snippet converted to an AST. Remember our factorial
     function:'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看一个更大的代码片段转换成AST的例子。记住我们的阶乘函数：
 - en: '[PRE44]'
+  id: totrans-193
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: 'And here is the corresponding AST:'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是相应的AST：
 - en: '[PRE45]'
+  id: totrans-195
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: We finish this chapter with a table that summarizes all the AST constructors
     that we’ve covered, their signatures, and examples of what source code these AST
     nodes can represent.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们以一个表格结束本章，该表格总结了我们所涵盖的所有AST构造函数，它们的签名以及这些AST节点可以表示的源代码示例。
 - en: Summary of AST constructor signatures with examples
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: AST构造函数签名及其示例总结
 - en: '| AST Constructor Signature | Example |'
+  id: totrans-198
   prefs: []
   type: TYPE_TB
+  zh: '| AST构造函数签名 | 示例 |'
 - en: '| --- | --- |'
+  id: totrans-199
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '|'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE46]'
+  id: totrans-201
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: '|'
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE47]'
+  id: totrans-203
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: '|'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-205
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE48]'
+  id: totrans-207
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: '|'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE49]'
+  id: totrans-209
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: '|'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-211
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE50]'
+  id: totrans-213
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: '|'
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE51]'
+  id: totrans-215
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: '|'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-217
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE52]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: '|'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE53]'
+  id: totrans-221
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: '|'
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-223
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE54]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: '|'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE55]'
+  id: totrans-227
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: '|'
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-229
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE56]'
+  id: totrans-231
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: '|'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE57]'
+  id: totrans-233
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: '|'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-235
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE58]'
+  id: totrans-237
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE58]'
 - en: '|'
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE59]'
+  id: totrans-239
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE59]'
 - en: '|'
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-241
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE60]'
+  id: totrans-243
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE60]'
 - en: '|'
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE61]'
+  id: totrans-245
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE61]'
 - en: '|'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '|  |  |'
+  id: totrans-247
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |'
 - en: '|'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE62]'
+  id: totrans-249
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE62]'
 - en: '|'
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: '[PRE63]'
+  id: totrans-251
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE63]'
 - en: '|'
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: '|'
 - en: In the next two chapters, you will learn about converting a program from source
     to an AST, or in other words, about *parsing*.
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的两章中，你将学习如何将程序从源代码转换为AST，换句话说，就是关于*解析*。
 - en: '[Next: Chapter 5\. Parser Combinators](./05-parser-combinators)'
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第五章\. 解析器组合器](./05-parser-combinators)'
 - en: '* * *'
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

@@ -1,119 +1,178 @@
 - en: Chapter 7 ARM Assembly Programming
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第 7 章 ARM 汇编编程
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/07-arm-assembly-programming](https://keleshev.com/compiling-to-assembly-from-scratch/07-arm-assembly-programming)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/07-arm-assembly-programming](https://keleshev.com/compiling-to-assembly-from-scratch/07-arm-assembly-programming)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从零开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 作者：[Vladimir Keleshev](/)
 - en: By the end of this chapter, you will learn enough ARM assembly programming to
     implement the rest of the compiler.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 到本章结束时，你将学习到足够的 ARM 汇编编程知识，以实现编译器的其余部分。
 - en: We will be using the GNU Compiler Collection (GCC) toolchain, most notably,
     the GNU Assembler (GAS). See *Appendix B* for comparison between GAS and the legacy
     ARMASM syntax.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将使用 GNU 编译器集合（GCC）工具链，最显著的是 GNU 汇编器（GAS）。参见 *附录 B* 了解 GAS 和传统 ARMASM 语法之间的比较。
 - en: First, we’ll take a bird’s eye view of a simple hello-world program to get a
     taste of assembly programming. After this rough initial overview, we will dive
     into details.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们将从简单的 hello-world 程序的鸟瞰图开始，以体验汇编编程。在初步的概述之后，我们将深入细节。
 - en: A taste of assembly
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 汇编的初体验
 - en: This is not one of these *how to draw an owl* tutorials. I will assume that
     you have never done any assembly programming and walk your way through it. However,
     in the beginning, I wanted to start with a small, complete program to get a taste
     of assembly programming. After that, we’ll cover each part in detail.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 这不是那些 *如何画一只猫头鹰* 的教程之一。我将假设你从未进行过任何汇编编程，并引导你完成这个过程。然而，一开始，我想从一个小的、完整的程序开始，以体验汇编编程。之后，我们将详细讲解每个部分。
 - en: 'So here it is, our first assembly program:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以，这就是我们的第一个汇编程序：
 - en: '[PRE0]'
+  id: totrans-10
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: This program prints `Hello, assembly!` to the console and exits with error code
     `42`.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 该程序将 `Hello, assembly!` 打印到控制台，并以错误代码 `42` 退出。
 - en: Now, let’s discuss this piece of assembly code step-by-step.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们逐步讨论这段汇编代码。
 - en: '[PRE1]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: The program starts with a `.data` directive. Under this directive, there are
     definitions of our global data, potentially mutable (or read-write). There we
     have only one definition, a byte string defined with a `.string` directive. It
     has a *label* named `hello:` which stands for the memory address of this string,
     which we can refer to. The data section ends, and the `.text` directive starts
     the *code* section.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 程序从 `.data` 指令开始。在这个指令下，有我们全局数据的定义，可能是可变的（或可读可写）。那里只有一个定义，一个使用 `.string` 指令定义的字节字符串。它有一个
+    *标签* 名为 `hello:`，代表这个字符串的内存地址，我们可以引用它。数据部分结束，`.text` 指令开始 *代码* 部分。
 - en: '[PRE2]'
+  id: totrans-15
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: This section is for immutable (read, no-write) data. It is used for constants,
     as well as for the actual assembly instructions. The only definition in the `.text`
     section is a function called `main` defined with the label `main:`. It is declared
     “public” using the `.global` directive. The function starts with an instruction
     `push` that saves some necessary registers on the stack. Then, it continues below.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节用于不可变（读取，不写入）数据。它用于常量，以及实际的汇编指令。`.text` 部分中唯一的定义是一个名为 `main` 的函数，使用标签 `main:`
+    定义。它使用 `.global` 指令声明为“公共”。函数以一个 `push` 指令开始，该指令将一些必要的寄存器保存到堆栈上。然后，它继续执行。
 - en: '[PRE3]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: The function loads the address of the string that we defined earlier, by referring
     to the `hello` label. The instruction `ldr` *loads* the address into *register*
     `r0`. The instruction `bl printf` is the *call* instruction that calls the `printf`
     function to print the string. The register `r0` is used to pass a parameter to
     `printf`.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数通过引用 `hello` 标签来加载我们之前定义的字符串的地址。指令 `ldr` *加载* 地址到 *寄存器* `r0`。指令 `bl printf`
+    是 *调用* 指令，用于调用 `printf` 函数以打印字符串。寄存器 `r0` 用于将参数传递给 `printf`。
 - en: '[PRE4]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Next, we set up the exit code. First, we use the `mov` instruction to *move*,
     or copy a number `41` into register `r0`. Then the `add` instruction increments
     `r0` by one, resulting in `42`. There’s nothing special about the exit code `42`,
     and we didn’t have to compute it from `41`. But this taste of assembly would be
     incomplete without showing some basic instructions like `mov` and `add`.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们设置退出代码。首先，我们使用 `mov` 指令将数字 `41` *移动* 或复制到寄存器 `r0`。然后，`add` 指令将 `r0` 的值增加一个，结果为
+    `42`。退出代码 `42` 没有什么特殊之处，我们也不需要从 `41` 计算它。但如果没有展示一些基本指令如 `mov` 和 `add`，这段汇编的体验将是不完整的。
 - en: '[PRE5]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The `main` function ends with a return sequence. The registers that we saved,
     in the beginning, are now restored with the `pop` instruction, and then we return
     from the function with the `bx lr` instruction, assuming that the return value
     is in `r0`, which should be `42`.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '`main`函数以返回序列结束。我们最初保存的寄存器现在通过`pop`指令恢复，然后我们使用`bx lr`指令从函数返回，假设返回值在`r0`中，应该是`42`。'
 - en: As you probably noticed, the familiar single- and multi-line comments are supported.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 如你可能注意到的，单行和多行注释都得到了支持。
 - en: Running an assembly program
+  id: totrans-24
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 运行汇编程序
 - en: Here’s how you get this simple program running.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是如何运行这个简单程序的方法。
 - en: '**Note**'
+  id: totrans-26
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**注意**'
 - en: ''
+  id: totrans-27
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -121,85 +180,127 @@
     computer (like a Raspberry Pi) with a 32-bit operating system. If this is not
     the case for you, check out *Appendix A* on how to adapt these instructions to
     other environments.
+  id: totrans-28
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 下面的说明假设你在运行基于ARM的计算机（如树莓派）上的32位操作系统上运行命令。如果你不是这种情况，请查看*附录A*了解如何将这些说明适应其他环境。
 - en: 'Save the previous program into a file called `hello.s` using a text editor.
     Then type the following command into the console:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用文本编辑器将之前的程序保存到名为`hello.s`的文件中。然后在控制台中输入以下命令：
 - en: '[PRE6]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: This will instruct GCC to assemble and link our program producing a `hello`
     executable. By default, GCC will link our assembly with a `libc` library, which
     provides us with basic functions such as `printf` that we used here.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将指示GCC汇编并链接我们的程序，生成一个`hello`可执行文件。默认情况下，GCC将我们的汇编与`libc`库链接，该库为我们提供了基本函数，例如我们在这里使用的`printf`。
 - en: You see, the operating system kernel doesn’t provide such functions directly.
     For example, printing to the console is implemented in libraries like `libc` on
     top of (operating) *system calls* like `writev`. Without these basics, we would
     be stuck without even being able to print to the console.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 你看，操作系统内核并不直接提供这样的功能。例如，打印到控制台是在`libc`等库中实现的，这些库建立在（操作）*系统调用*（如`writev`）之上。没有这些基础知识，我们甚至无法打印到控制台。
 - en: 'Now, you can run the resulting executable as usual:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，你可以像往常一样运行生成的可执行文件：
 - en: '[PRE7]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '*Oh, hello there!*'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '*哦，你好啊！*'
 - en: We can check the exit code by printing the `$?` shell variable.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以通过打印shell变量`$?`来检查退出代码。
 - en: '[PRE8]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: Now that we have a template to run our programs and a rough overview, we will
     dive deep into the details.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们有了运行程序的模板和粗略的概述，我们将深入细节。
 - en: We will start with the basic data structure of assembly programming, the *machine
     word*, then followed by an overview of how memory and registers work, and finally
     proceed to cover the different kinds of instructions that manipulate registers
     and memory.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将从汇编程序的基本数据结构*机器字*开始，然后概述内存和寄存器的工作方式，最后将介绍操作寄存器和内存的不同类型的指令。
 - en: Machine word
+  id: totrans-40
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 机器字
 - en: ARM is a 32-bit instruction set. That means that most operations work with a
     32-bit data structure called the *machine word*.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: ARM是一个32位指令集。这意味着大多数操作都使用一个名为*机器字*的32位数据结构。
 - en: In ARM, a word consists of 32 bits. Each bit is binary `0` or `1`.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 在ARM中，一个字由32位组成。每个位是二进制`0`或`1`。
 - en: Another way to look at it, a word consists of *four* bytes, where each byte
     is 8 bits.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种看待它的方式是，一个单词由*四个*字节组成，其中每个字节是8位。
 - en: There are also half-words and double-words. The names speak for themselves.
     Operations on them are not as common.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有半字和双字。它们的名称就说明了问题。对它们的操作并不常见。
 - en: Let’s look at the following word.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看以下单词。
 - en: '![An example machine word](../Images/3a55cf5fa168850321234094d5cc05d6.png)'
+  id: totrans-46
   prefs: []
   type: TYPE_IMG
+  zh: '![一个示例机器字](../Images/3a55cf5fa168850321234094d5cc05d6.png)'
 - en: An example machine word
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个示例机器字
 - en: What does it mean? What does it stand for? Well, the processor doesn’t care.
     It doesn’t have a type system. It doesn’t have any information attached to words
     to help us distinguish what a word stands for in isolation.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 它是什么意思？它代表什么？嗯，处理器并不关心。它没有类型系统。它没有与单词相关联的任何信息来帮助我们区分单词在孤立状态下代表什么。
 - en: If interpreted as an unsigned integer, this word could stand for `3_283_185_520`.
     If interpreted as a signed integer, then it’s `-1_011_781_776`. It could be a
     byte array of four bytes, `[195, 177, 111, 112]`. It could be an array of bits,
@@ -208,573 +309,880 @@
     as single-byte ASCII characters with codes `111` and `112`. It could also be an
     encoding of an ARM instruction with mnemonic `rsb`. Or it could be an address
     pointing to some data location in memory.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果解释为无符号整数，这个字可以代表 `3_283_185_520`。如果解释为有符号整数，那么它是 `-1_011_781_776`。它可能是一个包含四个字节的字节数组，`[195,
+    177, 111, 112]`。它可能是一个位数组，其中每个位是一个单独的标志。或者它可能是一个UTF-8编码的字符串 `"ñop"`，其中 `ñ` 使用两个字节
+    `195, 177` 编码，而 `o` 和 `p` 则作为单字节ASCII字符，代码分别为 `111` 和 `112`。它也可能是带有助记符 `rsb` 的ARM指令的编码。或者它可能是一个指向内存中某些数据位置的地址。
 - en: It is up to us (programmers and compiler writers) to assign meaning to each
     word and to keep track of what they stand for.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 是我们（程序员和编译器编写者）来为每个字分配意义，并跟踪它们所代表的内容。
 - en: '**Note**'
+  id: totrans-51
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**注意**'
 - en: ''
+  id: totrans-52
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Throughout this book, we’ll use (non-overlapping) solid boxes of different shapes
     and sizes to refer to 32-bit words. Like here, we’ll use dashed lines to delimit
     individual bytes, where it adds clarity.
+  id: totrans-53
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 在本书中，我们将使用不同形状和大小的（非重叠）实心框来引用32位字。就像这里，我们将使用虚线来限定单个字节，这有助于提高清晰度。
 - en: Numeric notation
+  id: totrans-54
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数值表示法
 - en: 'As we already did here, we’ll use JavaScript notation to refer to different
     interpretations of data. Modern JavaScript is quite good at that. We could refer
     to the above word using binary *(base-2)* notation, with `0b` prefix:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们在这里所做的那样，我们将使用JavaScript表示法来引用数据的不同解释。现代JavaScript在这方面做得相当不错。我们可以使用二进制（基数为2）表示法，带
+    `0b` 前缀来引用上述字：
 - en: '[PRE9]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'JavaScript allows us to add underscores for readability; for example, to distinguish
     bit patterns of individual bytes:'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: JavaScript允许我们添加下划线以提高可读性；例如，以区分单个字节的比特模式：
 - en: '[PRE10]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'We can use good old decimal *(base-10)* notation:'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以使用传统的十进制（基数为10）表示法：
 - en: '[PRE11]'
+  id: totrans-60
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: We can also use hexadecimal *(base-16)* notation, with `0x` prefix;
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们也可以使用带 `0x` 前缀的十六进制（基数为16）表示法；
 - en: '[PRE12]'
+  id: totrans-62
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: How do we decide which notation to use? Why would we ever use hexadecimal?
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们如何决定使用哪种表示法？为什么我们会使用十六进制？
 - en: 'Binary notation is straightforward: you can see the individual bits, and you
     can visually split a word into bytes, but it is very verbose!'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 二进制表示法简单直接：你可以看到单个比特，并且可以直观地将字分割为字节，但它非常冗长！
 - en: Decimal notation is much terser, you get a good understanding of the magnitude
     of the number, but it is hard to reason about the values of individual bytes and
     bits.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 十进制表示法更简洁，你可以很好地理解数字的大小，但很难推理单个字节和比特的值。
 - en: 'Hexadecimal notation is terse, and it is easy to split a word into bytes visually.
     Each hexadecimal digit maps to four bits, no matter the position in a number,
     so two hexadecimal digits always map to a byte. All you need to remember is bit
     patterns of the 16 hexadecimal digits:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 十六进制表示法简洁，并且易于直观地分割字为字节。每个十六进制数字映射到四个比特，无论其在数字中的位置如何，所以两个十六进制数字总是映射到一个字节。你只需要记住16个十六进制数字的比特模式：
 - en: '| Hexadecimal | Binary |'
+  id: totrans-67
   prefs: []
   type: TYPE_TB
+  zh: '| 十六进制 | 二进制 |'
 - en: '| --- | --- |'
+  id: totrans-68
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| `0x0` | `0b0000` |'
+  id: totrans-69
   prefs: []
   type: TYPE_TB
+  zh: '| `0x0` | `0b0000` |'
 - en: '| `0x1` | `0b0001` |'
+  id: totrans-70
   prefs: []
   type: TYPE_TB
+  zh: '| `0x1` | `0b0001` |'
 - en: '| `0x2` | `0b0010` |'
+  id: totrans-71
   prefs: []
   type: TYPE_TB
+  zh: '| `0x2` | `0b0010` |'
 - en: '| `0x3` | `0b0011` |'
+  id: totrans-72
   prefs: []
   type: TYPE_TB
+  zh: '| `0x3` | `0b0011` |'
 - en: '| `0x4` | `0b0100` |'
+  id: totrans-73
   prefs: []
   type: TYPE_TB
+  zh: '| `0x4` | `0b0100` |'
 - en: '| `0x5` | `0b0101` |'
+  id: totrans-74
   prefs: []
   type: TYPE_TB
+  zh: '| `0x5` | `0b0101` |'
 - en: '| `0x6` | `0b0110` |'
+  id: totrans-75
   prefs: []
   type: TYPE_TB
+  zh: '| `0x6` | `0b0110` |'
 - en: '| `0x7` | `0b0111` |'
+  id: totrans-76
   prefs: []
   type: TYPE_TB
+  zh: '| `0x7` | `0b0111` |'
 - en: '| `0x8` | `0b1000` |'
+  id: totrans-77
   prefs: []
   type: TYPE_TB
+  zh: '| `0x8` | `0b1000` |'
 - en: '| `0x9` | `0b1001` |'
+  id: totrans-78
   prefs: []
   type: TYPE_TB
+  zh: '| `0x9` | `0b1001` |'
 - en: '| `0xA` | `0b1010` |'
+  id: totrans-79
   prefs: []
   type: TYPE_TB
+  zh: '| `0xA` | `0b1010` |'
 - en: '| `0xB` | `0b1011` |'
+  id: totrans-80
   prefs: []
   type: TYPE_TB
+  zh: '| `0xB` | `0b1011` |'
 - en: '| `0xC` | `0b1100` |'
+  id: totrans-81
   prefs: []
   type: TYPE_TB
+  zh: '| `0xC` | `0b1100` |'
 - en: '| `0xD` | `0b1101` |'
+  id: totrans-82
   prefs: []
   type: TYPE_TB
+  zh: '| `0xD` | `0b1101` |'
 - en: '| `0xE` | `0b1110` |'
+  id: totrans-83
   prefs: []
   type: TYPE_TB
+  zh: '| `0xE` | `0b1110` |'
 - en: '| `0xF` | `0b1111` |'
+  id: totrans-84
   prefs: []
   type: TYPE_TB
+  zh: '| `0xF` | `0b1111` |'
 - en: 'This way we can easily translate from hexadecimal to binary and back. Take
     `0xC3_B1_6F_70`, as an example:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样我们就可以轻松地将十六进制转换为二进制，反之亦然。以 `0xC3_B1_6F_70` 为例：
 - en: '`0xC3` is `0b1100_0011`'
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0xC3` 是 `0b1100_0011`'
 - en: '`0xB1` is `0x1011_0001`'
+  id: totrans-87
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0xB1` 是 `0x1011_0001`'
 - en: '`0x6F` is `0b0110_1111`'
+  id: totrans-88
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0x6F` 是 `0b0110_1111`'
 - en: '`0x70` is `0b0111_0000`'
+  id: totrans-89
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`0x70` 是 `0b0111_0000`'
 - en: 'Thus we can conclude that `0xC3_B1_6F_70` is the same as:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，我们可以得出结论，`0xC3_B1_6F_70` 与以下表示相同：
 - en: '[PRE13]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: Can’t do this with decimal notation!
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 用十进制表示法做不到这一点！
 - en: Memory
+  id: totrans-93
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内存
 - en: 'Think of memory as a large continuous byte array. It contains our program instructions
     encoded as binary words. It contains the data that our program works with: data
     segment, code segment, stack, and heap (more on these later).'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 将内存想象成一个大的连续字节数组。它包含我们的程序指令，以二进制字的形式编码。它包含我们的程序处理的数据：数据段、代码段、栈和堆（稍后会有更多介绍）。
 - en: Like a byte array, you can access a single byte from memory given an index into
     this array. We call this index, a *memory address*. Memory addresses are 32-bit
     on ARM (how it all aligns, eh?).
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 就像字节数组一样，你可以通过数组的索引来访问内存中的单个字节。我们称这个索引为 *内存地址*。ARM 的内存地址是 32 位的（这一切是如何对齐的，对吧？）。
 - en: 'However, not only can you access single bytes from memory, you can also access
     whole 32-bit words. But there is a restriction: you can only access *aligned*
     words. In this case, *aligned* means non-overlapping words or words which address
     is divisible by *four*. One word contains four bytes, and each byte has its own
     address, but we address words only by the address of the first byte in the word.'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，你不仅可以访问内存中的单个字节，还可以访问整个 32 位字。但有一个限制：你只能访问 *对齐* 的字。在这种情况下，*对齐* 意味着非重叠的字或地址能被
+    4 整除的字。一个字包含四个字节，每个字节都有自己的地址，但我们只通过字中第一个字节的地址来引用字。
 - en: '**Well, actually…**'
+  id: totrans-97
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，……**'
 - en: ''
+  id: totrans-98
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Newer ARM processors support unaligned access, but not for all relevant instructions,
     and it incurs a performance penalty. In this book, we avoid it.
+  id: totrans-99
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 新的 ARM 处理器支持非对齐访问，但并非所有相关指令都支持，并且这会带来性能惩罚。在这本书中，我们避免使用它。
 - en: In the following figure, you can see a stretch of memory starting from address
     `0x00` that shows how individual bytes and their addresses map to aligned words
     and their addresses.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的图中，你可以看到从地址 `0x00` 开始的内存段，展示了单个字节及其地址如何映射到对齐的字及其地址。
 - en: '![An example stretch of memory on byte-level](../Images/e850519eb736df8b3b200aa68095323a.png)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![字节级别的内存示例](../Images/e850519eb736df8b3b200aa68095323a.png)'
 - en: An example stretch of memory on byte-level
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 字节级别的内存示例
 - en: From here on, we won’t need this much detail when talking about memory, so we
     will use a simplified (but still as precise) word-level diagrams. Like the next
     one that describes the same stretch of memory.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 从现在开始，当我们谈论内存时，我们不需要这么多细节，所以我们将使用简化的（但仍然非常精确）字级图。就像下一个描述相同内存段的图。
 - en: '![Same stretch of memory on word-level](../Images/6054e608c175c84d5ae309a76ca837d3.png)'
+  id: totrans-104
   prefs: []
   type: TYPE_IMG
+  zh: '![同一内存段的字级示例](../Images/6054e608c175c84d5ae309a76ca837d3.png)'
 - en: Same stretch of memory on word-level
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 同一内存段的字级示例
 - en: Sometimes we store a memory address in a memory word. We call that a *pointer*.
     In our diagrams, we will use arrows to show where a memory word is pointing. We
     will omit the actual memory addresses in our diagrams since the exact value is
     not important. The important part is where it points to, not the value itself.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时我们会将内存地址存储在内存字中。我们称之为 *指针*。在我们的图中，我们将使用箭头来表示内存字指向的位置。我们将在图中省略实际的内存地址，因为确切值并不重要。重要的是它指向的位置，而不是值本身。
 - en: '![Pointer notation: left—with arrows, right—with actual values](../Images/e5596e647de28affaa1b7b71978e50f7.png)'
+  id: totrans-107
   prefs: []
   type: TYPE_IMG
+  zh: '![指针表示法：左边——带有箭头，右边——带有实际值](../Images/e5596e647de28affaa1b7b71978e50f7.png)'
 - en: 'Pointer notation: left—with arrows, right—with actual values'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 指针表示法：左边——带有箭头，右边——带有实际值
 - en: As we already mentioned, the memory contains our data segment, code segment,
     stack, and heap. However, what it does *not* contain (on most architectures, anyway)
     is *registers*.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们之前提到的，内存包含我们的数据段、代码段、堆栈和堆。然而，它不包含（在大多数架构中，至少）的是 *寄存器*。
 - en: Registers
+  id: totrans-110
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 寄存器
 - en: Registers are special memory words that are *outside* of the main memory. They
     are used for intermediate values, sort of like temporary variables. There’s a
     limited number of these—usually 8, 16, or 32.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 寄存器是位于主内存之外的特殊内存字。它们用于中间值，有点像临时变量。这些寄存器的数量有限——通常是 8、16 或 32 个。
 - en: ARM has 16 main registers and a special *status* register (CPSR). The main registers
     are called `r0` to `r15`, but some of them have alternative names. See the next
     figure for more details.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: ARM 有 16 个主要寄存器和一个特殊的 *状态* 寄存器（CPSR）。主要寄存器称为 `r0` 到 `r15`，但其中一些有备选名称。请参见下一图以获取更多详细信息。
 - en: '![Registers in ARM](../Images/4d25c709f552949c71b9ccdcdc94740f.png)'
+  id: totrans-113
   prefs: []
   type: TYPE_IMG
+  zh: '![ARM 中的寄存器](../Images/4d25c709f552949c71b9ccdcdc94740f.png)'
 - en: Registers in ARM
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: ARM 中的寄存器
 - en: First, why do we need registers? Couldn’t instructions work directly with memory?
     They could, and there are other architectures such as accumulator-based and stack-based
     architectures that need only one register or no registers at all. However, ARM
     is a *load-store* architecture.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，为什么我们需要寄存器？指令不能直接与内存工作吗？它们可以，还有其他如累加器基础和堆栈基础的架构，只需要一个寄存器或者根本不需要寄存器。然而，ARM
+    是一种 *加载-存储* 架构。
 - en: 'With *load-store* architecture, the basic workflow is as follows:'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 *加载-存储* 架构中，基本的工作流程如下：
 - en: data is loaded from memory into registers, then
+  id: totrans-117
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据从内存加载到寄存器中，然后
 - en: operations are performed on registers, and finally
+  id: totrans-118
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 操作是在寄存器上执行的，最后
 - en: the data is stored back into memory.
+  id: totrans-119
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据被存储回内存中。
 - en: It turns out this workflow is quite efficient, and most modern architectures
     follow it.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果证明这种工作流程非常高效，并且大多数现代架构都遵循它。
 - en: Most ARM registers are general-purpose and can be used for any intermediate
     values. We’ll cover the more *special-purpose* registers like `fp`, `ip`, `sp`,
     `lr`, `pc`, and CPSR as we discover instructions that work with them.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数ARM寄存器都是通用的，可以用于任何中间值。当我们发现与它们一起工作的指令时，我们将介绍更**特殊用途**的寄存器，如`fp`、`ip`、`sp`、`lr`、`pc`和CPSR。
 - en: '* * *'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: You may have heard that *registers are fast*. What does that even mean? Why
     couldn’t we use the same technology for memory?
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可能听说过**寄存器很快**。这到底是什么意思？为什么我们不能使用相同的技术来处理内存？
 - en: Two reasons.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个原因。
 - en: There are only 16 registers. That means you can refer to a register using only
     4 bits. At the same time, memory addresses are 32-bit. So you need fewer bytes
     (and instructions) to encode an operation on three registers, rather than an operation
     on three memory addresses. And a processor can decode fewer instructions faster.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 只有16个寄存器。这意味着您只能使用4位来引用一个寄存器。同时，内存地址是32位的。因此，您需要更少的字节（和指令）来编码对三个寄存器的操作，而不是对三个内存地址的操作。并且处理器可以更快地解码更少的指令。
 - en: Second, computer memory has several *levels* of caches, usually referred to
     as *L1*–*L4*. And even if the fastest cache uses the same technology as registers,
     there could still be a *cache miss*. But such a cache miss can never happen in
     the case of registers.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二，计算机内存有多个**级别**的缓存，通常称为**L1**至**L4**。即使最快的缓存使用与寄存器相同的技术，也可能发生**缓存未命中**。但在寄存器的情况下，这种情况永远不会发生。
 - en: The add instruction
+  id: totrans-127
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 加法指令
 - en: 'Let’s get to our first instruction, `add`:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看我们的第一个指令，`add`：
 - en: '[PRE14]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: It consists of a mnemonic name `add` as well as three register *operands*, `r1`,
     `r2`, and `r3`. In this case, *operand 1* is `r2`, *operand 2* is `r3`, and `r1`
     is the result, also called the *destination* operand. This kind of instruction
     is called three-operand instruction.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 它由一个助记符名称`add`以及三个寄存器操作数`r1`、`r2`和`r3`组成。在这种情况下，**操作数1**是`r2`，**操作数2**是`r3`，`r1`是结果，也称为**目标**操作数。这种指令被称为三操作数指令。
 - en: As a comment, we provided a pseudo-code that describes the effect of the instruction.
     Note that the order of operands in the instructions is the same as in the pseudo-code.
     ARM assembly was designed such that this is always the case.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为注释，我们提供了一个伪代码，描述了指令的效果。请注意，指令中操作数的顺序与伪代码中的顺序相同。ARM汇编被设计成始终如此。
 - en: All ARM instructions are encoded into single 32-bit words in memory. In this
     figure, you can see how this particular instruction is encoded into binary form.
     We’ve left the meaning of some bits unexplained.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有ARM指令都编码成内存中的单个32位字。在这个图中，您可以看到这个特定指令是如何编码成二进制的。我们故意没有解释一些位的含义。
 - en: '![The encoding of: add r1, r2, r3](../Images/db4bf94d3d0c5a427e2509ba3575b2b8.png)'
+  id: totrans-133
   prefs: []
   type: TYPE_IMG
+  zh: '![The encoding of: add r1, r2, r3](../Images/db4bf94d3d0c5a427e2509ba3575b2b8.png)'
 - en: 'The encoding of: `add r1, r2, r3`'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '`add r1, r2, r3`的编码'
 - en: '**Well, actually…**'
+  id: totrans-135
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上…**'
 - en: ''
+  id: totrans-136
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Most ARM processors support several instruction sets. They have been historically
     called ARM, Thumb, and ARM64, but recently renamed to A32, T32, and A64.
+  id: totrans-137
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 大多数ARM处理器支持多个指令集。它们在历史上被称为ARM、Thumb和ARM64，但最近已更名为A32、T32和A64。
 - en: ''
+  id: totrans-138
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: T32 (or Thumb 2), for example, is a variable-length instruction set with both
     16-bit and 32-bit instructions.
+  id: totrans-139
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 例如，T32（或Thumb 2）是一个变长指令集，具有16位和32位指令。
 - en: Immediate operand
+  id: totrans-140
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 立即操作数
 - en: 'The `add` instruction has a second form, where the *last* operand is a small
     number encoded directly into the instruction. It is called an *immediate* operand,
     and the notation uses a `#` sign:'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: '`add`指令有一个第二种形式，其中**最后一个**操作数是一个直接编码到指令中的小数字。它被称为**立即**操作数，并且使用`#`符号表示：'
 - en: '[PRE15]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'GNU Assembler allows familiar syntax for hexadecimal values with `0x` prefix
     and binary values with `0b` prefix. However, it doesn’t allow underscores in them.
     So, the previous instruction can be rewritten as:'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: GNU汇编器允许使用`0x`前缀表示十六进制值和`0b`前缀表示二进制值。但是，它不允许在它们中使用下划线。因此，前面的指令可以重写为：
 - en: '[PRE16]'
+  id: totrans-144
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: In the following figure you can see how this instruction is encoded.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的图中，您可以看到这个指令是如何编码的。
 - en: '![The encoding of: add r1, r2, #0xFA00](../Images/e0848693a1c04b3c7414d0d1b8f09b7f.png)'
+  id: totrans-146
   prefs: []
   type: TYPE_IMG
+  zh: '![The encoding of: add r1, r2, #0xFA00](../Images/e0848693a1c04b3c7414d0d1b8f09b7f.png)'
 - en: 'The encoding of: `add r1, r2, #0xFA00`'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '`add r1, r2, #0xFA00`的编码'
 - en: From the figure, you can see that there are 8 bits dedicated to the immediate
     operand, so you might conclude that it can represent any single byte value. But—wait!—we’ve
     just used `64000` in our example, and that does not fit in a byte! It turns out,
     there are four more bits in the instruction that encode how many *even* number
     of bits the immediate should be shifted. This way we can represent `0xFA`, or
     `0xFA0`, or `0xFA00`, or `0xFA000` and so on.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 从图中，你可以看到有8位专门用于立即操作数，所以你可能得出结论，它可以表示任何单个字节的值。但是——等等！——在我们的例子中，我们使用了`64000`，这并不适合一个字节！实际上，指令中还有四个额外的位来编码立即数应该左移多少个偶数位。这样我们就可以表示`0xFA`、`0xFA0`、`0xFA00`、`0xFA000`等等。
 - en: This is an ingenious way to encode a vast amount of interesting constants in
     a very tight space!
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一种巧妙的方法，在非常紧凑的空间中编码大量有趣的常数！
 - en: Signed, unsigned, two’s complement
+  id: totrans-150
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 有符号、无符号、二进制补码
 - en: What are we adding with the `add` instruction? Unsigned integers? Signed integers?
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们使用`add`指令添加的是什么？无符号整数？有符号整数？
 - en: 'It turns out that it works correctly both when all the operands are treated
     as unsigned integers, and in the case where they are all treated as signed integers.
     This is thanks to the signed number representation that most computers use, called
     *two’s complement*. It was specifically designed for this trick: to use the same
     hardware adder for both signed and unsigned numbers.'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果表明，无论是将所有操作数都视为无符号整数，还是将它们都视为有符号整数，它都能正确工作。这要归功于大多数计算机使用的有符号数表示法，称为*二进制补码*。它是专门为这个技巧设计的：使用相同的硬件加法器对有符号数和无符号数进行操作。
 - en: '**Note**'
+  id: totrans-153
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**注意**'
 - en: ''
+  id: totrans-154
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Even though `add` and most ARM instructions work on 32-bit words, in this section
     we’ll show examples using signed and unsigned 8-bit bytes, to make them more manageable.
+  id: totrans-155
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 尽管`add`和大多数ARM指令在32位字上工作，但在本节中，我们将使用有符号和无符号8位字节来展示示例，以便它们更容易管理。
 - en: For example, if we try to add `0b1111_1100` and `0b0000_0010` using a hardware
     adder, we get `0b1111_1110`, which could be interpreted as an unsigned operation
     252 + 2 ⇒ 254, or as a signed operation  − 4 + 2 ⇒  − 2. In the following table,
     you can see how a range of binary patterns can be interpreted as an unsigned or
     a signed integer.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，如果我们尝试使用硬件加法器将`0b1111_1100`和`0b0000_0010`相加，我们得到`0b1111_1110`，这可以解释为无符号操作252+2→254，或者解释为有符号操作-4+2→-2。在下面的表中，你可以看到一系列二进制模式可以解释为无符号或有符号整数。
 - en: Two’s complement representation of integers
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 整数的二进制补码表示
 - en: '| Bit pattern | Unsigned interpretation | Signed interpretation |'
+  id: totrans-158
   prefs: []
   type: TYPE_TB
+  zh: '| 位模式 | 无符号解释 | 有符号解释 |'
 - en: '| --- | --- | --- |'
+  id: totrans-159
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| `0b0000_0000` | `0` | `0` |'
+  id: totrans-160
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0000` | `0` | `0` |'
 - en: '| `0b0000_0001` | `1` | `1` |'
+  id: totrans-161
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0001` | `1` | `1` |'
 - en: '| `0b0000_0010` | `2` | `2` |'
+  id: totrans-162
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0010` | `2` | `2` |'
 - en: '| `0b0000_0011` | `3` | `3` |'
+  id: totrans-163
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0011` | `3` | `3` |'
 - en: '| ⋮ | ⋮ | ⋮ |'
+  id: totrans-164
   prefs: []
   type: TYPE_TB
+  zh: '| ⋮ | ⋮ | ⋮ |'
 - en: '| `0b0111_1100` | `124` | `124` |'
+  id: totrans-165
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0111_1100` | `124` | `124` |'
 - en: '| `0b0111_1101` | `125` | `125` |'
+  id: totrans-166
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0111_1101` | `125` | `125` |'
 - en: '| `0b0111_1110` | `126` | `126` |'
+  id: totrans-167
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0111_1110` | `126` | `126` |'
 - en: '| `0b0111_1111` | `127` | `127` |'
+  id: totrans-168
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0111_1111` | `127` | `127` |'
 - en: '|  |  | *— signed overflow —* |'
+  id: totrans-169
   prefs: []
   type: TYPE_TB
+  zh: '|  |  | *— 有符号溢出 —* |'
 - en: '| `0b1000_0000` | `128` | `-128` |'
+  id: totrans-170
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1000_0000` | `128` | `-128` |'
 - en: '| `0b1000_0001` | `129` | `-127` |'
+  id: totrans-171
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1000_0001` | `129` | `-127` |'
 - en: '| `0b1000_0010` | `130` | `-126` |'
+  id: totrans-172
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1000_0010` | `130` | `-126` |'
 - en: '| `0b1000_0011` | `131` | `-125` |'
+  id: totrans-173
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1000_0011` | `131` | `-125` |'
 - en: '| ⋮ | ⋮ | ⋮ |'
+  id: totrans-174
   prefs: []
   type: TYPE_TB
+  zh: '| ⋮ | ⋮ | ⋮ |'
 - en: '| `0b1111_1100` | `252` | `-4` |'
+  id: totrans-175
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1111_1100` | `252` | `-4` |'
 - en: '| `0b1111_1101` | `253` | `-3` |'
+  id: totrans-176
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1111_1101` | `253` | `-3` |'
 - en: '| `0b1111_1110` | `254` | `-2` |'
+  id: totrans-177
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1111_1110` | `254` | `-2` |'
 - en: '| `0b1111_1111` | `255` | `-1` |'
+  id: totrans-178
   prefs: []
   type: TYPE_TB
+  zh: '| `0b1111_1111` | `255` | `-1` |'
 - en: '|  | *— unsigned overflow —* |  |'
+  id: totrans-179
   prefs: []
   type: TYPE_TB
+  zh: '|  | *— 无符号溢出 —* |  |'
 - en: '| `0b0000_0000` | `0` | `0` |'
+  id: totrans-180
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0000` | `0` | `0` |'
 - en: '| `0b0000_0001` | `1` | `1` |'
+  id: totrans-181
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0001` | `1` | `1` |'
 - en: '| `0b0000_0010` | `2` | `2` |'
+  id: totrans-182
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0010` | `2` | `2` |'
 - en: '| `0b0000_0011` | `3` | `3` |'
+  id: totrans-183
   prefs: []
   type: TYPE_TB
+  zh: '| `0b0000_0011` | `3` | `3` |'
 - en: '| ⋮ | ⋮ | ⋮ |'
+  id: totrans-184
   prefs: []
   type: TYPE_TB
+  zh: '| ⋮ | ⋮ | ⋮ |'
 - en: Two’s complement is an elegant system, but we won’t go into its details here.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 二进制补码是一个优雅的系统，但在这里我们不会深入其细节。
 - en: Arithmetic and logic instructions
+  id: totrans-186
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 算术和逻辑指令
 - en: So, we have covered our first instruction. Took a while, huh? And I have good
     news for you! All arithmetic and logic instructions in ARM have precisely the
     same three-operand form!
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，我们已经介绍了我们的第一个指令。花了一些时间，对吧？而且我有一个好消息要告诉你！ARM中的所有算术和逻辑指令都有精确的三操作数形式！
 - en: 'Here are just some of them:'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里只是其中的一些：
 - en: '| Instruction | Mnemonic | Effect |'
+  id: totrans-189
   prefs: []
   type: TYPE_TB
+  zh: '| 指令 | 助记符 | 效果 |'
 - en: '| --- | --- | --- |'
+  id: totrans-190
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| `add r1, r2, r3` | Add | `r1 = r2 + r3;` |'
+  id: totrans-191
   prefs: []
   type: TYPE_TB
+  zh: '| `add r1, r2, r3` | 加法 | `r1 = r2 + r3;` |'
 - en: '| `sub r1, r2, r3` | Subtract | `r1 = r2 - r3;` |'
+  id: totrans-192
   prefs: []
   type: TYPE_TB
+  zh: '| `sub r1, r2, r3` | 减法 | `r1 = r2 - r3;` |'
 - en: '| `mul r1, r2, r3` | Multiply | `r1 = r2 * r3;` |'
+  id: totrans-193
   prefs: []
   type: TYPE_TB
+  zh: '| `mul r1, r2, r3` | 乘法 | `r1 = r2 * r3;` |'
 - en: '| `sdiv r1, r2, r3` | Signed divide | `r1 = r2 / r3;` |'
+  id: totrans-194
   prefs: []
   type: TYPE_TB
+  zh: '| `sdiv r1, r2, r3` | 有符号除法 | `r1 = r2 / r3;` |'
 - en: '| `udiv r1, r2, r3` | Unsigned divide | `r1 = r2 / r3;` |'
+  id: totrans-195
   prefs: []
   type: TYPE_TB
+  zh: '| `udiv r1, r2, r3` | 无符号除法 | `r1 = r2 / r3;` |'
 - en: '| `bic r1, r2, r3` | Bitwise clear | `r1 = r2 & ~r3;` |'
+  id: totrans-196
   prefs: []
   type: TYPE_TB
+  zh: '| `bic r1, r2, r3` | 按位清除 | `r1 = r2 & ~r3;` |'
 - en: '| `and r1, r2, r3` | And (bitwise) | `r1 = r2 & r3;` |'
+  id: totrans-197
   prefs: []
   type: TYPE_TB
+  zh: '| `and r1, r2, r3` | 与（按位） | `r1 = r2 & r3;` |'
 - en: '| `orr r1, r2, r3` | Or (bitwise) | `r1 = r2 &#124; r3;` |'
+  id: totrans-198
   prefs: []
   type: TYPE_TB
+  zh: '| `orr r1, r2, r3` | 或（按位） | `r1 = r2 | r3;` |'
 - en: '| `eor r1, r2, r3` | Exclusive or (bitwise) | `r1 = r2 ^ r3;` |'
+  id: totrans-199
   prefs: []
   type: TYPE_TB
+  zh: '| `eor r1, r2, r3` | 异或（按位） | `r1 = r2 ^ r3;` |'
 - en: Neat, isn’t it? We have now basically covered a big chunk of the instruction
     set. Let’s move on.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 真是 neat，不是吗？我们现在基本上已经覆盖了指令集的大部分内容。让我们继续前进。
 - en: '**Note**'
+  id: totrans-201
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**注意**'
 - en: ''
+  id: totrans-202
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -784,190 +1192,282 @@
     not have hardware support for `sdiv` and `udiv` instructions (primarily, constrained
     embedded systems). To use them, you will need to pass an assembler parameter to
     specify an architecture version that supports them, for example, `gcc -march=armv7ve`.
+  id: totrans-203
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 除法是那些对于有符号和无符号整数操作不同的运算之一。由于JavaScript没有对无符号整数的适当支持，我们无法用我们的伪代码表示法轻松地表达这种差异。此外，一些ARM版本没有对`sdiv`和`udiv`指令的硬件支持（主要是受限制的嵌入式系统）。要使用它们，你需要传递一个汇编参数来指定支持它们的架构版本，例如，`gcc
+    -march=armv7ve`。
 - en: Move instructions
+  id: totrans-204
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 移动指令
 - en: Move instructions copy a word from one register to another, or from an immediate
     operand to a register. An immediate operand has the same restrictions as before.
     There’s also a “move–not” instruction that does bitwise negation.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 移动指令将一个字从寄存器复制到另一个寄存器，或者从立即数操作数复制到寄存器。立即数操作数有与之前相同的限制。还有一个“移动-非”指令，它执行按位取反。
 - en: '| Instruction | Mnemonic | Effect |'
+  id: totrans-206
   prefs: []
   type: TYPE_TB
+  zh: '| 指令 | 代码 | 效果 |'
 - en: '| --- | --- | --- |'
+  id: totrans-207
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| `mov r1, r2` | Move | `r1 = r2;` |'
+  id: totrans-208
   prefs: []
   type: TYPE_TB
+  zh: '| `mov r1, r2` | 移动 | `r1 = r2;` |'
 - en: '| `mvn r1, r2` | Move-not | `r1 = ~r2;` |'
+  id: totrans-209
   prefs: []
   type: TYPE_TB
+  zh: '| `mvn r1, r2` | 移动-非 | `r1 = ~r2;` |'
 - en: Program counter
+  id: totrans-210
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 程序计数器
 - en: We know that each instruction is encoded into a word. We also know that instructions
     are located in memory one after another. How does execution go from one instruction
     to the next one?
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们知道每个指令都被编码到一个字中。我们也知道指令在内存中一个接一个地排列。执行是如何从一个指令转移到下一个指令的呢？
 - en: 'For that, the *program counter* is used. The program counter is the register
     `r15`, but more often, it is referred to by its alternative name: `pc`. On some
     architectures, it is called the *instruction pointer*. The program counter is
     a pointer that points to the currently executing instruction. By manipulating
     `pc`, we can change which instruction is executing next.'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了做到这一点，使用的是*程序计数器*。程序计数器是寄存器`r15`，但更常见的是用它的别名：`pc`。在某些架构中，它被称为*指令指针*。程序计数器是一个指向当前正在执行的指令的指针。通过操作`pc`，我们可以改变下一个要执行的指令。
 - en: '**Well, actually…**'
+  id: totrans-213
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，**'
 - en: ''
+  id: totrans-214
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: Because of instruction pipelining (which we won’t cover here) program counter
     usually points two instructions ahead of the currently executing instruction.
     But, for the most part, we can safely ignore that.
+  id: totrans-215
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 由于指令流水线（我们在这里不会介绍），程序计数器通常指向当前正在执行的指令之后的两个指令。但，大部分情况下，我们可以安全地忽略这一点。
 - en: 'For example, if register `r0` contains some address that we want to *jump*
     to we can do that by moving that address into `pc` and the execution will continue
     from there:'
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，如果寄存器`r0`包含我们想要*跳转*到的某个地址，我们可以通过将该地址移动到`pc`中来实现，执行将从那里继续：
 - en: '[PRE17]'
+  id: totrans-217
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: By *jump*, we mean that execution is transferred to a different instruction,
     not the next one.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们所说的*跳转*是指执行转移到不同的指令，而不是下一条指令。
 - en: 'It is worth highlighting that *every* instruction affects the program counter.
     At the very least, each instruction increments program counter by four bytes (one
     word) so that execution can transfer to the next instruction. (Otherwise, we would
     always be stuck executing the same instruction). So the *effect* of each instruction
     that we listed so far requires `pc += 4;` to be prepended:'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 值得强调的是，**每一条**指令都会影响程序计数器。至少，每条指令都会将程序计数器增加四个字节（一个字）以便执行可以转移到下一条指令。（否则，我们总是会陷入执行相同的指令）。因此，我们迄今为止所列出的每条指令的*效果*都需要在前面加上`pc
+    += 4;`：
 - en: '[PRE18]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: Here’s a little snippet of assembly where we increment `r0` by one (at a time),
     but by adding to `pc` we jump over two instructions.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个汇编代码片段，其中我们通过增加`pc`来跳过两个指令，每次递增`r0`。
 - en: '[PRE19]'
+  id: totrans-222
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: Here, we made all the changes in `pc` explicit. Note that even though `add`
     typically increments `pc` by 4, this is overridden if the result is written to
     `pc`.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们对 `pc` 的所有更改都是显式的。请注意，尽管 `add` 通常会将 `pc` 增加 4，但如果结果写入 `pc`，则会被覆盖。
 - en: From here on, we will resume omitting `pc += 4;` in pseudo-code.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 从现在开始，我们将省略伪代码中的 `pc += 4;`。
 - en: We can conclude that the program counter is the most special register of all.
     By changing it, we change which instruction is executed in our program next. So
     don’t use it for storing some temporary values!
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以得出结论，程序计数器是所有寄存器中最特殊的。通过改变它，我们改变程序中下一个要执行的指令。所以不要用它来存储一些临时值！
 - en: Branch instruction
+  id: totrans-226
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 分支指令
 - en: We could jump forward and backward in code by adding to and subtracting from
     the program counter, but it is very cumbersome.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以通过向程序计数器添加和减去值来在代码中向前和向后跳转，但这非常繁琐。
 - en: We can use a little bit of help from the assembler. The assembler allows us
     to insert textual *labels* that represent particular instruction addresses. Then
     we can use them with *branch* instruction `b`, and the assembler will take care
     of calculating the offset that is necessary to apply to `pc` to land at the correct
     instruction.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以使用汇编器的一点点帮助。汇编器允许我们插入代表特定指令地址的文本 *标签*。然后我们可以使用 *分支* 指令 `b`，汇编器将负责计算应用于 `pc`
+    的必要偏移量，以便到达正确的指令。
 - en: 'This way, our previous snippet can be rewritten as:'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，我们之前的代码片段可以重写为：
 - en: '[PRE20]'
+  id: totrans-230
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: 'Even though the `b` instruction jumps to an offset relative to `pc`, and not
     to an absolute address, it helps to think of labels as constants with absolute
     addresses stored in them. And that is how we will use them in pseudo-code that
     describes the effect of each instruction:'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管指令 `b` 跳转到相对于 `pc` 的偏移量，而不是绝对地址，但将标签视为存储在其中的绝对地址的常量是有帮助的。这就是我们将在描述每个指令效果的伪代码中使用它们的方式：
 - en: '[PRE21]'
+  id: totrans-232
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: Branch and exchange
+  id: totrans-233
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 分支和交换
 - en: 'While the `b` instruction allows us to make a relative jump computed from a
     label, `bx`—or *branch and exchange*—allows us to jump to an address stored in
     a register:'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然 `b` 指令允许我们根据标签进行相对跳转，但 `bx`——或 *分支和交换*——允许我们跳转到寄存器中存储的地址：
 - en: '[PRE22]'
+  id: totrans-235
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: How is it different from `mov pc, r0`? For our purpose, it is the same. Some
     would say it’s a bit more readable.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 它与 `mov pc, r0` 有何不同？对我们来说，它是相同的。有些人会说它更易读。
 - en: However, it also allows to *exchange* instruction sets from ARM to Thumb and
     back. But we won’t be dealing with that in this book.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，它还允许在 ARM 和 Thumb 指令集之间进行 *交换*。但在这本书中我们不会处理这一点。
 - en: Branch and link
+  id: totrans-238
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 分支和链接
 - en: '*Branch and link*, or `bl` is a relative jump just like `b`. The only difference
     is that it saves the program counter’s value into a particular register, `r14`,
     more often referred to as `lr`, or *link register*.'
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: '*分支和链接*，或 `bl`，是一种相对跳转，就像 `b` 一样。唯一的区别是它会将程序计数器的值保存到一个特定的寄存器，`r14`，通常称为 `lr`，或
+    *链接寄存器*。'
 - en: '[PRE23]'
+  id: totrans-240
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: What it effectively does is it *saves* the previous value of `pc` before overriding
     it (and thus, losing it).
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 它实际上所做的就是 *保存* 在覆盖之前 `pc` 的上一个值（从而，失去了它）。
 - en: 'We could achieve the same with the following two instructions:'
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以用以下两个指令达到相同的效果：
 - en: '[PRE24]'
+  id: totrans-243
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: However, this is such a common operation that it deserved its own instruction.
     It is common because it is used to implement function calls.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这是一个如此常见的操作，以至于它值得拥有自己的指令。它之所以常见，是因为它用于实现函数调用。
 - en: Intra-procedure–call scratch register
+  id: totrans-245
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 过程内调用临时寄存器
 - en: 'Note that, under the hood, the instructions that branch to a label (`b` and
     `bl`) encode a 24-bit immediate value for the relative jump. That allows us to
     jump forward and backward within ±32 MB of code space. But you don’t have to deal
     with this limitation. The linker will arrange a so-called *veneer*: jump to a
     special place within the ±32 MB limit and then load the full 32-bit address into
     `pc`, if a longer jump is necessary.'
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，在底层，跳转到标签的指令（`b` 和 `bl`）编码了一个 24 位的立即值用于相对跳转。这允许我们在 ±32 MB 的代码空间内向前和向后跳转。但你不必处理这个限制。链接器将安排一个所谓的
+    *覆盖层*：在 ±32 MB 限制内跳转到特殊位置，然后如果需要更长的跳转，将加载完整的 32 位地址到 `pc`。
 - en: 'To do that, it will need to generate code that loads the full address into
     a temporary register. For this to be predictable, a special register was designated
     for the role: the *intra-procedure–call scratch register*, referred to as `r12`
@@ -978,205 +1478,307 @@
     register, meaning, a short-lived temporary. We can still use this register for
     our temporary values; we just can’t rely that the value will be preserved after
     a call is made. So it is best-suited for short-lived temporary values.'
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 要做到这一点，它需要生成代码将完整地址加载到一个临时寄存器中。为了使其可预测，指定了一个特殊的寄存器来扮演这个角色：*过程调用临时寄存器*，被称为`r12`或`ip`。这主要与过程（换句话说，函数）调用相关，因为其他跳转到标签的操作通常相对较短。为什么叫*内联*？因为它用于调用*之间*：在调用者调用之后，但在控制权切换到被调用函数之前。它也被称为*临时*寄存器，意味着，短暂的临时存储。我们仍然可以使用这个寄存器来存储我们的临时值；我们只是不能依赖在调用之后值会被保留。因此，它最适合短暂的临时值。
 - en: Function call basics
+  id: totrans-248
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 函数调用基础
 - en: The thing special about function calls that distinguishes them from other kinds
     of control-flow jumps is that function calls *return back*. When programming in
     a higher-level language, we don’t think much about that, but at assembly level,
     we have to implement the whole *return back* thing ourselves.
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数调用特别之处在于它们与其他类型的控制流跳转的区别在于函数调用会*返回*。在用高级语言编程时，我们不太考虑这一点，但在汇编级别，我们必须自己实现整个*返回*过程。
 - en: The value that the `bl` instruction stores into `lr` is called the *return address*.
     When the function finishes, it can jump to it to continue execution from where
     it was called.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: '`bl`指令存储到`lr`中的值被称为*返回地址*。当函数结束时，它可以跳转到它以从被调用处继续执行。'
 - en: Let’s implement a very primitive function, `addFourtyTwo`, that takes a single
     parameter and adds `42` to it. ARM calling convention (which will talk more about
     later) says that we should pass the first four arguments in registers `r0`–`r3`
     (if any), and provide a return value in `r0` (if any, again). In our case, `addFourtyTwo`
     takes one parameter and returns one value so that we use `r0` for both.
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们实现一个非常原始的函数`addFourtyTwo`，它接受一个参数并将`42`加到它上面。ARM调用约定（我们稍后会详细讨论）表示我们应该在寄存器`r0`–`r3`（如果有）中传递前四个参数，并在`r0`（如果有，再次）中提供返回值。在我们的例子中，`addFourtyTwo`接受一个参数并返回一个值，所以我们使用`r0`来处理两者。
 - en: '[PRE25]'
+  id: totrans-252
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: The *caller* that calls `addFourtyTwo` first sets register `r0` to `0`, then
     uses `bl` to jump to `addFourtyTwo`, which saves the return address into `lr`.
     At the end of `addFourtyTwo`, it branches back, with `bx lr` and the caller continues
     (with subtracting `3`, in this case).
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用`addFourtyTwo`的*调用者*首先将寄存器`r0`设置为`0`，然后使用`bl`跳转到`addFourtyTwo`，它将返回地址保存到`lr`中。在`addFourtyTwo`的末尾，它通过`bx
+    lr`返回，调用者继续（在这种情况下是减去`3`）。
 - en: Another way to look at this is that we pass `lr` as a special parameter to each
     function, so the function knows where to return back.
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种看待这个问题的方式是，我们将`lr`作为一个特殊参数传递给每个函数，这样函数就知道返回的位置了。
 - en: '**Well, actually…**'
+  id: totrans-255
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，……**'
 - en: ''
+  id: totrans-256
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: I cannot help myself but mention the words *continuation-passing style* here.
     We won’t cover it, but it is a powerful compiler technique that makes passing
     the return address (or *continuation*) explicit early in the compiler pipeline.
+  id: totrans-257
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 我忍不住在这里提到“延续传递风格”（*continuation-passing style*）。我们不会涉及它，但它是一种强大的编译器技术，它使得在编译器管道中早期明确传递返回地址（或*延续*）。
 - en: Link register
+  id: totrans-258
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 链接寄存器
 - en: The link register `lr` or `r14` is only special in the sense that `bl` works
     with `lr` and only `lr`. We could decide to use a different register for the return
     address, say `r8` (with the `mov r8, pc; b myLabel` sequence that we mentioned
     before), but `bl` is so convenient that we’ll be using only `lr` for that purpose.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: '链接寄存器`lr`或`r14`之所以特别，是因为`bl`只与`lr`一起工作。我们可以决定为返回地址使用不同的寄存器，比如`r8`（使用我们之前提到的`mov
+    r8, pc; b myLabel`序列），但`bl`如此方便，我们将只为这个目的使用`lr`。 '
 - en: I must admit that the name *link register* is not perfect. It’s called that
     because it creates a *link* that can be followed back to the callee. On some other
     architectures (like RISC-V), this register is called the *return address*, or
     `ra`.
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 我必须承认，“链接寄存器”这个名字并不完美。它之所以被称为这个名字，是因为它创建了一个可以追踪回被调用者的*链接*。在一些其他架构（如RISC-V）中，这个寄存器被称为*返回地址*，或`ra`。
 - en: Conditional execution and the CPSR register
+  id: totrans-261
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 条件执行和CPSR寄存器
 - en: 'So far, all the instructions we’ve covered were executed *unconditionally*.
     As long as `pc` could reach those instructions, they were executed. However, sometimes
     we want *conditional execution*. This is when we want to decide whether to execute
     an instruction or not depending on some *condition*. This is done in two steps
     in ARM:'
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们讨论的所有指令都是 *无条件执行* 的。只要 `pc` 能到达这些指令，它们就会执行。然而，有时我们想要 *条件执行*。这就是我们想要根据某些
+    *条件* 决定是否执行指令的时候。在 ARM 中，这通过两个步骤来完成：
 - en: A comparison instruction `cmp` compares two registers (or a register and an
     immediate), and saves the result of the comparison into the CPSR register.
+  id: totrans-263
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 比较指令 `cmp` 比较两个寄存器（或寄存器和立即数），并将比较结果保存到 CPSR 寄存器中。
 - en: One or more instructions with a *condition code* reads the result of the comparison
     from CPSR and executes (or not), depending on the condition code.
+  id: totrans-264
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 带有 *条件代码* 的一条或多条指令从 CPSR 中读取比较结果，并根据条件代码执行（或不执行）。
 - en: CPSR stands for the *current program status register*.
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: CPSR 代表 *当前程序状态寄存器*。
 - en: 'Here’s an example, where a bunch of `mov` instructions are executed depending
     on a condition:'
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是一个例子，其中根据条件执行了一系列 `mov` 指令：
 - en: '[PRE26]'
+  id: totrans-267
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: First, `cmp` instruction compares registers `r1` and `r2` and saves the result
     of the comparison into CPSR. It set a few bits in CPSR, but it’s not important
     for us which exact bits are set, so in the pseudo-code, we’ve hidden that inside
     an opaque `compare` function.
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，`cmp` 指令比较寄存器 `r1` 和 `r2`，并将比较结果保存到 CPSR 中。它在 CPSR 中设置了一些位，但对于我们来说，哪些具体的位被设置并不重要，所以在伪代码中，我们将其隐藏在一个不透明的
+    `compare` 函数中。
 - en: 'Next, we see a bunch of instructions starting with `mov`. Those are: `moveq`,
     `moval`, `movne`. They are not separate instructions from `mov`, but are just
     `mov` with a condition code suffix. For example, `mov` with `eq` code executes
     if the last comparison made with `cmp` was equal; `mov` with `ne`—not equal, and
     so on. The `al` code stands for *always*, and is the default so it can be skipped,
     and thus, `mov` and `moval` is *exactly* the same instruction.'
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，我们看到一系列以 `mov` 开头的指令。这些是：`moveq`、`moval`、`movne`。它们并不是与 `mov` 相独立的指令，而是带有条件代码后缀的
+    `mov`。例如，带有 `eq` 代码的 `mov` 在上一次 `cmp` 指令比较的结果为相等时执行；带有 `ne`（不等于）的 `mov` 等等。`al`
+    代码代表 *总是*，是默认值，因此可以省略，所以 `mov` 和 `moval` 实际上是 *完全相同* 的指令。
 - en: In the following table, you can see a summary of some condition codes. These
     are not all, but it’s more than enough for our use case.
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下面的表中，你可以看到一些条件代码的总结。这些并不是全部，但对于我们的用例来说已经足够多了。
 - en: Summary of select ARM condition codes
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择 ARM 条件代码总结
 - en: '| Code | Operator | Description | Signed/Unsigned |'
+  id: totrans-272
   prefs: []
   type: TYPE_TB
+  zh: '| 代码 | 操作符 | 描述 | 有符号/无符号 |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-273
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| `eq` | `==` | Equal | Either |'
+  id: totrans-274
   prefs: []
   type: TYPE_TB
+  zh: '| `eq` | `==` | 等于 | 任意 |'
 - en: '| `ne` | `!=` | Not equal | Either |'
+  id: totrans-275
   prefs: []
   type: TYPE_TB
+  zh: '| `ne` | `!=` | 不等于 | 任意 |'
 - en: '|  |  |  |  |'
+  id: totrans-276
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |  |  |'
 - en: '| `gt` | `>` | Greater than | Signed |'
+  id: totrans-277
   prefs: []
   type: TYPE_TB
+  zh: '| `gt` | `>` | 大于 | 有符号 |'
 - en: '| `ge` | `>=` | Greater than or equal | Signed |'
+  id: totrans-278
   prefs: []
   type: TYPE_TB
+  zh: '| `ge` | `>=` | 大于或等于 | 有符号 |'
 - en: '| `lt` | `<` | Less than | Signed |'
+  id: totrans-279
   prefs: []
   type: TYPE_TB
+  zh: '| `lt` | `<` | 小于 | 有符号 |'
 - en: '| `le` | `<=` | Less than or equal | Signed |'
+  id: totrans-280
   prefs: []
   type: TYPE_TB
+  zh: '| `le` | `<=` | 小于或等于 | 有符号 |'
 - en: '|  |  |  |  |'
+  id: totrans-281
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |  |  |'
 - en: '| `hi` | `>` | Greater than | Unsigned |'
+  id: totrans-282
   prefs: []
   type: TYPE_TB
+  zh: '| `hi` | `>` | 大于 | 无符号 |'
 - en: '| `hs` | `>=` | Greater than or equal | Unsigned |'
+  id: totrans-283
   prefs: []
   type: TYPE_TB
+  zh: '| `hs` | `>=` | 大于或等于 | 无符号 |'
 - en: '| `lo` | `<` | Less than | Unsigned |'
+  id: totrans-284
   prefs: []
   type: TYPE_TB
+  zh: '| `lo` | `<` | 小于 | 无符号 |'
 - en: '| `ls` | `<=` | Less than or equal | Unsigned |'
+  id: totrans-285
   prefs: []
   type: TYPE_TB
+  zh: '| `ls` | `<=` | 小于或等于 | 无符号 |'
 - en: '|  |  |  |  |'
+  id: totrans-286
   prefs: []
   type: TYPE_TB
+  zh: '|  |  |  |  |'
 - en: '| `al` | — | Always (default) | — |'
+  id: totrans-287
   prefs: []
   type: TYPE_TB
+  zh: '| `al` | — | 总是（默认） | — |'
 - en: The beautiful thing about the ARM instruction set is that these condition codes
     can be added to almost any instruction! Branch if equal? `beq`! Add if greater
     than? `addgt`! Compare—*again!*—if not equal? `cmpne`!
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: ARM 指令集的美丽之处在于，这些条件代码几乎可以添加到任何指令中！如果相等则分支？`beq`！如果大于则添加？`addgt`！比较——*再次*！如果不等于？`cmpne`！
 - en: 'That’s one of the features that makes the ARM instruction set *orthogonal*:
     conditional execution is available regardless of the instruction type.'
+  id: totrans-289
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是 ARM 指令集 *正交性* 的一部分特性：无论指令类型如何，都可以进行条件执行。
 - en: Conditional branching
+  id: totrans-290
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 条件分支
 - en: Combining branch instructions like `b` and condition codes gives us *conditional
     branching*. Conditional branching is used to implement `if`/`else` statements
     and loops like `while` and `for`.
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: 将分支指令 `b` 和条件代码结合起来，我们得到了 *条件分支*。条件分支用于实现 `if`/`else` 语句和 `while`、`for` 循环等。
 - en: Loader
+  id: totrans-292
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 加载器
 - en: How did our program get into memory? An operating system program called *loader*
     copied our program from disk into memory, and then set the program counter so
     that our program started execution from `main`.
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的程序是如何进入内存的？一个名为*加载器*的操作系统程序将我们的程序从磁盘复制到内存中，然后设置程序计数器，使我们的程序从`main`开始执行。
 - en: '**Well, actually…**'
+  id: totrans-294
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，嗯……**'
 - en: ''
+  id: totrans-295
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
@@ -1185,456 +1787,678 @@
     `_start` entry point, which sets up things like program’s command-line arguments
     and other machinery that is necessary for `libc` functions to work. In turn, it
     will call `main`, and that is why it needs to be declared `.global`.
+  id: totrans-296
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 实际的入口点称为`_start`，按照惯例，它不需要是`.global`。但是，我们用`libc`链接了我们的程序，它定义了自己的`_start`入口点，该入口点设置了程序命令行参数和其他对`libc`函数工作必要的机制。反过来，它将调用`main`，这就是为什么它需要声明为`.global`。
 - en: If the loader is an operating system program, then how did the operating system
     get into memory? That is done with the help of a program called *boot loader*.
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果加载器是操作系统程序，那么操作系统是如何进入内存的？这是通过一个名为*引导加载程序*的程序来完成的。
 - en: '**Well, actually…**'
+  id: totrans-298
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，嗯……**'
 - en: ''
+  id: totrans-299
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: In embedded systems, the program is often stored in read-only memory that doesn’t
     get erased on power-off, and when the system starts, the program counter starts
     executing from address 0.
+  id: totrans-300
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 在嵌入式系统中，程序通常存储在只读存储器中，断电时不会擦除，并且当系统启动时，程序计数器从地址0开始执行。
 - en: Data and code sections
+  id: totrans-301
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据和代码部分
 - en: Let’s look again at the data and code sections of our hello-world program.
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们再次看看我们的hello-world程序的数据和代码部分。
 - en: '[PRE27]'
+  id: totrans-303
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: 'The data section declared with `.data` assembly directive is a span of memory
     that you are allowed to:'
+  id: totrans-304
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`.data`汇编指令声明的数据部分是另一段内存，允许你：
 - en: read,
+  id: totrans-305
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 读取，
 - en: write,
+  id: totrans-306
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 写入，
 - en: but not execute.
+  id: totrans-307
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 但不能执行。
 - en: 'The code section declared (confusingly) with `.text` is another span of memory
     that you are allowed to:'
+  id: totrans-308
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`.text`声明的代码部分是另一段内存，允许你：
 - en: read,
+  id: totrans-309
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 读取，
 - en: but not write, and
+  id: totrans-310
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 但不能写入，并且
 - en: execute.
+  id: totrans-311
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 执行。
 - en: Why do we need separate sections? Why the restrictions on writing and executing?
     The answer is many-fold.
+  id: totrans-312
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们为什么需要单独的部分？为什么有关于写入和执行的限制？答案有很多。
 - en: First, it is a security feature of many operating systems to forbid data section
     from executing and forbid modifying the code section at run-time. It makes it
     harder to inject malicious code by tricking the program to change its code, or
     to jump to an area that is not supposed to be executed. It also helps with caching
     and with running multiple instances of the same program on different data.
+  id: totrans-313
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，这是许多操作系统的安全特性，禁止数据部分执行，并在运行时禁止修改代码部分。这使得通过欺骗程序更改其代码或跳转到不应执行的区域来注入恶意代码变得更加困难。它还有助于缓存，并允许在不同的数据上运行同一程序的多个实例。
 - en: Even simpler, in embedded systems, the code section will most often go into
     read-only memory, while the data section will be the main read-write memory.
+  id: totrans-314
   prefs: []
   type: TYPE_NORMAL
+  zh: 更简单地说，在嵌入式系统中，代码部分通常会进入只读存储器，而数据部分将是主要的读写存储器。
 - en: Segmentation fault
+  id: totrans-315
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 段错误
 - en: 'In our hello-world program, we don’t modify the greeting string, do we? Does
     that mean that we can put it under the `.text` section? Yes; we can even omit
     the `.text` section, since it’s implicit:'
+  id: totrans-316
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们的hello-world程序中，我们没有修改问候字符串，对吧？这意味着我们可以将其放在`.text`部分下吗？是的；我们甚至可以省略`.text`部分，因为它默认存在：
 - en: '[PRE28]'
+  id: totrans-317
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: Try it out!
+  id: totrans-318
   prefs: []
   type: TYPE_NORMAL
+  zh: 尝试一下！
 - en: Oh, no! Our program crashes with a *segmentation fault*! What happened? What’s
     a segmentation fault anyway?
+  id: totrans-319
   prefs: []
   type: TYPE_NORMAL
+  zh: 哦，不！我们的程序因为*段错误*而崩溃！发生了什么？什么是段错误？
 - en: It can happen when we try to write to a read-only *segment*. But, in general,
     this term is applied to all kinds of *memory access violations*.
+  id: totrans-320
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可能发生在我们尝试写入只读*段*时。但是，通常，这个术语适用于所有类型的*内存访问违规*。
 - en: 'So what did we violate here? Alignment! Our string—`"Hello, assembly!"`—is
     17 bytes long (including the implicit zero-terminator `\0`). So it pushed our
     `main` function to a memory address that is not an aligned word. We can pad the
     string with zeros, so it occupies 20 bytes (divisible by four):'
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，我们在这里违反了什么？对齐！我们的字符串——“Hello, assembly!””——长度为17字节（包括隐式的零终止符`\0`）。因此，它将我们的`main`函数推到了一个不是对齐字的内存地址。我们可以用零填充字符串，使其占用20字节（可被四整除）：
 - en: '[PRE29]'
+  id: totrans-322
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: 'Or, we can use an assembly directive called `.balign` to align it at a four-byte
     (word) boundary:'
+  id: totrans-323
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，我们可以使用一个名为`.balign`的汇编指令将其对齐到四字节（字）边界：
 - en: '[PRE30]'
+  id: totrans-324
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: '**Well, actually…**'
+  id: totrans-325
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '**实际上，嗯……**'
 - en: ''
+  id: totrans-326
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
 - en: There’s also an `.align` directive, but its exact meaning is inconsistent across
     architectures and assemblers. On the other hand, `.balign` always aligns at a
     boundary specified as a number of *bytes*.
+  id: totrans-327
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 此外，还有一个 `.align` 指令，但它在不同的架构和汇编器中的确切含义并不一致。另一方面，`.balign` 总是在指定的 *字节* 数的边界对齐。
 - en: Data directives
+  id: totrans-328
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据指令
 - en: 'One way to look at an assembly language: it is a way to encode binary data.
     As we know, each ARM instruction is encoded into a single machine word. However,
     the assembler has directives that allow us to encode literal data as well.'
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种看待汇编语言的方式：它是一种编码二进制数据的方法。正如我们所知，每个ARM指令都被编码到一个机器字中。然而，汇编器有指令允许我们将字面数据也进行编码。
 - en: Two directives that we’ll talk about are `.string` and `.word`, but there are
     more available.
+  id: totrans-330
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将要讨论的两个指令是 `.string` 和 `.word`，但还有更多可用。
 - en: 'We’ve already seen the string directive. One notable feature of it is that
     it encodes a zero-terminated string. That is, the string is padded with a single
     zero byte: `\0`.'
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经看到了字符串指令。它的一个显著特点是它编码了一个以零结尾的字符串。也就是说，字符串被填充了一个单独的零字节：`\0`。
 - en: 'The `.word` directive allows us to insert a literal machine word into our binary
     using a numeric notation:'
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: '`.word` 指令允许我们使用数字记法将字面机器字插入到我们的二进制中：'
 - en: '[PRE31]'
+  id: totrans-333
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: It’s a good idea to put a label before a data directive so we can refer to it
     later, but it is not always necessary, as you’ll see below.
+  id: totrans-334
   prefs: []
   type: TYPE_NORMAL
+  zh: 在数据指令前放置一个标签是一个好主意，这样我们以后可以引用它，但正如你下面将看到的，这并不总是必要的。
 - en: What are data directives good for? They can be used for constants or global
     variables in our program, but they are simply another encoding for binary data.
     Consider the following program.
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据指令有什么好处？它们可以用于我们程序中的常量或全局变量，但它们只是二进制数据的另一种编码方式。考虑以下程序。
 - en: '[PRE32]'
+  id: totrans-336
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: 'This is a short program that simply exits with code 42\. But here, instead
     of writing `mov r0, #42`, we wrote `.word 0xE3A0002A`, which encodes the same
     value, as the instruction. As you might remember from instruction encoding, the
     last byte of an instruction encodes an immediate, which is `0x2A` in this case
     (`42` in decimal).'
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: '这是一个简单的程序，它简单地以代码 42 退出。但在这里，我们不是写 `mov r0, #42`，而是写了 `.word 0xE3A0002A`，它编码了相同的值，就像指令一样。你可能还记得，从指令编码中，指令的最后字节编码了一个立即数，在这个例子中是
+    `0x2A`（十进制的 `42`）。'
 - en: Writing instructions this way *is definitely a bad idea*, but it is a way for
     us to dispel the magic of what the assembler does for us.
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: 以这种方式编写指令 *绝对是一个坏主意*，但这是我们消除汇编器为我们所做事情神秘性的方法。
 - en: Loading data
+  id: totrans-339
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 加载数据
 - en: Loading means copying data from memory into one or more registers. We’ve already
     seen how to load data, given a label. For example, load a string address and pass
     it to `printf` to be printed to the console.
+  id: totrans-340
   prefs: []
   type: TYPE_NORMAL
+  zh: 加载意味着将数据从内存复制到一个或多个寄存器中。我们已经看到了如何通过标签加载数据，例如，加载一个字符串地址并将其传递给 `printf` 以在控制台打印。
 - en: '[PRE33]'
+  id: totrans-341
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: Similarly, you can load an address of a word. But this way, you only get the
     address of the word, and not the word itself.
+  id: totrans-342
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样，你可以加载一个单词的地址。但这种方式，你只能得到单词的地址，而不是单词本身。
 - en: 'Once we have loaded an address of a word, we can load the word itself. For
     that we use another form of `ldr` instruction, with square brackets:'
+  id: totrans-343
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦我们加载了一个单词的地址，我们就可以加载单词本身。为此，我们使用另一种形式的 `ldr` 指令，带有方括号：
 - en: '[PRE34]'
+  id: totrans-344
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 'This assumes that we have a word with that label stored somewhere:'
+  id: totrans-345
   prefs: []
   type: TYPE_NORMAL
+  zh: 这假设我们有一个带有该标签的单词存储在某个地方：
 - en: '[PRE35]'
+  id: totrans-346
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: When we load an address into a register, we call it a *pointer*. This pointer
     *references* another word, but it’s not that word itself. When we load the word
     that is referenced by that pointer, we say that we *dereference* a pointer.
+  id: totrans-347
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们将一个地址加载到一个寄存器中时，我们称它为 *指针*。这个指针 *引用* 另一个单词，但它本身并不是那个单词。当我们加载由该指针引用的单词时，我们说我们
+    *取消引用* 一个指针。
 - en: In this example, when the two instructions execute, `r1` will contain some seemingly
     random number, which is the address corresponding to the label `myWord`, while
     `r0` will contain the loaded value itself, that is `42`.
+  id: totrans-348
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个例子中，当两条指令执行时，`r1` 将包含一些看似随机的数字，这是对应于标签 `myWord` 的地址，而 `r0` 将包含加载的值本身，即 `42`。
 - en: In the listing, we used a new notation for our pseudo-code. We used `M[r1]`
     to refer to the memory word located at the address found in `r1`. Remember, how
     we said that memory is like a large array? This notation is easy to remember because
     the square brackets in the instruction syntax (`[r1]`) match the square brackets
     of array notation (`M[r1]`). This will always be the case.
+  id: totrans-349
   prefs: []
   type: TYPE_NORMAL
+  zh: 在列表中，我们为我们的伪代码使用了一种新的表示法。我们使用 `M[r1]` 来指代位于 `r1` 中地址的内存单词。记住，我们是如何说内存就像一个大数组？这种表示法很容易记住，因为指令语法中的方括号（`[r1]`）与数组表示法中的方括号（`M[r1]`）相匹配。这始终是这种情况。
 - en: 'However, loading a single word known ahead of time is not very interesting.
     For that there’s a shortcut:'
+  id: totrans-350
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，预先知道单个单词的加载并不很有趣。为此有一个捷径：
 - en: '[PRE36]'
+  id: totrans-351
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: 'Even better, if the constant that we are loading can fit into an immediate
     value, the assembler will translate this into:'
+  id: totrans-352
   prefs: []
   type: TYPE_NORMAL
+  zh: 更好的是，如果我们正在加载的常数可以放入立即数中，汇编器将将其转换成：
 - en: '[PRE37]'
+  id: totrans-353
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: 'However, if it doesn’t fit into an immediate, it will convert it into something
     roughly equivalent to our previous example:'
+  id: totrans-354
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，如果它不适合立即数，它将转换成与我们的上一个例子大致等效的东西：
 - en: '[PRE38]'
+  id: totrans-355
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: This version of `ldr` instruction is called a *pseudo-instruction*, because,
     as we have just seen, it will be converted to one or more actual instructions
     by the assembler.
+  id: totrans-356
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种 `ldr` 指令的版本被称为 *伪指令*，因为我们刚刚看到，它将被汇编器转换为一个或多个实际指令。
 - en: Load with immediate offset
+  id: totrans-357
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用立即偏移量加载
 - en: It is not necessary to have a label for each word to load it. You can also load
     a word given an *offset* from another word.
+  id: totrans-358
   prefs: []
   type: TYPE_NORMAL
+  zh: 加载每个单词时不需要标签。你也可以通过给定另一个单词的 *偏移量* 来加载一个单词。
 - en: 'For example, if we have several consequtive words:'
+  id: totrans-359
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，如果我们有多个连续的单词：
 - en: '[PRE39]'
+  id: totrans-360
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: (Which we can also write as follows:)
+  id: totrans-361
   prefs: []
   type: TYPE_NORMAL
+  zh: （我们也可以这样写：）
 - en: '[PRE40]'
+  id: totrans-362
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: 'Then, we can load the third word using the following syntax:'
+  id: totrans-363
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，我们可以使用以下语法加载第三个单词：
 - en: '[PRE41]'
+  id: totrans-364
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: Here we loaded a word given an 8-byte (and thus, 2-word) offset. As a result,
     we have loaded `46` into `r0`.
+  id: totrans-365
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们通过一个 8 字节（因此，2 个单词）的偏移量加载了一个单词。因此，我们将 `46` 加载到了 `r0`。
 - en: 'The offset can be positive or negative. It can be an immediate (like in this
     case) or a register. For example:'
+  id: totrans-366
   prefs: []
   type: TYPE_NORMAL
+  zh: 偏移量可以是正数或负数。它可以是立即的（就像在这个例子中）或寄存器。例如：
 - en: '[PRE42]'
+  id: totrans-367
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: Storing data
+  id: totrans-368
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 存储数据
 - en: Storing means copying data from one or more registers into memory. In other
     words, we are modifying, or *mutating* memory.
+  id: totrans-369
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储（storing）意味着将数据从一个或多个寄存器复制到内存中。换句话说，我们正在修改，或者说是 *mutating* 内存。
 - en: 'As we already mentioned, it is not possible to store data into the read-only
     segment that we declare with the `.text` directive: this will lead to a segmentation
     fault.'
+  id: totrans-370
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们之前提到的，不可能将数据存储到我们用 `.text` 指令声明的只读段中：这将导致段错误。
 - en: However, we can store data into the `.data` segment, as well as into the stack
     and the heap (that we’ll get into in a short while).
+  id: totrans-371
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，我们可以将数据存储到 `.data` 段，以及栈和堆（我们将在稍后讨论）。
 - en: 'Store instructions use `str` mnemonic, and use the same syntax as `ldr` instruction.
     Some examples (with `ldr` for comparison):'
+  id: totrans-372
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储指令使用 `str` 寄存器，并且与 `ldr` 指令使用相同的语法。一些示例（与 `ldr` 进行比较）：
 - en: '[PRE43]'
+  id: totrans-373
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: The square brackets always remind us which part stands for the address.
+  id: totrans-374
   prefs: []
   type: TYPE_NORMAL
+  zh: 方括号总是提醒我们哪个部分代表地址。
 - en: Stack
+  id: totrans-375
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 栈
 - en: The *stack*, or the *call stack*, is used to implement nested, potentially recursive
     function calls. It is a segment of memory, not unlike the code segment and the
     data segment.
+  id: totrans-376
   prefs: []
   type: TYPE_NORMAL
+  zh: '*栈*，或称为 *调用栈*，用于实现嵌套的、可能递归的函数调用。它是一个内存段，与代码段和数据段类似。'
 - en: In computing, a *stack* usually refers to a particular data structure. The word
     *stack* is used as a metaphor for stacks of things, like books. If you have a
     stack of books, it is easy to add one or few books at the top, and it is easy
     to remove one or few books at the top. However, it is trickier to add or remove
     books in the middle or at the bottom of the stack. A *stack* is a data structure
     that makes it easy (and efficient) to add and remove items from one end.
+  id: totrans-377
   prefs: []
   type: TYPE_NORMAL
+  zh: 在计算机科学中，*栈* 通常指的是一种特定的数据结构。*栈* 这个词被用作堆叠事物的隐喻，比如书籍。如果你有一堆书，很容易在顶部添加一本或几本书，也容易从顶部移除一本或几本书。然而，在栈的中间或底部添加或移除书籍则更为复杂。*栈*
+    是一种数据结构，它使得从一端添加和移除项目变得容易（且高效）。
 - en: 'In JavaScript you rarely see anyone defining such data structure. This is because
     the built-in `Array` is good enough as a stack: it has a `push` method to add
     a last element, and a `pop` method to remove it, and they are reasonably efficient.'
+  id: totrans-378
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 JavaScript 中，你很少看到有人定义这样的数据结构。这是因为内置的 `Array` 已经足够作为一个栈使用：它有一个 `push` 方法来添加最后一个元素，以及一个
+    `pop` 方法来移除它，而且它们效率相当高。
 - en: The *call stack* is not a data structure in the sense of `Array`. It is a segment
     of memory. However, unlike those other segments, it requires us to follow a particular
     discipline or convention to use it. This convention is called the *calling convention*.
     It is defined so that functions written in different languages, or using different
     compilers can call each other and interoperate on some basic level.
+  id: totrans-379
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用栈在`Array`数据结构的意义上不是一个数据结构。它是一段内存。然而，与那些其他段不同，它要求我们遵循特定的纪律或约定来使用它。这个约定被称为调用约定。它被定义为使得用不同语言编写的函数或使用不同编译器的函数能够相互调用并在某些基本级别上交互操作。
 - en: For example, when we call some `libc` functions like `printf`, we need to follow
     this convention. If we want other functions to call a function we’ve defined (as
     in the case of `main`), we also need to follow it.
+  id: totrans-380
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，当我们调用一些`libc`函数，如`printf`时，我们需要遵循这个约定。如果我们想让其他函数调用我们定义的函数（比如`main`），我们也需要遵循它。
 - en: 'First, we will look at the basic stack operations: push and pop, and then we
     will discuss the calling conventions, and how it can be implemented using these
     operations.'
+  id: totrans-381
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，我们将查看基本的栈操作：push和pop，然后我们将讨论调用约定，以及如何使用这些操作来实现它。
 - en: Push and pop
+  id: totrans-382
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Push和pop
 - en: The *stack pointer* is the central concept of the call stack. In ARM assembly,
     it is referred to as `r13` or, more often as `sp`. It holds the address of the
     *top of the stack*. As the stack pointer changes its value, we say that the stack
     grows or shrinks. The stack grows towards smaller addresses of the memory, and
     shrinks towards larger addresses. We say that a word is allocated on the stack
     if it is pointed by the stack pointer, or below.
+  id: totrans-383
   prefs: []
   type: TYPE_NORMAL
+  zh: 栈指针是调用栈的核心概念。在ARM汇编中，它被称为`r13`或更常见的是`sp`。它保存着栈顶的地址。当栈指针改变其值时，我们说栈在增长或缩小。栈向内存中的较小地址增长，向较大地址缩小。我们说如果一个字被栈指针指向，或者在其下方，那么这个字是在栈上分配的。
 - en: The following instruction pushes four words onto the stack.
+  id: totrans-384
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下指令将四个字推入栈中。
 - en: '[PRE44]'
+  id: totrans-385
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: In the next figure, you can see several registers and a stretch of memory belonging
     to the call stack, shown in two states. On the left, you can see the state before
     executing the push instruction, and on the right, you can see the state after
     executing it.
+  id: totrans-386
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一张图中，你可以看到几个寄存器和属于调用栈的一段内存，以两种状态展示。在左侧，你可以看到执行`push`指令前的状态，而在右侧，你可以看到执行后的状态。
 - en: '![Call stack before and after executing: push {r0, r1, r2, r3}](../Images/b5e3b458741c461c0baf30b373153e83.png)'
+  id: totrans-387
   prefs: []
   type: TYPE_IMG
+  zh: '![执行`push {r0, r1, r2, r3}`前后的调用栈](../Images/b5e3b458741c461c0baf30b373153e83.png)'
 - en: 'Call stack before and after executing: `push {r0, r1, r2, r3}`'
+  id: totrans-388
   prefs: []
   type: TYPE_NORMAL
+  zh: 执行`push {r0, r1, r2, r3}`前后的调用栈：`push {r0, r1, r2, r3}`
 - en: The effect is that the words are copied from registers to the stack, and the
     stack pointer is *decremented* by 16 bytes, and thus, four words. It is *decremented*
     because it grows towards lower addresses. The area above the stack pointer is
     greyed out to signify that this area is not allocated.
+  id: totrans-389
   prefs: []
   type: TYPE_NORMAL
+  zh: 其效果是将字从寄存器复制到栈中，栈指针减少16字节，因此是四个字。它是减少的，因为它向较低的地址增长。栈指针上方的区域被灰色表示，表示这个区域没有被分配。
 - en: 'We could have acheived the same effect using the following instructions:'
+  id: totrans-390
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以使用以下指令达到相同的效果：
 - en: '[PRE45]'
+  id: totrans-391
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: 'Or the following sequence of individual `push` instructions:'
+  id: totrans-392
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者以下一系列单独的`push`指令：
 - en: '[PRE46]'
+  id: totrans-393
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: 'The `push` instruction has a counterpart, `pop`:'
+  id: totrans-394
   prefs: []
   type: TYPE_NORMAL
+  zh: '`push`指令有一个对应的指令`pop`：'
 - en: '[PRE47]'
+  id: totrans-395
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: 'This reverses the previous action: *increments* `sp` by 16, and copies values
     from stack into registers. It does this in the reverse order, in other words,
     like this:'
+  id: totrans-396
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会逆转之前的行为：将`sp`增加16，并将值从栈复制到寄存器中。它以相反的顺序执行，换句话说，就像这样：
 - en: '[PRE48]'
+  id: totrans-397
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: These instructions use curly braces that remind us of the set notation. This
     is to signify that the order in which you write them in the assembly does not
     matter.
+  id: totrans-398
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些指令使用大括号，这让我们想起了集合表示法。这是为了表示你在汇编中写入它们的顺序并不重要。
 - en: 'You can write it either way:'
+  id: totrans-399
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以以任何一种方式来写它：
 - en: '[PRE49]'
+  id: totrans-400
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: 'But the effect will be the same:'
+  id: totrans-401
   prefs: []
   type: TYPE_NORMAL
+  zh: 但效果将是相同的：
 - en: Lower registers (think `r0`) are pushed to and popped from the lower memory
     addresses.
+  id: totrans-402
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 较低的寄存器（比如`r0`）被推送到并从较低的内存地址中弹出。
 - en: Higher registers (think `r15`) are pushed to and popped from the higher memory
     addresses.
+  id: totrans-403
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 较高的寄存器（比如`r15`）被推送到并从较高的内存地址中弹出。
 - en: The `push` and `pop` instructions’ encodings have 16 bit-flags dedicated to
     the 16 registers. So they can express which registers to push or pop, but not
     their order. The order was picked so that a pop operation would undo the effect
     of the corresponding push operation.
+  id: totrans-404
   prefs: []
   type: TYPE_NORMAL
+  zh: '`push` 和 `pop` 指令的编码有16位标志位，专门用于16个寄存器。因此，它们可以表示要推入或弹出哪些寄存器，但不能表示它们的顺序。顺序的选择是为了确保弹出操作能够撤销相应推入操作的效果。'
 - en: Stack alignment
+  id: totrans-405
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 栈对齐
 - en: An essential peculiarity of the call stack is that the stack pointer should
     be aligned at the 8-byte (2-word) boundary at so-called *external interfaces*.
     In this book, we won’t discuss what this means and will just mention that calling
@@ -1642,66 +2466,97 @@
     calling a `libc` foreign function from a baseline language function. For simplicity,
     we will assume an even stricter requirement that *the stack pointer should always
     be 8-byte (2-word) aligned*.
+  id: totrans-406
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用栈的一个基本特性是，栈指针应该在所谓的“外部接口”的8字节（2个字）边界对齐。在这本书中，我们不会讨论这意味着什么，只是提到调用 `libc` 函数是这种情况之一。我们的编译器不会区分从基线语言函数调用
+    `libc` 外部函数。为了简单起见，我们将假设一个更严格的要求，即*栈指针始终应该是8字节（2个字）对齐的*。
 - en: 'So, what if we need to push a single word onto the stack? If we just do `push
     {r4}`, then our stack won’t be aligned. Thus, it is common to push some other
     register as a dummy to maintain the stack alignment when needed:'
+  id: totrans-407
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，如果我们需要将单个字推入栈中呢？如果我们只是执行 `push {r4}`，那么我们的栈就不会对齐。因此，在需要时通常推入其他寄存器作为占位符以保持栈对齐：
 - en: '[PRE50]'
+  id: totrans-408
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: 'Here we used the `ip` registers for that purpose. The same as we did when we
     defined our `main` function:'
+  id: totrans-409
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里我们使用了 `ip` 寄存器来达到这个目的。这与我们定义 `main` 函数时所做的相同：
 - en: '[PRE51]'
+  id: totrans-410
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: In general, we can always pad a push with a dummy register to maintain the stack
     alignment. When constructing the compiler, we will also talk about how we can
     maintain the stack alignment without wasting space unnecessarily.
+  id: totrans-411
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，我们总是可以用一个占位寄存器填充推入操作以保持栈对齐。在构建编译器时，我们还将讨论如何在不浪费空间的情况下保持栈对齐。
 - en: Arguments and return value
+  id: totrans-412
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 参数和返回值
 - en: 'Function arguments are passed in the first four registers: `r0`–`r3`. The rules
     are elaborate regarding differently-sized arguments, but in our compiler, all
     values are represented using a single word. Thus, we can say that the first four
     arguments are passed in the registers `r0`–`r3`. These registers are also sometimes
     called the *argument registers*.'
+  id: totrans-413
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数参数通过前四个寄存器传递：`r0`–`r3`。关于不同大小的参数的规则很复杂，但在我们的编译器中，所有值都使用单个字表示。因此，我们可以说前四个参数是通过寄存器
+    `r0`–`r3` 传递的。这些寄存器有时也被称为*参数寄存器*。
 - en: The rest of the arguments are passed by pushing them onto the stack.
+  id: totrans-414
   prefs: []
   type: TYPE_NORMAL
+  zh: 其余的参数通过将它们推入栈中传递。
 - en: 'For example, if a function `f` takes six parameters, to make a call `f(10,
     20, 30, 40, 50, 60)` we need to write the following assembly:'
+  id: totrans-415
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，如果一个函数 `f` 接收六个参数，为了调用 `f(10, 20, 30, 40, 50, 60)`，我们需要编写以下汇编代码：
 - en: '[PRE52]'
+  id: totrans-416
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: It is also the caller’s responsibility to deallocate the stack space used for
     the arguments that didn’t fit into the four argument registers. After a function
     returns, the return value (if any) is expected to be in `r0`. (It can also span
     `r0`–`r1` in case of a 64-bit return value.)
+  id: totrans-417
   prefs: []
   type: TYPE_NORMAL
+  zh: 这也是调用者的责任，在函数返回后，释放用于未适合四个参数寄存器的栈空间。函数返回后，期望的返回值（如果有）应在 `r0` 中。在64位返回值的情况下，它也可以跨越
+    `r0`–`r1`。
 - en: 'It is expected that the assembly programmer or the compiler writer knows (from
     external sources) about the correct signature of each function: the number of
     parameters, their size, and about the return value (if any). For a `libc` function,
     we can look them up in the documentation, and for a function defined in our language,
     we can see it from its definition.'
+  id: totrans-418
   prefs: []
   type: TYPE_NORMAL
+  zh: 预期汇编程序员或编译器编写者（从外部来源）了解每个函数的正确签名：参数的数量、它们的大小以及关于返回值（如果有）。对于 `libc` 函数，我们可以在文档中查找它们，而对于在我们的语言中定义的函数，我们可以从其定义中看到它们。
 - en: Register conventions
+  id: totrans-419
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 寄存器约定
 - en: 'After a call returns, the contents of registers `r0`–`r3` will be unpredictable
     and semi-random and should not be relied upon. (This is, of course, except for
     the registers that are used for the return value, if any.) In other words, these
@@ -1712,14 +2567,20 @@
     of the “call” instruction `bl`, which overwrites the `lr` with the return address.
     Another *call-clobbered* register is `r12` or `ip`, which is clobbered by the
     linker-generated veneer.'
+  id: totrans-420
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用返回后，寄存器 `r0`–`r3` 的内容将是不可预测的和半随机的，不应依赖它们。（当然，这除外了用于返回值的寄存器，如果有的话。）换句话说，这些寄存器将包含函数调用后留下的*垃圾*：被调用的函数可能已经使用了它们或调用了另一个函数。这就是为什么我们说寄存器
+    `r0`–`r3` 是*调用破坏*的。另一个*调用破坏*的寄存器是 `r14` 或 `lr`。它被“调用”指令 `bl` 的设计破坏，该指令用返回地址覆盖了
+    `lr`。另一个*调用破坏*的寄存器是 `r12` 或 `ip`，它被链接器生成的包装器破坏。
 - en: In contrast, all other registers are *call-preserved*. In other words, it is
     the responsibility of each function to preserve the values in these registers
     when a call returns. Can a function modify them at all? Yes, but it should make
     sure to restore the values before returning from the call.
+  id: totrans-421
   prefs: []
   type: TYPE_NORMAL
+  zh: 相比之下，所有其他寄存器都是*调用保留*。换句话说，每个函数在调用返回时都有责任保留这些寄存器中的值。函数能否修改它们？是的，但应该在返回调用之前确保恢复这些值。
 - en: 'If *call-clobbered* registers are a good fit for arguments, then *call-preserved*
     registers are a good fit for variables. The registers `r4` to `r10` are sometimes
     referred to as *variable registers*. Other *call-preserved* registers are: frame
@@ -1728,82 +2589,130 @@
     stack will be at the same address as before the call. The program counter register
     (`r15` or `pc`) is a special register, but you can think of it as being call-preserved
     too: when the call returns back, the `pc` is restored to the previous value.'
+  id: totrans-422
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果*调用破坏*寄存器适合作为参数，那么*调用保留*寄存器适合作为变量。寄存器 `r4` 到 `r10` 有时被称为*变量寄存器*。其他*调用保留*寄存器包括：帧指针和栈指针（`r11`
+    或 `fp` 和 `r13` 或 `sp`）。（我们稍后会谈到帧指针。）换句话说，预期栈顶将与调用之前的地址相同。程序计数器寄存器（`r15` 或 `pc`）是一个特殊的寄存器，但你可以将其视为也是调用保留：当调用返回时，`pc`
+    将恢复到之前的值。
 - en: ARM register roles and conventions
+  id: totrans-423
   prefs: []
   type: TYPE_NORMAL
+  zh: ARM 寄存器角色和习惯用法
 - en: '| Register | Role | Convention |'
+  id: totrans-424
   prefs: []
   type: TYPE_TB
+  zh: '| 寄存器 | 角色 | 习惯用法 |'
 - en: '| --- | --- | --- |'
+  id: totrans-425
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- |'
 - en: '| `r0` | Argument/return register | *Call-clobbered* |'
+  id: totrans-426
   prefs: []
   type: TYPE_TB
+  zh: '| `r0` | 参数/返回寄存器 | *调用破坏* |'
 - en: '| `r1` | Argument register | *Call-clobbered* |'
+  id: totrans-427
   prefs: []
   type: TYPE_TB
+  zh: '| `r1` | 参数寄存器 | *调用破坏* |'
 - en: '| `r2` | Argument register | *Call-clobbered* |'
+  id: totrans-428
   prefs: []
   type: TYPE_TB
+  zh: '| `r2` | 参数寄存器 | *调用破坏* |'
 - en: '| `r3` | Argument register | *Call-clobbered* |'
+  id: totrans-429
   prefs: []
   type: TYPE_TB
+  zh: '| `r3` | 参数寄存器 | *调用破坏* |'
 - en: '| `r4` | Variable register | *Call-preserved* |'
+  id: totrans-430
   prefs: []
   type: TYPE_TB
+  zh: '| `r4` | 变量寄存器 | *调用保留* |'
 - en: '| `r5` | Variable register | *Call-preserved* |'
+  id: totrans-431
   prefs: []
   type: TYPE_TB
+  zh: '| `r5` | 变量寄存器 | *调用保留* |'
 - en: '| `r6` | Variable register | *Call-preserved* |'
+  id: totrans-432
   prefs: []
   type: TYPE_TB
+  zh: '| `r6` | 变量寄存器 | *调用保留* |'
 - en: '| `r7` | Variable register | *Call-preserved* |'
+  id: totrans-433
   prefs: []
   type: TYPE_TB
+  zh: '| `r7` | 变量寄存器 | *调用保留* |'
 - en: '| `r8` | Variable register | *Call-preserved* |'
+  id: totrans-434
   prefs: []
   type: TYPE_TB
+  zh: '| `r8` | 变量寄存器 | *调用保留* |'
 - en: '| `r9` | Variable register | *Call-preserved* |'
+  id: totrans-435
   prefs: []
   type: TYPE_TB
+  zh: '| `r9` | 变量寄存器 | *调用保留* |'
 - en: '| `r10` | Variable register | *Call-preserved* |'
+  id: totrans-436
   prefs: []
   type: TYPE_TB
+  zh: '| `r10` | 变量寄存器 | *调用保留* |'
 - en: '| `r11` or `fp` | Frame pointer | *Call-preserved* |'
+  id: totrans-437
   prefs: []
   type: TYPE_TB
+  zh: '| `r11` 或 `fp` | 帧指针 | *调用保留* |'
 - en: '| `r12` or `ip` | Intra-procedure scratch register | *Call-clobbered* |'
+  id: totrans-438
   prefs: []
   type: TYPE_TB
+  zh: '| `r12` 或 `ip` | 程序内临时寄存器 | *调用破坏* |'
 - en: '| `r13` or `sp` | Stack pointer | *Call-preserved* |'
+  id: totrans-439
   prefs: []
   type: TYPE_TB
+  zh: '| `r13` 或 `sp` | 栈指针 | *调用保留* |'
 - en: '| `r14` or `lr` | Link register | *Call-clobbered* |'
+  id: totrans-440
   prefs: []
   type: TYPE_TB
+  zh: '| `r14` 或 `lr` | 链接寄存器 | *调用破坏* |'
 - en: '| `r15` or `pc` | Program counter | *Call-preserved* |'
+  id: totrans-441
   prefs: []
   type: TYPE_TB
+  zh: '| `r15` 或 `pc` | 程序计数器 | *调用保留* |'
 - en: So, how do we preserve the values of the call-preserved registers, in practice?
     When the call starts, we decide which call-preserved registers we want to use,
     so we push them onto the stack. Then we proceed with using them to our liking.
     Then we pop them off the stack before returning the call. It is also said that
     we are *saving* these registers on the stack.
+  id: totrans-442
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，我们如何在实践中保留调用保留寄存器的值？当调用开始时，我们决定要使用哪些调用保留寄存器，因此我们将它们推入栈中。然后我们继续使用它们。然后在返回调用之前，我们将它们从栈中弹出。也有人说是我们在栈上*保存*这些寄存器。
 - en: 'Thus, the terms *call-clobbered* and *call-preserved* have an alternative terminology:
     *callee-saved* and *caller-saved*. This refers to which side of the call is responsible
     for saving the registers onto the stack, *if they want them to be preserved*.
     So that’s another way to look at it.'
+  id: totrans-443
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，术语*调用破坏*和*调用保留*有另一种术语：*被调用者保留*和*调用者保留*。这指的是调用哪一侧负责将寄存器保存到堆栈上，*如果它们希望保留它们的话*。所以这也是另一种看待它的方式。
 - en: Frame pointer
+  id: totrans-444
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 帧指针
 - en: The last register that we haven’t talked about is the *frame pointer* denoted
     as `r11` or `fp` in assembly. A function’s *frame* is an area of the stack which
     is allocated by that function. It is also referred to as a *stack frame*, a *call
@@ -1816,18 +2725,26 @@
     frame pointer register gives a start to a *linked list* of stack frames, where
     intermediate links are the stack-saved frame pointers of the callers. See the
     diagram that follows.
+  id: totrans-445
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们还没有讨论的最后一个是表示为`r11`或`fp`的*帧指针*。一个函数的*帧*是该函数分配的堆栈区域。它也被称为*堆栈帧*、*调用帧*或*活动记录*。当它被使用时，*帧指针*被设置为指向帧的*基*，换句话说，指向函数被调用时堆栈指针曾经指向的地址。堆栈指针和帧指针之间的堆栈区域是当前函数的堆栈帧。帧指针是一个调用保留寄存器。按照惯例，我们将帧指针保存在新帧指针指向的同一个堆栈槽中。这样，帧指针寄存器为堆栈帧的*链表*提供了一个起点，其中中间链接是调用者的堆栈保存帧指针。请参见下面的图示。
 - en: '![Example of a stack with several frames](../Images/971ca69bb22b0810708dc5617639c234.png)'
+  id: totrans-446
   prefs: []
   type: TYPE_IMG
+  zh: '![多个帧的堆栈示例](../Images/971ca69bb22b0810708dc5617639c234.png)'
 - en: Example of a stack with several frames
+  id: totrans-447
   prefs: []
   type: TYPE_NORMAL
+  zh: 多个帧的堆栈示例
 - en: Unlike in the diagram, each stack frame usually has a different size, depending
     on the number of local variables and intermediate values.
+  id: totrans-448
   prefs: []
   type: TYPE_NORMAL
+  zh: 与图中的情况不同，每个堆栈帧通常具有不同的大小，这取决于局部变量和中间值的数量。
 - en: 'It is optional to use the frame pointer register this way, and it is optional
     to maintain the linked list of stack frames. However, it is used by debuggers,
     introspection tools, and it may be necessary for certain language features, such
@@ -1837,39 +2754,57 @@
     `fp + 4` always refers to the same stack slot, where a variable can be stored.
     At the same time, loading local variables relative to the stack pointer is a bit
     trickier: stack pointer often changes its value, but it is certainly possible.'
+  id: totrans-449
   prefs: []
   type: TYPE_NORMAL
+  zh: 以这种方式使用帧指针和维持堆栈帧的链表都是可选的。然而，调试器、内省工具可能会使用它，并且对于某些语言特性，如异常处理和非局部跳转语句，可能也是必要的。由于函数调用后帧指针不会改变，因此在从堆栈帧中加载数据时，如局部变量，它是一个方便的指针。你知道`fp
+    + 4`始终指向同一个堆栈槽，可以存储变量。同时，相对于堆栈指针加载局部变量要复杂一些：堆栈指针经常改变其值，但这当然是可以做到的。
 - en: Function definitions
+  id: totrans-450
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 函数定义
 - en: 'We have already defined some functions previously, `main` and `addFourtyTwo`.
     The latter looks pretty simple:'
+  id: totrans-451
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们之前已经定义了一些函数，`main`和`addFourtyTwo`。后者看起来相当简单：
 - en: '[PRE53]'
+  id: totrans-452
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: Calling this function doesn’t allocate any stack at all! Neither for intermediate
     values, nor for saving registers. The return address is passed in the `lr` registers.
     And it doesn’t need to save any registers, because it doesn’t use any call-preserved
     registers.
+  id: totrans-453
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用此函数根本不会分配任何堆栈！既不是用于中间值，也不是用于保存寄存器。返回地址是通过`lr`寄存器传递的。而且它不需要保存任何寄存器，因为它不使用任何调用保留寄存器。
 - en: 'This all changes as soon as you want to define a function that calls another
     function, like the `main` function, that we have seen before:'
+  id: totrans-454
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你想要定义一个调用另一个函数的函数时，比如我们之前看到的`main`函数，这一切都会改变：
 - en: '[PRE54]'
+  id: totrans-455
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: 'Since it calls `printf`, this call will potentially clobber all the call-clobbered
     registers, notably: the return address `lr`. If we want to be able to return from
     `main`, we better save this register onto the stack. And that’s exactly what we
     did in our `main` definition by doing `push {ip, lr}`. We have also saved a dummy
     `ip` register to maintain stack-alignment.'
+  id: totrans-456
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于它调用了`printf`，这个调用可能会破坏所有被调用破坏的寄存器，特别是：返回地址`lr`。如果我们想从`main`函数返回，我们最好将这个寄存器保存到栈上。这正是我们在`main`定义中通过`push
+    {ip, lr}`所做的事情。我们还保存了一个虚拟的`ip`寄存器以保持栈对齐。
 - en: 'Now, if we wanted to maintain the frame pointer and the linked-list of frames,
     we would do things differently. We would push both `lr` and `fp` onto the stack
     and then set the new frame pointer to match the stack pointer. Now we can push
@@ -1878,31 +2813,46 @@
     frame. You can do it with `mov sp, fp` at the end of your function. Alternatively,
     you could try to match all the pushes and pops, but it can be tricky. All this
     busywork has a name, or two in fact: function’s *prologue* and *epilogue*.'
+  id: totrans-457
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，如果我们想保持帧指针和帧的链表，我们会做不同的事情。我们会将`lr`和`fp`都推入栈中，然后设置新的帧指针以匹配栈指针。现在我们可以推入和弹出栈，我们仍然会在`fp`中有一个稳定的参考框架来访问局部变量。使用`fp`也使得释放帧变得容易。你可以在函数结束时使用`mov
+    sp, fp`来完成它。或者，你也可以尝试匹配所有的推入和弹出，但这可能很棘手。所有这些繁琐的工作都有一个名字，或者确切地说，有两个名字：函数的*前置部分*和*后置部分*。
 - en: '[PRE55]'
+  id: totrans-458
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE55]'
 - en: Function’s prologue saves the call-preserved registers, sets up the frame pointer,
     if necessary. Function’s epilogue reverses this and exits the function.
+  id: totrans-459
   prefs: []
   type: TYPE_NORMAL
+  zh: 函数的前置部分保存了被调用保留的寄存器，如果需要，设置帧指针。函数的后置部分则反转这一过程并退出函数。
 - en: 'In this epilogue, we `pop` the registers back, and return using `bx lr`. If
     you remember, in this case, `bx lr` is the same as `mov pc, lr`. So, why not pop
     the return address directly into `pc`, instead of `lr`? This way, we can make
     our epilogue shorter and more efficient:'
+  id: totrans-460
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个序言中，我们使用`pop`指令恢复寄存器，并通过`bx lr`返回。如果你还记得，在这种情况下，`bx lr`与`mov pc, lr`是相同的。那么，为什么不直接将返回地址弹出到`pc`，而不是`lr`呢？这样，我们可以使我们的序言更短、更高效：
 - en: '[PRE56]'
+  id: totrans-461
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE56]'
 - en: This is a common way to organize a function’s prologue and epilogue in ARM.
+  id: totrans-462
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是在ARM中组织函数前置部分和后置部分的常见方式。
 - en: Heap
+  id: totrans-463
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 堆
 - en: The other memory segment is called the *heap* or the *dynamic memory*. It is
     dynamic in the sense that a program can ask the operating system to allocate or
     deallocate a new region of memory at runtime. This is usually done by calling
@@ -1913,31 +2863,47 @@
     as its single parameter in `r0` and deallocates that region of memory. After that,
     you can’t use this region, and the operating system will use that memory somewhere
     else.
+  id: totrans-464
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个内存段被称为*堆*或*动态内存*。它是动态的，因为程序可以在运行时请求操作系统分配或释放新的内存区域。这通常是通过调用`libc`函数（`malloc`和`free`）来完成的，这些函数最终为你执行系统调用。`malloc`函数在`r0`中接受一个参数，指定我们想要分配多少字节。它返回一个在`r0`中的指针，该指针指向新分配的内存区域。`free`函数接受这样的指针作为其单个参数在`r0`中，并释放该内存区域。之后，你不能使用这个区域，操作系统将把它用于其他地方。
 - en: Here’s a small snippet of assembly which allocates a single word on the heap,
     stores the number `42` into it, and then deallocates it.
+  id: totrans-465
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个汇编代码片段，它在堆上分配一个单字，将数字`42`存储进去，然后释放它。
 - en: '[PRE57]'
+  id: totrans-466
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE57]'
 - en: It is common for high-level languages to allocate most of the objects and data
     structures on the heap, and the functions are only passing and returning pointers
     to these objects.
+  id: totrans-467
   prefs: []
   type: TYPE_NORMAL
+  zh: 高级语言通常会在堆上分配大多数对象和数据结构，而函数只传递和返回这些对象的指针。
 - en: '* * *'
+  id: totrans-468
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: There’s much more to discuss about ARM assembly and assembly programming, in
     general. But this chapter should be enough to get a solid grasp on it. And even
     more than enough to complete the second pass of our compiler.
+  id: totrans-469
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于ARM汇编和汇编编程还有很多要讨论的内容。但这一章应该足以让你对它有一个扎实的掌握。而且，对于完成编译器的第二遍来说，绰绰有余。
 - en: '[Next: Chapter 8\. Second Pass: Code Generation](./08-second-pass-code-generation)'
+  id: totrans-470
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第8章 第二遍：代码生成](./08-second-pass-code-generation)'
 - en: '* * *'
+  id: totrans-471
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

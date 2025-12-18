@@ -1,43 +1,63 @@
 - en: Chapter 3 High-level Compiler Overview
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第3章 高级编译器概述
 - en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/03-high-level-compiler-overview](https://keleshev.com/compiling-to-assembly-from-scratch/03-high-level-compiler-overview)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/03-high-level-compiler-overview](https://keleshev.com/compiling-to-assembly-from-scratch/03-high-level-compiler-overview)
 - en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '[从零开始编译汇编](./#table-of-contents)'
 - en: by [Vladimir Keleshev](/)
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 由 [Vladimir Keleshev](/)
 - en: A *compiler* is a program that translates another program from one language
     to another.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '**编译器**是一个程序，它将另一个程序从一种语言翻译成另一种语言。'
 - en: In our case, it transforms from what we call the *baseline language* to ARM
     assembly language.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们的案例中，它将我们从所谓的**基线语言**转换为ARM汇编语言。
 - en: Types of compilers
+  id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 编译器的类型
 - en: Our compiler will be an *ahead-of-time* (AOT) compiler. Only once the compilation
     is finished can the resulting program be run.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的编译器将是一个**即时编译器**（AOT）。只有当编译完成时，生成的程序才能运行。
 - en: There are also *just-in-time* (JIT) compilers that compile a program as it runs.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有**即时编译器**（JIT），它在程序运行时编译程序。
 - en: 'Think of AOT compilers as translator services for foreign languages: you might
     send them a few papers to translate from English to Japanese, and when they are
     done, they send the results back. On the other hand, JIT compilers are more like
     simultaneous translators at a business meeting: they translate participants as
     they speak.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 将AOT编译器想象成外语翻译服务：你可能向他们发送一些从英语翻译成日语的论文，当他们完成时，他们会将结果发回来。另一方面，即时编译器（JIT）更像是商务会议上的同声传译：他们在说话的同时翻译参与者。
 - en: Our compiler *targets* an *assembly language*, i.e. produces assembly code.
     An *assembly language* is a textual representation of a binary *machine language*
     that processors can execute directly. It has a straightforward translation to
@@ -46,92 +66,132 @@
     called an *assembler*. In most cases for ARM, one assembly instruction is translated
     into one 32-bit binary integer. Think of assembly language as an API for directly
     accessing your processor’s functionality.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的编译器**目标**是**汇编语言**，即生成汇编代码。汇编语言是处理器可以直接执行的二进制**机器语言**的文本表示。它可以直接转换为这样的二进制。这种转换称为**汇编**，并且比编译器中找到的简单得多。执行这种转换的程序称为**汇编器**。在大多数情况下，对于ARM，一条汇编指令被翻译成一个32位的二进制整数。将汇编语言想象成直接访问处理器功能的API。
 - en: Some compilers target binary *machine code* directly, but this is increasingly
     rare. Instead, most compilers compile to assembly and then call the assembler
     behind the scenes.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些编译器直接以**二进制机器代码**为目标，但这越来越少见。相反，大多数编译器编译到汇编，然后在幕后调用汇编器。
 - en: 'Some compilers target *byte code* instead of assembly. Byte code is similar
     to assembly: it consists of similar instructions. However, these do not target
     a real processor, but instead an *abstract machine*, which is a processor that
     is implemented in software. This could be done for portability reasons, or to
     add security features that are not available in the hardware. Often byte code,
     in turn, is translated to machine code by a JIT compiler.'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些编译器以**字节码**为目标而不是汇编。字节码类似于汇编：它由类似的指令组成。然而，这些并不针对真实的处理器，而是针对一个**抽象机**，这是一个在软件中实现的处理器。这可能是因为可移植性原因，或者是为了添加硬件中不可用的安全功能。通常，字节码反过来由JIT编译器转换为机器代码。
 - en: A possible compiler target could be another programming language. We call these
     compilers *source-to-source* compilers. For example, the TypeScript compiler is
     a source-to-source compiler that targets JavaScript.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 可能的编译器目标可以是另一种编程语言。我们称这些编译器为**源到源**编译器。例如，TypeScript编译器是一个源到源编译器，其目标是JavaScript。
 - en: Compiler passes and intermediate representations
+  id: totrans-14
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 编译器遍历和中间表示
 - en: Compilers are structured into several *passes*. At the high-level, each pass
     is a function that takes one representation of the program and converts it to
     a different representation of the program. The first such representation is the
     source of the program. The last one is the compiled program in the target language.
     In between them, we have representations that are *internal* to the compiler.
     We call them *intermediate representations* or IR.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 编译器被结构化为几个**遍历**。在高级别上，每个遍历都是一个函数，它接受程序的一种表示并将其转换为程序的不同表示。这种表示的第一种是程序的源代码。最后一种是目标语言的编译程序。在这两者之间，我们有编译器内部的表示。我们称它们为**中间表示**或IR。
 - en: In the figure you can see an example diagram of a three-pass compiler.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 在图中，你可以看到一个三遍编译器的示例图。
 - en: '![An example of a three-pass compiler](../Images/78d4f52a6ef376bc17915a0f5cfd4288.png)'
+  id: totrans-17
   prefs: []
   type: TYPE_IMG
+  zh: '![一个三遍编译器的示例](../Images/78d4f52a6ef376bc17915a0f5cfd4288.png)'
 - en: An example of a three-pass compiler
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个三遍编译器的示例
 - en: Intermediate representations of a program are data structures convenient for
     us to manipulate at different stages of the compiler. For one stage, we might
     want to use a tree-like representation. For another, we might pick a graph-like
     one. For some, a linear array-like representation is appropriate.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 程序的中间表示是我们在编译器的不同阶段方便操作的数据结构。对于某一阶段，我们可能希望使用树状表示。对于另一阶段，我们可能选择图状表示。对于某些情况，线性数组状表示是合适的。
 - en: To convert from one IR to another one, each pass needs to traverse it once (or
     iterate through it). That’s why it’s called a *pass*.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将一个IR转换为另一个IR，每个遍历都需要遍历一次（或迭代通过它）。这就是为什么它被称为*遍*。
 - en: The number of passes in a compiler ranges wildly, from single-pass compilers
     to multiple-pass compilers with dozens of passes (sometimes called *nano-pass*
     compilers).
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 编译器的遍历次数差异很大，从单遍编译器到具有数十遍（有时称为*纳米遍*编译器）的多遍编译器。
 - en: 'The number of compiler passes presents a trade-off. On the one hand, we want
     to write many small passes that do one thing and are maintainable and testable
     in isolation. We also want to write more passes that do sophisticated analysis
     to improve the resulting programs’ performance. On the other hand, we want to
     minimize the number of traversals to improve our compiler’s performance: how fast
     it compiles the programs.'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 编译器的遍历次数提出了一个权衡。一方面，我们希望编写许多小的遍历，每遍历做一件事情，并且可以独立维护和测试。我们也希望编写更多的遍历来进行复杂的分析，以提高生成的程序的性能。另一方面，我们希望最小化遍历次数以提高编译器的性能：编译程序的速度有多快。
 - en: Our baseline compiler is a two-pass compiler. The first pass converts the source
     into an IR called *abstract syntax tree* or AST. This process is called *parsing*.
     The second pass converts from AST to assembly. It is called *emitting code* or
     *code generation*.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的基线编译器是一个两遍编译器。第一遍将源代码转换为称为*抽象语法树*或AST的IR。这个过程称为*解析*。第二遍将AST转换为汇编。这被称为*生成代码*或*代码生成*。
 - en: '![Baseline compiler structure](../Images/7d2d772b01b6d4adc676f1350d8df889.png)'
+  id: totrans-24
   prefs: []
   type: TYPE_IMG
+  zh: '![基线编译器结构](../Images/7d2d772b01b6d4adc676f1350d8df889.png)'
 - en: Baseline compiler structure
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 基线编译器结构
 - en: In *Part II* of the book, we will introduce some more passes.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 在书的*第二部分*中，我们将介绍一些更多的遍历。
 - en: Abstract syntax trees are the most common type of intermediate representations.
     Let’s talk about them in detail.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 抽象语法树是最常见的中间表示类型。让我们详细谈谈它们。
 - en: '[Next: Chapter 4\. Abstract Syntax Tree](./04-abstract-syntax-tree)'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '[下一章：第4章 抽象语法树](./04-abstract-syntax-tree)'
 - en: '* * *'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
