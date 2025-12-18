@@ -1,0 +1,445 @@
+- en: Chapter 13 Static Type Checking and Inference
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/13-static-type-checking-and-inference](https://keleshev.com/compiling-to-assembly-from-scratch/13-static-type-checking-and-inference)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: by [Vladimir Keleshev](/)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this chapter, we will implement a type checker for our language with *local
+    type inference*. Local type inference means that local variables do not need a
+    type annotation, so you can write the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: The type of `a` will be inferred as `Array<number>`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Our type checker will cover such types as `number`, `boolean`, `void`, and
+    `Array<T>` where `T` could be any other type, for example `Array<Array<boolean>>`.
+    We will also deal with function types, such as `(x: boolean, y: number) => number`,
+    when type checking function calls.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, we need to refer to different types to manipulate them. We will represent
+    them similarly to AST nodes, with an interface called `Type` and one class that
+    implements it per type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: We will need equality and a `toString` method to be able to display type errors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary of Type constructor signatures with examples
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Type Constructor Signature | Example |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Implementing `toString` and `equals` for these data classes is straightforward.
+    However, `FunctionType` requires some comments:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, `Map` in JavaScript preserves the order of elements, which is important
+    to be able to match parameter positions at a call site.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'When comparing two instances of `FunctionType` it makes sence to ignore parameter
+    names, since `(x: boolean, y: number) => number` is the same type as `(p1: boolean,
+    p2: number) => number`.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Our language will change to allow functions to be type-annotated. We will first
+    change our `Function` AST node to store its signature as `FunctionType`, instead
+    of just parameter names:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: We will also need to change our grammar and parser. After introducing the necessary
+    tokens, we can define the following grammar for types.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `type` rule is recursive, just like `expression` and `statement`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, we need to change the grammar and parser for functions, to include optional
+    type annotations:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: We allow optional type annotations for function parameters and function return
+    type. Why optional? Some languages do infer parameter and return types, but we
+    do it so we can use the same parser unmodified later with dynamic types. If a
+    type annotation is missing, we default it to `number`, which also gives us some
+    backwards compatibility with our test suite.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now, the parser will accept functions with type annotations, like the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'For such function, the parser will produce a `Function` node with `FunctionType`
+    signature like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, for type checking, we will use a function that asserts that two types
+    are the same and otherwise raises an exception to signal an error. We call it
+    `assertType`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: It uses both the `equals` method and the `toString` method, which is invoked
+    implicitly for template string variables. Here, we are slightly abusing the built-in
+    `TypeError` exception, which has a different purpose (run-time type errors); it
+    is better to define a custom exception type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Our `TypeChecker` pass will walk the AST and will either abort with a `TypeError`,
+    or will return the inferred `Type` of an expression. Thus, `TypeChecker` implements
+    `Visitor<Type>`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'It maintains two environments:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`locals`—an environment that stores types of local variables in a function,
+    and'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`functions`—an environment that stores signatures of each function.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'We need two separate environments for these since functions are not first-class
+    in our language: they cannot be assigned to a variable and passed around. So,
+    when we encounter a `Call`, we will search for a function in the `functions` map,
+    and when we encounter an `Id`, we will search for a non-function type in the `locals`
+    map.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: We also maintain an instance variable `currentFunctionReturnType` which will
+    help us type-check `Return` statements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, we get to the actual type checking and inference.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scalars
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The type of literal scalars is the easiest to infer. We know that the type of
+    a number literal is `number`, the type of a boolean node is `boolean`, and so
+    forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: In TypeScript the `void` type is inferred for expressions or statements that
+    return `undefined`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: Operators
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Now, let’s look at the most straightforward operator—negation. That’s not exactly
+    how it works in TypeScript, but let’s assume that the negation operator expects
+    strictly boolean parameter. To enforce that, we first infer the inner term’s type
+    by calling the `visit` method on it. Then we assert that it is boolean:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: We return the `boolean` type since this will always be the result of negation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To type-check numeric operators like `Add`, we infer the type of `left` and
+    `right` parameters and assert that they are both numbers. Then we return `number`
+    as the resulting type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now we get to something more interesting. Operations such as equality are generic:
+    they can work with any type as long as the type on the left-hand side is the same
+    as the one on the right-hand side. We infer the types on both sides by visiting
+    them, and then assert that the two are the same.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: Variables
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: For a new variable defined with `var`, we infer its type by visiting its value,
+    and then we add that type to the `locals` environment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: When we encounter a variable, we look it up in the `locals` environment and
+    return its type. If the variable is not defined—we raise a `TypeError`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: When assigning a new value to a variable, we check that the variable was previously
+    defined, and that the assignment does not change the type of the variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: Arrays
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Inferring the type of array literals is a bit trickier than the other literals
+    that we’ve covered. We know that any array literal is of type `Array<T>`, but
+    we need to figure out what `T` is. First of all, we can’t infer the type of an
+    empty array—there’s simply not enough information at this point. There are bi-directional
+    type inference algorithms that handle this, but often this is solved by requiring
+    a type annotation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the array is non-empty, we infer the type of each element and then assert
+    pair-wise that they are the same type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: For something like our array length primitive, we need to assert that the parameter
+    type is an array, but we don’t care about the element type. So, instead of using
+    `assertType` we manually check that the type is an instance of `ArrayType`, and
+    raise a `TypeError` otherwise. The inferred type of such expression is `number`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'When handling array lookup, we assert that the `index` is a number, and that
+    the `array` is of type array:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: Functions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When encountering a function, we add its signature to the `functions` environment.
+    We do not need to infer it, because it is parsed from the source. Before type-checking
+    the body of the function, we create a new visitor with a modified environment.
+    Since we use mutable maps, we need to pass a new `Map` to each function, to avoid
+    modifying the wrong function’s environment. We also set the `currentFunctionReturnType`
+    to the one in the signature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: When visiting a `Call`, we fetch that function’s signature from the `functions`
+    environment. Then we infer the type of the function being called and compare it
+    to the type from the environment. When inferring the type of the function we visit
+    each argument, and since `FunctionType` requires a name for each parameter, we
+    assign them dummy names, such as `x0`, `x1`, `x2`, etc. When it comes to the function’s
+    return type, we use the one from the type annotation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: When checking a return statement, we infer the type of the returned value and
+    compare it with the one from the function annotation, which we saved conveniently
+    in `currentFunctionReturnType` instance variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: If and While
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When checking `If` and `While` we visit each inner node to make sure that their
+    type is checked, but we don’t enforce any type. The `conditional` could be checked
+    to be boolean, but in TypeScript (as in many languages) it is not required to
+    be such. We could also enforce that the statements inside the branches return
+    `void`, but this is not usually required either.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: However, if we had a ternary conditional operation, we would need to ensure
+    that the two branches return the same type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Soundness
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Our type checker is complete. But is it *sound*? A type system is sound if the
+    types at compile time are always consistent with run time. Can you find a soundness
+    issue in our type checker?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Although we check that each `return` statement is consistent with the annotated
+    return type, we don’t check that each control-flow path has a return statement.
+    Here’s an example that demonstraits this issue:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: Checking that each control flow path leads to a return statement requires a
+    bit of control-flow analysis which is outside of the scope of this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Error messages
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We can improve our error messages by specializing them to each situation instead
+    of relying on a generic message produced by `assertType`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Next: Chapter 14\. Dynamic Typing](./14-dynamic-typing)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL

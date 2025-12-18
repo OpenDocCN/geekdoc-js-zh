@@ -1,0 +1,1943 @@
+- en: Chapter 7 ARM Assembly Programming
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/07-arm-assembly-programming](https://keleshev.com/compiling-to-assembly-from-scratch/07-arm-assembly-programming)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: by [Vladimir Keleshev](/)
+  prefs: []
+  type: TYPE_NORMAL
+- en: By the end of this chapter, you will learn enough ARM assembly programming to
+    implement the rest of the compiler.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We will be using the GNU Compiler Collection (GCC) toolchain, most notably,
+    the GNU Assembler (GAS). See *Appendix B* for comparison between GAS and the legacy
+    ARMASM syntax.
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, we’ll take a bird’s eye view of a simple hello-world program to get a
+    taste of assembly programming. After this rough initial overview, we will dive
+    into details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A taste of assembly
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: This is not one of these *how to draw an owl* tutorials. I will assume that
+    you have never done any assembly programming and walk your way through it. However,
+    in the beginning, I wanted to start with a small, complete program to get a taste
+    of assembly programming. After that, we’ll cover each part in detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So here it is, our first assembly program:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: This program prints `Hello, assembly!` to the console and exits with error code
+    `42`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, let’s discuss this piece of assembly code step-by-step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: The program starts with a `.data` directive. Under this directive, there are
+    definitions of our global data, potentially mutable (or read-write). There we
+    have only one definition, a byte string defined with a `.string` directive. It
+    has a *label* named `hello:` which stands for the memory address of this string,
+    which we can refer to. The data section ends, and the `.text` directive starts
+    the *code* section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: This section is for immutable (read, no-write) data. It is used for constants,
+    as well as for the actual assembly instructions. The only definition in the `.text`
+    section is a function called `main` defined with the label `main:`. It is declared
+    “public” using the `.global` directive. The function starts with an instruction
+    `push` that saves some necessary registers on the stack. Then, it continues below.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: The function loads the address of the string that we defined earlier, by referring
+    to the `hello` label. The instruction `ldr` *loads* the address into *register*
+    `r0`. The instruction `bl printf` is the *call* instruction that calls the `printf`
+    function to print the string. The register `r0` is used to pass a parameter to
+    `printf`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Next, we set up the exit code. First, we use the `mov` instruction to *move*,
+    or copy a number `41` into register `r0`. Then the `add` instruction increments
+    `r0` by one, resulting in `42`. There’s nothing special about the exit code `42`,
+    and we didn’t have to compute it from `41`. But this taste of assembly would be
+    incomplete without showing some basic instructions like `mov` and `add`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `main` function ends with a return sequence. The registers that we saved,
+    in the beginning, are now restored with the `pop` instruction, and then we return
+    from the function with the `bx lr` instruction, assuming that the return value
+    is in `r0`, which should be `42`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As you probably noticed, the familiar single- and multi-line comments are supported.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Running an assembly program
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Here’s how you get this simple program running.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Note**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The instructions below assume that you are running the commands on an ARM-based
+    computer (like a Raspberry Pi) with a 32-bit operating system. If this is not
+    the case for you, check out *Appendix A* on how to adapt these instructions to
+    other environments.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Save the previous program into a file called `hello.s` using a text editor.
+    Then type the following command into the console:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: This will instruct GCC to assemble and link our program producing a `hello`
+    executable. By default, GCC will link our assembly with a `libc` library, which
+    provides us with basic functions such as `printf` that we used here.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You see, the operating system kernel doesn’t provide such functions directly.
+    For example, printing to the console is implemented in libraries like `libc` on
+    top of (operating) *system calls* like `writev`. Without these basics, we would
+    be stuck without even being able to print to the console.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now, you can run the resulting executable as usual:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '*Oh, hello there!*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can check the exit code by printing the `$?` shell variable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: Now that we have a template to run our programs and a rough overview, we will
+    dive deep into the details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We will start with the basic data structure of assembly programming, the *machine
+    word*, then followed by an overview of how memory and registers work, and finally
+    proceed to cover the different kinds of instructions that manipulate registers
+    and memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Machine word
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: ARM is a 32-bit instruction set. That means that most operations work with a
+    32-bit data structure called the *machine word*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In ARM, a word consists of 32 bits. Each bit is binary `0` or `1`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to look at it, a word consists of *four* bytes, where each byte
+    is 8 bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are also half-words and double-words. The names speak for themselves.
+    Operations on them are not as common.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at the following word.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![An example machine word](../Images/3a55cf5fa168850321234094d5cc05d6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: An example machine word
+  prefs: []
+  type: TYPE_NORMAL
+- en: What does it mean? What does it stand for? Well, the processor doesn’t care.
+    It doesn’t have a type system. It doesn’t have any information attached to words
+    to help us distinguish what a word stands for in isolation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If interpreted as an unsigned integer, this word could stand for `3_283_185_520`.
+    If interpreted as a signed integer, then it’s `-1_011_781_776`. It could be a
+    byte array of four bytes, `[195, 177, 111, 112]`. It could be an array of bits,
+    where each bit is a single flag. Or it could be a UTF-8–encoded string `"ñop"`,
+    where `ñ` is encoded using as two bytes `195, 177`, while `o` and `p` are encoded
+    as single-byte ASCII characters with codes `111` and `112`. It could also be an
+    encoding of an ARM instruction with mnemonic `rsb`. Or it could be an address
+    pointing to some data location in memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is up to us (programmers and compiler writers) to assign meaning to each
+    word and to keep track of what they stand for.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Note**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Throughout this book, we’ll use (non-overlapping) solid boxes of different shapes
+    and sizes to refer to 32-bit words. Like here, we’ll use dashed lines to delimit
+    individual bytes, where it adds clarity.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Numeric notation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'As we already did here, we’ll use JavaScript notation to refer to different
+    interpretations of data. Modern JavaScript is quite good at that. We could refer
+    to the above word using binary *(base-2)* notation, with `0b` prefix:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'JavaScript allows us to add underscores for readability; for example, to distinguish
+    bit patterns of individual bytes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'We can use good old decimal *(base-10)* notation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: We can also use hexadecimal *(base-16)* notation, with `0x` prefix;
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: How do we decide which notation to use? Why would we ever use hexadecimal?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Binary notation is straightforward: you can see the individual bits, and you
+    can visually split a word into bytes, but it is very verbose!'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Decimal notation is much terser, you get a good understanding of the magnitude
+    of the number, but it is hard to reason about the values of individual bytes and
+    bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Hexadecimal notation is terse, and it is easy to split a word into bytes visually.
+    Each hexadecimal digit maps to four bits, no matter the position in a number,
+    so two hexadecimal digits always map to a byte. All you need to remember is bit
+    patterns of the 16 hexadecimal digits:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Hexadecimal | Binary |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x0` | `0b0000` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x1` | `0b0001` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x2` | `0b0010` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x3` | `0b0011` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x4` | `0b0100` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x5` | `0b0101` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x6` | `0b0110` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x7` | `0b0111` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x8` | `0b1000` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0x9` | `0b1001` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0xA` | `0b1010` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0xB` | `0b1011` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0xC` | `0b1100` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0xD` | `0b1101` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0xE` | `0b1110` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0xF` | `0b1111` |'
+  prefs: []
+  type: TYPE_TB
+- en: 'This way we can easily translate from hexadecimal to binary and back. Take
+    `0xC3_B1_6F_70`, as an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`0xC3` is `0b1100_0011`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`0xB1` is `0x1011_0001`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`0x6F` is `0b0110_1111`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`0x70` is `0b0111_0000`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Thus we can conclude that `0xC3_B1_6F_70` is the same as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: Can’t do this with decimal notation!
+  prefs: []
+  type: TYPE_NORMAL
+- en: Memory
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Think of memory as a large continuous byte array. It contains our program instructions
+    encoded as binary words. It contains the data that our program works with: data
+    segment, code segment, stack, and heap (more on these later).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like a byte array, you can access a single byte from memory given an index into
+    this array. We call this index, a *memory address*. Memory addresses are 32-bit
+    on ARM (how it all aligns, eh?).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, not only can you access single bytes from memory, you can also access
+    whole 32-bit words. But there is a restriction: you can only access *aligned*
+    words. In this case, *aligned* means non-overlapping words or words which address
+    is divisible by *four*. One word contains four bytes, and each byte has its own
+    address, but we address words only by the address of the first byte in the word.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Newer ARM processors support unaligned access, but not for all relevant instructions,
+    and it incurs a performance penalty. In this book, we avoid it.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: In the following figure, you can see a stretch of memory starting from address
+    `0x00` that shows how individual bytes and their addresses map to aligned words
+    and their addresses.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![An example stretch of memory on byte-level](../Images/e850519eb736df8b3b200aa68095323a.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: An example stretch of memory on byte-level
+  prefs: []
+  type: TYPE_NORMAL
+- en: From here on, we won’t need this much detail when talking about memory, so we
+    will use a simplified (but still as precise) word-level diagrams. Like the next
+    one that describes the same stretch of memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Same stretch of memory on word-level](../Images/6054e608c175c84d5ae309a76ca837d3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Same stretch of memory on word-level
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sometimes we store a memory address in a memory word. We call that a *pointer*.
+    In our diagrams, we will use arrows to show where a memory word is pointing. We
+    will omit the actual memory addresses in our diagrams since the exact value is
+    not important. The important part is where it points to, not the value itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Pointer notation: left—with arrows, right—with actual values](../Images/e5596e647de28affaa1b7b71978e50f7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Pointer notation: left—with arrows, right—with actual values'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As we already mentioned, the memory contains our data segment, code segment,
+    stack, and heap. However, what it does *not* contain (on most architectures, anyway)
+    is *registers*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Registers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Registers are special memory words that are *outside* of the main memory. They
+    are used for intermediate values, sort of like temporary variables. There’s a
+    limited number of these—usually 8, 16, or 32.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARM has 16 main registers and a special *status* register (CPSR). The main registers
+    are called `r0` to `r15`, but some of them have alternative names. See the next
+    figure for more details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Registers in ARM](../Images/4d25c709f552949c71b9ccdcdc94740f.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Registers in ARM
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, why do we need registers? Couldn’t instructions work directly with memory?
+    They could, and there are other architectures such as accumulator-based and stack-based
+    architectures that need only one register or no registers at all. However, ARM
+    is a *load-store* architecture.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With *load-store* architecture, the basic workflow is as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: data is loaded from memory into registers, then
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: operations are performed on registers, and finally
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: the data is stored back into memory.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It turns out this workflow is quite efficient, and most modern architectures
+    follow it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most ARM registers are general-purpose and can be used for any intermediate
+    values. We’ll cover the more *special-purpose* registers like `fp`, `ip`, `sp`,
+    `lr`, `pc`, and CPSR as we discover instructions that work with them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL
+- en: You may have heard that *registers are fast*. What does that even mean? Why
+    couldn’t we use the same technology for memory?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two reasons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are only 16 registers. That means you can refer to a register using only
+    4 bits. At the same time, memory addresses are 32-bit. So you need fewer bytes
+    (and instructions) to encode an operation on three registers, rather than an operation
+    on three memory addresses. And a processor can decode fewer instructions faster.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, computer memory has several *levels* of caches, usually referred to
+    as *L1*–*L4*. And even if the fastest cache uses the same technology as registers,
+    there could still be a *cache miss*. But such a cache miss can never happen in
+    the case of registers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The add instruction
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Let’s get to our first instruction, `add`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: It consists of a mnemonic name `add` as well as three register *operands*, `r1`,
+    `r2`, and `r3`. In this case, *operand 1* is `r2`, *operand 2* is `r3`, and `r1`
+    is the result, also called the *destination* operand. This kind of instruction
+    is called three-operand instruction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a comment, we provided a pseudo-code that describes the effect of the instruction.
+    Note that the order of operands in the instructions is the same as in the pseudo-code.
+    ARM assembly was designed such that this is always the case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All ARM instructions are encoded into single 32-bit words in memory. In this
+    figure, you can see how this particular instruction is encoded into binary form.
+    We’ve left the meaning of some bits unexplained.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![The encoding of: add r1, r2, r3](../Images/db4bf94d3d0c5a427e2509ba3575b2b8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The encoding of: `add r1, r2, r3`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Most ARM processors support several instruction sets. They have been historically
+    called ARM, Thumb, and ARM64, but recently renamed to A32, T32, and A64.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: T32 (or Thumb 2), for example, is a variable-length instruction set with both
+    16-bit and 32-bit instructions.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Immediate operand
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The `add` instruction has a second form, where the *last* operand is a small
+    number encoded directly into the instruction. It is called an *immediate* operand,
+    and the notation uses a `#` sign:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'GNU Assembler allows familiar syntax for hexadecimal values with `0x` prefix
+    and binary values with `0b` prefix. However, it doesn’t allow underscores in them.
+    So, the previous instruction can be rewritten as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: In the following figure you can see how this instruction is encoded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![The encoding of: add r1, r2, #0xFA00](../Images/e0848693a1c04b3c7414d0d1b8f09b7f.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The encoding of: `add r1, r2, #0xFA00`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: From the figure, you can see that there are 8 bits dedicated to the immediate
+    operand, so you might conclude that it can represent any single byte value. But—wait!—we’ve
+    just used `64000` in our example, and that does not fit in a byte! It turns out,
+    there are four more bits in the instruction that encode how many *even* number
+    of bits the immediate should be shifted. This way we can represent `0xFA`, or
+    `0xFA0`, or `0xFA00`, or `0xFA000` and so on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is an ingenious way to encode a vast amount of interesting constants in
+    a very tight space!
+  prefs: []
+  type: TYPE_NORMAL
+- en: Signed, unsigned, two’s complement
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: What are we adding with the `add` instruction? Unsigned integers? Signed integers?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It turns out that it works correctly both when all the operands are treated
+    as unsigned integers, and in the case where they are all treated as signed integers.
+    This is thanks to the signed number representation that most computers use, called
+    *two’s complement*. It was specifically designed for this trick: to use the same
+    hardware adder for both signed and unsigned numbers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Note**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Even though `add` and most ARM instructions work on 32-bit words, in this section
+    we’ll show examples using signed and unsigned 8-bit bytes, to make them more manageable.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: For example, if we try to add `0b1111_1100` and `0b0000_0010` using a hardware
+    adder, we get `0b1111_1110`, which could be interpreted as an unsigned operation
+    252 + 2 ⇒ 254, or as a signed operation  − 4 + 2 ⇒  − 2. In the following table,
+    you can see how a range of binary patterns can be interpreted as an unsigned or
+    a signed integer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two’s complement representation of integers
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Bit pattern | Unsigned interpretation | Signed interpretation |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0000` | `0` | `0` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0001` | `1` | `1` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0010` | `2` | `2` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0011` | `3` | `3` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ⋮ | ⋮ | ⋮ |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0111_1100` | `124` | `124` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0111_1101` | `125` | `125` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0111_1110` | `126` | `126` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0111_1111` | `127` | `127` |'
+  prefs: []
+  type: TYPE_TB
+- en: '|  |  | *— signed overflow —* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1000_0000` | `128` | `-128` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1000_0001` | `129` | `-127` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1000_0010` | `130` | `-126` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1000_0011` | `131` | `-125` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ⋮ | ⋮ | ⋮ |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1111_1100` | `252` | `-4` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1111_1101` | `253` | `-3` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1111_1110` | `254` | `-2` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b1111_1111` | `255` | `-1` |'
+  prefs: []
+  type: TYPE_TB
+- en: '|  | *— unsigned overflow —* |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0000` | `0` | `0` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0001` | `1` | `1` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0010` | `2` | `2` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0b0000_0011` | `3` | `3` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ⋮ | ⋮ | ⋮ |'
+  prefs: []
+  type: TYPE_TB
+- en: Two’s complement is an elegant system, but we won’t go into its details here.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arithmetic and logic instructions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: So, we have covered our first instruction. Took a while, huh? And I have good
+    news for you! All arithmetic and logic instructions in ARM have precisely the
+    same three-operand form!
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here are just some of them:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Instruction | Mnemonic | Effect |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `add r1, r2, r3` | Add | `r1 = r2 + r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `sub r1, r2, r3` | Subtract | `r1 = r2 - r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `mul r1, r2, r3` | Multiply | `r1 = r2 * r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `sdiv r1, r2, r3` | Signed divide | `r1 = r2 / r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `udiv r1, r2, r3` | Unsigned divide | `r1 = r2 / r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `bic r1, r2, r3` | Bitwise clear | `r1 = r2 & ~r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `and r1, r2, r3` | And (bitwise) | `r1 = r2 & r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `orr r1, r2, r3` | Or (bitwise) | `r1 = r2 &#124; r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `eor r1, r2, r3` | Exclusive or (bitwise) | `r1 = r2 ^ r3;` |'
+  prefs: []
+  type: TYPE_TB
+- en: Neat, isn’t it? We have now basically covered a big chunk of the instruction
+    set. Let’s move on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Note**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Division is one of those operations that differs for signed and unsigned integers.
+    As JavaScript doesn’t have proper support for unsigned integers, we can’t express
+    the difference easily with our pseudo-code notation. Also, some ARM versions do
+    not have hardware support for `sdiv` and `udiv` instructions (primarily, constrained
+    embedded systems). To use them, you will need to pass an assembler parameter to
+    specify an architecture version that supports them, for example, `gcc -march=armv7ve`.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Move instructions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Move instructions copy a word from one register to another, or from an immediate
+    operand to a register. An immediate operand has the same restrictions as before.
+    There’s also a “move–not” instruction that does bitwise negation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Instruction | Mnemonic | Effect |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `mov r1, r2` | Move | `r1 = r2;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `mvn r1, r2` | Move-not | `r1 = ~r2;` |'
+  prefs: []
+  type: TYPE_TB
+- en: Program counter
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We know that each instruction is encoded into a word. We also know that instructions
+    are located in memory one after another. How does execution go from one instruction
+    to the next one?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For that, the *program counter* is used. The program counter is the register
+    `r15`, but more often, it is referred to by its alternative name: `pc`. On some
+    architectures, it is called the *instruction pointer*. The program counter is
+    a pointer that points to the currently executing instruction. By manipulating
+    `pc`, we can change which instruction is executing next.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Because of instruction pipelining (which we won’t cover here) program counter
+    usually points two instructions ahead of the currently executing instruction.
+    But, for the most part, we can safely ignore that.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'For example, if register `r0` contains some address that we want to *jump*
+    to we can do that by moving that address into `pc` and the execution will continue
+    from there:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: By *jump*, we mean that execution is transferred to a different instruction,
+    not the next one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is worth highlighting that *every* instruction affects the program counter.
+    At the very least, each instruction increments program counter by four bytes (one
+    word) so that execution can transfer to the next instruction. (Otherwise, we would
+    always be stuck executing the same instruction). So the *effect* of each instruction
+    that we listed so far requires `pc += 4;` to be prepended:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: Here’s a little snippet of assembly where we increment `r0` by one (at a time),
+    but by adding to `pc` we jump over two instructions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: Here, we made all the changes in `pc` explicit. Note that even though `add`
+    typically increments `pc` by 4, this is overridden if the result is written to
+    `pc`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: From here on, we will resume omitting `pc += 4;` in pseudo-code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can conclude that the program counter is the most special register of all.
+    By changing it, we change which instruction is executed in our program next. So
+    don’t use it for storing some temporary values!
+  prefs: []
+  type: TYPE_NORMAL
+- en: Branch instruction
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We could jump forward and backward in code by adding to and subtracting from
+    the program counter, but it is very cumbersome.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can use a little bit of help from the assembler. The assembler allows us
+    to insert textual *labels* that represent particular instruction addresses. Then
+    we can use them with *branch* instruction `b`, and the assembler will take care
+    of calculating the offset that is necessary to apply to `pc` to land at the correct
+    instruction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This way, our previous snippet can be rewritten as:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Even though the `b` instruction jumps to an offset relative to `pc`, and not
+    to an absolute address, it helps to think of labels as constants with absolute
+    addresses stored in them. And that is how we will use them in pseudo-code that
+    describes the effect of each instruction:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: Branch and exchange
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'While the `b` instruction allows us to make a relative jump computed from a
+    label, `bx`—or *branch and exchange*—allows us to jump to an address stored in
+    a register:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: How is it different from `mov pc, r0`? For our purpose, it is the same. Some
+    would say it’s a bit more readable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, it also allows to *exchange* instruction sets from ARM to Thumb and
+    back. But we won’t be dealing with that in this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Branch and link
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Branch and link*, or `bl` is a relative jump just like `b`. The only difference
+    is that it saves the program counter’s value into a particular register, `r14`,
+    more often referred to as `lr`, or *link register*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: What it effectively does is it *saves* the previous value of `pc` before overriding
+    it (and thus, losing it).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We could achieve the same with the following two instructions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: However, this is such a common operation that it deserved its own instruction.
+    It is common because it is used to implement function calls.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Intra-procedure–call scratch register
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Note that, under the hood, the instructions that branch to a label (`b` and
+    `bl`) encode a 24-bit immediate value for the relative jump. That allows us to
+    jump forward and backward within ±32 MB of code space. But you don’t have to deal
+    with this limitation. The linker will arrange a so-called *veneer*: jump to a
+    special place within the ±32 MB limit and then load the full 32-bit address into
+    `pc`, if a longer jump is necessary.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To do that, it will need to generate code that loads the full address into
+    a temporary register. For this to be predictable, a special register was designated
+    for the role: the *intra-procedure–call scratch register*, referred to as `r12`
+    or `ip`. This is mostly relevant for procedure (in other words, function) calls
+    since other jumps to a label are usually relatively short. Why *intra*? Because
+    it is used *between* the calls: after the call is made by the caller, but before
+    the control switches to the callee function. It is also referred to as a *scratch*
+    register, meaning, a short-lived temporary. We can still use this register for
+    our temporary values; we just can’t rely that the value will be preserved after
+    a call is made. So it is best-suited for short-lived temporary values.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Function call basics
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The thing special about function calls that distinguishes them from other kinds
+    of control-flow jumps is that function calls *return back*. When programming in
+    a higher-level language, we don’t think much about that, but at assembly level,
+    we have to implement the whole *return back* thing ourselves.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The value that the `bl` instruction stores into `lr` is called the *return address*.
+    When the function finishes, it can jump to it to continue execution from where
+    it was called.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s implement a very primitive function, `addFourtyTwo`, that takes a single
+    parameter and adds `42` to it. ARM calling convention (which will talk more about
+    later) says that we should pass the first four arguments in registers `r0`–`r3`
+    (if any), and provide a return value in `r0` (if any, again). In our case, `addFourtyTwo`
+    takes one parameter and returns one value so that we use `r0` for both.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: The *caller* that calls `addFourtyTwo` first sets register `r0` to `0`, then
+    uses `bl` to jump to `addFourtyTwo`, which saves the return address into `lr`.
+    At the end of `addFourtyTwo`, it branches back, with `bx lr` and the caller continues
+    (with subtracting `3`, in this case).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to look at this is that we pass `lr` as a special parameter to each
+    function, so the function knows where to return back.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: I cannot help myself but mention the words *continuation-passing style* here.
+    We won’t cover it, but it is a powerful compiler technique that makes passing
+    the return address (or *continuation*) explicit early in the compiler pipeline.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Link register
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The link register `lr` or `r14` is only special in the sense that `bl` works
+    with `lr` and only `lr`. We could decide to use a different register for the return
+    address, say `r8` (with the `mov r8, pc; b myLabel` sequence that we mentioned
+    before), but `bl` is so convenient that we’ll be using only `lr` for that purpose.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I must admit that the name *link register* is not perfect. It’s called that
+    because it creates a *link* that can be followed back to the callee. On some other
+    architectures (like RISC-V), this register is called the *return address*, or
+    `ra`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conditional execution and the CPSR register
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'So far, all the instructions we’ve covered were executed *unconditionally*.
+    As long as `pc` could reach those instructions, they were executed. However, sometimes
+    we want *conditional execution*. This is when we want to decide whether to execute
+    an instruction or not depending on some *condition*. This is done in two steps
+    in ARM:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A comparison instruction `cmp` compares two registers (or a register and an
+    immediate), and saves the result of the comparison into the CPSR register.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: One or more instructions with a *condition code* reads the result of the comparison
+    from CPSR and executes (or not), depending on the condition code.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: CPSR stands for the *current program status register*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here’s an example, where a bunch of `mov` instructions are executed depending
+    on a condition:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: First, `cmp` instruction compares registers `r1` and `r2` and saves the result
+    of the comparison into CPSR. It set a few bits in CPSR, but it’s not important
+    for us which exact bits are set, so in the pseudo-code, we’ve hidden that inside
+    an opaque `compare` function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, we see a bunch of instructions starting with `mov`. Those are: `moveq`,
+    `moval`, `movne`. They are not separate instructions from `mov`, but are just
+    `mov` with a condition code suffix. For example, `mov` with `eq` code executes
+    if the last comparison made with `cmp` was equal; `mov` with `ne`—not equal, and
+    so on. The `al` code stands for *always*, and is the default so it can be skipped,
+    and thus, `mov` and `moval` is *exactly* the same instruction.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the following table, you can see a summary of some condition codes. These
+    are not all, but it’s more than enough for our use case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary of select ARM condition codes
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Code | Operator | Description | Signed/Unsigned |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `eq` | `==` | Equal | Either |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ne` | `!=` | Not equal | Either |'
+  prefs: []
+  type: TYPE_TB
+- en: '|  |  |  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `gt` | `>` | Greater than | Signed |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ge` | `>=` | Greater than or equal | Signed |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `lt` | `<` | Less than | Signed |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `le` | `<=` | Less than or equal | Signed |'
+  prefs: []
+  type: TYPE_TB
+- en: '|  |  |  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `hi` | `>` | Greater than | Unsigned |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `hs` | `>=` | Greater than or equal | Unsigned |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `lo` | `<` | Less than | Unsigned |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `ls` | `<=` | Less than or equal | Unsigned |'
+  prefs: []
+  type: TYPE_TB
+- en: '|  |  |  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `al` | — | Always (default) | — |'
+  prefs: []
+  type: TYPE_TB
+- en: The beautiful thing about the ARM instruction set is that these condition codes
+    can be added to almost any instruction! Branch if equal? `beq`! Add if greater
+    than? `addgt`! Compare—*again!*—if not equal? `cmpne`!
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'That’s one of the features that makes the ARM instruction set *orthogonal*:
+    conditional execution is available regardless of the instruction type.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conditional branching
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Combining branch instructions like `b` and condition codes gives us *conditional
+    branching*. Conditional branching is used to implement `if`/`else` statements
+    and loops like `while` and `for`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Loader
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: How did our program get into memory? An operating system program called *loader*
+    copied our program from disk into memory, and then set the program counter so
+    that our program started execution from `main`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: The real entry point is called `_start`, by convention, and it doesn’t need
+    to be a `.global`. But we linked our program with `libc`, and it defines its own
+    `_start` entry point, which sets up things like program’s command-line arguments
+    and other machinery that is necessary for `libc` functions to work. In turn, it
+    will call `main`, and that is why it needs to be declared `.global`.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: If the loader is an operating system program, then how did the operating system
+    get into memory? That is done with the help of a program called *boot loader*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: In embedded systems, the program is often stored in read-only memory that doesn’t
+    get erased on power-off, and when the system starts, the program counter starts
+    executing from address 0.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Data and code sections
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Let’s look again at the data and code sections of our hello-world program.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The data section declared with `.data` assembly directive is a span of memory
+    that you are allowed to:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: read,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: write,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: but not execute.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The code section declared (confusingly) with `.text` is another span of memory
+    that you are allowed to:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: read,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: but not write, and
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: execute.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Why do we need separate sections? Why the restrictions on writing and executing?
+    The answer is many-fold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, it is a security feature of many operating systems to forbid data section
+    from executing and forbid modifying the code section at run-time. It makes it
+    harder to inject malicious code by tricking the program to change its code, or
+    to jump to an area that is not supposed to be executed. It also helps with caching
+    and with running multiple instances of the same program on different data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even simpler, in embedded systems, the code section will most often go into
+    read-only memory, while the data section will be the main read-write memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Segmentation fault
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In our hello-world program, we don’t modify the greeting string, do we? Does
+    that mean that we can put it under the `.text` section? Yes; we can even omit
+    the `.text` section, since it’s implicit:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: Try it out!
+  prefs: []
+  type: TYPE_NORMAL
+- en: Oh, no! Our program crashes with a *segmentation fault*! What happened? What’s
+    a segmentation fault anyway?
+  prefs: []
+  type: TYPE_NORMAL
+- en: It can happen when we try to write to a read-only *segment*. But, in general,
+    this term is applied to all kinds of *memory access violations*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So what did we violate here? Alignment! Our string—`"Hello, assembly!"`—is
+    17 bytes long (including the implicit zero-terminator `\0`). So it pushed our
+    `main` function to a memory address that is not an aligned word. We can pad the
+    string with zeros, so it occupies 20 bytes (divisible by four):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Or, we can use an assembly directive called `.balign` to align it at a four-byte
+    (word) boundary:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: There’s also an `.align` directive, but its exact meaning is inconsistent across
+    architectures and assemblers. On the other hand, `.balign` always aligns at a
+    boundary specified as a number of *bytes*.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: Data directives
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'One way to look at an assembly language: it is a way to encode binary data.
+    As we know, each ARM instruction is encoded into a single machine word. However,
+    the assembler has directives that allow us to encode literal data as well.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two directives that we’ll talk about are `.string` and `.word`, but there are
+    more available.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We’ve already seen the string directive. One notable feature of it is that
+    it encodes a zero-terminated string. That is, the string is padded with a single
+    zero byte: `\0`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `.word` directive allows us to insert a literal machine word into our binary
+    using a numeric notation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: It’s a good idea to put a label before a data directive so we can refer to it
+    later, but it is not always necessary, as you’ll see below.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What are data directives good for? They can be used for constants or global
+    variables in our program, but they are simply another encoding for binary data.
+    Consider the following program.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'This is a short program that simply exits with code 42\. But here, instead
+    of writing `mov r0, #42`, we wrote `.word 0xE3A0002A`, which encodes the same
+    value, as the instruction. As you might remember from instruction encoding, the
+    last byte of an instruction encodes an immediate, which is `0x2A` in this case
+    (`42` in decimal).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing instructions this way *is definitely a bad idea*, but it is a way for
+    us to dispel the magic of what the assembler does for us.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Loading data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Loading means copying data from memory into one or more registers. We’ve already
+    seen how to load data, given a label. For example, load a string address and pass
+    it to `printf` to be printed to the console.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: Similarly, you can load an address of a word. But this way, you only get the
+    address of the word, and not the word itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Once we have loaded an address of a word, we can load the word itself. For
+    that we use another form of `ldr` instruction, with square brackets:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'This assumes that we have a word with that label stored somewhere:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: When we load an address into a register, we call it a *pointer*. This pointer
+    *references* another word, but it’s not that word itself. When we load the word
+    that is referenced by that pointer, we say that we *dereference* a pointer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this example, when the two instructions execute, `r1` will contain some seemingly
+    random number, which is the address corresponding to the label `myWord`, while
+    `r0` will contain the loaded value itself, that is `42`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the listing, we used a new notation for our pseudo-code. We used `M[r1]`
+    to refer to the memory word located at the address found in `r1`. Remember, how
+    we said that memory is like a large array? This notation is easy to remember because
+    the square brackets in the instruction syntax (`[r1]`) match the square brackets
+    of array notation (`M[r1]`). This will always be the case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, loading a single word known ahead of time is not very interesting.
+    For that there’s a shortcut:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Even better, if the constant that we are loading can fit into an immediate
+    value, the assembler will translate this into:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'However, if it doesn’t fit into an immediate, it will convert it into something
+    roughly equivalent to our previous example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: This version of `ldr` instruction is called a *pseudo-instruction*, because,
+    as we have just seen, it will be converted to one or more actual instructions
+    by the assembler.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Load with immediate offset
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: It is not necessary to have a label for each word to load it. You can also load
+    a word given an *offset* from another word.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, if we have several consequtive words:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: (Which we can also write as follows:)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Then, we can load the third word using the following syntax:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: Here we loaded a word given an 8-byte (and thus, 2-word) offset. As a result,
+    we have loaded `46` into `r0`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The offset can be positive or negative. It can be an immediate (like in this
+    case) or a register. For example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: Storing data
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Storing means copying data from one or more registers into memory. In other
+    words, we are modifying, or *mutating* memory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As we already mentioned, it is not possible to store data into the read-only
+    segment that we declare with the `.text` directive: this will lead to a segmentation
+    fault.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, we can store data into the `.data` segment, as well as into the stack
+    and the heap (that we’ll get into in a short while).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Store instructions use `str` mnemonic, and use the same syntax as `ldr` instruction.
+    Some examples (with `ldr` for comparison):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: The square brackets always remind us which part stands for the address.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stack
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *stack*, or the *call stack*, is used to implement nested, potentially recursive
+    function calls. It is a segment of memory, not unlike the code segment and the
+    data segment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In computing, a *stack* usually refers to a particular data structure. The word
+    *stack* is used as a metaphor for stacks of things, like books. If you have a
+    stack of books, it is easy to add one or few books at the top, and it is easy
+    to remove one or few books at the top. However, it is trickier to add or remove
+    books in the middle or at the bottom of the stack. A *stack* is a data structure
+    that makes it easy (and efficient) to add and remove items from one end.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In JavaScript you rarely see anyone defining such data structure. This is because
+    the built-in `Array` is good enough as a stack: it has a `push` method to add
+    a last element, and a `pop` method to remove it, and they are reasonably efficient.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *call stack* is not a data structure in the sense of `Array`. It is a segment
+    of memory. However, unlike those other segments, it requires us to follow a particular
+    discipline or convention to use it. This convention is called the *calling convention*.
+    It is defined so that functions written in different languages, or using different
+    compilers can call each other and interoperate on some basic level.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, when we call some `libc` functions like `printf`, we need to follow
+    this convention. If we want other functions to call a function we’ve defined (as
+    in the case of `main`), we also need to follow it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'First, we will look at the basic stack operations: push and pop, and then we
+    will discuss the calling conventions, and how it can be implemented using these
+    operations.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Push and pop
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *stack pointer* is the central concept of the call stack. In ARM assembly,
+    it is referred to as `r13` or, more often as `sp`. It holds the address of the
+    *top of the stack*. As the stack pointer changes its value, we say that the stack
+    grows or shrinks. The stack grows towards smaller addresses of the memory, and
+    shrinks towards larger addresses. We say that a word is allocated on the stack
+    if it is pointed by the stack pointer, or below.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following instruction pushes four words onto the stack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: In the next figure, you can see several registers and a stretch of memory belonging
+    to the call stack, shown in two states. On the left, you can see the state before
+    executing the push instruction, and on the right, you can see the state after
+    executing it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Call stack before and after executing: push {r0, r1, r2, r3}](../Images/b5e3b458741c461c0baf30b373153e83.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Call stack before and after executing: `push {r0, r1, r2, r3}`'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The effect is that the words are copied from registers to the stack, and the
+    stack pointer is *decremented* by 16 bytes, and thus, four words. It is *decremented*
+    because it grows towards lower addresses. The area above the stack pointer is
+    greyed out to signify that this area is not allocated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We could have acheived the same effect using the following instructions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Or the following sequence of individual `push` instructions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `push` instruction has a counterpart, `pop`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'This reverses the previous action: *increments* `sp` by 16, and copies values
+    from stack into registers. It does this in the reverse order, in other words,
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: These instructions use curly braces that remind us of the set notation. This
+    is to signify that the order in which you write them in the assembly does not
+    matter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can write it either way:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'But the effect will be the same:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Lower registers (think `r0`) are pushed to and popped from the lower memory
+    addresses.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Higher registers (think `r15`) are pushed to and popped from the higher memory
+    addresses.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `push` and `pop` instructions’ encodings have 16 bit-flags dedicated to
+    the 16 registers. So they can express which registers to push or pop, but not
+    their order. The order was picked so that a pop operation would undo the effect
+    of the corresponding push operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stack alignment
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: An essential peculiarity of the call stack is that the stack pointer should
+    be aligned at the 8-byte (2-word) boundary at so-called *external interfaces*.
+    In this book, we won’t discuss what this means and will just mention that calling
+    a `libc` function is one of those cases. Our compiler will not distinguish between
+    calling a `libc` foreign function from a baseline language function. For simplicity,
+    we will assume an even stricter requirement that *the stack pointer should always
+    be 8-byte (2-word) aligned*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So, what if we need to push a single word onto the stack? If we just do `push
+    {r4}`, then our stack won’t be aligned. Thus, it is common to push some other
+    register as a dummy to maintain the stack alignment when needed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Here we used the `ip` registers for that purpose. The same as we did when we
+    defined our `main` function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE51]'
+  prefs: []
+  type: TYPE_PRE
+- en: In general, we can always pad a push with a dummy register to maintain the stack
+    alignment. When constructing the compiler, we will also talk about how we can
+    maintain the stack alignment without wasting space unnecessarily.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arguments and return value
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Function arguments are passed in the first four registers: `r0`–`r3`. The rules
+    are elaborate regarding differently-sized arguments, but in our compiler, all
+    values are represented using a single word. Thus, we can say that the first four
+    arguments are passed in the registers `r0`–`r3`. These registers are also sometimes
+    called the *argument registers*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rest of the arguments are passed by pushing them onto the stack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, if a function `f` takes six parameters, to make a call `f(10,
+    20, 30, 40, 50, 60)` we need to write the following assembly:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE52]'
+  prefs: []
+  type: TYPE_PRE
+- en: It is also the caller’s responsibility to deallocate the stack space used for
+    the arguments that didn’t fit into the four argument registers. After a function
+    returns, the return value (if any) is expected to be in `r0`. (It can also span
+    `r0`–`r1` in case of a 64-bit return value.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is expected that the assembly programmer or the compiler writer knows (from
+    external sources) about the correct signature of each function: the number of
+    parameters, their size, and about the return value (if any). For a `libc` function,
+    we can look them up in the documentation, and for a function defined in our language,
+    we can see it from its definition.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Register conventions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'After a call returns, the contents of registers `r0`–`r3` will be unpredictable
+    and semi-random and should not be relied upon. (This is, of course, except for
+    the registers that are used for the return value, if any.) In other words, these
+    registers will contain *garbage* that is left over after the function call: the
+    called function itself might have used them or called another function. That’s
+    why we say that the registers `r0`–`r3` are *call-clobbered*. Another register
+    that is a *call-clobbered* register is `r14` or `lr`. It is clobbered by the design
+    of the “call” instruction `bl`, which overwrites the `lr` with the return address.
+    Another *call-clobbered* register is `r12` or `ip`, which is clobbered by the
+    linker-generated veneer.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In contrast, all other registers are *call-preserved*. In other words, it is
+    the responsibility of each function to preserve the values in these registers
+    when a call returns. Can a function modify them at all? Yes, but it should make
+    sure to restore the values before returning from the call.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If *call-clobbered* registers are a good fit for arguments, then *call-preserved*
+    registers are a good fit for variables. The registers `r4` to `r10` are sometimes
+    referred to as *variable registers*. Other *call-preserved* registers are: frame
+    pointer and stack pointer (`r11` or `fp` and `r13` or `sp`). (We’ll get to the
+    frame pointer in a minute.) In other words, it is expected that the top of the
+    stack will be at the same address as before the call. The program counter register
+    (`r15` or `pc`) is a special register, but you can think of it as being call-preserved
+    too: when the call returns back, the `pc` is restored to the previous value.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ARM register roles and conventions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Register | Role | Convention |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r0` | Argument/return register | *Call-clobbered* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r1` | Argument register | *Call-clobbered* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r2` | Argument register | *Call-clobbered* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r3` | Argument register | *Call-clobbered* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r4` | Variable register | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r5` | Variable register | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r6` | Variable register | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r7` | Variable register | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r8` | Variable register | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r9` | Variable register | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r10` | Variable register | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r11` or `fp` | Frame pointer | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r12` or `ip` | Intra-procedure scratch register | *Call-clobbered* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r13` or `sp` | Stack pointer | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r14` or `lr` | Link register | *Call-clobbered* |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `r15` or `pc` | Program counter | *Call-preserved* |'
+  prefs: []
+  type: TYPE_TB
+- en: So, how do we preserve the values of the call-preserved registers, in practice?
+    When the call starts, we decide which call-preserved registers we want to use,
+    so we push them onto the stack. Then we proceed with using them to our liking.
+    Then we pop them off the stack before returning the call. It is also said that
+    we are *saving* these registers on the stack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Thus, the terms *call-clobbered* and *call-preserved* have an alternative terminology:
+    *callee-saved* and *caller-saved*. This refers to which side of the call is responsible
+    for saving the registers onto the stack, *if they want them to be preserved*.
+    So that’s another way to look at it.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Frame pointer
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The last register that we haven’t talked about is the *frame pointer* denoted
+    as `r11` or `fp` in assembly. A function’s *frame* is an area of the stack which
+    is allocated by that function. It is also referred to as a *stack frame*, a *call
+    frame*, or an *activation record*. When it is used, the *frame pointer* is set
+    to point to the *base* of the frame, in other words, to an address where the stack
+    pointer used to point when the function was called. The area of the stack between
+    the stack pointer and the frame pointer is the current function’s stack frame.
+    The frame pointer is a call-preserved register. By convention, we save the frame
+    pointer in the same stack slot where the new frame pointer points. This way, the
+    frame pointer register gives a start to a *linked list* of stack frames, where
+    intermediate links are the stack-saved frame pointers of the callers. See the
+    diagram that follows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![Example of a stack with several frames](../Images/971ca69bb22b0810708dc5617639c234.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Example of a stack with several frames
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unlike in the diagram, each stack frame usually has a different size, depending
+    on the number of local variables and intermediate values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is optional to use the frame pointer register this way, and it is optional
+    to maintain the linked list of stack frames. However, it is used by debuggers,
+    introspection tools, and it may be necessary for certain language features, such
+    as exception handling and non-local go-to statements. Since the frame pointer
+    doesn’t change after the function is called, it is a convenient pointer to use
+    when loading data from the stack frame, such as local variables. You know that
+    `fp + 4` always refers to the same stack slot, where a variable can be stored.
+    At the same time, loading local variables relative to the stack pointer is a bit
+    trickier: stack pointer often changes its value, but it is certainly possible.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Function definitions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'We have already defined some functions previously, `main` and `addFourtyTwo`.
+    The latter looks pretty simple:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE53]'
+  prefs: []
+  type: TYPE_PRE
+- en: Calling this function doesn’t allocate any stack at all! Neither for intermediate
+    values, nor for saving registers. The return address is passed in the `lr` registers.
+    And it doesn’t need to save any registers, because it doesn’t use any call-preserved
+    registers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This all changes as soon as you want to define a function that calls another
+    function, like the `main` function, that we have seen before:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE54]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Since it calls `printf`, this call will potentially clobber all the call-clobbered
+    registers, notably: the return address `lr`. If we want to be able to return from
+    `main`, we better save this register onto the stack. And that’s exactly what we
+    did in our `main` definition by doing `push {ip, lr}`. We have also saved a dummy
+    `ip` register to maintain stack-alignment.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now, if we wanted to maintain the frame pointer and the linked-list of frames,
+    we would do things differently. We would push both `lr` and `fp` onto the stack
+    and then set the new frame pointer to match the stack pointer. Now we can push
+    and pop the stack, and we will still have a solid frame of reference in `fp` for
+    accessing local variables. Using the `fp` also makes it easy to deallocate the
+    frame. You can do it with `mov sp, fp` at the end of your function. Alternatively,
+    you could try to match all the pushes and pops, but it can be tricky. All this
+    busywork has a name, or two in fact: function’s *prologue* and *epilogue*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE55]'
+  prefs: []
+  type: TYPE_PRE
+- en: Function’s prologue saves the call-preserved registers, sets up the frame pointer,
+    if necessary. Function’s epilogue reverses this and exits the function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this epilogue, we `pop` the registers back, and return using `bx lr`. If
+    you remember, in this case, `bx lr` is the same as `mov pc, lr`. So, why not pop
+    the return address directly into `pc`, instead of `lr`? This way, we can make
+    our epilogue shorter and more efficient:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE56]'
+  prefs: []
+  type: TYPE_PRE
+- en: This is a common way to organize a function’s prologue and epilogue in ARM.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Heap
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The other memory segment is called the *heap* or the *dynamic memory*. It is
+    dynamic in the sense that a program can ask the operating system to allocate or
+    deallocate a new region of memory at runtime. This is usually done by calling
+    the `libc` functions (`malloc` and `free`), which eventually make the system calls
+    for you. The function `malloc` takes a single argument in `r0` that specifies
+    how many bytes we want to allocate. It returns a pointer in `r0`, which points
+    to the newly allocated region of memory. The function `free` takes such pointer
+    as its single parameter in `r0` and deallocates that region of memory. After that,
+    you can’t use this region, and the operating system will use that memory somewhere
+    else.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here’s a small snippet of assembly which allocates a single word on the heap,
+    stores the number `42` into it, and then deallocates it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE57]'
+  prefs: []
+  type: TYPE_PRE
+- en: It is common for high-level languages to allocate most of the objects and data
+    structures on the heap, and the functions are only passing and returning pointers
+    to these objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There’s much more to discuss about ARM assembly and assembly programming, in
+    general. But this chapter should be enough to get a solid grasp on it. And even
+    more than enough to complete the second pass of our compiler.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Next: Chapter 8\. Second Pass: Code Generation](./08-second-pass-code-generation)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL

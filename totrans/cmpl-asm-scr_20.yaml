@@ -1,0 +1,41 @@
+- en: Appendix B GAS v. ARMASM Syntax
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/appendix-b-gas-v-armasm-syntax](https://keleshev.com/compiling-to-assembly-from-scratch/appendix-b-gas-v-armasm-syntax)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: by [Vladimir Keleshev](/)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two different syntaxes are used for ARM assembly. The first one is the GNU Assembler
+    (GAS) syntax. It is also supported by the official ARM toolchain based on Clang
+    called `armclang`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The other one is the legacy ARMASM syntax. Most likely, you will not need to
+    deal with it, but I include a small Rosetta Stone–style (side-by-side) comparison
+    cheat sheet for completeness.
+  prefs: []
+  type: TYPE_NORMAL
+- en: GNU Assembler Syntax
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: Legacy ARMASM Syntax
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,845 @@
+- en: Chapter 4 Abstract Syntax Tree
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/04-abstract-syntax-tree](https://keleshev.com/compiling-to-assembly-from-scratch/04-abstract-syntax-tree)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: by [Vladimir Keleshev](/)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Abstract syntax tree, or AST, is the central concept in compilers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: AST is a data-structure. It’s a *tree* that models the *syntax* of a programming
+    language. But it *abstracts* away from the mundane details of syntax, such as
+    the exact placement of parenthesis or semicolons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This tree consists of *nodes*, where each node is a data object that represents
+    a syntactic construct in the language. A `Return` node could represent a `return`
+    statement, an `Add` node can represent a `+` operator, an identifier referring
+    to a variable could use an `Id` node, and so on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, the following line of code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Can have an AST like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: In the next figure you can see a graphical representation of the same tree.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![AST corresponding to n * factorial(n - 1)](../Images/12cdfb9105052361e252391b35466581.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: AST corresponding to `**return**` `n * factorial(n - 1)`
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Why use an AST? When working with a language construct, an AST makes it convenient
+    to operate on it: to query, construct, and modify.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We design an AST so that it is convenient for us, depending on what we do with
+    it: what kinds of transformations we want to make, which things to query or change.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, an AST can include source location information for error reporting.
+    Or it can include documentation comments if our compiler needs to deal with those.
+    Or it can include all comments and some notion of whitespace, if we want to have
+    style-preserving transformations, like automatic refactoring.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: There are also *concrete syntax trees*, also called *parse trees*. They reflect
+    the structure and hierarchy down to *each* input symbol. They usually have too
+    many details that we don’t care about when writing a compiler. But they are a
+    good match for style-preserving transformations.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'We will represent each kind of node in our AST as a separate class: `Return`,
+    `Multiply`, `Id`, etc. However, at the type level, we want to be able to refer
+    to “any AST node”. For that TypeScript gives us several tools:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: interfaces,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: abstract classes,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: union types.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Either of these works. We will use an interface:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: Each type of AST node will be a class that implements the `AST` interface. It
+    starts simple, with `equals` as the only method. We will add methods to this interface
+    (and the classes) as needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `equals` method is mostly useful for unit-testing. The implementation is
+    quite mundane, so for the most part, we will omit it and replace its body with
+    an ellipsis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Number node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Our first node is `Number`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Here we used the TypeScript shortcut for quickly defining instance variables
+    using `public` for the constructor parameter. Remember that it is equivalent to
+    the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: It saves us quite some typing, which will be useful because we need to define
+    many types of AST nodes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We called our AST node `Number` because the data type in JavaScript and TypeScript
+    is called `number`. However, our compiler will handle only unsigned integers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Examples of the `Number` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `0` | `new Number(0)` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `42` | `new Number(42)` |'
+  prefs: []
+  type: TYPE_TB
+- en: Identifier node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Identifiers, or *id*s for short, refer to variables in the code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: Examples of the `Id` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `x` | `new Id("x")` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `hello` | `new Id("hello")` |'
+  prefs: []
+  type: TYPE_TB
+- en: Operator nodes
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The next AST node is `Not`, which stands for the logical negation operator (`!`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: Examples of the `Not` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `!x` | `new Not(new Id("x"))` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `!42` | `new Not(new Number(42))` |'
+  prefs: []
+  type: TYPE_TB
+- en: Negation is the only *prefix operator* (or *unary operator*) that we define.
+    However, we define several *infix operators* (or *binary operators*).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Equality operator (`==`) and its opposite (`!=`).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: Examples of `Equal` and `NotEqual` nodes
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `x == y` | `new Equal(new Id("x"), new Id("y"))` |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `10 != 25` | `new NotEqual(new Number(10), new Number(25))` |'
+  prefs: []
+  type: TYPE_TB
+- en: 'Addition (`+`), subtraction (`-`), multiplication (`*`), and division (`/`):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: Examples of `Add` and `Multiply` nodes
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `x + y` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `10 * 25` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note that since the parameters are ASTs themselves, that means they can be arbitrarily
+    nested.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, `42 + !(20 != 10)` will be:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: Not all combinations of AST nodes make sense. Nonetheless, the one above happens
+    to be valid in JavaScript.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Call node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`Call` refers to a function name (or *callee*), and an array of arguments.
+    For example, `f(x)` becomes: `new Call("f", [new Id("x")])`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: The language of our baseline compiler is restricted such that only named functions
+    can be called.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can’t name the arguments array `arguments`, since this clashes with JavaScript
+    built-in `arguments` object. So, with some reluctance, let’s call it `args`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Call` node is interesting because it has both a primitive string and an
+    array of AST as its members. JavaScript doesn’t have an agreed-upon protocol for
+    equality; that’s why `Call` makes an excellent example of how to implement the
+    `equals` method in JavaScript:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It uses `instanceof` operator to check that the other AST is also a `Call`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It compares the `callee` strings using the `===` operator.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It uses the `.equals` method for comparing AST nodes of each argument.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It compares array by length and checks `every` element.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Languages other than JavaScript often have more elegant ways of dealing with
+    structural equality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Examples of the `Call` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `f(x, y)` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `factorial(n - 1)` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Return node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: Examples of the `Return` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `return 0;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `return n - 1;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Block node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`Block` refers to a block of code delimited with curly braces.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: Examples of the `Block` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The `If` node has three branches:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`conditional` refers to the expression that is evaluated to either true or
+    false,'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`consequence` is the branch taken in the true case, and'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`alternative` is the branch taken in the false case.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'This way, the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Becomes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Curly braces are optional for if statements, thus, the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Becomes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'How do we represent an `if` without the `else` branch? We could have a separate
+    node for it, or we can do a simple trick: representing `if (x) y` the same way
+    as `if (x) y else {}`. In other words, by placing an empty `Block` as the `alternative`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Function definition node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A function definition consists of a function name, an array of parameters, and
+    the function’s body.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: Consider the following function definition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: When converted to an AST it becomes as follows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: Notice that in a function definition, the parameters are strings, while in a
+    function call, they are ASTs. This fact reflects that function calls can have
+    nested expressions, while function definitions simply list the inbound variable
+    names.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Variable declaration node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`Var` nodes are for variable declarations. So `var x = 42;` becomes `new Var("x",
+    new Number(42))`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: Assignment node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: An assignment is represented with the node `Assign`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Assignment differs from variable declaration in the following way: assignment
+    changes the value of an existing variable, and does not define a new one. At least,
+    that’s the distinction that we will assume. JavaScript allows assignment of a
+    variable that is not defined yet; in such case, it will create a global variable.
+    TypeScript, on the other hand, dissallows this error-prone behavior.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Examples of the `Assign` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `x = 42;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| `y = a + b;` |'
+  prefs: []
+  type: TYPE_TB
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: While loop node
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The last node of our AST and the last construct in our baseline language is
+    the while loop.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: Examples of the `While` node
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | AST |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Let’s look at a larger snippet converted to an AST. Remember our factorial
+    function:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'And here is the corresponding AST:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: We finish this chapter with a table that summarizes all the AST constructors
+    that we’ve covered, their signatures, and examples of what source code these AST
+    nodes can represent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary of AST constructor signatures with examples
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| AST Constructor Signature | Example |'
+  prefs: []
+  type: TYPE_TB
+- en: '| --- | --- |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE48]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE49]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE50]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE51]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE52]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE53]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE54]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE55]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE56]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE57]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE58]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE59]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE60]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE61]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE62]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE63]'
+  prefs: []
+  type: TYPE_PRE
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next two chapters, you will learn about converting a program from source
+    to an AST, or in other words, about *parsing*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Next: Chapter 5\. Parser Combinators](./05-parser-combinators)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL

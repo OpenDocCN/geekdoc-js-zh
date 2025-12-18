@@ -1,0 +1,196 @@
+- en: Appendix A Running ARM Programs
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/appendix-a-running-arm-programs](https://keleshev.com/compiling-to-assembly-from-scratch/appendix-a-running-arm-programs)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: by [Vladimir Keleshev](/)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 32-bit Linux on ARM (e.g. Raspberry Pi)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If you’re a lucky owner of an ARM board like Raspberry Pi, you don’t need any
+    special steps. You can use the built-in `gcc` toolchain and run the produced executables
+    natively, as discussed in the book. Just make sure to run a 32-bit operating system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, assuming you have an assembly listing `hello.s` from *Part I*,
+    you can assemble it like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'And then, you can run the produced executable natively:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: Even though modern Raspberry Pi boards have a 64-bit–capable processor, they
+    can perfectly well run 32-bit operating systems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you want to run a 64-bit OS on Raspberry Pi, you can still execute 32-bit
+    code. In that case the instructions that follow apply.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 64-bit Linux on ARM
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The following instructions are relevant in case you’re running 64-bit Linux
+    on an ARM device, for example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: a newer Raspberry Pi,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: an ARM laptop, such as Pinebook Pro,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: an ARM development board,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: an ARM server or compute instance.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The good news is that most 64-bit ARM processors are backwards-compatible and
+    can run 32-bit ARM executables natively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Well, actually…**'
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: ''
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: There are cases when chip manufactures disable 32-bit support to save costs.
+    Most notably, this is the case for Apple Silicon.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'Note, in the case of 64-bit Linux on ARM, the built-in `gcc` toolchain supports
+    only the 64-bit version of ARM assembly, which is different from the 32-bit assembly
+    used in this book. That means you need to install a version of the `gcc` toolchain
+    that targets 32-bit ARM. Assuming a Debian-based Linux distro with `apt-get` package
+    manager, you can install it as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now, whenever the book uses `gcc`, you need to use `arm-linux-gnueabihf-gcc
+    -static` instead. For example, assuming you have an assembly listing `hello.s`
+    from *Part I*, you can assemble it like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'But then, you can run the produced executable natively:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Linux on x86-64 using QEMU
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: This guide assumes that you don’t have access to an ARM Linux machine like a
+    Raspberry Pi or a Pinebook Pro, but only to a good old x86-64 computer based on
+    an AMD or Intel processor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following has been tested on Ubuntu 20.04 LTS, but it should work the same
+    on all Debian-based Linux distros. For other distros, you might need to use a
+    different package manager. The package names could be slightly different, as well.
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: 'On an x86-64 Linux machine, the default `gcc` toolchain expects x86-64 assembly,
+    which is quite different from the 32-bit assembly described in this book. That
+    means you need to install a version of the `gcc` toolchain that targets 32-bit
+    ARM. Assuming a Debian-based Linux distro with `apt-get` package manager, you
+    can install it as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now, whenever the book uses `gcc`, you need to use `arm-linux-gnueabihf-gcc
+    -static` instead. For example, assuming you have an assembly listing `hello.s`
+    from *Part I*, you can assemble it like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'However, you can’t just run this executable because it is made for an ARM processor:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: To run it, we need to install QEMU—a piece of software that allows emulating
+    different processors, including ARM. There are several ways to use it. The `qemu-user`
+    package enables emulation for individual executables, instead of emulating the
+    whole operating system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Now, the next step is no mistake:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'What just happened? How are we running an ARM binary on x86-64? It turns out
+    `qemu-user` has a smart mechanism: when installed, it configures itself to handle
+    ARM binary files (which is not unlike how we can run shell scripts as if they
+    were binaries). However, on some Linux configurations, this won’t work, and you
+    need to be a little bit more explicit about invoking QEMU:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: Note that even though the package name is `qemu-user`, the executable name that
+    we’re interested in is `qemu-arm`, since ARM is one of several possible target
+    of QEMU.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Windows on x86-64 using WSL and QEMU
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Follow the steps to enable Windows Subsystem for Linux (WSL). Ubuntu 20.04 LTS
+    has been tested for this purpose.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*[https://ubuntu.com/wsl](https://ubuntu.com/wsl)*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, open a WSL terminal and follow the steps described in the previous section,
+    *Linux on x86-64 using QEMU*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL

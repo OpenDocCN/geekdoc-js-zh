@@ -1,0 +1,109 @@
+- en: Chapter 12 Visitor Pattern
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[https://keleshev.com/compiling-to-assembly-from-scratch/12-visitor-pattern](https://keleshev.com/compiling-to-assembly-from-scratch/12-visitor-pattern)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '[Compiling to Assembly from Scratch](./#table-of-contents)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: by [Vladimir Keleshev](/)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'We are about to add more passes to our compiler: type checking, and code generation
+    for dynamic typing. What we could do is extend the AST interface with new methods,
+    one for each pass. It can look something like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: And this is perfectly fine. However, this way, code for each pass is intertwined
+    with code for every other pass. In other words, code is grouped by an AST node
+    and not by a pass.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Using the *visitor pattern* we can group the code for each pass together under
+    a separate class. The visitor pattern allows us to decouple our passes from AST
+    by using indirection. Instead of having a method *per pass, per AST node* we add
+    a single method *per AST node* called `visit` that delegates the action to a class
+    that implements the *visitor interface*. The *visitor interface* has one method
+    per AST node: `visitAssert`, `visitLength`, `visitNumber`, etc.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: Each AST node implements the new `AST` interface by calling the corresponding
+    visitor method. For example, `Assert` calls `visitAssert`, `Length` calls `visitLength`,
+    etc.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: The visitor interface `Visitor<T>` is generic. That means it can be used to
+    implement passes that return different things. For example, `Visitor<AST>` produces
+    an `AST` node, `Visitor<void>` can emit code as a side-effect.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s convert our existing code generation pass into a visitor. Since our existing
+    `emit` method returned `void`, our new visitor will implement `Visitor<void>`.
+    Instead of having a separate `Environment` class, we make the visitor constructor
+    take all the environment parameters. In a way, the visitor becomes the environment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: We copy the body of each method, like `Assert.emit` and `Length.emit` into the
+    visitor methods, like `visitAssert` and `visitLength`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In `emit` methods we used to call `emit` recursively for inner nodes, like
+    this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Now, instead, we call the `visit` method on them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: Previously `this` referred to the AST node, but now the node is passed as the
+    parameter called `node`. Now, `this` refers to the visitor itself, which we pass
+    instead of the `env` parameter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In rare places where we created a new environment, we create a new visitor instead
+    with the updated environment. Here’s an example from `visitFunction`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Before:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'After:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: As you can see, converting from an AST-based pass to a visitor-based pass is
+    a purely mechanical transformation. New passes that we will introduce will also
+    be based on the visitor pattern.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[Next: Chapter 13\. Static Type Checking and Inference](./13-static-type-checking-and-inference)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL
