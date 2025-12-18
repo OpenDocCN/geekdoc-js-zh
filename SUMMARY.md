@@ -1,6 +1,7 @@
 +   [使用 Webpack 构建你自己的应用](docs/bd-yr-app-webpack/README.md)
 +   [TypeScript 手册](docs/bk-ts/README.md)
 +   [Chrome 扩展及应用开发](docs/chrome-ext-appdev/README.md)
++   [从零开始的汇编编译指南](docs/cmpl-asm-scr/README.md)
 +   [CoffeeScript Cookbook 中文版](docs/coff-cb/README.md)
 +   [D3.js 入门教程](docs/d3js-tut/README.md)
 +   [Ember.js入门教程、博文汇总](docs/ember-tut-blog/README.md)
