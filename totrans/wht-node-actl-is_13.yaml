@@ -1,0 +1,1013 @@
+- en: Transform & Duplex Streams
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 原文：[https://www.thenodebook.com/streams/transform-streams](https://www.thenodebook.com/streams/transform-streams)
+  prefs:
+  - PREF_BQ
+  type: TYPE_NORMAL
+- en: '`Readable` streams produce data. `Writable` streams consume it. But sometimes
+    you need both, or you need a stream where the two directions aren''t related,
+    or you need transformation between input and output.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Duplex` streams are both readable and writable at the same time, with **two
+    independent sides** operating in parallel. `Transform` streams are a specialized
+    version of `Duplex` where the writable side feeds into the readable side through
+    a transformation function. The distinction between these two types affects how
+    you build data processing pipelines.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Both stream types work differently. `Duplex` streams have independent sides.
+    `Transform` streams, which are more common in application code, connect the writable
+    input to the readable output through a transformation function. We'll implement
+    several custom `Transform` streams to show the patterns, then cover when to choose
+    `Duplex` versus `Transform`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Duplex Streams
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`Duplex` streams come first. They''re the foundation that makes `Transform`
+    streams make sense. A `Duplex` stream is simultaneously readable and writable.
+    You can call both `read()` and `write()` on the same object. You can attach both
+    `''data''` listeners and pass chunks to `write()`. The stream has all the properties
+    and events of both `Readable` and `Writable`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The critical detail: the **readable side** and the **writable side** are **independent**.
+    Data you write to a `Duplex` stream doesn''t automatically appear on the readable
+    side. The two sides are separate channels that happen to exist on the same object.
+    Think of it like a phone line - you can speak into it and listen through it, but
+    what you say doesn''t echo back to you. The two directions are independent.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This independence exists because `Duplex` streams model bidirectional communication
+    channels. The canonical example is a TCP socket. When you have a socket connection,
+    you can send data to the remote endpoint by writing to the socket, and you can
+    receive data from the remote endpoint by reading from it. The data you send isn't
+    the data you receive - they're two separate streams of communication happening
+    simultaneously over the same connection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At the class level, `Duplex` streams have a specific structure. The `stream.Duplex`
+    class extends `Readable`, but it also implements the `Writable` interface. Internally,
+    it maintains separate state for the readable side (`_readableState`) and the writable
+    side (`_writableState`). When you implement a custom `Duplex` stream, you provide
+    both `_read()` and `_write()` methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A minimal Duplex stream implementation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `_read()` method is called when the readable side needs data. The `_write()`
+    method is called when something writes to the writable side. These two methods
+    don't interact. They're completely independent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Using this stream:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'When you run this, you''ll see "Received: written data" from the `_write()`
+    side and "Read: readable data" from the `_read()` side. They''re not connected.
+    You''re not transforming "written data" into "readable data" - they''re two separate
+    flows.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `allowHalfOpen` option is `Duplex`-specific and changes how the stream
+    handles ending. When you create a `Duplex` stream, you can set `allowHalfOpen:
+    false` to change what happens when one side ends.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: By default, `allowHalfOpen` is `true`. This means the readable side can end
+    while the writable side is still open, and vice versa. You can finish writing
+    and call `end()` on the writable side, but the readable side continues to produce
+    data. Or the readable side can `push(null)` to signal EOF, but you can still write
+    to the writable side.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Network sockets work this way. When a TCP connection is **half-closed**, one
+    endpoint has finished sending but can still receive. The connection isn't fully
+    closed until both sides have finished.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If you set `allowHalfOpen: false`, the stream enforces that when either side
+    ends, the other side ends too. If the readable side pushes `null`, the writable
+    side is automatically ended. If you call `end()` on the writable side, the readable
+    side automatically pushes `null`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'With `allowHalfOpen: false`, calling `duplex.end()` causes the readable side
+    to end immediately. Use this when modeling something that doesn''t support half-open
+    states, like request-response protocols where the stream should close completely
+    when either direction finishes.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The real-world use cases for raw `Duplex` streams are mostly about I/O primitives.
+    The `net.Socket` class from Node's networking module is a `Duplex` stream. When
+    you create a TCP socket, you get a `Duplex`. The writable side sends data over
+    the network. The readable side receives data from the network. The two sides are
+    independent because you're communicating with a remote endpoint - what you send
+    isn't what you receive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another example is a subprocess's `stdin` and `stdout`. When you spawn a child
+    process, its `stdin` is writable (you send data to the process) and its `stdout`
+    is readable (you receive data from the process). These are modeled as a `Duplex`
+    stream where the two sides communicate with the external process, not with each
+    other.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Application code rarely implements `Duplex` streams from scratch. `Transform`
+    streams are more common for data transformation. But first, a slightly more realistic
+    `Duplex` example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This `Duplex` stream maintains an in-memory buffer. Data written to it is stored
+    in an internal array, and data read from it comes from that array:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: Now the two sides interact through shared state (the `this.buffer` array). When
+    you write, chunks are added to the buffer. When the readable side needs data,
+    chunks are pulled from the buffer. This is a basic queue implementation using
+    a `Duplex` stream.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even though there's shared state, the `_read()` and `_write()` methods don't
+    call each other. They just access the same data structure. The stream's internal
+    machinery handles calling `_read()` when the readable side needs data and calling
+    `_write()` when something writes to the writable side.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using a `Duplex` to implement a queue or buffer works, but it's not the primary
+    use case. Most often, if you're building something that transforms or processes
+    data in a pipeline, you want a `Transform` stream, not a `Duplex`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One more detail about `Duplex` streams: error handling works differently because
+    of the two independent sides. Because a `Duplex` has two independent sides, an
+    error on one side doesn''t automatically propagate to the other. If an error occurs
+    in `_write()`, the stream emits an `''error''` event, but the readable side continues
+    operating unless you explicitly destroy it. Similarly, an error in `_read()` doesn''t
+    stop the writable side.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: However, when you call `destroy()` on a `Duplex` stream, both sides are destroyed.
+    This is the correct behavior - destroying the stream means the entire resource
+    is being shut down, not just one direction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: This matters when you're handling cleanup or cancellation. If you're using a
+    `Duplex` to model a network connection, and the connection drops, you destroy
+    the stream, which shuts down both sending and receiving.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Transform Streams
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`Transform` streams are what most developers reach for when building data processors.
+    A `Transform` stream is a specialized `Duplex` where the writable input is connected
+    to the readable output through a transformation function. Data flows in one side,
+    gets processed, and flows out the other side.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unlike raw `Duplex` streams where the two sides are independent, `Transform`
+    streams create a **causal relationship** between them. What you write to the writable
+    side directly affects what comes out of the readable side. You're not just implementing
+    two separate channels - you're implementing a function that takes input chunks
+    and produces output chunks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most common examples of `Transform` streams in Node.js's standard library
+    are compression and encryption. The `zlib.createGzip()` function returns a `Transform`
+    stream. You write uncompressed data to it, and you read compressed data from it.
+    The `crypto.createCipheriv()` function returns a `Transform` stream. You write
+    plaintext to it, and you read ciphertext from it. The transformation happens inside
+    the stream.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Transform` class differs from `Duplex` in a few key ways. `Transform`
+    extends `Duplex`, so it has all the properties and methods of a `Duplex`. But
+    instead of implementing `_read()` and `_write()`, you implement a different method:
+    `_transform()`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `_transform()` method has this signature:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: It receives a **chunk** from the writable side, processes it, and pushes zero
+    or more output chunks to the readable side. When it's done processing, it invokes
+    the **callback** to signal that it's ready for the next chunk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A simple `Transform` that converts text to uppercase:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `_transform()` method receives a chunk (which is a `Buffer` by default),
+    converts it to a string, uppercases it, pushes the result to the readable side
+    using `this.push()`, and then calls the callback to indicate the transformation
+    is complete.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Using this stream:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Output: "HELLO" and "WORLD". Each chunk you write is transformed and emerges
+    on the readable side.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Transform`''s `_read()` method is already implemented for you, unlike `Duplex`.
+    You don''t override it. The `Transform` base class handles pulling data from an
+    internal buffer that''s populated by your `_transform()` method. Similarly, `Transform`''s
+    `_write()` method is implemented to call your `_transform()` method. You only
+    implement the **transformation logic** - the stream plumbing is handled by the
+    base class.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This makes `Transform` streams simpler to implement than raw `Duplex` streams.
+    You focus on "what do I do with this chunk" instead of "how do I manage two independent
+    sides."
+  prefs: []
+  type: TYPE_NORMAL
+- en: The callback parameter in `_transform()` does two things. It signals that you're
+    done processing the current chunk, and it allows you to report errors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If an error occurs during transformation, you pass it to the callback:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: If you pass an error to the callback, the stream emits an `'error'` event and
+    stops processing. Any buffered data is discarded, and the stream enters an **errored
+    state**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can also use `this.push()` multiple times in a single `_transform()` call.
+    This is called a **one-to-many transformation**. For every input chunk, you produce
+    multiple output chunks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This `Transform` splits input into individual lines:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'If you write `"hello\nworld\n"`, the transform pushes two chunks: `"hello\n"`
+    and `"world\n"`. One input chunk becomes multiple output chunks.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can also push nothing. If your transformation decides to drop a chunk (filter
+    it out), you just call the callback without pushing:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: This transform filters out chunks that start with `"#"`. Some chunks pass through,
+    others are dropped.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What about **many-to-one transformations**, where you need to accumulate multiple
+    input chunks before producing output? This is common when parsing structured data
+    that might be split across chunk boundaries. You use instance state to buffer
+    incomplete data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This `Transform` accumulates chunks until it sees a delimiter, then emits the
+    accumulated data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: This transform maintains a `this.buffer` that accumulates incoming data. Each
+    time `_transform()` is called, it appends the new chunk to the buffer, splits
+    on the delimiter, and pushes complete parts. The last part (which might be incomplete)
+    is kept in the buffer for the next call.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This is a fundamental pattern in `Transform` streams: **maintaining state**
+    across calls to `_transform()` to handle data structures that span multiple chunks.
+    This is **stateful transformation**.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The above implementation has a problem. When the stream ends, any leftover data
+    in the buffer is lost. The stream finishes without emitting that final incomplete
+    chunk. This is where `_flush()` comes in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The _flush() Method
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`Transform` streams have a second method you can implement: `_flush()`. This
+    method is called after all input chunks have been processed (after `end()` is
+    called on the writable side) but before the readable side pushes `null` to signal
+    EOF. It''s your opportunity to emit any remaining data.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `_flush()` signature is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: It receives only a callback, no chunk. You can call `this.push()` to emit final
+    data, and then you call the callback to signal that flushing is complete.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The delimiter parser with `_flush()` added:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: Now when the stream ends, `_flush()` is called. If there's leftover data in
+    the buffer, it's pushed as the final chunk. Then the callback is invoked, and
+    the stream pushes `null` to signal EOF on the readable side.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Without `_flush()`, data that doesn't end with a delimiter is lost. With `_flush()`,
+    it's emitted as the final chunk. Parsers, decoders, and any `Transform` that accumulates
+    state need this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `_flush()` callback works the same way as the `_transform()` callback.
+    If an error occurs, you pass it to the callback:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: If you pass an error to the callback, the stream emits an `'error'` event instead
+    of ending cleanly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One more detail about `_flush()`: it''s **optional**. If you don''t implement
+    it, the stream just ends without a final processing step. Transforms that don''t
+    accumulate state (like the uppercase transform) don''t need this. Each chunk is
+    independent, so there''s nothing to flush when the stream ends.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: But for any transform that buffers across chunks - parsers, decoders, aggregators
+    - you must implement `_flush()` to avoid losing data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A more complete example: parsing **NDJSON** (newline-delimited JSON) where
+    each line is a separate JSON document.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: This transform operates in `objectMode`, which means it pushes JavaScript objects
+    instead of buffers. Each line is parsed as JSON, and the resulting object is pushed
+    to the readable side. If a line is incomplete at the end of a chunk, it's buffered
+    until the next chunk arrives. When the stream ends, `_flush()` parses any remaining
+    buffered line.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If `JSON.parse()` throws, we pass the error to the callback. This stops the
+    stream and emits an error event. We use `return callback(err)` to exit early -
+    we don't want to continue processing after an error.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This pattern (buffer across chunks, split on delimiter, parse complete units,
+    flush remaining data) appears in most `Transform` streams for structured data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Implementing Custom Transform Streams
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Now that you understand the mechanics, we'll implement several `Transform` streams.
+    These cover **filtering**, **mapping**, **splitting**, **joining**, and **stateful
+    parsing**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Filter transforms** pass through chunks that meet a condition and drop chunks
+    that don''t. This transform filters out empty lines:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: Simple. If the chunk (after trimming whitespace) has content, push it. Otherwise,
+    skip it. The callback is always invoked to signal completion, even when we don't
+    push.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Map transforms** convert each input chunk to a different output chunk, typically
+    in `objectMode`. This transform takes JSON objects and extracts specific fields:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: Each input object is mapped to a new object with only the specified fields.
+    One object in, one object out. This is a **one-to-one transform**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Split transforms** break input into smaller pieces. We''ve seen a line splitter,
+    but here''s a byte-level splitter that breaks a stream into fixed-size chunks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: This transform accumulates incoming data in a buffer. When the buffer reaches
+    `chunkSize`, it slices off a chunk and pushes it. The loop continues until there's
+    less than `chunkSize` left in the buffer. When the stream ends, `_flush()` emits
+    any remaining data as a final partial chunk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Join transforms** combine multiple input chunks into a single output chunk.
+    This transform accumulates objects into an array and emits the array when a certain
+    count is reached:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: This is a **many-to-one transform**. It accumulates `batchSize` objects, then
+    pushes the array. If the stream ends with a partial batch, `_flush()` emits it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Stateful parsing transforms** maintain state across chunks to parse structured
+    data. We''ve seen delimiter parsing, but here''s a more complex example: a parser
+    for **length-prefixed binary messages**.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a length-prefixed protocol, each message starts with a 4-byte length field
+    (a `uint32`) indicating how many bytes follow. To parse this, we need to read
+    the length, then read that many bytes, then repeat.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: This transform uses a **state machine**. The `expectedLength` variable tracks
+    whether we're waiting to read a length header or waiting to read the message body.
+    The loop reads as many complete messages as possible from the buffer, pushing
+    each one, and then calls the callback.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There's no `_flush()` here. If the stream ends with incomplete data (a partial
+    length header or a partial message body), that data is lost. Whether this is correct
+    depends on your protocol. Some protocols treat partial data at EOF as an error.
+    Others emit a final incomplete message or emit an error in `_flush()`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most transforms you implement will be variations of these patterns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Chunking Boundary Problem
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Data structures that span chunk boundaries cause problems in nearly every `Transform`
+    implementation. This is the source of many subtle bugs in streaming code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you're processing a stream of bytes or text, the chunks you receive are
+    **arbitrary**. The stream doesn't know or care about the structure of your data.
+    If you're parsing JSON objects separated by newlines, a newline might appear in
+    the middle of a chunk, or it might fall exactly on a chunk boundary, or a JSON
+    object might be split across two chunks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can't assume that each chunk is a complete unit. You have to handle **partial
+    data**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We've seen this in the delimiter parser and the length-prefixed parser. **Buffering**
+    solves this. You maintain an internal buffer (often a string or `Buffer`) that
+    accumulates incoming data. You process complete units from the buffer and leave
+    incomplete units for the next call.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The pattern in abstract form:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `extractCompleteUnit()` method tries to parse one complete unit from the
+    buffer. If it succeeds, it returns the parsed data and the remaining buffer. If
+    there's not enough data to parse a complete unit, it returns null. The loop continues
+    extracting units until the buffer is empty or incomplete.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This pattern handles arbitrary chunk boundaries correctly. It doesn't matter
+    where the chunks split - the parser accumulates data until it has a complete unit,
+    parses it, and continues.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Concrete example: parsing CSV rows from a stream. A CSV file is lines separated
+    by newlines, and each line is fields separated by commas. A line might be split
+    across chunks, and a field might contain a newline if it''s quoted.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A simplified CSV parser (without handling quoted fields):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: This handles line boundaries correctly. If a line is split across chunks, the
+    partial line is buffered until the newline arrives in a subsequent chunk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: But this doesn't handle quoted fields. If a field is `"hello\nworld"`, the newline
+    inside the quotes shouldn't split the line. Handling this correctly requires a
+    more complex state machine that tracks whether we're inside quotes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proper `Transform` implementations must account for the possibility that data
+    structures span chunks. Buffering and state machines are the tools you use to
+    handle this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Push Behavior and Backpressure in Transforms
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Calling `this.push()` in a `Transform` is more subtle than it appears, because
+    `push` is the interface to the readable side, and it respects **backpressure**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you call `this.push(chunk)`, the chunk is added to the readable side's
+    internal buffer. If the buffer is below its `highWaterMark`, `push` returns `true`.
+    If the buffer is at or above `highWaterMark`, `push` returns `false`, signaling
+    backpressure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can check this return value in `_transform()`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: The return value of `push` in `_transform()` doesn't usually affect your logic.
+    You still have to call the callback. The `Transform` stream handles backpressure
+    for you by not calling `_transform()` again until the readable side drains. You
+    don't need to implement pause/resume logic yourself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is different from implementing a `Readable` stream, where you check `push`'s
+    return value and stop calling `_read()` if it returns `false`. In a `Transform`,
+    the base class handles this. You just implement the transformation logic.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, if you''re pushing multiple chunks in a single `_transform()` call
+    (a one-to-many transform), you might want to check `push`''s return value and
+    stop pushing if backpressure is signaled:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: But this adds complexity. Most of the time, you just push all your output chunks
+    and let the stream's buffering handle the backpressure. The readable side's buffer
+    will grow until it hits `highWaterMark`, at which point the stream stops calling
+    `_transform()` until the buffer drains.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This automatic backpressure handling makes `Transform` streams much easier to
+    work with than raw `Duplex` streams. You don't have to coordinate the two sides
+    manually - the base class does it for you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: PassThrough
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'There''s a built-in `Transform` stream that does nothing: `stream.PassThrough`.
+    It''s a `Transform` where `_transform()` just pushes the input chunk unchanged.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Use cases: observing or intercepting data without modifying it.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One use case is adding event listeners. You can insert a `PassThrough` into
+    a pipeline and attach `''data''` listeners to it to observe the data flowing through
+    without affecting the pipeline:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: Another use case is implementing a **tee** or **broadcast** pattern, where you
+    split a stream to multiple destinations. You can pipe a stream to multiple `PassThrough`s,
+    and each `PassThrough` can be piped to a different destination.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`PassThrough` is also useful in testing. You can create a `PassThrough`, write
+    test data to it, and then read from it to verify that your stream processing logic
+    works correctly.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Implementing `PassThrough` yourself:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `callback(null, chunk)` is a shorthand for pushing the chunk and then calling
+    the callback. It''s equivalent to:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: This pattern of passing the chunk to the callback is common when you want to
+    push exactly one chunk per input chunk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Transform vs Duplex - When to Use Each
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We've covered both `Duplex` and `Transform` streams. The choice between them
+    matters for API design.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Transform` streams fit data pipelines where input chunks become output chunks.
+    The output depends on the input. Compression, encryption, parsing, formatting,
+    filtering, and mapping all work this way.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Duplex` streams model bidirectional communication channels where the readable
+    and writable sides are independent. Network sockets, IPC channels, proxy connections,
+    and bidirectional message passing all work this way.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Does what you write affect what you read? If yes, use `Transform`. If no, use
+    `Duplex`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Application-level code mostly uses `Transform` streams. `Duplex` streams appear
+    at the system level: networking and IPC modules that model channels rather than
+    transformations.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Concrete examples:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A **Transform** that compresses data:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: What you write to `gzip` (uncompressed data) directly determines what you read
+    from it (compressed data). It's a transformation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A **Duplex** that represents a TCP socket:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: What you write to `socket` (your request) doesn't produce the data you read
+    from `socket` (the server's response). They're independent. It's a channel.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There''s a subtle case where you might implement a `Duplex` instead of a `Transform`:
+    when you need to model something that has independent input and output, but the
+    two sides share state. For example, a stream that encrypts outgoing data and decrypts
+    incoming data using the same encryption key. The two sides are independent (encrypting
+    A doesn''t produce decrypted B), but they share configuration.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In practice, you'd probably implement this as two separate `Transform` streams
+    (one for encryption, one for decryption) rather than a single `Duplex`, because
+    it's cleaner and more composable. But it's technically a valid `Duplex` use case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The rule of thumb: if you''re building something that fits naturally into a
+    pipeline with other transforms, make it a `Transform`. If you''re building something
+    that sits at the edge of your system, communicating with external entities, make
+    it a `Duplex`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Real-World Transform Examples
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A few `Transform` streams you might actually use in production:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**1) JSON Line Stringifier**'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This transform takes JavaScript objects and outputs newline-delimited JSON:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `writableObjectMode: true` setting here: the writable side accepts objects,
+    but the readable side emits strings (or buffers). You can mix modes - writable
+    in `objectMode`, readable in byte mode, or vice versa.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**2) Line Counter**'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This transform counts lines and emits a summary object at the end:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: This transform doesn't push anything during `_transform()`, just accumulates
+    statistics. In `_flush()`, it pushes a single summary object. This is a valid
+    pattern - transforms don't have to produce output for every input chunk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**3) Rate Limiter**'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This transform delays chunks to enforce a maximum throughput:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: This transform uses a token bucket to rate-limit throughput. If there aren't
+    enough tokens for the current chunk, it delays the callback until enough time
+    has passed. This is a useful pattern for throttling data flow to match downstream
+    capacity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**4) Deduplicator**'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This transform in objectMode removes duplicate objects based on a key:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: This maintains a set of keys it's seen. If an object's key is new, it's pushed.
+    Otherwise, it's dropped. This is a stateful filter transform.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These examples show the versatility of Transform streams. They can aggregate,
+    filter, format, throttle, deduplicate, and more. Any operation that takes a stream
+    of chunks and produces a stream of chunks is a candidate for a Transform.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Error Handling and Cleanup
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Transform streams inherit error handling from both Readable and Writable. If
+    an error occurs in `_transform()` or `_flush()`, you pass it to the callback,
+    and the stream emits an 'error' event.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: If `this.process()` throws, the error is caught and passed to the callback.
+    The stream emits 'error', and processing stops.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can also use async functions for `_transform()` and `_flush()`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Or omit the callback and return a promise:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE37]'
+  prefs: []
+  type: TYPE_PRE
+- en: If the promise rejects, Node.js treats it as an error and invokes the callback
+    with the rejection reason.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For cleanup, you can implement `_destroy()`, which is called when the stream
+    is destroyed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE38]'
+  prefs: []
+  type: TYPE_PRE
+- en: This is useful if your transform allocates resources (file handles, database
+    connections, timers) that need to be released when the stream is destroyed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Always attach an ''error'' listener to Transform streams you create or use:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE39]'
+  prefs: []
+  type: TYPE_PRE
+- en: Without an error listener, an error will crash your process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ObjectMode Considerations for Transforms
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: We've mentioned objectMode several times. With Transform streams, you can mix
+    modes between the writable and readable sides.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'By default, both sides are in byte mode. But you can set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`writableObjectMode: true` - writable side accepts objects, readable side emits
+    buffers/strings'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`readableObjectMode: true` - writable side accepts buffers/strings, readable
+    side emits objects'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`objectMode: true` - both sides in objectMode'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Example: a Transform that parses JSON from bytes to objects:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE40]'
+  prefs: []
+  type: TYPE_PRE
+- en: The writable side is in byte mode (accepts buffers), the readable side is in
+    objectMode (emits objects).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Conversely, a Transform that stringifies objects to JSON:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE41]'
+  prefs: []
+  type: TYPE_PRE
+- en: The writable side is in objectMode (accepts objects), the readable side is in
+    byte mode (emits strings/buffers).
+  prefs: []
+  type: TYPE_NORMAL
+- en: This flexibility lets you build pipelines that seamlessly transition between
+    byte streams and object streams. You can have a byte stream that reads from a
+    file, a Transform that parses bytes into objects, a Transform that processes objects,
+    and another Transform that serializes objects back to bytes before writing to
+    a destination.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simplified Transform Creation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'For simple transforms, you don''t have to create a class. You can pass options
+    with `transform` and `flush` functions inline:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE42]'
+  prefs: []
+  type: TYPE_PRE
+- en: This is convenient for one-off transforms. You pass a `transform` function and
+    optionally a `flush` function in the options object. Node.js creates the Transform
+    and calls your functions as `_transform()` and `_flush()`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can also use `stream.pipeline()` with transform functions directly:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE43]'
+  prefs: []
+  type: TYPE_PRE
+- en: This async generator becomes a Transform. Each `yield` pushes a chunk. This
+    is even more concise for simple transforms and fits naturally with async iteration.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For complex stateful transforms, use a class. For simple one-off transforms
+    in a pipeline, use inline options or a generator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performance Considerations
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`Transform` streams add a layer of abstraction, which has a performance cost.
+    Every chunk passes through the `Transform`''s internal machinery - buffering,
+    event emission, callback invocation. For high-throughput applications, this overhead
+    can matter.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you're processing millions of small chunks per second, the overhead of creating
+    `Transform` instances and invoking `_transform()` for each chunk might be measurable.
+    In such cases, consider **batching**. Instead of processing one object at a time,
+    process arrays of objects. This reduces the number of `Transform` invocations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, instead of:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE44]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Batch with:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE45]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `BatchAccumulator` transform we implemented earlier does this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another performance consideration is buffer copying. If your `Transform` calls
+    `Buffer.concat()` repeatedly to accumulate data, you're allocating and copying
+    buffers on every chunk. For large data volumes, this is slow. Consider using a
+    more efficient data structure, like a linked list of buffers or a `BufferList`
+    from the `'bl'` npm package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For transforms that don't need to accumulate state, make sure you're not accidentally
+    buffering. If your `_transform()` immediately pushes each chunk, the transform
+    is efficient. If it accumulates chunks in an array or buffer before pushing, you're
+    adding memory pressure and latency.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Measure performance before optimizing. Use Node.js's built-in profiler or `clinic.js`
+    to identify bottlenecks. Many transforms are fast enough already, but high-throughput
+    pipelines need attention to these details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Testing Custom Transforms
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When you implement a custom `Transform`, you need to test it. Here are patterns
+    for testing transforms reliably.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Test by writing and reading:**'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE46]'
+  prefs: []
+  type: TYPE_PRE
+- en: You create a `Readable` source with known data, pipe it through your `Transform`,
+    collect the output in a `Writable`, and assert the result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Test edge cases:** empty input, single chunks, many small chunks, large chunks,
+    incomplete data at EOF, and invalid data. Write a test for each scenario.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Test backpressure:**'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Create a slow `Writable` destination and verify that the `Transform` respects
+    backpressure:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE47]'
+  prefs: []
+  type: TYPE_PRE
+- en: If the `Transform` doesn't respect backpressure, it will finish much faster
+    than expected because it's not waiting for the slow destination.
+  prefs: []
+  type: TYPE_NORMAL
