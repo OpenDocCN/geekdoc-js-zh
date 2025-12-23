@@ -1,19 +1,27 @@
 - en: Working with Buffers
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 与缓冲区一起工作
 - en: 原文：[https://www.thenodebook.com/buffers/working-with-buffers](https://www.thenodebook.com/buffers/working-with-buffers)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://www.thenodebook.com/buffers/working-with-buffers](https://www.thenodebook.com/buffers/working-with-buffers)
 - en: ℹ️Note
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️备注
 - en: This chapter takes a deep dive into Buffers. If any part feels unclear or overwhelming,
     don’t worry, re-read the section, or revisit it later after going through other
     (sub) chapters.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章深入探讨了缓冲区。如果任何部分感觉不清楚或令人不知所措，请不要担心，重新阅读该部分，或者在其他（子）章节阅读完毕后再次回顾。
 - en: 'I''m pretty sure you''re here because either you wish to learn how do I apply
     all the knowledge learnt in the previous chapters, or something in your Node.js
     service is consuming excessive amounts of memory. Or maybe because your high-throughput
@@ -24,16 +32,23 @@
     `Array.prototype.slice()`. It doesn''t. Not even close. One creates a new, independent
     copy of data; the other creates a "view" - a mere window into the *exact same
     underlying memory* as the original. This is the heart of zero-copy operations.'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 我很确定你在这里是因为你希望学习如何将之前章节中学到的所有知识应用到实践中，或者你的Node.js服务正在消耗过量的内存。或者也许是因为你的高吞吐量二进制协议解析器执行速度极慢。罪魁祸首几乎总是对Node.js
+    `Buffer`如何处理内存的根本性误解。本章将引导你走出这个地狱。我们将拆解Node.js开发中最危险的假设：即`Buffer.slice()`的行为类似于`Array.prototype.slice()`。它并不相同。一个创建了一个新的、独立的数据副本；另一个创建了一个“视图”——仅仅是原始数据的窗口。这是零拷贝操作的核心。
 - en: 🚨Caution
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨警告
 - en: '`Buffer.slice` is deprecated in favor of `Buffer.subarray()`. However, understanding
     its behavior remains essential for maintaining legacy codebases and comprehending
     view mechanics.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.slice`已被弃用，取而代之的是`Buffer.subarray()`。然而，理解其行为对于维护遗留代码库和了解视图机制仍然是至关重要的。'
 - en: When used correctly, these views are really powerful, letting you process massive
     amounts of data with almost no memory overhead. When misunderstood, they create
     the most insidious, hard-to-debug memory leaks you'll ever encounter - leaks where
@@ -48,37 +63,51 @@
     developed a deep, almost instinctual respect for memory semantics. You'll understand
     why your service is using 10GB of memory for 1GB of data and, more importantly,
     how to fix it for good.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 当正确使用时，这些视图非常强大，让你几乎无需内存开销就能处理大量数据。当被误解时，它们会创建你遇到的最隐蔽、最难调试的内存泄漏——一个只有10字节的切片却可以锁定1GB的缓冲区在内存中，阻止垃圾回收器回收它。我们将回顾这些战争故事、深夜调试会话和生产中断，这些经历塑造了这些知识。你将了解视图（`slice`、`subarray`）和真正的副本（`Buffer.copy()`）之间的关键区别，以及何时使用每个。我们将探讨`Buffer`和`TypedArray`之间的密切关系，它们共享相同的内存基础（`ArrayBuffer`），以及这既可以是一种超级能力，也可能是一个微妙的内存损坏的来源。到本章结束时，你不仅会了解API，而且会对内存语义有深刻的、几乎本能的尊重。你将理解为什么你的服务使用10GB的内存来处理1GB的数据，更重要的是，如何永久修复它。
 - en: A Gigabyte-Scale Memory Leak
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 吉字节级内存泄漏
 - en: Ever seen a service that should use a tidy 500MB of RAM suddenly decide it needs
     10GB to live? It's an amazing feature of misunderstanding memory. Let's walk through
     how you could, with the best intentions and perfectly clean-looking code, build
     this exact disaster. It's the best way to learn how to prevent it.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 你是否见过一个本应只使用整洁的500MB RAM的服务突然决定它需要10GB才能运行？这是对内存理解的惊人误解。让我们一步步了解，即使怀着最好的意图和看起来完美的代码，你如何构建这种灾难。这是学习如何预防它的最佳方式。
 - en: ⚠️Warning
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️注意
 - en: 'The buffer memory retention patterns described in this chapter are the #1 cause
     of production Node.js memory leaks. A single `Buffer.slice()` can hold gigabytes
     of memory hostage indefinitely.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章中描述的缓冲区内存保留模式是生产环境中Node.js内存泄漏的首要原因。单个`Buffer.slice()`可以无限期地锁定数GB的内存。
 - en: 'Imagine a common scenario: a service that ingests large batches of data. Maybe
     they''re logs, maybe they''re multipart file uploads. The task is simple: for
     each incoming chunk (which could be several megabytes), you need to parse a small,
     fixed-size header to extract an identifier, like a session ID. You''d write a
     function that looks something like this. Be honest, you''ve probably written this
     code a dozen times.'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一个常见的场景：一个处理大量数据的服务。也许它们是日志，也许是多部分文件上传。任务很简单：对于每个传入的块（可能是几个兆字节），你需要解析一个小的固定大小的头部来提取一个标识符，比如会话ID。你会编写一个看起来像这样的函数。说实话，你可能已经写了十几次这样的代码。
 - en: '[PRE0]'
+  id: totrans-13
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'Stop right here. This exact line - `logBuffer.slice(0, 16)` - is where your
     production system begins its death spiral. Here''s what''s actually happening
     in the Node.js internals. When you call `slice()`, Node.js doesn''t allocate new
@@ -87,8 +116,10 @@
     ArrayBuffer, an offset (0 in this case), and a length (16). This object lives
     on the V8 heap, but it maintains a strong reference to the external memory where
     `logBuffer` stores its actual data.'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 立即停止。这条确切的一行——`logBuffer.slice(0, 16)`——是你的生产系统开始死亡螺旋的地方。下面是Node.js内部实际发生的事情。当你调用`slice()`时，Node.js不会分配新的内存。相反，它创建了一个微小的JavaScript对象（在V8上大约是72字节），其中包含三个关键信息：指向父缓冲区的ArrayBuffer的指针、偏移量（在这种情况下为0）和长度（16）。这个对象存在于V8堆上，但它保持对外部内存的强引用，其中`logBuffer`存储其实际数据。
 - en: The V8 garbage collector sees this reference and marks the entire parent buffer
     as "reachable." Even though you only care about 16 bytes, the GC must keep the
     entire multi-megabyte buffer alive. In V8's generational garbage collection system,
@@ -96,11 +127,15 @@
     after surviving two scavenges, making it even harder to collect. I've seen this
     pattern keep 100MB buffers alive for hours in production, all for the sake of
     storing a handful of 16-byte session IDs.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: V8垃圾回收器看到这个引用并将整个父缓冲区标记为“可到达”。即使你只关心16个字节，垃圾回收器也必须保持整个多兆字节的缓冲区存活。在V8的代际垃圾回收系统中，这个父缓冲区在经历两次清理后从年轻代提升到老年代，这使得它更难被回收。我见过这种模式在生产环境中让100MB的缓冲区存活数小时，只是为了存储一小把16字节的会话ID。
 - en: '[PRE1]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: This code will inevitably cause production failures. It looks innocent, but
     `logBuffer.slice(0, 16)` is the line that will cause your production environment
     to fail completely. Here's what happens. You're processing, say, 100MB of logs
@@ -108,8 +143,10 @@
     stay relatively flat. Instead, you watch it climb, gigabyte by gigabyte. You're
     holding onto 10GB of memory to manage what should be, at most, a few megabytes
     of session IDs.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 这段代码不可避免地会导致生产故障。它看起来很无辜，但`logBuffer.slice(0, 16)`是导致你的生产环境完全失败的那一行。下面是实际发生的情况。你每分钟处理大约100MB的日志。你的服务内存使用量（常驻集大小，或RSS）应该保持相对稳定。相反，你看到它以千兆字节为单位攀升。你保留10GB的内存来管理本应最多只有几兆字节的会话ID。
 - en: 'So you take a heap snapshot, and what you see makes no sense. The profiler
     shows you thousands of tiny 16-byte `Buffer` objects, but it claims they are collectively
     responsible for retaining gigabytes of memory. Your first thought is, "The profiler
@@ -118,121 +155,171 @@
     JavaScript wrapper, but it holds an internal reference to the original, multi-megabyte
     `logBuffer`. As long as that tiny slice is alive - say, sitting in your cache
     - the garbage collector cannot reclaim the *entire* large buffer.'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，你进行了一个堆快照，而你看到的东西毫无意义。分析器显示给你成千上万的微小的16字节`Buffer`对象，但它声称它们共同保留了数GB的内存。你的第一个想法是，“分析器坏了。”其实并没有。它向你展示了一个基本真理：切片不是副本，它是一个视图。那个16字节的`headerSlice`对象只是一个轻量级的JavaScript包装器，但它持有对原始的多兆字节`logBuffer`的内部引用。只要那个微小的切片存活——比如说，它坐在你的缓存中——垃圾回收器就无法回收整个大的缓冲区。
 - en: You weren't leaking a few bytes. You were leaking the massive parent buffer
     for every single request. Multiply that by thousands of requests, and you have
     a recipe for the exact 10GB memory leak we're dissecting. This is the consequence
     of misinterpreting one of the most common methods in the `Buffer` API. Let's dig
     into why.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 你并没有泄露几个字节。你泄露了每个请求的整个父缓冲区。乘以数千个请求，你就有了我们正在剖析的10GB内存泄露的配方。这是误解`Buffer` API中最常见方法之一的后果。让我们深入探究原因。
 - en: 'Alright, let''s cut the fluff. As we established in the previous chapter, trying
     to handle raw binary data with JavaScript strings is a recipe for disaster. To
     understand the solution, the `Buffer`, you have to burn this into your brain:
     **Node.js `Buffer` memory does not live on the V8 heap.**'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，让我们去掉废话。正如我们在上一章中提到的，试图用JavaScript字符串处理原始二进制数据是灾难的配方。要理解解决方案，即`Buffer`，你必须将其刻在你的脑海中：**Node.js的`Buffer`内存不生活在V8堆上**。
 - en: Understanding Buffer Memory Architecture
+  id: totrans-21
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 理解Buffer内存架构
 - en: Remember how we talked about V8's world being built for small, interconnected
     JavaScript objects? Its Garbage Collector (GC) is a champ at cleaning up strings
     and objects, but it chokes on huge, monolithic blobs of binary data. A massive
     file read would trigger an application-freezing "stop-the-world" pause, killing
     your performance.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 记得我们提到V8的世界是为小型、相互连接的JavaScript对象构建的吗？它的垃圾回收器（GC）在清理字符串和对象方面是一把好手，但在处理巨大的、单一的二进制数据块时却显得力不从心。一次大量的文件读取会触发一个使应用程序冻结的“停止世界”暂停，从而杀死你的性能。
 - en: So, Node does the smart thing. It allocates that big chunk of memory **outside**
     the V8 heap, in C++ land, closer to the metal. This is often called "off-heap"
     or "external" memory.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，Node做了明智的事情。它将那大块内存**外部**分配在C++领域，更接近硬件。这通常被称为“堆外”或“外部”内存。
 - en: The `Buffer` object you play with in your JavaScript code, as we touched on
     before, is just a tiny, lightweight **handle** that lives on the V8 heap. It's
     like a keycard. The keycard itself is small and easy for the V8 GC to track. But
     it holds a reference that points to that massive block of raw memory outside.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 你在JavaScript代码中操作的`Buffer`对象，正如我们之前提到的，只是一个微小的、轻量级的**句柄**，它生活在V8堆上。它就像一张钥匙卡。钥匙卡本身很小，V8
+    GC很容易追踪。但它持有指向那块巨大原始内存的引用。
 - en: 'This two-part system is the source of both incredible performance and epic
     confusion:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个两部分的系统是既带来惊人性能又造成巨大困惑的源头：
 - en: Node can pass these giant memory blocks to the filesystem or network card without
     ever having to copy them into JavaScript's world. It's super-efficient.
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Node可以将这些巨大的内存块直接传递给文件系统或网卡，而无需将它们复制到JavaScript的世界中。这非常高效。
 - en: The V8 garbage collector only sees the tiny keycard. If your code accidentally
     holds onto that keycard (like in a closure or a long-lived object), V8 won't clean
     it up. And as long as the keycard exists, it acts as an anchor, preventing that
     huge, multi-megabyte block of external memory from being freed. You're not leaking
     a few bytes of JavaScript objects; you're leaking the massive memory slabs they
     point to.
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: V8垃圾回收器只能看到这张微小的钥匙卡。如果你的代码意外地保留了这张钥匙卡（比如在闭包或长期存在的对象中），V8就不会清理它。只要钥匙卡存在，它就充当锚点，防止那巨大的、多兆字节的块外部内存被释放。你并不是在泄漏几个字节的JavaScript对象；你是在泄漏它们指向的巨大内存块。
 - en: 'The 8KB Speed Hack: Buffer Pooling'
+  id: totrans-28
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 8KB速度黑客：Buffer池
 - en: 'Now, as we covered when discussing allocation patterns, Node has a speed hack
     for smaller buffers: the **buffer pool**. To avoid constantly asking the OS for
     memory, Node pre-allocates an 8KB (`Buffer.poolSize`) slab. For any buffer smaller
     than 4KB, Node just slices a piece off this pool instead of bugging the OS for
     new memory.'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，正如我们在讨论分配模式时提到的，Node为较小的缓冲区有一个速度黑客：**buffer池**。为了避免不断向操作系统请求内存，Node预先分配了一个8KB（`Buffer.poolSize`）的内存块。对于任何小于4KB的缓冲区，Node只是从这个池中切下一块，而不是去麻烦操作系统为新内存。
 - en: This is a massive performance boost for applications that use lots of small
     buffers. This is also the exact mechanism that makes `Buffer.allocUnsafe()` so
     treacherous, a topic we dissected earlier. You're not getting fresh memory; you're
     getting a recycled piece of the pool that could be littered with secrets - like
     another user's session token - from another part of your application that ran
     moments before.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 这对于使用大量小缓冲区的应用程序来说是一个巨大的性能提升。这也是使`Buffer.allocUnsafe()`如此危险的确切机制，我们之前已经剖析过。你并没有得到新鲜内存；你得到的是池中回收的碎片，它可能充满了来自应用程序其他部分的秘密——比如另一个用户的会话令牌——而这些部分在几秒钟前运行过。
 - en: 'Views and References: `slice`, `subarray`, and `Buffer.from`'
+  id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 视图和引用：`slice`、`subarray`和`Buffer.from`
 - en: Now that we have a clearer picture of where buffer memory lives, let's talk
     about the tools you use to manipulate it. This is the point where theory becomes
     practice, and where most developers make an incorrect decision. The three main
     functions we need to understand are `Buffer.slice()`, `Buffer.subarray()`, and
     `Buffer.from()` (when used with another buffer or `ArrayBuffer`).
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们对缓冲区内存所在的位置有了更清晰的了解，让我们谈谈你用来操作它的工具。这是理论变成实践的地方，也是大多数开发者做出错误决定的地方。我们需要了解的三个主要函数是
+    `Buffer.slice()`、`Buffer.subarray()` 和 `Buffer.from()`（当与另一个缓冲区或 `ArrayBuffer`
+    一起使用时）。
 - en: 'Let''s start with the one that causes a lot of trouble: `slice()`. If you come
     from a JavaScript background, your habitual programming patterns suggest that
     `Array.prototype.slice()` creates a shallow copy. You slice an array, you get
     a new array, and you can modify one without affecting the other. This is a lie
     when it comes to buffers.'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从引起很多麻烦的那个开始：`slice()`。如果你有 JavaScript 的背景，你的习惯编程模式可能会让你认为 `Array.prototype.slice()`
+    创建了一个浅拷贝。你切割一个数组，你会得到一个新的数组，你可以修改其中一个而不影响另一个。当涉及到缓冲区时，这其实是一个谎言。
 - en: '`Buffer.prototype.slice()` does **not** create a copy. It creates a **view**.'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.prototype.slice()` **不会** 创建一个拷贝。它创建了一个**视图**。'
 - en: 'Let me say that again, because it''s the most critical sentence in this entire
     chapter: `Buffer.slice()` creates a view that shares memory with the original
     buffer. It carves out a new `Buffer` object, but this new object points to the
     *exact same bytes in the same underlying `ArrayBuffer`* as the original.'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我再重复一遍，因为这是本章中最关键的句子：`Buffer.slice()` 创建了一个与原始缓冲区共享内存的视图。它切割出一个新的 `Buffer`
+    对象，但这个新对象指向与原始对象**完全相同的字节**，在相同的底层 `ArrayBuffer` 中。
 - en: 🚨Caution
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨注意
 - en: '`Buffer.slice()` is NOT like `Array.slice()`. Arrays create copies, Buffers
     create views. Modifying a sliced buffer modifies the original. This single misunderstanding
     causes the majority of Node.js memory leaks and data corruption bugs in production.'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.slice()` 并不像是 `Array.slice()`。数组创建拷贝，缓冲区创建视图。修改切割的缓冲区会修改原始缓冲区。这个误解导致了
+    Node.js 生产环境中大多数内存泄漏和数据损坏错误。'
 - en: Let me show you the innocent-looking code that nearly cost me my sanity.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我展示一下那个看似无辜的代码，它几乎让我失去了理智。
 - en: '[PRE2]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: That `Buffer.alloc()` call just triggered a cascade of events in Node's internals.
     First, Node.js checks if the requested size (52,428,800 bytes) is larger than
     `Buffer.poolSize >>> 1` (4096 bytes). It is, so Node bypasses the buffer pool
@@ -243,8 +330,13 @@
     where physical pages are only allocated when you first write to them. This is
     why `Buffer.alloc()` zeroes the memory - it forces the kernel to allocate real
     physical pages immediately.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 那个 `Buffer.alloc()` 调用在 Node 的内部触发了连锁反应。首先，Node.js 检查请求的大小（52,428,800 字节）是否大于
+    `Buffer.poolSize >>> 1`（4096 字节）。它是，所以 Node 完全绕过了缓冲池。它直接调用 C++ 层来分配 50MB 的内存。在
+    Linux 上，这通常会导致一个 `mmap()` 系统调用，用于大分配，它将匿名页面映射到你的进程地址空间。内核实际上并没有分配物理 RAM，它使用了一种称为“按需分页”的技术，其中物理页面只有在第一次写入时才会分配。这就是为什么
+    `Buffer.alloc()` 会将内存清零——它迫使内核立即分配真实的物理页面。
 - en: The `write()` operation then copies your string data into this buffer using
     optimized SIMD instructions when available. V8's string encoding machinery converts
     the UTF-8 JavaScript string into raw bytes. For ASCII characters, this is a straight
@@ -252,20 +344,31 @@
     boundaries to avoid splitting characters. This encoding happens in a tight C++
     loop that's been optimized to process multiple bytes per CPU cycle using vector
     instructions.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后 `write()` 操作会将你的字符串数据复制到这个缓冲区中，当可用时使用优化的 SIMD 指令。V8 的字符串编码机制将 UTF-8 JavaScript
+    字符串转换为原始字节。对于 ASCII 字符，这是一个直接的复制。对于多字节 UTF-8 字符，编码器必须仔细跟踪字节边界，以避免分割字符。这种编码在一个紧密的
+    C++ 循环中发生，该循环已被优化，以使用向量指令在每次 CPU 周期中处理多个字节。
 - en: '[PRE3]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: That operation is blazingly fast because it doesn't need to allocate 5 bytes
     and copy data into them. It just creates a tiny new JavaScript object with a different
     offset and length that points back to the original 50MB `ArrayBuffer`. Now, what
     happens if we modify the view?
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 那个操作非常快，因为它不需要分配 5 个字节并将数据复制进去。它只是创建了一个带有不同偏移量和长度的微小新 JavaScript 对象，该对象指向原始的
+    50MB `ArrayBuffer`。现在，如果我们修改这个视图会发生什么呢？
 - en: '[PRE4]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 'This single write operation just corrupted your original 50MB buffer. When
     you call `write()` on the slice, Node.js calculates the absolute position in the
     parent ArrayBuffer: slice''s base offset (9) plus the write position (0) equals
@@ -276,11 +379,16 @@
     bypassing all of JavaScript''s safety mechanisms. In production, I''ve seen this
     pattern corrupt binary protocol headers, overwrite critical metadata, and even
     expose sensitive data from one request to another.'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 这单个写入操作就破坏了你的原始50MB缓冲区。当你对切片调用`write()`时，Node.js会计算父`ArrayBuffer`的绝对位置：切片的基本偏移量（9）加上写入位置（0）等于父内存中的字节位置9。字符串"99999"被编码为UTF-8字节[0x39,
+    0x39, 0x39, 0x39, 0x39]，并直接写入父缓冲区的内存位置9-13。没有写时复制机制，没有保护，没有警告。写入是通过C++中的直接内存指针操作完成的，绕过了JavaScript的所有安全机制。在生产环境中，我见过这种模式破坏二进制协议头，覆盖关键元数据，甚至从一个请求泄露敏感数据到另一个请求。
 - en: '[PRE5]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Did you see that? We changed the `userIdSlice`, and it mutated the `massiveBuffer`.
     They are two Buffer objects that reference the exact same memory location. When
     you modify the data through one Buffer reference, the change is immediately visible
@@ -288,26 +396,36 @@
     ArrayBuffer. The V8 documentation on `TypedArray` views, which `Buffer`s are based
     on, confirms this shared memory behavior is intentional and fundamental to their
     design.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 你看到了吗？我们改变了`userIdSlice`，它修改了`massiveBuffer`。它们是两个引用相同内存位置的Buffer对象。当你通过一个Buffer引用修改数据时，通过另一个Buffer引用立即可以看到更改，因为它们都指向相同的底层`ArrayBuffer`。基于`TypedArray`视图的V8文档，`Buffer`就是基于这个视图的，确认这种共享内存行为是故意的，并且是其设计的基本原则。
 - en: So what about `subarray()`? In current Node.js versions, `Buffer.prototype.subarray()`
     is effectively the same as `Buffer.prototype.slice()`. Both create a view into
     the same memory, not a copy. The Node.js documentation recommends `subarray()`
     for clarity when you want to signal that you're working within the `TypedArray`
     specification, as `subarray` is the standard `TypedArray` method for creating
     views.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么`subarray()`呢？在当前的Node.js版本中，`Buffer.prototype.subarray()`实际上与`Buffer.prototype.slice()`相同。两者都创建了对相同内存的视图，而不是副本。Node.js文档建议在你想表明你正在`TypedArray`规范内工作时使用`subarray()`，因为`subarray`是创建视图的标准`TypedArray`方法。
 - en: ℹ️Note
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: '`Buffer.slice()` and `Buffer.subarray()` are functionally identical. Both create
     views, not copies. Use `subarray()` for consistency with TypedArray conventions.'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.slice()`和`Buffer.subarray()`在功能上相同。两者都创建视图，而不是副本。为了与`TypedArray`约定保持一致，请使用`subarray()`。'
 - en: '[PRE6]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'That `subarray()` call creates a new Buffer object with just three properties
     that matter: a reference to `mainBuffer`''s ArrayBuffer, an offset of 1, and a
     length of 2\. The total cost is about 72 bytes on the V8 heap for the JavaScript
@@ -317,42 +435,60 @@
     of the parent''s memory, adds the view''s offset (1 byte), and reads from that
     location. This happens entirely in compiled machine code without any JavaScript
     overhead.'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 那个`subarray()`调用创建了一个只包含三个重要属性的新的Buffer对象：对`mainBuffer`的`ArrayBuffer`的引用、偏移量为1、长度为2。总成本大约是V8堆上的72字节用于JavaScript对象本身。没有为实际数据分配内存。视图的内部`[[ViewedArrayBuffer]]`槽直接指向父的存储。当你访问`sub[0]`时，V8执行指针运算：它从父内存的基址开始，加上视图的偏移量（1字节），并从该位置读取。这完全在编译的机器代码中完成，没有任何JavaScript开销。
 - en: '[PRE7]'
+  id: totrans-53
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: The third character is `Buffer.from()`. This one is tricky because its behavior
     changes completely depending on the input type you provide.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三个字符是`Buffer.from()`。这个函数有点棘手，因为它的行为完全取决于你提供的输入类型。
 - en: '`Buffer.from(string)`: **Allocates new memory** and copies the string data
     into it.'
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(string)`: **分配新的内存**并将字符串数据复制到其中。'
 - en: '`Buffer.from(array)`: **Allocates new memory** and copies the byte values.'
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(array)`: **分配新的内存**并复制字节数据。'
 - en: '`Buffer.from(arrayBuffer)`: **Creates a VIEW** that shares memory with the
     provided `ArrayBuffer`. This is a zero-copy operation.'
+  id: totrans-57
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(arrayBuffer)`: **创建一个与提供的`ArrayBuffer`共享内存的视图**。这是一个零复制操作。'
 - en: '`Buffer.from(buffer)`: **Allocates new memory** and copies the data from the
     source buffer. This is a full copy!'
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(buffer)`: **分配新的内存** 并从源缓冲区复制数据。这是一个完整的拷贝！'
 - en: ⚠️Warning
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: '`Buffer.from(arrayBuffer)` creates a VIEW (shares memory), but `Buffer.from(buffer)`
     creates a COPY (new memory). This inconsistency is a common source of bugs. Always
     verify which behavior you''re getting based on your input type.'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.from(arrayBuffer)` 创建一个视图（共享内存），但 `Buffer.from(buffer)` 创建一个拷贝（新内存）。这种不一致性是常见的错误来源。始终根据您的输入类型验证您获得的行为。'
 - en: The distinction between `Buffer.from(arrayBuffer)` and `Buffer.from(buffer)`
     is a common source of bugs. The former is a zero-copy view, while the latter is
     a full-copy operation. The `TypedArray` view that silently corrupted our binary
@@ -360,12 +496,18 @@
     sometimes passed an `ArrayBuffer` and sometimes a `Buffer`, and the subtle difference
     in `Buffer.from()` semantics was causing unexpected copies in our hot path, tanking
     performance.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.from(arrayBuffer)` 和 `Buffer.from(buffer)` 之间的区别是常见的错误来源。前者是一个零拷贝视图，而后者是一个完整的拷贝操作。那个静默地破坏了我们二进制协议的
+    `TypedArray` 视图教会了我不要不测量就信任。我们有一个函数，有时会传入一个 `ArrayBuffer`，有时会传入一个 `Buffer`，而 `Buffer.from()`
+    语义的微妙差异在我们的热点路径中导致了意外的拷贝，从而降低了性能。'
 - en: Zero-Copy Operations
+  id: totrans-62
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 零拷贝操作
 - en: The term "zero-copy" is misleadingly appealing. It sounds like achieving performance
     gains without any costs. You're not. There's a trade-off, and you need to understand
     it. A zero-copy operation means you are not copying the *data payload*. You are,
@@ -373,15 +515,22 @@
     has a small memory footprint on the V8 heap, but its creation is orders of magnitude
     faster than allocating a new memory block and then iterating over the original
     data to copy it byte by byte.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: “零拷贝”这个术语听起来很有吸引力，但具有误导性。它听起来像是在不付出任何代价的情况下实现性能提升。事实并非如此。这里有一个权衡，你需要理解它。零拷贝操作意味着你不会复制
+    *数据负载*。然而，你仍然在创建一个新的 JavaScript 对象——视图本身。这个对象在 V8 堆上有很小的内存占用，但它的创建速度比分配新的内存块然后逐字节迭代原始数据来复制它快得多。
 - en: Let's quantify this. Let's say we have a 10MB buffer and we want a 1KB chunk
     from it.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们量化一下。假设我们有一个 10MB 的缓冲区，我们想要从中获取 1KB 的块。
 - en: '[PRE8]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: This allocation triggers a single `mmap()` syscall for 10,485,760 bytes. The
     kernel reserves virtual address space but doesn't allocate physical pages yet
     - that happens on first write through demand paging. Node.js tracks this allocation
@@ -390,11 +539,17 @@
     which influences when the next major GC cycle triggers. If external memory grows
     too fast, V8 will panic and force a synchronous GC, blocking your event loop for
     potentially hundreds of milliseconds.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个分配触发了单个 `mmap()` 系统调用，用于 10,485,760 字节。内核保留了虚拟地址空间，但尚未分配物理页面——这发生在第一次通过按需分页写入时。Node.js
+    通过 `Isolate::AdjustAmountOfExternalAllocatedMemory()` 通知 V8 的垃圾收集器，这会影响下一次主要 GC
+    周期的触发。如果外部内存增长过快，V8 将崩溃并强制进行同步 GC，这可能会阻塞你的事件循环数百毫秒。
 - en: '[PRE9]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'The `subarray()` operation completes in nanoseconds. It allocates exactly 72
     bytes on the V8 heap for the new Buffer object and sets three fields: buffer pointer,
     offset (5000), and length (1024). No memory barrier, no cache invalidation, no
@@ -402,30 +557,47 @@
     counter shows ~0.007ms because that''s mostly the overhead of `console.time()`
     itself - the actual subarray operation takes less than 100 nanoseconds on modern
     CPUs.'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '`subarray()` 操作在纳秒级别完成。它为新的 Buffer 对象在 V8 堆上分配了正好 72 字节，并设置了三个字段：缓冲区指针、偏移量（5000）和长度（1024）。没有内存屏障，没有缓存失效，没有
+    TLB 清除。CPU 可以将整个操作保持在 L1 缓存中。性能计数器显示 ~0.007ms，因为那主要是 `console.time()` 自身的开销——实际的子数组操作在现代
+    CPU 上不到 100 纳秒。'
 - en: '[PRE10]'
+  id: totrans-69
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'On a modern Node.js install, the results are telling:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 在现代 Node.js 安装中，结果是有说服力的：
 - en: '`view creation`: `0.007ms`'
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`视图创建`: `0.007ms`'
 - en: '`copy creation`: `0.024ms`'
+  id: totrans-72
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`拷贝创建`: `0.024ms`'
 - en: 💡Tip
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 💡提示
 - en: Use `performance.timerify()` or `perf_hooks` module to accurately measure buffer
     operations in production. The `console.time()` method is convenient but less precise
     for sub-millisecond measurements.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `performance.timerify()` 或 `perf_hooks` 模块在生产环境中准确测量缓冲区操作。`console.time()`
+    方法很方便，但对于亚毫秒级的测量来说不够精确。
 - en: The cost of creating a view is effectively constant time, O(1). It doesn't matter
     if you're viewing 10 bytes or 10 megabytes; you're just creating a small JS object
     with some pointers and offsets. The cost of a copy, however, is linear time, O(n).
@@ -434,8 +606,12 @@
     a measurable slice of a millisecond. In a hot path, this adds up. Our own telemetry
     has shown that replacing unnecessary copies with views in a critical parsing loop
     can cut CPU usage by 30%.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建视图的成本实际上是常数时间，O(1)。无论你查看 10 字节还是 10 兆字节，你只是在创建一个带有一些指针和偏移的小型 JS 对象。然而，复制的成本是线性时间，O(n)。它与你要复制的数据量成正比。对于一个从
+    100MB 缓冲区中提取的 1MB 数据块，视图仍然几乎是瞬时的，而复制则需要消耗一个可测量的毫秒时间。在一个热点路径中，这会累积起来。我们自己的遥测数据显示，在关键解析循环中将不必要的复制替换为视图可以减少
+    CPU 使用率 30%。
 - en: But here's the trade-off, the common mistake that developers make. You hear
     "zero-copy" and think "faster." So you embark on an "optimization" pass, replacing
     copies with views wherever you see them. But what you're really doing is trading
@@ -443,8 +619,11 @@
     have to manage its own memory; it simply borrows the parent's. This creates a
     strong reference that the garbage collector must respect. As long as your view
     is alive, the entire parent buffer is pinned in memory.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是这里有权衡，开发者常见的错误。你听到“零复制”就会想到“更快”。所以你开始进行“优化”遍历，在看到复制的地方用视图替换它们。但你实际上是在用 CPU
+    周期换取内存管理复杂性。视图之所以快，是因为它不需要管理自己的内存；它只是借用父级的。这创建了一个强引用，垃圾收集器必须尊重。只要你的视图是活跃的，整个父缓冲区就会在内存中被固定。
 - en: 'This is the fundamental trade-off: you trade memory safety for speed. You are
     telling the runtime, "Trust me, I know what I''m doing. Keep this giant chunk
     of memory around because I need this tiny piece of it." The runtime will do exactly
@@ -452,166 +631,245 @@
     out-of-memory exception. The correct "optimization" is not to use views everywhere,
     but to understand when the cost of a small, explicit copy is infinitely cheaper
     than the memory cost of retaining a giant parent buffer.'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是基本的权衡：你用内存安全性换取速度。你是在告诉运行时，“相信我，我知道我在做什么。保留这块巨大的内存块，因为我需要它的一小部分。”运行时会完全按照你的要求去做。而且如果你不小心，它甚至会一直信任你直到出现内存不足异常。正确的“优化”不是在所有地方都使用视图，而是要理解何时小而明确的复制的成本远远低于保留大型父缓冲区的内存成本。
 - en: Buffers, TypedArrays, and the Memory They Share
+  id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 缓冲区、类型化数组以及它们共享的内存
 - en: Okay, so we've established that `Buffer`s are Node's special sauce for handling
     binary data. But as we saw in the first chapter, they don't live in a vacuum.
     They're part of a bigger family called `TypedArray`s, and understanding this relationship
     is crucial.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，所以我们已经确定 `Buffer` 是 Node 处理二进制数据的特殊调料。但正如我们在第一章中看到的，它们并不是孤立存在的。它们是更大家族 `TypedArray`
+    的一部分，理解这种关系至关重要。
 - en: Since Node.js v3.0, the `Buffer` class is a direct subclass of `Uint8Array`.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 自从 Node.js v3.0 版本以来，`Buffer` 类是 `Uint8Array` 的直接子类。
 - en: '[PRE11]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: And that's not just trivia for your next job interview. It's the golden ticket
     to interoperability. It means you can pass a Node `Buffer` to any modern API -
     in the browser, in WebAssembly, wherever - that expects a `Uint8Array`, and it
     just works.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 这不仅仅是你下次面试的 trivia。这是互操作性的金票。这意味着你可以将 Node `Buffer` 传递给任何期望 `Uint8Array` 的现代
+    API - 在浏览器中、在 WebAssembly 中、在任何地方 - 它都能正常工作。
 - en: 'The key concept is this: the raw slab of memory itself is an `ArrayBuffer`.
     `Buffer`, `Uint8Array`, `Int32Array`, etc., are all just different **views** you
     can place over that same raw memory. Think of the `ArrayBuffer` as a raw hunk
     of steel. A `Buffer` is a stencil that lets you see it as a sequence of individual
     bytes. An `Int32Array` is a different stencil that groups those bytes into 4-byte
     chunks and shows you 32-bit numbers.'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键概念是这样的：原始的内存块本身是一个 `ArrayBuffer`。`Buffer`、`Uint8Array`、`Int32Array` 等，都是你可以放置在相同原始内存上的不同
+    **视图**。将 `ArrayBuffer` 想象成一块原始的钢铁。一个 `Buffer` 是一个模板，让你可以看到它作为一个字节序列。一个 `Int32Array`
+    是一个不同的模板，将那些字节分组为 4 字节块，并显示 32 位数字。
 - en: This is incredibly powerful. It's also how you can silently corrupt all your
     data without a single error being thrown.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 这非常强大。这也是你可以在不抛出任何错误的情况下静默地损坏所有数据的方法。
 - en: Let's walk through the crime scene. Imagine we get a 12-byte message from the
     network.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看犯罪现场。想象一下，我们从网络中获取了一个 12 字节的消息。
 - en: '[PRE12]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Now, let's create a couple of views to work with this memory.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们创建几个视图来处理这个内存。
 - en: '[PRE13]'
+  id: totrans-88
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: Everything's clean. The views point to different, non-overlapping parts of the
     same memory slab. But then a bug slips in - a classic off-by-one or a typo in
     an offset calculation.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 一切都很干净。视图指向同一内存块的不同、不重叠的部分。但随后出现了一个错误——一个经典的“偏移量错误”或偏移量计算中的打字错误。
 - en: '[PRE14]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: And **boom**. Silent data corruption.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后**嘭**。静默的数据损坏。
 - en: Your code "worked." No exceptions, no crashes. But because your `buggyStringView`
     overlapped with your `intView`, writing that string just obliterated your integer.
     The bytes for "CANC" (`[0x43, 0x41, 0x4E, 0x43]`) are now squatting in the exact
     same memory where your number used to be. In production, this is the kind of bug
     that corrupts financial data or invalidates security tokens and takes weeks to
     track down.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的代码“工作”了。没有异常，没有崩溃。但是因为你的`buggyStringView`与你的`intView`重叠，写入那个字符串就彻底摧毁了你的整数。代表“CANC”(`[0x43,
+    0x41, 0x4E, 0x43]`)的字节现在占据了你的数字曾经所在的确切内存位置。在生产环境中，这种类型的错误会破坏财务数据或使安全令牌无效，并需要几周时间才能追踪到。
 - en: '[PRE15]'
+  id: totrans-93
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'The lesson here is simple and brutal: when you start creating multiple views
     over a single `ArrayBuffer`, you''ve fired the automated memory manager and hired
     yourself for the job. You are responsible for every offset and every length. Get
     it wrong, and you''re in for a nightmare of debugging data that looks right one
     millisecond and is garbage the next.'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的教训简单而残酷：当你开始对单个`ArrayBuffer`创建多个视图时，你已经启动了自动内存管理器，并为自己聘请了这项工作。你必须对每个偏移量和每个长度负责。搞错了，你将陷入调试看似正确但下一毫秒就变成垃圾数据的噩梦。
 - en: 🚨Caution
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨警告
 - en: Multiple TypedArray views over the same ArrayBuffer can silently corrupt each
     other's data. There are NO runtime checks for overlapping views. A single off-by-one
     error in offset calculation can corrupt critical data without throwing any errors.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 在同一`ArrayBuffer`上创建多个`TypedArray`视图可能会静默地相互破坏数据。没有对重叠视图进行运行时检查。在偏移量计算中单个“偏移量错误”就可能导致关键数据损坏而不会抛出任何错误。
 - en: When Views Share Memory (and When They Don't)
+  id: totrans-97
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 当视图共享内存（以及它们不共享内存时）
 - en: 'By now, you should be healthily paranoid about shared memory. The rule of thumb
     is: **if an operation doesn''t explicitly say it "copies" or "allocates," assume
     it shares memory.** Let''s build a mental map of the common `Buffer` and `TypedArray`
     operations and put them into "View" (shares memory) or "Copy" (allocates new memory)
     buckets.'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 到现在为止，你应该对共享内存保持健康的警惕。一般来说：**如果一个操作没有明确说明它“复制”或“分配”，就假设它共享内存**。让我们构建一个常见的`Buffer`和`TypedArray`操作的思维导图，并将它们放入“视图”（共享内存）或“复制”（分配新内存）类别中。
 - en: '**Operations that Create Views (Zero-Copy):**'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '**创建视图的操作（零复制）：**'
 - en: '`Buffer.prototype.slice(start, end)`'
+  id: totrans-100
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.prototype.slice(start, end)`'
 - en: '`Buffer.prototype.subarray(start, end)`'
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.prototype.subarray(start, end)`'
 - en: '`new Uint8Array(arrayBuffer, byteOffset, length)` (and all other `TypedArray`
     constructors that take an `ArrayBuffer`)'
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`new Uint8Array(arrayBuffer, byteOffset, length)` (以及所有其他接受`ArrayBuffer`的`TypedArray`构造函数)'
 - en: '`Buffer.from(arrayBuffer, byteOffset, length)`'
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(arrayBuffer, byteOffset, length)`'
 - en: These are your high-performance, high-risk tools. They are incredibly fast for
     creating sub-sections of existing data for temporary processing. The key word
     here is *temporary*. If the view you create is short-lived and goes out of scope
     quickly, you get all the performance benefits without the memory retention risk.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是你的高性能、高风险工具。它们在创建现有数据的临时子部分进行临时处理时速度极快。这里的关键词是*临时*。如果你创建的视图生命周期短，很快就会超出范围，你将获得所有性能优势，而不会承担内存保留风险。
 - en: '**Operations that Create Copies (Allocating New Memory):**'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '**创建副本的操作（分配新内存）：**'
 - en: '`Buffer.alloc(size)`'
+  id: totrans-106
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.alloc(size)`'
 - en: '`Buffer.from(string)`'
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(string)`'
 - en: '`Buffer.from(array)`'
+  id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(array)`'
 - en: '`Buffer.from(buffer)`'
+  id: totrans-109
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.from(buffer)`'
 - en: '`Buffer.prototype.copy()` (the method itself, which copies *into* an existing
     buffer)'
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Buffer.prototype.copy()` (该方法本身，它将副本复制到现有的缓冲区)'
 - en: '`Uint8Array.prototype.slice(start, end)` (Note the critical difference! `TypedArray.slice()`
     *copies*, whereas `Buffer.slice()` *views*.)'
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Uint8Array.prototype.slice(start, end)` (注意关键的区别！`TypedArray.slice()`会复制，而`Buffer.slice()`会创建视图。)'
 - en: 🚨Caution
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨警告
 - en: 'CRITICAL CONFUSION: `TypedArray.prototype.slice()` creates a COPY, but `Buffer.prototype.slice()`
     creates a VIEW. This is because Buffer overrides the TypedArray slice method.
     If you accidentally call the TypedArray version, you get opposite behavior!'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '**关键混淆**：`TypedArray.prototype.slice()`创建一个副本，但`Buffer.prototype.slice()`创建一个视图。这是因为Buffer覆盖了TypedArray的切片方法。如果你意外地调用了TypedArray版本，你会得到相反的行为！'
 - en: This last point is a landmine. I've seen it burn senior engineers. Because `Buffer`
     is a `Uint8Array`, it inherits both methods, but Buffer overrides `slice()` to
     create views instead of copies. If you were to somehow call the `Uint8Array` prototype's
@@ -620,16 +878,23 @@
     and `TypedArray.slice()` is a design quirk that can cost you your sanity. The
     Node.js team has gone to great lengths to make `Buffer`'s behavior internally
     consistent, but this fundamental difference with standard TypedArrays remains.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一点是一个陷阱。我见过它烧毁资深工程师。因为`Buffer`是`Uint8Array`，它继承了这两种方法，但`Buffer`覆盖了`slice()`以创建视图而不是复制。如果你直接在缓冲区上调用`Uint8Array`原型上的`slice`方法（通过`Uint8Array.prototype.slice.call(buf,
+    ...)`），你会得到一个复制而不是视图。`Buffer.slice()`和`TypedArray.slice()`之间的这种不一致性是一个可能导致你精神崩溃的设计怪癖。Node.js团队已经做了很多努力来确保`Buffer`的行为在内部保持一致，但与标准TypedArrays的根本区别仍然存在。
 - en: Let's look at a scenario where the distinction is crucial. You're reading a
     large file, say a 1GB video file, and you just need to parse the first 1KB for
     metadata.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看一个区分至关重要的场景。你正在读取一个大文件，比如说一个1GB的视频文件，而你只需要解析前1KB的元数据。
 - en: '[PRE16]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: That `readFileSync` call just blocked your event loop while Node.js read 1GB
     from disk. Under the hood, libuv opens the file with `open()`, gets the file size
     with `fstat()`, allocates a buffer of that size, and then reads the entire file
@@ -638,11 +903,15 @@
     by 1GB, and the OS might have even started swapping other processes to disk to
     make room. This synchronous operation can freeze your server for several seconds
     on slow disks.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 那个`readFileSync`调用阻塞了你的事件循环，同时Node.js从磁盘读取了1GB。在底层，libuv使用`open()`打开文件，使用`fstat()`获取文件大小，分配相应大小的缓冲区，然后使用单个`read()`系统调用（或对于非常大的文件，使用多个读取）读取整个文件。整个1GB被加载到一个单一的连续ArrayBuffer中。你的进程的RSS值增加了1GB，操作系统甚至可能开始将其他进程交换到磁盘上以腾出空间。这种同步操作可以在慢速磁盘上冻结你的服务器几秒钟。
 - en: '[PRE17]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 'This creates a 72-byte Buffer object that holds a reference to the entire 1GB
     ArrayBuffer. The view''s retained size is 1GB, but its shallow size is just 72
     bytes. If you pass this to a cache, a global variable, or any long-lived data
@@ -650,98 +919,146 @@
     reference chain: your cache → metadataView → videoBuffer''s ArrayBuffer, and concludes
     the entire 1GB must be kept alive. I''ve debugged production systems where hundreds
     of these tiny views collectively retained tens of gigabytes of memory.'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样会创建一个72字节的Buffer对象，它持有对整个1GB ArrayBuffer的引用。视图的保留大小是1GB，但其浅层大小仅为72字节。如果你将此传递给缓存、全局变量或任何长期数据结构，你刚刚就创建了一个内存泄漏。垃圾收集器看到引用链：你的缓存
+    → 元数据视图 → 视频缓冲区的ArrayBuffer，并得出整个1GB必须保持活跃的结论。我调试过生产系统，其中数百个这样的小视图共同保留了数十GB的内存。
 - en: '[PRE18]'
+  id: totrans-120
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: The correct approach here, if you need to hold onto that metadata for any length
     of time, is to perform a strategic copy.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你需要长时间保留这些元数据，这里正确的做法是进行战略性的复制。
 - en: '[PRE19]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: The `Buffer.alloc(1024)` allocates exactly 1024 bytes from Node's buffer pool
     (since it's under 4KB). This memory is zeroed for security. The `copy()` operation
     then triggers a highly optimized `memcpy()` in C++ that can move data at several
     GB/s on modern hardware. The CPU's SIMD instructions copy 32 or 64 bytes per cycle,
     making this 1KB copy complete in microseconds. Most importantly, `metadataCopy`
     has its own independent ArrayBuffer with no reference to the original 1GB buffer.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.alloc(1024)`从Node的缓冲池中分配了正好1024字节（因为它的尺寸小于4KB）。出于安全考虑，这段内存被清零。然后`copy()`操作触发一个高度优化的C++中的`memcpy()`，在现代硬件上可以以数GB/s的速度移动数据。CPU的SIMD指令每次复制32或64字节，这使得这个1KB的复制在微秒内完成。最重要的是，`metadataCopy`有一个独立的ArrayBuffer，没有引用原始的1GB缓冲区。'
 - en: '[PRE20]'
+  id: totrans-124
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: 💡Tip
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 💡提示
 - en: 'Rule of thumb: Use views for temporary processing within a function. Use copies
     for any data that needs to be stored, cached, or passed to async operations. The
     small CPU cost of copying prevents massive memory leaks.'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 经验法则：在函数内部使用视图进行临时处理。对于需要存储、缓存或传递给异步操作的数据，使用复制。复制的微小CPU成本可以防止巨大的内存泄漏。
 - en: This decision framework - "Is this data short-lived or long-lived?" - is the
     key to wielding views and copies effectively. For temporary, in-function processing,
     views are your best friend. For data that needs to be stored, cached, or passed
     between different parts of your application, an explicit copy is your insurance
     policy against massive memory leaks.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个决策框架——“这些数据是短期存在还是长期存在？”是有效使用视图和副本的关键。对于临时函数内处理，视图是你的最佳选择。对于需要存储、缓存或在应用程序的不同部分之间传递的数据，显式复制是你的保险政策，以防大规模内存泄漏。
 - en: Copy Semantics and Buffer.copy()
+  id: totrans-128
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 复制语义和 Buffer.copy()
 - en: So, we've established that sometimes you absolutely need a copy. The primary
     tool for this in Node.js is `Buffer.prototype.copy()`. It's a low-level, high-performance
     method designed to be the `memcpy` of the JavaScript world. Its signature is `buf.copy(targetBuffer,
     targetStart, sourceStart, sourceEnd)`.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，我们已经确定有时你绝对需要副本。在 Node.js 中，这个主要工具是 `Buffer.prototype.copy()`。它是一个低级、高性能的方法，旨在成为
+    JavaScript 世界的 `memcpy`。它的签名是 `buf.copy(targetBuffer, targetStart, sourceStart,
+    sourceEnd)`。
 - en: It's important to note that `copy()` writes into an *existing* `targetBuffer`.
     You must allocate the destination buffer yourself before you call it. This gives
     you fine-grained control but also adds a step to the process.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要注意，`copy()` 将写入一个 *现有* 的 `targetBuffer`。在调用它之前，你必须自己分配目标缓冲区。这给了你细粒度的控制，但也增加了处理步骤。
 - en: '[PRE21]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: The `Buffer.from(string)` encodes the 26-character alphabet into 26 bytes of
     UTF-8 (all ASCII, so one byte per character). Node allocates this from its buffer
     pool since it's under 4KB. The `Buffer.alloc(10)` creates another small buffer,
     also from the pool but from a different offset. These two buffers might actually
     be slices of the same underlying 8KB pool slab, but they're non-overlapping regions
     with independent lifecycles.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.from(string)` 将 26 个字符的字母表编码为 26 字节的 UTF-8（全部是 ASCII，所以每个字符一个字节）。Node
+    从其缓冲区池中分配它，因为它的尺寸小于 4KB。`Buffer.alloc(10)` 创建另一个小缓冲区，也来自池，但来自不同的偏移量。这两个缓冲区实际上可能是同一
+    8KB 池片的不同切片，但它们是非重叠的区域，具有独立的生命周期。'
 - en: '[PRE22]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: This `copy()` operation resolves to a single `memcpy(target_ptr + 0, source_ptr
     + 0, 10)` call in C++. Modern CPUs optimize this with SIMD instructions, moving
     multiple bytes per cycle. The operation completes in nanoseconds for such small
     buffers. The data is physically duplicated - changes to `source` won't affect
     `target` and vice versa.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个 `copy()` 操作在 C++ 中会解析为单个 `memcpy(target_ptr + 0, source_ptr + 0, 10)` 调用。现代
+    CPU 使用 SIMD 指令进行优化，每次循环移动多个字节。对于如此小的缓冲区，操作可以在纳秒内完成。数据在物理上是复制的——对 `source` 的更改不会影响
+    `target`，反之亦然。
 - en: '[PRE23]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: The performance of `Buffer.copy()` is heavily optimized in Node's C++ core.
     For copying data between buffers, it will almost always be faster than any manual,
     byte-by-byte loop you could write in JavaScript. Memory profiling results show
     that the time taken is directly proportional to the number of bytes copied, and
     the constant factor is very low.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: Node 的 C++ 内核对 `Buffer.copy()` 的性能进行了大量优化。对于在缓冲区之间复制数据，它几乎总是比你在 JavaScript 中编写的任何手动、逐字节循环要快。内存分析结果显示，所需时间与复制的字节数成正比，而常数因子非常低。
 - en: 'However, there''s a more convenient way to create a copy that many people reach
     for: `Buffer.from(buffer)`. As we touched on earlier, this specific overload of
     `Buffer.from()` is explicitly a copy operation.'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，有一种更方便的方法来创建副本，许多人都会选择：`Buffer.from(buffer)`。正如我们之前提到的，这个特定的 `Buffer.from()`
+    重载明确是一个复制操作。
 - en: '[PRE24]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: We've talked about `Buffer.from` too many times now, but - the `Buffer.from(buffer)`
     constructor is deceptive in its simplicity. Internally, it allocates a new ArrayBuffer
     of the exact same size as the original (28 bytes here), then performs a `memcpy()`
@@ -749,41 +1066,60 @@
     function. The new buffer is completely independent - it has its own backing store
     with no references to the original. This is crucial for memory isolation and preventing
     the retention issues we've been discussing.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经多次讨论了 `Buffer.from`，但——`Buffer.from(buffer)` 构造函数在其简单性上具有欺骗性。内部，它分配了一个与原始缓冲区大小完全相同的新
+    ArrayBuffer（这里为 28 字节），然后执行整个内容的 `memcpy()`。这发生在 Node 的 C++ 层，通过 `node::Buffer::Copy()`
+    函数。新的缓冲区是完全独立的——它有自己的后端存储，没有对原始缓冲区的引用。这对于内存隔离和防止我们一直在讨论的保留问题至关重要。
 - en: '[PRE25]'
+  id: totrans-140
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: Internally, `Buffer.from(buffer)` is essentially doing an `alloc` and a `copy`
     for you. It's syntactic sugar for the two-step process. In most cases, the performance
     difference is negligible, and the convenience of a one-liner often wins. However,
     if you are in an extremely hot path where you need to reuse an existing destination
     buffer to avoid allocation overhead (a technique called buffer pooling), then
     using `Buffer.copy()` directly is the way to go.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 在内部，`Buffer.from(buffer)`基本上为你执行了一个`alloc`和一个`copy`。这是两步过程的语法糖。在大多数情况下，性能差异是可以忽略不计的，一行代码的便利性通常更胜一筹。然而，如果你处于一个极端的热路径中，需要重用现有的目标缓冲区以避免分配开销（一种称为缓冲区池化的技术），那么直接使用`Buffer.copy()`是最佳选择。
 - en: 'Knowing *when* to copy is the art. The science is knowing *how*. The rule is
     simple: if the data needs to outlive its original, massive parent buffer, you
     must give it a new home. Allocate a new buffer of the exact size you need and
     copy the data into it. This breaks the link to the parent, allowing the garbage
     collector to do its job.'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 知道何时复制是一种艺术。科学在于知道如何做。规则很简单：如果数据需要比其原始的、庞大的父缓冲区存活更久，你必须给它一个新的家。分配一个所需的确切大小的新的缓冲区，并将数据复制到其中。这打破了与父缓冲区的链接，允许垃圾回收器完成其工作。
 - en: 📌Important
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: '`Buffer.copy()` requires a pre-allocated target buffer. Common pattern: `const
     copy = Buffer.alloc(size); source.copy(copy, 0, start, end);`. For convenience,
     use `Buffer.from(source.subarray(start, end))` to create a copy in one line.'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.copy()`需要一个预先分配的目标缓冲区。常见模式：`const copy = Buffer.alloc(size); source.copy(copy,
+    0, start, end);`。为了方便，可以使用`Buffer.from(source.subarray(start, end))`在一行中创建一个副本。'
 - en: 'It''s the solution we eventually implemented for our log parser. Instead of
     storing the `slice`, we did this:'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我们最终为我们的日志解析器实现的解决方案。我们不是存储`slice`，而是这样做：
 - en: '[PRE26]'
+  id: totrans-146
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: 'This pattern costs us 16 bytes of allocation plus a few nanoseconds for the
     `memcpy()`. The `Buffer.alloc(16)` gets memory from Node''s buffer pool (it''s
     under 4KB), and the memory is zeroed for security. The `copy()` operation then
@@ -792,202 +1128,293 @@
     and `logBuffer` goes out of scope, the entire multi-megabyte buffer can be immediately
     garbage collected. Your heap profiler will show 16-byte buffers with 16-byte retained
     sizes - exactly what you''d expect.'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式使我们分配了16个字节的内存，并且`memcpy()`操作需要几纳秒。`Buffer.alloc(16)`从Node的缓冲池（小于4KB）中获取内存，并且出于安全考虑，内存被初始化为零。然后`copy()`操作从源中精确地移动16个字节。关键的区别是`sessionId`有一个自己的ArrayBuffer，没有对`logBuffer`的引用。当这个函数返回并且`logBuffer`超出作用域时，整个多兆字节的缓冲区可以立即被垃圾回收。你的堆分析器将显示16字节的缓冲区，保留大小正好是16字节——这正是你所期望的。
 - en: '[PRE27]'
+  id: totrans-148
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: ⚠️Warning
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: Never use `Buffer.allocUnsafe()` for copies that might contain sensitive data.
     The uninitialized memory could expose passwords, tokens, or other secrets from
     previously freed buffers. Always use `Buffer.alloc()` for security-critical code.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 永远不要在可能包含敏感数据的复制操作中使用`Buffer.allocUnsafe()`。未初始化的内存可能会暴露来自先前释放的缓冲区的密码、令牌或其他秘密。始终使用`Buffer.alloc()`来确保安全关键代码。
 - en: This one-line change from `slice` to `alloc`+`copy` saved us gigabytes of RAM.
     It might seem less "efficient" on the surface because it's doing more work (allocating
     and copying), but in the grand scheme of the system's health, it was infinitely
     more efficient.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 从`slice`到`alloc`+`copy`的一行更改为我们节省了数GB的RAM。从表面上看，它可能看起来不太“高效”，因为它做了更多的工作（分配和复制），但在整个系统健康的大背景下，它要高效得多。
 - en: SharedArrayBuffer and Cross-Thread Views
+  id: totrans-152
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: SharedArrayBuffer和跨线程视图
 - en: The plot thickens when we introduce Node.js worker threads. For a long time,
     JavaScript was single-threaded. If you wanted to do CPU-intensive work, you'd
     block the main event loop, and your application's performance would grind to a
     halt. Worker threads changed the game, allowing for true parallelism. But how
     do you share data between threads without expensive serialization and copying?
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们引入Node.js工作线程时，情况变得更加复杂。长期以来，JavaScript都是单线程的。如果你想要进行CPU密集型工作，你会阻塞主事件循环，你的应用程序的性能会降至停顿。工作线程改变了游戏规则，允许真正的并行性。但是，你如何在不需要昂贵的序列化和复制的情况下在线程之间共享数据？
 - en: The answer is `SharedArrayBuffer` (SAB). A regular `ArrayBuffer` cannot be accessed
     by multiple threads. If you pass one to a worker, a copy is made. A `SharedArrayBuffer`,
     however, is a special type of `ArrayBuffer` whose underlying memory block can
     be referenced and manipulated by multiple threads simultaneously.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 答案是 `SharedArrayBuffer` (SAB)。普通的 `ArrayBuffer` 不能被多个线程访问。如果你传递一个给工作线程，就会创建一个副本。然而，`SharedArrayBuffer`
+    是一种特殊的 `ArrayBuffer` 类型，其底层的内存块可以被多个线程同时引用和操作。
 - en: ⚠️Warning
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: '`SharedArrayBuffer` was temporarily disabled in browsers (2018-2020) due to
     Spectre vulnerabilities. While re-enabled with security mitigations, it requires
     careful handling. In Node.js, always use `Atomics` operations to prevent race
     conditions and data corruption in multi-threaded scenarios.'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于 Spectre 漏洞，`SharedArrayBuffer` 在浏览器中（2018-2020年）被暂时禁用。虽然重新启用并加入了安全缓解措施，但仍需要谨慎处理。在
+    Node.js 中，始终使用 `Atomics` 操作来防止多线程场景中的竞态条件和数据损坏。
 - en: This is where our understanding of views becomes strong. You can create a `SharedArrayBuffer`
     on the main thread, pass it to a worker thread, and then both threads can create
     `TypedArray` or `Buffer` views over that *same block of memory*.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我们对视图理解变得强大的地方。你可以在主线程上创建一个 `SharedArrayBuffer`，将其传递给工作线程，然后两个线程都可以在相同的内存块上创建
+    `TypedArray` 或 `Buffer` 视图。
 - en: '[PRE28]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: This allocates 4 bytes of memory that can be simultaneously accessed by multiple
     JavaScript contexts. Unlike regular ArrayBuffer, this memory is mapped into multiple
     address spaces using platform-specific mechanisms (shared memory on POSIX, memory-mapped
     files on Windows). The allocation is page-aligned for atomic operations support.
     V8 tracks this specially - it can't move or compact this memory during garbage
     collection because multiple isolates might be accessing it simultaneously.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 这分配了 4 字节的内存，可以被多个 JavaScript 上下文同时访问。与常规 `ArrayBuffer` 不同，这种内存使用平台特定的机制（POSIX
+    上的共享内存，Windows 上的内存映射文件）映射到多个地址空间。分配是页面对齐的，以支持原子操作。V8 会特别跟踪这一点 - 在垃圾回收期间，它不能移动或压缩这种内存，因为多个隔离区可能同时访问它。
 - en: '[PRE29]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: This write is NOT atomic by default. On x86-64, a 32-bit aligned write is atomic
     at the hardware level, but JavaScript makes no such guarantees. Without using
     `Atomics.store()`, this write could be torn - another thread might see a partially
     written value. The value 123 is written directly to the shared memory without
     any synchronization primitives, meaning there's no guarantee when other threads
     will see this update due to CPU cache coherency delays.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，这个写入操作不是原子的。在 x86-64 上，32 位对齐的写入在硬件级别上是原子的，但 JavaScript 并不提供这样的保证。如果不使用
+    `Atomics.store()`，这个写入可能会被撕裂 - 另一个线程可能会看到部分写入的值。值 123 直接写入共享内存，没有任何同步原语，这意味着由于
+    CPU 缓存一致性延迟，无法保证其他线程何时会看到这个更新。
 - en: '[PRE30]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: The `postMessage` doesn't copy the SharedArrayBuffer - it transfers a reference
     to the same memory. Both threads now have access to the same 4 bytes of RAM. This
     is fundamentally different from regular ArrayBuffer messaging, which clones the
     data. The worker thread gets its own Int32Array view, but it points to the exact
     same memory pages as the main thread's view.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: '`postMessage` 不会复制 `SharedArrayBuffer` - 它传递了对相同内存的引用。现在两个线程都可以访问相同的 4 字节 RAM。这与常规
+    `ArrayBuffer` 消息传递有根本的不同，后者会克隆数据。工作线程获得自己的 Int32Array 视图，但它指向与主线程视图完全相同的内存页。'
 - en: '[PRE31]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: '[PRE32]'
+  id: totrans-165
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: The worker immediately sees the value 123 that was written by the main thread.
     But this isn't guaranteed without proper synchronization. Due to CPU cache coherency
     protocols, there could be a delay between when one thread writes and when another
     thread sees the update. On weakly-ordered memory architectures (like ARM), you
     might not see the update at all without memory barriers.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 工作线程立即看到主线程写入的值 123。但这并不保证在没有适当同步的情况下。由于 CPU 缓存一致性协议，一个线程写入和另一个线程看到更新之间可能会有延迟。在弱顺序内存架构（如
+    ARM）上，如果没有内存屏障，你可能根本看不到更新。
 - en: '[PRE33]'
+  id: totrans-167
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: This is mind-bendingly powerful. We just modified memory in one thread and saw
     the result instantly in another, with zero copying and zero serialization overhead.
     This is the foundation for high-performance parallel computing in Node.js. You
     can have a worker thread performing complex calculations on a large dataset while
     the main thread reads the results as they become available.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 这非常强大，令人难以置信。我们只是在一条线程上修改了内存，并在另一条线程上立即看到了结果，没有任何复制和序列化开销。这是 Node.js 中高性能并行计算的基础。你可以有一个工作线程在大型数据集上执行复杂计算，而主线程则读取结果，这些结果一旦可用即可读取。
 - en: 'However, this introduces a whole new class of problems: race conditions. Since
     two threads can read and write to the same memory at the same time, you need synchronization
     primitives to coordinate access. This is where `Atomics` come in. The `Atomics`
     object provides methods for performing atomic reads, writes, and read-modify-write
     operations on `SharedArrayBuffer` views. These operations are guaranteed to complete
     without being interrupted by another thread, preventing data corruption.'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这引入了一个全新的问题类别：竞争条件。由于两个线程可以同时读取和写入相同的内存，你需要同步原语来协调访问。这就是 `Atomics` 发挥作用的地方。`Atomics`
+    对象提供了在 `SharedArrayBuffer` 视图上执行原子读取、写入和读取-修改-写入操作的方法。这些操作保证在没有被另一个线程中断的情况下完成，从而防止数据损坏。
 - en: 📌Important
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: Without `Atomics`, SharedArrayBuffer access is NOT thread-safe. Regular array
     indexing (`array[0] = value`) can cause data races. Always use `Atomics.store()`,
     `Atomics.load()`, and other atomic operations for thread-safe access.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有使用 `Atomics`，`SharedArrayBuffer` 访问不是线程安全的。常规数组索引（`array[0] = value`）可能导致数据竞争。始终使用
+    `Atomics.store()`、`Atomics.load()` 和其他原子操作进行线程安全的访问。
 - en: Using `SharedArrayBuffer` is an advanced technique, and it brings the challenges
     of concurrent programming directly into your Node.js application. But understanding
     that it's all built on the same foundation of views (`TypedArray`s) over a shared
     block of memory (`SharedArrayBuffer`) demystifies the magic. It's the same principle
     as `slice` and `subarray`, just extended across the thread boundary.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `SharedArrayBuffer` 是一种高级技术，它将并发编程的挑战直接带入你的 Node.js 应用程序。但理解它全部建立在相同的视图（`TypedArray`s）共享内存块（`SharedArrayBuffer`）的基础之上，就能揭开魔法的面纱。这与
+    `slice` 和 `subarray` 的原理相同，只是扩展到了线程边界之外。
 - en: Memory Retention and Garbage Collection
+  id: totrans-173
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 记忆保留与垃圾回收
 - en: We've talked a lot about memory retention, but let's formalize it. This is the
     mechanism behind our 10GB (hypothetical) log parser leak. In a garbage-collected
     language like JavaScript, an object is kept in memory as long as there is a reachable
     reference to it from the "root" set (e.g., the global object, the current call
     stack).
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经讨论了很多关于记忆保留的内容，但让我们正式化它。这是我们10GB（假设）日志解析器泄露背后的机制。在像 JavaScript 这样的垃圾回收语言中，只要从“根”集合（例如，全局对象，当前调用栈）有可到达的引用，对象就会保留在内存中。
 - en: When you create a `Buffer` view with `slice()` or `subarray()`, you create two
     objects with a relationship.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你使用 `slice()` 或 `subarray()` 创建 `Buffer` 视图时，你创建了两个具有关系的对象。
 - en: The **View Object** - The new `Buffer` instance (`userIdSlice`). It's a small
     object on the V8 heap.
+  id: totrans-176
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**视图对象** - 新的 `Buffer` 实例（`userIdSlice`）。它是在 V8 堆上的一个小对象。'
 - en: The **Parent Buffer Object** - The original `Buffer` (`massiveBuffer`), which
     holds the reference to the large external `ArrayBuffer`.
+  id: totrans-177
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**父缓冲对象** - 原始的 `Buffer` (`massiveBuffer`)，它持有对大型外部 `ArrayBuffer` 的引用。'
 - en: The view object maintains an internal reference to its parent buffer. According
     to V8's memory model, as long as the view object is reachable, its parent buffer
     is also considered reachable. The garbage collector sees the reference from `userIdSlice`
     to `massiveBuffer` and says, "Nope, can't collect `massiveBuffer` yet, someone
     still needs it." It has no idea you only care about 16 bytes out of the 50 megabytes.
     It just sees a valid reference and honors it.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 视图对象维护对其父缓冲区的内部引用。根据 V8 的内存模型，只要视图对象是可到达的，它的父缓冲区也被认为是可到达的。垃圾回收器看到从 `userIdSlice`
+    到 `massiveBuffer` 的引用，会说：“不行，还不能收集 `massiveBuffer`，还有人需要它。”它不知道你只关心50MB中的16字节。它只看到有效的引用并尊重它。
 - en: This is why the heap snapshot was so confusing. The profiler correctly identified
     that the `userIdSlice` objects were small. But it also has a concept of "retained
     size" vs. "shallow size."
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是为什么堆快照如此令人困惑。分析器正确地识别出 `userIdSlice` 对象很小。但它还有一个“保留大小”与“浅层大小”的概念。
 - en: '**Shallow Size** is thhe size of the object itself. For our slices, this was
     tiny, just a few dozen bytes for the JavaScript object wrapper.'
+  id: totrans-180
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**浅层大小** 是对象本身的大小。对于我们的切片，这非常小，只是 JavaScript 对象包装器几十字节。'
 - en: '**Retained Size** is the size of all memory that is being kept alive *solely*
     because this object exists. For our slices, the retained size was enormous, because
     they were the only thing keeping the 50MB parent buffers from being garbage collected.'
+  id: totrans-181
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**保留大小** 是所有仅因为该对象存在而被保留的内存的大小。对于我们的切片，保留大小非常大，因为它们是唯一阻止50MB父缓冲区被垃圾回收的东西。'
 - en: 'The heap snapshot showed 890MB retained by 10KB of slices. It looked like an
     accounting error, but it was the brutal truth of view semantics. Once we understood
     this, the fix was obvious: we had to sever the link between the small piece of
     data we needed and its giant parent. The only way to do that is with a copy.'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 堆快照显示 890MB 的切片保留了 10KB。它看起来像是一个会计错误，但这是视图语义的残酷真相。一旦我们理解了这一点，修复就显而易见了：我们必须切断我们所需的小数据片段与其庞大的父对象之间的联系。唯一的方法是进行复制。
 - en: '[PRE34]'
+  id: totrans-183
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: This function returns a view that maintains a strong reference to `parent`'s
     ArrayBuffer. If `parent` is 10MB, your 10-byte view keeps all 10MB alive. The
     V8 garbage collector traces the reference chain and marks the entire parent as
     reachable. This pattern is responsible for the majority of Buffer-related memory
     leaks in production Node.js applications.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 此函数返回一个视图，它保持对 `parent` 的 `ArrayBuffer` 的强引用。如果 `parent` 是 10MB，你的 10 字节视图将保持所有
+    10MB 的活跃状态。V8 垃圾收集器追踪引用链，并将整个父对象标记为可到达。这种模式是生产环境中 Node.js 应用程序中与 Buffer 相关的大多数内存泄漏的原因。
 - en: '[PRE35]'
+  id: totrans-185
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: The `Buffer.from(buffer)` constructor call is the key. It takes the 10-byte
     view created by `slice()`, allocates a *new* 10-byte `ArrayBuffer`, copies the
     data into it, and returns a new `Buffer` object that points to this new, small
@@ -997,47 +1424,70 @@
     create a "trimmed" copy of a small section of a large buffer. It's the antidote
     to view-based memory retention. After enough production incidents, you learn to
     spot a missing copy like a hawk.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Buffer.from(buffer)` 构造函数调用是关键。它接受由 `slice()` 创建的 10 字节视图，分配一个新的 10 字节 `ArrayBuffer`，将数据复制到其中，并返回一个新的
+    `Buffer` 对象，该对象指向这个新的、小的分配。原始父缓冲区不再被返回的对象引用，由 `slice()` 创建的临时视图可以立即回收。这种模式，`Buffer.from(buf.slice(...))`，是创建大型缓冲区一小部分“修剪”副本的常见且有效的方法。它是基于视图的内存保留的解药。在经历了足够的生产事故后，你就能像鹰一样迅速发现缺失的副本。'
 - en: Binary Protocol Parsing with Views
+  id: totrans-187
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 基于视图的二进制协议解析
 - en: 'Now let''s apply these concepts to a real-world scenario: parsing a custom
     binary protocol. This is common in high-performance systems, IoT, and gaming,
     where the overhead of JSON or XML is unacceptable. A binary protocol defines a
     strict layout of data in a sequence of bytes.'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们将这些概念应用到实际场景中：解析自定义二进制协议。这在高性能系统、物联网和游戏中很常见，在这些场景中，JSON 或 XML 的开销是不可接受的。二进制协议定义了字节序列中的数据严格布局。
 - en: 'For example, a message might be structured like this:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，一条消息可能的结构如下：
 - en: 'Bytes 0-1: Message Type (Uint16)'
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 字节 0-1：消息类型（Uint16）
 - en: 'Bytes 2-3: Message Length (Uint16)'
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 字节 2-3：消息长度（Uint16）
 - en: 'Byte 4: Flags (Uint8)'
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 字节 4：标志（Uint8）
 - en: 'Bytes 5-20: Session ID (16-byte UUID string)'
+  id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 字节 5-20：会话 ID（16 字节 UUID 字符串）
 - en: 'Bytes 21-end: Payload (raw bytes)'
+  id: totrans-194
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 字节 21-结束：有效载荷（原始字节）
 - en: A naive approach to parsing this would involve a lot of slicing and copying.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 解析此内容的一个简单方法涉及大量的切片和复制。
 - en: '[PRE36]'
+  id: totrans-196
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: Each of these lines creates a temporary view just to read a primitive value.
     The `slice(0, 2)` creates a Buffer object (72 bytes on heap), then `readUInt16BE()`
     reads two bytes and converts them from big-endian to native endianness. The view
@@ -1045,57 +1495,82 @@
     garbage collects it. With thousands of messages per second, you're creating massive
     GC pressure for no reason. These intermediate views serve no purpose - you could
     read directly from the original buffer.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 每行代码都创建一个临时视图，仅用于读取原始值。`slice(0, 2)` 创建一个缓冲区对象（堆上 72 字节），然后 `readUInt16BE()`
+    读取两个字节并将它们从大端转换为本地端序。视图立即被丢弃，但在 V8 分配、跟踪并最终垃圾回收它之前。每秒数千条消息，你正在无端地创建大量的 GC 压力。这些中间视图没有任何作用——你可以直接从原始缓冲区读取。
 - en: '[PRE37]'
+  id: totrans-198
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: ⚠️Warning
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: The above pattern creates 5 buffer views per message. Processing 1000 messages/sec
     with 1MB payloads would retain 1GB of memory even if you only need the 16-byte
     session IDs!
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 上述模式为每条消息创建 5 个缓冲区视图。以每秒 1MB 的负载处理 1000 条消息将保留 1GB 的内存，即使你只需要 16 字节的会话 ID！
 - en: This code *works*, but it's creating five new `Buffer` objects for every single
     message. If you're processing thousands of messages per second, those allocations
     add up, putting pressure on the garbage collector and slowing down your application.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 这段代码*工作*，但它为每条消息创建了五个新的 `Buffer` 对象。如果你每秒处理数千条消息，这些分配会累加起来，给垃圾收集器施加压力，并减慢你的应用程序。
 - en: A zero-copy approach, on the other hand, leverages views to read the data without
     creating copies of the data itself. We can use the offset-based read methods directly
     on the main buffer, or create `TypedArray` views for more complex data types.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，零拷贝方法利用视图读取数据，而不创建数据的副本。我们可以在主缓冲区上直接使用基于偏移量的读取方法，或者为更复杂的数据类型创建`TypedArray`视图。
 - en: '[PRE38]'
+  id: totrans-203
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: These direct reads are lightning fast. No intermediate objects, no allocations,
     no GC pressure. The `readUInt16BE()` method calculates the memory address (buffer
     base + offset), reads two bytes, and performs the endianness conversion in optimized
     C++ code. The entire operation stays in CPU cache. For high-frequency parsing,
     this difference between creating a view then reading versus reading directly can
     mean the difference between 10,000 and 100,000 messages per second.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些直接读取操作非常快速。没有中间对象，没有分配，没有GC压力。`readUInt16BE()` 方法计算内存地址（缓冲区基础地址 + 偏移量），读取两个字节，并在优化的C++代码中执行字节序转换。整个操作都保持在CPU缓存中。对于高频解析，创建视图然后读取与直接读取之间的差异可能意味着每秒10,000条和100,000条消息之间的差异。
 - en: '[PRE39]'
+  id: totrans-205
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: 📌Important
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: 'This zero-copy version is 10x faster but returns views that retain the entire
     parent buffer. Document this clearly: callers MUST copy the data if they need
     to store it beyond the immediate processing scope.'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个零拷贝版本速度快10倍，但返回保留整个父缓冲区的视图。明确记录：如果调用者需要将数据存储在立即处理作用域之外，调用者必须复制数据。
 - en: This version is significantly more efficient. It creates no intermediate copies
     for the primitive number types. It creates two views for the session ID and payload,
     but no data is duplicated. The `sessionIdView` and `payloadView` are lightweight
     pointers back into the original message buffer.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个版本效率显著更高。它为原始数字类型不创建任何中间副本。它为会话ID和有效载荷创建了两个视图，但没有数据被重复。`sessionIdView`和`payloadView`是轻量级指针，指向原始消息缓冲区。
 - en: 'This is the pattern that finally saved us 8GB of RAM in our TCP service. We
     use a view because the processing is temporary. If we needed to store the `sessionIdView`
     or `payloadView` long-term (e.g., in a cache or a request map), we would be right
@@ -1103,97 +1578,142 @@
     be clear: it returns views that are only valid for the immediate scope of processing.
     If a caller needs to persist that data, it is the *caller''s responsibility* to
     perform the copy.'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我们TCP服务中最终节省了8GB RAM的模式。我们使用视图是因为处理是临时的。如果我们需要长期存储`sessionIdView`或`payloadView`（例如，在缓存或请求映射中），我们就会回到内存保留陷阱。此类函数的契约应该是清晰的：它返回仅在处理立即作用域内有效的视图。如果调用者需要持久化该数据，它就是调用者的*责任*来执行复制。
 - en: This is a critical design pattern for high-performance libraries. A parsing
     function should perform zero-copy operations and return views. The consumer of
     the function then decides whether the data is short-lived (use the view directly)
     or long-lived (create a copy). This separates concerns and puts the memory management
     decision in the hands of the code that has the most context.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是对高性能库至关重要的设计模式。解析函数应执行零拷贝操作并返回视图。函数的消费者然后决定数据是短期的（直接使用视图）还是长期的（创建副本）。这分离了关注点，并将内存管理决策交给了具有最多上下文的代码。
 - en: Platform Endianness and TypedArray Views
+  id: totrans-211
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 平台字节序和TypedArray视图
 - en: When you're working with binary data that comes from the network or a file,
     you can't escape the concept of endianness. It refers to the order in which a
     multi-byte number (like a 16-bit or 32-bit integer) is stored in memory.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你处理来自网络或文件的二进制数据时，你无法避开字节序的概念。它指的是多字节数字（如16位或32位整数）在内存中存储的顺序。
 - en: ℹ️Note
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Don't sweat it if bit manipulation and bit masks are still a bit fuzzy; we'll
     do a deep dive on them in a dedicated chapter later on. For now, just hang tight.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果位操作和位掩码仍然有点模糊，不要担心；我们将在后面的专门章节中深入探讨它们。现在，只需耐心等待。
 - en: '**Big-Endian (BE) -** The most significant byte comes first. This is common
     in network protocols (often called "network byte order"). The number `0x12345678`
     would be stored as `12 34 56 78`.'
+  id: totrans-215
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**大端（BE）** - 最显著的字节首先。这在网络协议中很常见（通常称为“网络字节序”）。数字`0x12345678`将存储为`12 34 56 78`。'
 - en: '**Little-Endian (LE) -** The least significant byte comes first. This is the
     native format for most modern CPUs, including Intel and AMD x86-64\. The same
     number would be stored as `78 56 34 12`.'
+  id: totrans-216
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**小端（LE）** - 最不显著的字节首先。这是大多数现代CPU的本地格式，包括Intel和AMD x86-64。相同的数字将存储为`78 56 34
+    12`。'
 - en: 'Forgetting about endianness will lead to completely garbled data when reading
     binary protocols. Node.js `Buffer`s provide explicit methods for this: `readUInt16BE`,
     `readUInt16LE`, `writeInt32BE`, etc. These are your safest bet when you know the
     exact endianness of the data you''re parsing.'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 忽略字节序问题在读取二进制协议时会导致数据完全混乱。Node.js 的 `Buffer` 提供了明确的方法来处理这个问题：`readUInt16BE`、`readUInt16LE`、`writeInt32BE`
+    等。当你知道你正在解析的数据的确切字节序时，这些方法是你的最佳选择。
 - en: But what if you're using `TypedArray` views directly on an underlying `ArrayBuffer`?
     This is where it gets tricky. `TypedArray`s (like `Int16Array`, `Float64Array`)
     read and write data using the host system's native endianness. On my x86 laptop,
     that's little-endian. If I create an `Int16Array` view over a buffer that contains
     big-endian network data, I will read garbage.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 但如果你直接在底层的 `ArrayBuffer` 上使用 `TypedArray` 视图呢？这就变得复杂了。`TypedArray`（如 `Int16Array`、`Float64Array`）使用宿主系统的本地字节序读取和写入数据。在我的
+    x86 笔记本电脑上，这是小端字节序。如果我在包含大端网络数据的缓冲区上创建一个 `Int16Array` 视图，我将读取垃圾数据。
 - en: '[PRE40]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: The `readUInt16BE()` method explicitly handles endianness conversion. It reads
     bytes at positions 0 and 1, then combines them as `(buffer[0] << 8) | buffer[1]`,
     which correctly interprets big-endian data regardless of platform endianness.
     This happens in Node's C++ layer with optimized byte-swapping instructions like
     `bswap` on x86 or `rev` on ARM when needed.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: '`readUInt16BE()` 方法明确处理字节序转换。它读取位置 0 和 1 的字节，然后将它们组合为 `(buffer[0] << 8) | buffer[1]`，这可以正确地解释大端数据，无论平台字节序如何。当需要时，这发生在
+    Node 的 C++ 层，使用优化的字节交换指令，如 x86 上的 `bswap` 或 ARM 上的 `rev`。'
 - en: '[PRE41]'
+  id: totrans-221
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 🚨Caution
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨 警告
 - en: TypedArray views use platform endianness (usually little-endian on x86/ARM).
     Network protocols typically use big-endian. NEVER use raw TypedArray views for
     network data - always use Buffer's BE/LE methods or DataView with explicit endianness.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TypedArray` 视图使用平台字节序（通常在 x86/ARM 上是小端字节序）。网络协议通常使用大端字节序。永远不要使用原始的 `TypedArray`
+    视图来处理网络数据 - 总是使用 `Buffer` 的 BE/LE 方法或带有明确字节序的 `DataView`。'
 - en: This is a disaster waiting to happen. How do we control endianness when using
     generic `TypedArray` views? The answer is the `DataView` object. A `DataView`
     is a low-level interface for reading and writing data to an `ArrayBuffer` that
     lets you explicitly specify the endianness for each operation. It's more verbose
     than using a `TypedArray`, but it gives you absolute control.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个即将发生的灾难。我们如何在使用通用 `TypedArray` 视图时控制字节序？答案是 `DataView` 对象。`DataView` 是一个低级接口，用于读取和写入
+    `ArrayBuffer` 中的数据，允许你为每个操作明确指定字节序。它比使用 `TypedArray` 更冗长，但它提供了绝对的控制。
 - en: '[PRE42]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: The `setInt32()` with `false` writes the bytes as [0x07, 0x5B, 0xCD, 0x15] -
     most significant byte first. DataView internally handles the byte ordering regardless
     of platform endianness. On a little-endian system, it reverses the bytes before
     writing. On a big-endian system, it writes them directly. This abstraction layer
     costs a few CPU cycles but guarantees correct behavior across all platforms.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: '`setInt32()` 方法使用 `false` 将字节写入为 [0x07, 0x5B, 0xCD, 0x15] - 最高有效字节首先写入。`DataView`
+    内部处理字节序，无论平台字节序如何。在小端系统上，它在写入之前反转字节。在大端系统上，它直接写入。这个抽象层会消耗一些 CPU 周期，但确保了所有平台上的正确行为。'
 - en: '[PRE43]'
+  id: totrans-227
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: This `DataView` cast seemed fine until it corrupted everything. In one of our
     services, a developer had used a `Float32Array` to quickly parse a list of floating-point
     numbers from a network stream, assuming the host endianness matched the network
@@ -1205,179 +1725,259 @@
     reminder that hidden assumptions about the execution environment are a recipe
     for production failures. When in doubt, be explicit. Use `Buffer`'s `BE`/`LE`
     methods or use a `DataView`.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个 `DataView` 类型转换看起来没问题，直到它破坏了一切。在我们的一个服务中，一位开发者使用 `Float32Array` 从网络流中快速解析一系列浮点数，假设主机字节序与网络字节序匹配。在他们的开发机器上运行正常。但当部署到具有不同字节序的不同云架构（这些天很罕见，但确实会发生）时，服务开始读取完全无意义的随机数据。修复方法是替换直接的
+    `Float32Array` 视图，使用循环和 `DataView` 来以正确、明确声明的字节序读取每个浮点数。这是一个痛苦的提醒，隐藏的执行环境假设是生产失败的配方。当有疑问时，要明确。使用
+    `Buffer` 的 `BE`/`LE` 方法或使用 `DataView`。
 - en: Production Patterns for Zero-Copy
+  id: totrans-229
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 零拷贝的生产模式
 - en: After experiencing these production issues, my team developed a set of thoroughly
     validated patterns for working with buffers. These aren't just theoretical best
     practices; they are essential patterns for production systems.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 经历了这些生产问题后，我的团队开发了一套经过充分验证的模式，用于处理缓冲区。这些不仅仅是理论上的最佳实践；它们是生产系统中必不可少的模式。
 - en: '**Pattern 1: The Temporary View for Synchronous Processing**'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: '**模式 1：用于同步处理的临时视图**'
 - en: This is the most common and safest use of zero-copy. When you need to process
     a chunk of a larger buffer within a single function scope, a view is perfect.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是零拷贝最常见且最安全的使用方式。当你需要在单个函数作用域内处理更大缓冲区的一个块时，视图是完美的。
 - en: '[PRE44]'
+  id: totrans-233
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: 'This pattern is safe because the view''s lifetime is scoped to the function
     execution. The view is created, used, and becomes unreachable when the function
     returns. V8''s escape analysis can often optimize this further - if the view doesn''t
     escape the function, it might not even allocate the Buffer object on the heap,
     keeping everything in registers. The key insight: synchronous, function-scoped
     views are nearly always safe from retention issues.'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个模式是安全的，因为视图的寿命限制在函数执行范围内。视图被创建、使用，并在函数返回时变得不可达。V8的逃逸分析通常可以进一步优化这一点——如果视图没有逃逸函数，它甚至可能不在堆上分配Buffer对象，而将所有内容保持在寄存器中。关键洞察：同步、函数作用域的视图几乎总是安全于保留问题。
 - en: '[PRE45]'
+  id: totrans-235
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: We use a view here because the processing is temporary and synchronous. The
     view doesn't escape the function's scope. If we needed to store this chunk long-term
     or use it in an asynchronous callback, we'd copy instead. Here's why that decision
     matters...
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在这里使用视图是因为处理是临时的且同步的。视图不会超出函数的作用域。如果我们需要长期存储这个块或用于异步回调，我们会选择复制。这里就是为什么这个决定很重要的原因...
 - en: '**Pattern 2: The Defensive Copy for Asynchronous Operations and Storage**'
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: '**模式 2：用于异步操作和存储的防御性复制**'
 - en: Any time buffer data needs to cross an asynchronous boundary or be stored in
     a collection, you must assume it needs to be copied. The original buffer might
     be reused or garbage collected by the time your callback executes.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何需要跨异步边界或存储在集合中的缓冲区数据，你必须假设它需要被复制。原始缓冲区可能在你回调执行时被重用或垃圾回收。
 - en: '[PRE46]'
+  id: totrans-239
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: These views are created for immediate processing. They're lightweight - just
     72 bytes each on the heap - but they hold references to `dataBuffer`'s entire
     ArrayBuffer. If we stored these views directly in our cache, we'd create a memory
     leak. The entire `dataBuffer` would be retained for as long as the cache entry
     exists, which could be hours or days in a production system.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些视图是为了立即处理而创建的。它们很轻量级——在堆上每个视图只有72字节——但它们持有`dataBuffer`整个ArrayBuffer的引用。如果我们直接将这些视图存储在我们的缓存中，就会创建内存泄漏。整个`dataBuffer`将保留，直到缓存条目存在，这在生产系统中可能是几个小时或几天。
 - en: '[PRE47]'
+  id: totrans-241
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: Here, we create views to initially parse the buffer. But the moment we decide
     to put the `value` into our `longLivedCache`, we immediately create a copy. This
     ensures our cache entry is self-contained and doesn't unexpectedly hold a reference
     to a much larger `dataBuffer`.
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们创建视图以最初解析缓冲区。但当我们决定将`value`放入我们的`longLivedCache`时，我们立即创建一个副本。这确保我们的缓存条目是自包含的，并且不会意外地持有对更大的`dataBuffer`的引用。
 - en: '**Pattern 3: The Parser Protocol (Views out, Copies in)**'
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: '**模式 3：解析器协议（输出视图，输入副本**）'
 - en: This is the library author's pattern. Write parsing functions that are purely
     zero-copy and return views. Document clearly that the returned values are views
     and may be invalidated if the original buffer changes.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是库作者的模式。编写纯零拷贝的解析函数，并返回视图。明确记录返回的值是视图，如果原始缓冲区发生变化，它们可能会被无效化。
 - en: '[PRE48]'
+  id: totrans-245
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: This function contract is critical. The JSDoc explicitly warns that returned
     values are views. This shifts the memory management decision to the caller, who
     has more context about data lifetime. The function itself is pure and fast - no
     allocations beyond the two small Buffer objects for the views. This pattern scales
     to millions of operations per second because it does the minimum necessary work.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个函数合约至关重要。JSDoc明确警告返回的值是视图。这把内存管理决策权交给了调用者，调用者对数据寿命有更多的上下文。这个函数本身是纯的且快速的——除了为视图的两个小Buffer对象进行分配之外，没有其他分配。因为这个模式将最小必要的工作扩展到每秒数百万次操作。
 - en: '[PRE49]'
+  id: totrans-247
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: This pattern provides maximum performance for consumers who can handle the data
     immediately and maximum safety for those who need to store it, by forcing them
     to be explicit about their intentions.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个模式通过强制他们明确自己的意图，为可以立即处理数据的消费者提供最大性能，为需要存储数据的消费者提供最大安全性。
 - en: Debugging Memory Issues with Views
+  id: totrans-249
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用视图调试内存问题
 - en: When you suspect a view-related memory leak, your primary tool is the heap snapshot.
     You can generate these using the Chrome DevTools for Node.js or programmatically
     with modules like `heapdump`.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你怀疑与视图相关的内存泄漏时，你的主要工具是堆快照。你可以使用Node.js的Chrome DevTools或使用像`heapdump`这样的模块来生成这些快照。
 - en: 'The process is usually:'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 该过程通常如下：
 - en: Take a heap snapshot when your application is in a stable, low-memory state.
+  id: totrans-252
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 当你的应用程序处于稳定、低内存状态时，进行堆快照。
 - en: Apply a load to your application that you suspect triggers the leak.
+  id: totrans-253
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 向你的应用程序施加你认为可能触发泄漏的负载。
 - en: Take a second heap snapshot.
+  id: totrans-254
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 再次进行堆快照。
 - en: Take a third snapshot after some more time to confirm the growth trend.
+  id: totrans-255
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在一段时间后再次进行第三次快照以确认增长趋势。
 - en: In the snapshot viewer, you'll want to use the "Comparison" view to see what
     objects were allocated between snapshots. When debugging our log parser, we saw
     a massive increase in the number of `Buffer` objects.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 在快照查看器中，你将想要使用“比较”视图来查看快照之间分配了哪些对象。当调试我们的日志解析器时，我们看到了`Buffer`对象数量的巨大增加。
 - en: 💡Tip
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: 💡提示
 - en: Use Chrome DevTools with `node --inspect-brk` for memory profiling. The "Retained
     Size" column is key - it shows memory kept alive by each object. Look for small
     Buffers with huge retained sizes - that's the signature of view-based leaks.
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`node --inspect-brk`与Chrome DevTools进行内存分析。关键的是“保留大小”列——它显示了每个对象保留的内存。寻找具有巨大保留大小的微小缓冲区——这是基于视图的泄漏的标志。
 - en: When you click on one of these `Buffer` objects, the profiler will show you
     its properties. The key is to look for the internal reference to the parent buffer.
     In Chrome DevTools, this is often shown under a property like `[[backing_store]]`
     or by inspecting the object's retainers. You'll see your tiny 16-byte `Buffer`
     slice, and in its retainer chain, you will find the massive multi-megabyte parent
     `Buffer` it's keeping alive.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你点击这些`Buffer`对象之一时，分析器将显示其属性。关键是寻找对父缓冲区的内部引用。在Chrome DevTools中，这通常在像`[[backing_store]]`这样的属性下显示，或者通过检查对象保留者。你会看到你那微小的16字节`Buffer`切片，在其保留链中，你会找到它所保持活的巨大多兆字节父`Buffer`。
 - en: Another powerful technique is to use `process.memoryUsage()` that we've gone
     through a lot of times already.
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种强大的技术是使用我们已多次讨论过的`process.memoryUsage()`。
 - en: 💡Tip
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 💡提示
 - en: In Node.js 13.9.0+, use `process.memoryUsage().arrayBuffers` to specifically
     track Buffer memory. This is more accurate than `external` which includes other
     C++ allocations.
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Node.js 13.9.0+中，使用`process.memoryUsage().arrayBuffers`来专门跟踪缓冲区内存。这比包括其他C++分配的`external`更准确。
 - en: In our leak, `heapUsed` was growing slowly, but `external` and `rss` were exploding.
     This told us the leak wasn't in standard JavaScript objects but in the external
     memory managed by Node.js - a classic signature of a `Buffer` retention problem.
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们的泄漏中，`heapUsed`缓慢增长，但`external`和`rss`却在爆炸性增长。这告诉我们泄漏不在标准JavaScript对象中，而是在Node.js管理的外部内存中——这是`Buffer`保留问题的经典特征。
 - en: After profiling, we discovered our views were aliasing each other in another
     service. We had a circular buffer implementation where we would wrap around by
     creating a view. A bug in our offset logic caused a new view to overlap slightly
     with an old view, inadvertently keeping the old view (and thus the entire buffer)
     alive far longer than intended. The heap snapshot was the only way to visualize
     that chain of references.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 在分析后，我们发现我们的视图在另一个服务中相互别名。我们有一个循环缓冲区实现，我们会通过创建视图来环绕。我们偏移逻辑中的错误导致新视图与旧视图略有重叠，无意中使旧视图（以及整个缓冲区）比预期存活得更久。堆快照是唯一可视化这些引用链的方法。
 - en: Best Practices for Buffer Manipulation
+  id: totrans-265
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 缓冲区操作的最佳实践
 - en: If I could distill all this pain and suffering down into a set of guiding principles,
     it would be these.
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我能将所有这些痛苦和苦难浓缩成一套指导原则，那将是这些。
 - en: After enough production incidents, you learn to **profile memory retention before
     deploying** any new code that heavily manipulates buffers. You don't just test
     for correctness; you test for memory behavior under load. You start using **views
@@ -1386,8 +1986,10 @@
     the parent-child relationship between a view and its underlying buffer because
     you've debugged the alternative at 3 AM. You **test with memory profilers** because
     you've been burned by assumptions one too many times.
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 在经历了足够的生产事故后，你学会了在部署任何大量操作缓冲区的新代码之前**分析内存保留情况**。你不仅测试正确性，还测试负载下的内存行为。你开始使用**视图进行临时、同步处理**，但对于任何长期存在、异步或存储在集合中的数据，你都会寻求**显式复制**。你内化了视图与其底层缓冲区之间的父子关系，因为你已经在凌晨3点调试了替代方案。你**使用内存分析器进行测试**，因为你已经因为假设而多次被烧伤。
 - en: You **document your function signatures relentlessly**. If a function returns
     a view, you scream it from the rooftops in the JSDoc comments. You make it impossible
     for the next developer to accidentally misuse your API and create a leak. You
@@ -1395,159 +1997,229 @@
     is being assigned to a variable with a wider scope, like an object property or
     a module-level variable. You see that and you immediately ask, "Shouldn't that
     be a copy?"
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 你**不懈地记录函数签名**。如果一个函数返回一个视图，你会在JSDoc注释中大声疾呼。你使下一个开发者不可能意外地误用你的API并创建泄漏。你学会了识别
+    `slice()` 或 `subarray()` 的代码异味，其结果被分配给具有更广作用域的变量，如对象属性或模块级变量。你看到这一点，就会立刻问，“那不应该是一个复制吗？”
 - en: And most importantly, you **treat every zero-copy operation with suspicion**.
     You don't see it as a free performance boost; you see it as a powerful tool with
     significant risks. You ask yourself, "What is the lifetime of the data I'm creating?
     And what is the lifetime of the data I'm referencing?" If those two lifetimes
     are different, a copy is almost always the right answer.
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 最重要的是，你**对每个零拷贝操作都持怀疑态度**。你不将其视为免费性能提升；你将其视为一个具有重大风险的强大工具。你问自己，“我创建的数据的生命周期是什么？我引用的数据的生命周期是什么？”如果这两个生命周期不同，复制几乎总是正确的答案。
 - en: Memory Profiling Data
+  id: totrans-270
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内存分析数据
 - en: Here is a sample of the kind of data we collected during our investigation.
     The test creates 100,000 small objects derived from a single 50MB buffer.
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是我们调查期间收集到的数据样本。测试创建了一个由单个50MB缓冲区派生出的100,000个小对象。
 - en: '**Test Scenario 1: Using `slice()` (creating views)**'
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: '**测试场景1：使用 `slice()`（创建视图**）'
 - en: '[PRE50]'
+  id: totrans-273
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: ℹ️Note
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: With Node.js 22+'s native TypeScript support, you can run TypeScript buffer
     code directly without transpilation. Use `node --experimental-strip-types` for
     .ts files with buffer operations.
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Node.js 22+的本地TypeScript支持下，你可以直接运行TypeScript缓冲区代码，无需转译。对于进行缓冲区操作的.ts文件，使用
+    `node --experimental-strip-types`。
 - en: '**`process.memoryUsage()` Output:**'
+  id: totrans-276
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**`process.memoryUsage()` 输出：**'
 - en: '`rss`: ~78 MB'
+  id: totrans-277
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`rss`: ~78 MB'
 - en: '`heapUsed`: ~8 MB'
+  id: totrans-278
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`heapUsed`: ~8 MB'
 - en: '`external`: ~50.5 MB'
+  id: totrans-279
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`external`: ~50.5 MB'
 - en: '**Heap Snapshot Analysis:**'
+  id: totrans-280
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**堆快照分析：**'
 - en: 'Shallow size of all `Buffer` objects in the `views` array: ~800 KB (100,000
     * ~8 bytes/object)'
+  id: totrans-281
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`views` 数组中所有 `Buffer` 对象的浅层大小：~800 KB（100,000 * ~8字节/对象）'
 - en: 'Retained size: **~50 MB**. The entire `largeBuffer` is retained by the views.'
+  id: totrans-282
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 保留大小：**~50 MB**。整个 `largeBuffer` 都被视图保留。
 - en: '**Test Scenario 2: Using a strategic copy**'
+  id: totrans-283
   prefs: []
   type: TYPE_NORMAL
+  zh: '**测试场景2：使用战略复制**'
 - en: '[PRE51]'
+  id: totrans-284
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: Each iteration creates a temporary view with `slice(0, 10)`, then immediately
     copies it with `Buffer.from()`. The temporary view is eligible for collection
     as soon as `Buffer.from()` completes. The copy has its own 10-byte ArrayBuffer
     with no reference to `largeBuffer`. After the loop, we have 100,000 independent
     10-byte buffers totaling ~1MB of memory, and `largeBuffer` can be garbage collected,
     freeing 50MB.
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 每次迭代都会使用 `slice(0, 10)` 创建一个临时视图，然后立即使用 `Buffer.from()` 进行复制。临时视图在 `Buffer.from()`
+    完成后即可进行回收。复制拥有自己的10字节 ArrayBuffer，与 `largeBuffer` 无关。在循环结束后，我们拥有100,000个独立的10字节缓冲区，总共约1MB的内存，而
+    `largeBuffer` 可以被垃圾回收，释放50MB。
 - en: '[PRE52]'
+  id: totrans-286
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: '**`process.memoryUsage()` Output (after GC is triggered):**'
+  id: totrans-287
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**`process.memoryUsage()` 输出（触发垃圾回收后）：**'
 - en: '`rss`: ~32 MB'
+  id: totrans-288
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`rss`: ~32 MB'
 - en: '`heapUsed`: ~9 MB'
+  id: totrans-289
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`heapUsed`: ~9 MB'
 - en: '`external`: ~1.5 MB'
+  id: totrans-290
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`external`: ~1.5 MB'
 - en: '**Heap Snapshot Analysis:**'
+  id: totrans-291
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**堆快照分析：**'
 - en: The 50MB `largeBuffer` is gone.
+  id: totrans-292
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 50MB的 `largeBuffer` 已消失。
 - en: The `copies` array holds 100,000 small `Buffer` objects, each with its own 10-byte
     backing store. Total external memory is approximately 1MB (100,000 * 10 bytes)
     plus some overhead.
+  id: totrans-293
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`copies`数组包含100,000个小的`Buffer`对象，每个对象都有自己的10字节后端存储。总外部内存大约为1MB（100,000 * 10字节）加上一些开销。'
 - en: These measurements clearly quantify the trade-off. The view-based approach used
     less CPU upfront but retained 50MB of memory it didn't need. The copy-based approach
     used slightly more CPU in the loop but resulted in a vastly smaller memory footprint.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些测量清楚地量化了权衡。基于视图的方法在初期使用了更少的CPU，但保留了它不需要的50MB内存。基于副本的方法在循环中使用了稍微更多的CPU，但结果内存占用大大减小。
 - en: Closing
+  id: totrans-295
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 结束语
 - en: ℹ️Note
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: With Node.js 22+'s native TypeScript support, you can write type-safe buffer
     operations without a build step. TypeScript's type system can help catch buffer
     misuse at compile time, preventing many of the runtime issues discussed in this
     chapter.
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Node.js 22+的本地TypeScript支持下，你可以编写无需构建步骤的类型安全缓冲区操作。TypeScript的类型系统可以在编译时帮助捕获缓冲区误用，从而防止本章讨论的许多运行时问题。
 - en: I still remember one of my mentee who, asked with genuine curiosity, "So why
     don't we just use copies everywhere? It seems safer." It's a fair question. The
     answer is that real engineering is about making informed trade-offs. We could
     copy everything, and our applications would be simpler to reason about but also
     slower and less efficient. We could have services that use twice the CPU and memory
     they need to, and in a large-scale system, that's a cost you can't afford.
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 我仍然记得我的一个徒弟，他带着真正的好奇心问道：“那么我们为什么不在每个地方都使用副本呢？这似乎更安全。”这是一个合理的问题。答案是，真正的工程是关于做出明智的权衡。我们可以复制一切，我们的应用程序将更容易推理，但也会更慢、效率更低。我们可以拥有使用两倍CPU和内存的服务，在一个大规模系统中，这是你负担不起的成本。
 - en: The goal isn't to fear zero-copy operations instead we should respect them.
     It's to understand that shared memory is a mechanism with both powerful advantages
     and serious risks. When you create a view, you are making a promise to the runtime
     - a promise that you understand the lifecycle of both the view and its parent.
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: 目标不是害怕零拷贝操作，相反，我们应该尊重它们。这是要理解共享内存是一种既有强大优势又有严重风险的机制。当你创建一个视图时，你是在向运行时做出承诺——一个承诺，即你理解视图及其父视图的生命周期。
 - en: Mastery is about understanding the consequences of each call. It's about looking
     at `const view = buf.slice(0, 10)` and not just seeing a line of code, but seeing
     the internal reference it creates back to the parent buffer and asking, "Is that
     a reference I'm prepared to manage?" When you can answer that question instinctively,
     you'll never look at memory the same way again.
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 精通是关于理解每个调用的后果。这是关于查看`const view = buf.slice(0, 10)`，而不仅仅是看到一行代码，而是看到它创建的指向父缓冲区的内部引用，并问自己：“这是否是我准备管理的引用？”当你本能地回答这个问题时，你将永远不会以同样的方式看待内存。

@@ -1,118 +1,165 @@
 - en: Node.js Process Lifecycle
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Node.js进程生命周期
 - en: 原文：[https://www.thenodebook.com/node-arch/node-process-lifecycle](https://www.thenodebook.com/node-arch/node-process-lifecycle)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://www.thenodebook.com/node-arch/node-process-lifecycle](https://www.thenodebook.com/node-arch/node-process-lifecycle)
 - en: Node.js Process Lifecycle
+  id: totrans-2
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Node.js进程生命周期
 - en: ⚠️Warning
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: You've received an early-access to this chapter. Your feedback is invaluable,
     so please share your thoughts in the comment section at the bottom.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 你已经提前获得了这一章节的访问权限。你的反馈是无价的，所以请在下面的评论部分分享你的想法。
 - en: Alright, let's talk about the Node.js process lifecycle.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，让我们来谈谈Node.js进程的生命周期。
 - en: 'And I know what you''re thinking. "Lifecycle? Isn''t that some boring, academic
     thing?" Most engineers think a Node service is just one command: `node server.js`.
     They assume `require()` is free, `process.exit()` is a clean way to stop, and
     a single `SIGTERM` handler is all you need for "graceful shutdown."'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 我知道你在想什么。“生命周期？那不是一些无聊的学术东西吗？”大多数工程师认为Node服务只是一个命令：`node server.js`。他们假设`require()`是免费的，`process.exit()`是一种干净的停止方式，一个单一的`SIGTERM`处理器就足够用于“优雅关闭”。
 - en: I used to think that, too. And those assumptions are behind some of the worst
     production issues I've ever seen. I'm talking about data corruption during a simple
     deploy, services that get stuck in a crash loop under load, and memory leaks that
     trigger a cascade of OOM kills across an entire system.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 我曾经也这么想。而这些假设是导致我见过的最严重的生产问题的原因之一。我谈论的是简单部署期间的数据损坏，在负载下陷入崩溃循环的服务，以及触发整个系统OOM杀死的内存泄漏。
 - en: The truth is, a Node.js process has a complex life, from the second you type
     `node` to its very last breath. And every single stage is a place where things
     can go spectacularly wrong.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 事实上，Node.js进程有一个复杂的生命周期，从你输入 `node` 的那一刻直到它的最后一息。每个阶段都是可能出现严重错误的地方。
 - en: 'This isn''t just another chapter. This is a *in-depth* guide to that lifecycle.
     We''re going to dissect the whole journey: the C++ bootstrap that happens before
     your code even gets a look-in, the surprisingly expensive cost of `require()`,
     and the careful teamwork of a *true* graceful shutdown. Forget a simple `try...catch`.
     We''re talking about the reality of resource management - the file descriptors,
     sockets, and timers that can leak and bring your entire service down.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 这不仅仅是一个章节。这是一本关于生命周期的*深入*指南。我们将剖析整个旅程：在你代码甚至得到一看之前的C++引导，`require()`令人惊讶的高成本，以及一个真正的优雅关闭的谨慎团队合作。忘记简单的`try...catch`。我们谈论的是资源管理的现实——可能会泄漏并使整个服务崩溃的文件描述符、套接字和定时器。
 - en: By the end of this, you'll finally understand *why* your service takes forever
     to start, *why* it sometimes corrupts data on restart, and *why* it leaks handles.
     More importantly, you'll have a rock-solid framework for building Node.js apps
     that start fast, run reliably, and shut down cleanly.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 到了最后，你将最终理解*为什么*你的服务启动需要花费很长时间，*为什么*它在重启时有时会损坏数据，*为什么*它会泄漏句柄。更重要的是，你将拥有一个构建Node.js应用程序的坚实基础，这些应用程序启动快、运行可靠、关闭干净。
 - en: This isn't about edge cases. This is core competence for any serious backend
     engineer. Ignoring the process lifecycle is choosing to build fragile systems.
     Respecting it is the first step toward building something that can actually survive
     in production.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 这不是关于边缘情况。这是任何严肃的后端工程师的核心能力。忽视进程生命周期是选择构建脆弱系统。尊重它是迈向真正能在生产中生存的第一步。
 - en: The Node.js Process Birth
+  id: totrans-12
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Node.js进程的诞生
 - en: When you type `node my_app.js`, you're kicking off this whole chain of events
     that happens long before a single line of your JavaScript ever runs. Most of us
     just take it for granted. Node just... starts, right?
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你输入 `node my_app.js` 时，你正在启动一系列事件，这些事件在你JavaScript代码的任何一行运行之前就已经发生了。我们大多数人只是把它当作理所当然。Node只是...启动，对吧？
 - en: Nope. It's actually a carefully choreographed dance between C++, the V8 engine,
     and an internal bootstrap script. And a lot of the weirdness you see - slow startups,
     weird environment issues - it all starts here.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 不。实际上，这是C++、V8引擎和内部引导脚本之间精心编排的舞蹈。而你看到的很多奇怪现象——缓慢的启动、奇怪的环境问题——都始于这里。
 - en: The journey begins not in JavaScript, but inside the Node.js source code, in
     a C++ file. This is the *real* entry point.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 旅程不是从JavaScript开始的，而是在Node.js源代码内部，在一个C++文件中。这是真正的入口点。
 - en: Here's the simplified sequence of what goes down in C++ land -
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是C++领域中发生的事情的简化序列 -
 - en: The processThe `main` function starts. It parses your command-line arguments
     (`--inspect`, `--max-old-space-size`, all that stuff) and sets up the basic process
     properties.
+  id: totrans-17
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 过程开始于 `main` 函数。它解析你的命令行参数（`--inspect`、`--max-old-space-size` 等等）并设置基本的过程属性。
 - en: We've already talked about this but, node is built on Google's V8 engine, and
     the first thing it has to do is **wake it up**. This sets up shared resources
     like thread pools for background tasks (hello, garbage collection). This only
     happens once.
+  id: totrans-18
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 我们已经讨论过这一点，但 node 是基于 Google 的 V8 引擎构建的，它首先要做的是 **唤醒它**。这设置了用于后台任务（比如垃圾回收）的共享资源，如线程池。这只会发生一次。
 - en: Then it creates a **V8 Isolate**. An **isolate** is a single, sandboxed instance
     of the V8 engine. It has its own memory heap and its own garbage collector. Think
     of it as a little planet for your JavaScript to live in. Creating this is a heavyweight
     operation; it's where a big chunk of memory gets allocated for the heap right
     off the bat.
+  id: totrans-19
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后，它创建一个 **V8 Isolate**。一个 **isolate** 是 V8 引擎的单个、沙盒化的实例。它有自己的内存堆和自己的垃圾回收器。想象一下，这是一个你的
+    JavaScript 可以居住的小星球。创建这个是一个重量级的操作；它是在堆上直接分配大量内存的地方。
 - en: After creating the V8 Isolate, it has to **create a V8 Context** inside that
     isolate. This is the execution environment with all the built-in stuff your code
     expects, like `Object`, `Array`, and `JSON`. The `global` object lives here.
+  id: totrans-20
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在创建 V8 Isolate 之后，它必须在那个 isolate 内部 **创建一个 V8 Context**。这是所有内置内容的执行环境，你的代码期望的，比如
+    `Object`、`Array` 和 `JSON`。`global` 对象就生活在这里。
 - en: It then proceeds to **initialize the libuv Event Loop**. This is the big one.
     Node's fantastic non-blocking I/O is all thanks to **libuv**. The C++ code fires
     up a new libuv event loop. This loop is the heart of Node. It's what juggles all
     the network requests, file operations, and timers without blocking. Right now,
     it's just created, not running.
+  id: totrans-21
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后，它继续 **初始化 libuv 事件循环**。这是重中之重。Node 的非阻塞 I/O 功能全靠 **libuv**。C++ 代码启动一个新的 libuv
+    事件循环。这个循环是 Node 的心脏。它处理所有的网络请求、文件操作和定时器，而不会阻塞。目前，它只是被创建，还没有运行。
 - en: Now it's the right time to **configure the libuv Threadpool**. Alongside the
     event loop, the libuv Threadpool is configured. Think of this as a crew of helper
     threads standing by. Any time you do something that could be slow and blocking
@@ -120,40 +167,57 @@
     `crypto` operations), Node offloads that work to one of these threads. This is
     the thing that lets the main event loop stay free to handle other incoming requests,
     ensuring nothing gets blocked.
+  id: totrans-22
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 现在，是配置 libuv Threadpool 的正确时机。与事件循环一样，libuv Threadpool 被配置。想象一下，这是一支随时待命的辅助线程队伍。任何可能对操作系统造成缓慢和阻塞操作的事情（比如使用
+    `fs` 读取大文件、DNS 查询或一些密集的 `crypto` 操作），Node 都会将这项工作卸载到这些线程之一。这是让主事件循环保持空闲以处理其他传入请求的东西，确保没有任何东西被阻塞。
 - en: After that it has to **create the Node.js Environment**. A C++ object called
     `node::Environment` is created. This is the glue that holds everything together
     - the V8 isolate, the context, the libuv loop - all of it.
+  id: totrans-23
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 之后，它必须 **创建 Node.js 环境**。创建了一个名为 `node::Environment` 的 C++ 对象。这是将一切粘合在一起的东西
+    - V8 isolate、context、libuv loop - 所有这些。
 - en: Now it will **load Native Modules** or in some sense - the Node.js standard
     library. All the cool built-in stuff (`fs`, `http`, `crypto`) isn't actually JavaScript.
     They're C++ components that talk to the operating system. At this stage, they
     get registered so they can be exposed to your JavaScript later via `require()`.
+  id: totrans-24
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 现在，它将 **加载原生模块**或者从某种意义上说 - Node.js 标准库。所有酷炫的内置功能（`fs`、`http`、`crypto`）实际上不是
+    JavaScript。它们是与操作系统通信的 C++ 组件。在这个阶段，它们被注册，以便稍后可以通过 `require()` 将它们暴露给 JavaScript。
 - en: It still doesn't ends here. Now it has to **execute the Bootstrap Script**.
     For the first time, Node actually runs some JavaScript. But it's not yours. It's
     an internal script (`lib/internal/bootstrap/node.js`) that uses all the C++ bindings
     to build the JavaScript world we know and love. It sets up the `process` object,
     creates the `require` function itself, and gets everything ready for your code.
     This script is the bridge from the raw C++/V8 world to the friendly Node.js API.
+  id: totrans-25
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 但这还没有结束。现在，它必须 **执行引导脚本**。Node 首次实际运行一些 JavaScript。但这不是你的。这是一个内部脚本（`lib/internal/bootstrap/node.js`），它使用所有
+    C++ 绑定来构建我们熟悉和喜爱的 JavaScript 世界。它设置 `process` 对象，创建 `require` 函数本身，并为你的代码准备一切。这个脚本是从原始
+    C++/V8 世界到友好 Node.js API 的桥梁。
 - en: Last but not the least, it **loads your code**. Only after *all of that* is
     done does Node finally look at `my_app.js`. The module loader, which was just
     set up by the bootstrap script, is called to find, read, and execute your app.
+  id: totrans-26
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最后但同样重要的是，它**加载你的代码**。只有在所有这些完成之后，Node才会最终查看`my_app.js`。由引导脚本刚刚设置的模块加载器被调用以查找、读取和执行你的应用程序。
 - en: Here’s the whole funnel -
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是整个漏斗 -
 - en: Why should you care? Because this isn't free. This pre-execution dance can take
     hundreds of milliseconds, sometimes seconds. If you're running in a tiny container,
     this can be a huge bottleneck. I once worked on a serverless function where we
@@ -162,96 +226,134 @@
     Understanding this process let us use tools to snapshot the V8 heap, effectively
     pre-compiling the code and skipping some of these steps. It was the difference
     between a viable product and a failed one.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 你为什么应该关心？因为这并不是免费的。这个预执行过程可能需要数百毫秒，有时甚至几秒钟。如果你在一个微小的容器中运行，这可能会成为一个巨大的瓶颈。我曾经在一个无服务器函数上工作，我们为了每一个冷启动时间毫秒而奋斗。我们发现，在我们`index.js`的任何一行代码被触及之前，就已经消耗了大约300毫秒。理解这个过程让我们可以使用工具来快照V8堆，有效地预编译代码并跳过一些这些步骤。这是成功产品和失败产品之间的区别。
 - en: V8 and Native Module Initialization
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: V8和本地模块初始化
 - en: 'Okay, so once the C++ scaffolding is up, the real work begins: setting up V8
     and the native modules. This is where the performance and memory profile of your
     entire application gets defined. If you don''t understand this part, you''ll wonder
     why your process is already eating 100MB of RAM before your server even starts.'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，一旦C++框架搭建完成，真正的任务就开始了：设置V8和本地模块。这是定义你整个应用程序性能和内存配置文件的地方。如果你不理解这部分，你会 wonder为什么你的进程在服务器甚至开始之前就已经消耗了100MB的RAM。
 - en: Heap Allocation and the JIT
+  id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 堆分配和即时编译（JIT）
 - en: When Node creates a V8 isolate, it's not just flipping a switch. It's asking
     V8 to allocate a huge, contiguous block of memory for the JavaScript heap. This
     is where every single one of your objects, strings, and functions will live. The
     size is configurable (`--max-old-space-size`), but the default is pretty beefy.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 当Node创建一个V8隔离时，它不仅仅是切换一个开关。它要求V8为JavaScript堆分配一个巨大的、连续的内存块。这就是你的每一个对象、字符串和函数将居住的地方。大小是可配置的（`--max-old-space-size`），但默认值相当大。
 - en: This initial allocation is a big part of your startup cost. Node has to ask
     the OS for that memory, and on a system under pressure, that can be surprisingly
     slow.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个初始分配是启动成本的一大部分。Node需要向操作系统请求内存，在一个压力之下，这可能非常慢。
 - en: A common misconception is that V8's Just-In-Time (JIT) compiler "warms up" here.
     It doesn't. The JIT is lazy. It only compiles your functions into optimized machine
     code after they've run a few times and become "hot." During startup, V8 is just
     interpreting the internal bootstrap script. The real JIT fireworks happen later,
     when your app is actually handling traffic.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个常见的误解是V8的即时编译器（JIT）在这里“预热”。它不是。JIT是懒惰的。它只有在函数运行了几次并变得“热”之后，才会将你的函数编译成优化的机器代码。在启动期间，V8只是在解释内部的引导脚本。真正的JIT烟花在应用程序实际处理流量时才会发生。
 - en: ℹ️Note
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: V8 typically reserves a large virtual address range for the heap and enforces
     heap limits, but the OS may not commit all that memory physically at allocation
     time - allocation/commit behavior depends on platform and V8 flags (--max-old-space-size,
     --initial-old-space-size) and can be tuned.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: V8通常为堆保留一个大的虚拟地址范围，并强制执行堆限制，但操作系统在分配时可能不会实际提交所有这些内存 - 分配/提交行为取决于平台和V8标志（`--max-old-space-size`、`--initial-old-space-size`），并且可以进行微调。
 - en: Wiring the Native Modules
+  id: totrans-37
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 连接本地模块
 - en: This is the most underrated part of the startup sequence. Modules like `fs`,
     `http`, `crypto` - they're the workhorses. They're the bridge from your nice,
     safe JavaScript world to the raw power of the operating system, usually implemented
     in C++.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是启动序列中最被低估的部分。像`fs`、`http`、`crypto`这样的模块——它们是工作马。它们是你美好的、安全的JavaScript世界与操作系统的原始力量之间的桥梁，通常是用C++实现的。
 - en: During the bootstrap, Node doesn't actually load all of these modules. That
     would be slow and wasteful. Instead, it just registers them. It builds an internal
     map of string names (like `'fs'`) to C++ function pointers.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 在引导过程中，Node实际上并没有加载所有这些模块。那样会慢且浪费。相反，它只是注册它们。它构建了一个内部映射，将字符串名称（如`'fs'`）映射到C++函数指针。
 - en: So when your code finally calls `require('fs')` for the first time, this is
     what happens -
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以当你的代码第一次调用`require('fs')`时，这是发生的 -
 - en: The `require` function sees 'fs' is a built-in module.
+  id: totrans-41
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`require`函数看到''fs''是一个内置模块。'
 - en: It looks up 'fs' in that internal map.
+  id: totrans-42
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 它在内部映射中查找'fs'。
 - en: It calls the C++ initialization function it found.
+  id: totrans-43
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 它调用它找到的C++初始化函数。
 - en: '*This* C++ function does the heavy lifting. It creates the JavaScript object
     that will become the `fs` module and attaches all the functions to it, like `readFileSync`
     and `createReadStream`. These JS functions are just thin wrappers around the underlying
     C++ code.'
+  id: totrans-44
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*这个* C++函数承担了繁重的工作。它创建了一个将成为`fs`模块的JavaScript对象，并将所有函数附加到它上面，比如`readFileSync`和`createReadStream`。这些JS函数只是底层C++代码的薄包装。'
 - en: This brand new module object gets stuffed into a cache (`require.cache`) and
     then returned to your code.
+  id: totrans-45
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 这个全新的模块对象被塞入缓存（`require.cache`）中，然后返回到你的代码。
 - en: This lazy-loading is a crucial optimization. If your app never needs `crypto`,
     you never pay the memory or time cost of fully initializing it.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种懒加载是一个关键的优化。如果你的应用永远不会需要`crypto`，你永远不会为完全初始化它付出内存或时间的成本。
 - en: But - and this is a big but - the cost of initializing these native modules
     on the *first* `require` is not zero. We once had a service where the very first
     API request after a deploy was always painfully slow, sometimes by over 100ms.
@@ -259,193 +361,277 @@
     for the first time *inside the request handler*. The one-time cost of setting
     up all the OpenSSL contexts and C++ objects was happening right in the critical
     path of a user's request.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是——这是一个很大的但是——在第一次`require`初始化这些本地模块的成本并不为零。我们曾经有一个服务，部署后的第一个API请求总是非常慢，有时超过100ms。我们最终追踪到这是一个安全库，它在请求处理器内部第一次调用`require('crypto')`。设置所有OpenSSL上下文和C++对象的单次成本正好发生在用户请求的关键路径上。
 - en: 'The fix was laughably simple: just add `require(''crypto'')` at the top of
     our main `server.js` file. This moved the initialization cost from the first request
     to the boot sequence. Yeah, it made our startup time 100ms slower, but it made
     our runtime performance predictable. And in the real world, predictable is almost
     always better.'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 修复方法是可笑的简单：只需在主`server.js`文件的顶部添加`require('crypto')`。这把初始化成本从第一个请求移到了启动序列。是的，它使我们的启动时间慢了100ms，但它使我们的运行时性能变得可预测。而在现实世界中，可预测几乎总是更好的。
 - en: Module Loading and Resolution
+  id: totrans-49
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 模块加载和解析
 - en: The module system is one of the topics, which isn’t usually given much attention
     by developers, because it feels so simple to just `require` something and start
     building. It's all managed by `require()`, a function so common we treat it like
     it's instantaneous.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 模块系统是众多主题之一，通常开发者并不会给予它太多关注，因为它感觉非常简单，只需`require`一下就能开始构建。这一切都由`require()`函数管理，这个函数如此常见，以至于我们把它当作是瞬间的。
 - en: That is a dangerous assumption.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个危险的假设。
 - en: The module system, with its resolution algorithm and its cache, has a massive
     impact on startup performance and memory. I still remember when it was a pain
     in the butt for me, when I was building a backend service for a game built in
     Unreal engine.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 模块系统，包括其解析算法和缓存，对启动性能和内存有巨大的影响。我仍然记得当我为使用虚幻引擎构建的游戏构建后端服务时，它对我来说是多么痛苦。
 - en: We had a service that, in production, would sometimes take almost a minute to
     start. It would just sit there, churning CPU, long before it ever started listening
     on its port. On our dev laptops? 3 seconds. Staging? 5 seconds. Production? A
     total disaster. The deployment orchestrator would just give up and kill the pod,
     triggering a crash-loop that would go on for ages.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们有一个服务，在生产环境中，有时启动需要近一分钟的时间。它只是在那里，消耗CPU，在它开始监听端口之前很久。在我们的开发笔记本电脑上？3秒。预发布环境？5秒。生产环境？简直是灾难。部署编排器会直接放弃并杀死pod，触发一个持续很长时间的崩溃循环。
 - en: 'The breakthrough came from a little-known Node flag: `--trace-sync-io`. This
     flag screams at you whenever synchronous I/O happens on the main thread. We ran
     our app with it, and the console just exploded. Thousands of messages, all pointing
     to `fs.readFileSync`. But we weren''t calling that function directly! The stack
     traces all ended inside `require()`.'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 突破来自于一个鲜为人知的Node标志：`--trace-sync-io`。这个标志会在主线程上发生同步I/O时大声呼喊。我们用这个标志运行我们的应用，控制台就爆炸了。成千上万的消息，都指向`fs.readFileSync`。但我们并没有直接调用那个函数！堆栈跟踪都结束在`require()`内部。
 - en: See, `require()` isn't magic. It's a synchronous operation that hammers the
     file system. Here's what it's really doing -
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 看看，`require()`并不是魔法。它是一个同步操作，猛烈地打击文件系统。这里就是它真正在做的事情——
 - en: Given a string like `'./utils'` or `'express'`, Node has to find the absolute
     path to the file. This is a surprisingly complicated lookup.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 给定一个像`'./utils'`或`'express'`这样的字符串，Node需要找到文件的绝对路径。这是一个令人惊讶复杂的查找。
 - en: If it's a core module (`'fs'`), great, it's done.
+  id: totrans-57
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果它是一个核心模块（`'fs'`），那就太好了，它已经完成了。
 - en: If it starts with `./` or `../`, it's a file path. It'll try adding `.js`, `.mjs`,
     `.json`, and `.node` to the end. If it's a directory, it looks for `package.json`'s
     `"main"` field, or falls back to `index.js`.
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果它以`./`或`../`开头，它是一个文件路径。它会尝试在末尾添加`.js`、`.mjs`、`.json`和`.node`。如果它是一个目录，它会查找`package.json`的`"main"`字段，或者回退到`index.js`。
 - en: If it's a bare name like `'express'`, it begins the infamous `node_modules`
     walk. It looks in `./node_modules`, then `../node_modules`, then `../../node_modules`,
     all the way up to the root of the file system. Every single one of those checks
     is a synchronous file system call.
+  id: totrans-59
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果它是一个裸名，如`'express'`，它将开始臭名昭著的`node_modules`遍历。它会检查`./node_modules`，然后是`../node_modules`，然后是`../../node_modules`，一直到文件系统的根目录。每一个这样的检查都是一个同步的文件系统调用。
 - en: Once it finds the file, it checks a cache (`require.cache`).
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦找到文件，它会检查一个缓存（`require.cache`）。
 - en: If it's already in the cache ( a **cache hit**), it just returns the `exports`
     object. This is why the second time you `require('express')` it's super fast.
     But it's not *free* - it's still a hash map lookup.
+  id: totrans-61
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果它已经在缓存中（一个**缓存命中**），它就只返回`exports`对象。这就是为什么你第二次`require('express')`时它超级快。但这并不是**免费的**
+    - 它仍然是一个哈希表查找。
 - en: If it's not in the cache (a **cache miss**), this is going to be the slow path.
     Node creates a new `Module` object, reads the file from disk (`fs.readFileSync`
     - there's our culprit!), and prepares to compile it.
+  id: totrans-62
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果它不在缓存中（一个**缓存未命中**），这将是一条慢路径。节点创建一个新的`Module`对象，从磁盘读取文件（`fs.readFileSync`
+    - 就是我们的罪魁祸首！），并准备编译它。
 - en: The code from your file gets wrapped in this function -
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 你文件的代码被这个函数包装起来 -
 - en: '[PRE0]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: That wrapper is what gives you those magic, module-local variables. This whole
     string is then compiled and run by V8\. Whatever you put on `module.exports` is
     the result.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 那个包装器就是给你那些神奇的、模块局部变量的。然后整个字符串将由V8编译并运行。你放在`module.exports`上的任何内容都是结果。
 - en: Our 45-second startup was caused by a huge `node_modules` directory. Each `require()`
     was triggering hundreds of synchronous file system checks. On our speedy local
     SSDs, you'd never notice. But on the production network-attached storage (NFS),
     with its higher latency, the effect of all those tiny delays added up to a catastrophe.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的45秒启动时间是由一个巨大的`node_modules`目录造成的。每次`require()`都会触发数百次同步的文件系统检查。在我们的快速本地SSD上，你永远不会注意到。但在生产网络附加存储（NFS）上，由于其更高的延迟，所有这些微小延迟的影响加起来就是一场灾难。
 - en: The fix was two-fold. First, we started using a bundler like Webpack for production
     builds. This smashes everything into a single file and completely eliminates the
     `node_modules` walk at runtime. Second, we did a ruthless audit of our dependencies
     and flattened the tree as much as we could.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决方案有两个方面。首先，我们开始使用Webpack这样的打包器进行生产构建。这会将一切压缩成一个文件，并在运行时完全消除`node_modules`遍历。其次，我们对我们的依赖进行了无情的审计，并将树尽可能扁平化。
 - en: ⚠️Warning
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: Don't Bundle Your Entire Node.js Server It can cause a lot of issues. Bundling
     everything can break dynamic imports and native modules. For targeted fixes, use
     a tool like `esbuild` to bundle only the necessary parts.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 不要将整个Node.js服务器打包在一起，这可能会引起很多问题。打包一切可能会破坏动态导入和本地模块。对于有针对性的修复，请使用像`esbuild`这样的工具来仅打包必要的部分。
 - en: 'This experience also introduced us to another issue - **The Module Cache Memory
     Bomb**. We had this long-running process that just kept growing in memory until
     it got OOM-killed (Out Of Memory). We couldn''t find a leak anywhere in our own
     code. We took a heap snapshot and found the problem: `require.cache`. The service
     was dynamically generating reports, and some clever developer had written this:'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种经历也让我们遇到了另一个问题 - **模块缓存内存炸弹**。我们有一个长时间运行的过程，它在内存中不断增长，直到被OOM-killed（内存不足）。我们在自己的代码中找不到任何泄漏。我们进行了堆快照，并发现了问题：`require.cache`。该服务正在动态生成报告，并且有位聪明的开发者写了这样一段代码：
 - en: '[PRE1]'
+  id: totrans-71
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Because every `templateName` was a unique path, Node saw each one as a brand
     new module. It would load the file, compile it, and store it in `require.cache`...
     forever. After a day, the cache had tens of thousands of entries and was eating
     over 2GB of RAM. The fix was to stop abusing `require` and use `fs.readFileSync`
     combined with the `vm` module to run the templates in a temporary, sandboxed context
     that could actually be garbage collected.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为每个 `templateName` 都是一个唯一的路径，Node 会将其视为一个全新的模块。它会加载文件，编译它，并将其存储在 `require.cache`
+    中……永远。一天后，缓存就有成千上万的条目，消耗了超过 2GB 的 RAM。解决办法是停止滥用 `require` 并使用 `fs.readFileSync`
+    与 `vm` 模块结合，在临时、沙箱化的环境中运行模板，这样实际上可以进行垃圾回收。
 - en: ℹ️Note
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: It's recommended to use established template engines (e.g., Handlebars, Nunjucks)
     that support precompilation and caching with eviction, or compile templates once
     and reuse functions. If using `vm`, create short-lived contexts, avoid global
     retention, and implement explicit cache eviction/limits with monitoring.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 建议使用支持预编译和带驱逐缓存的成熟模板引擎（例如，Handlebars、Nunjucks），或者编译模板一次并重用函数。如果使用 `vm`，创建短期上下文，避免全局保留，并实现显式的缓存驱逐/限制以及监控。
 - en: The module system is powerful, but every `require()` call is a potential performance
     bottleneck and a permanent addition to your process's memory footprint. Treat
     it with respect.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 模块系统很强大，但每个 `require()` 调用都可能成为性能瓶颈，并永久增加你进程的内存占用。请尊重它。
 - en: ℹ️Note
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: '`require.cache` entries can be manually deleted (`delete require.cache[path]`),
     but using `require` for dynamic, user-driven code is unsafe. For templates or
     ephemeral modules, you should be using `fs.readFile` with `vm`, which allows proper
     garbage collection.'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '`require.cache` 中的条目可以手动删除（`delete require.cache[path]`），但使用 `require` 来处理动态、用户驱动的代码是不安全的。对于模板或临时模块，你应该使用
+    `fs.readFile` 与 `vm` 结合，这允许进行适当的垃圾回收。'
 - en: ES Modules (`import`)
+  id: totrans-78
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: ES 模块（`import`）
 - en: 'Okay, so everything we''ve talked about with `require()` is the classic, battle-tested
     way Node has worked for a decade. But for years, there was this slowmo civil war
     happening in the JavaScript community: CommonJS (`require`) vs. ES Modules (`import`/`export`).'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，所以关于 `require()` 我们所讨论的一切都是 Node 在过去十年中经过实战检验的经典方式。但多年来，在 JavaScript 社区中发生了一场缓慢的、持续的战争：CommonJS
+    (`require`) 与 ES 模块 (`import`/`export`)。
 - en: 'And I''m not gonna lie, the transition in Node was messy. For a long time,
     trying to use `import` in Node felt like you were breaking the rules. We had `.mjs`
     files, then `"type": "module"` in `package.json`, endless debates about interoperability
     - it was a headache. But we''re finally on the other side, and ESM is now the
     standard.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '我不会撒谎，Node 中的过渡非常混乱。长期以来，试图在 Node 中使用 `import` 感觉就像是在破坏规则。我们有过 `.mjs` 文件，然后在
+    `package.json` 中有 `"type": "module"`，关于互操作性的无尽争论——这真是个头疼的问题。但我们现在终于走上了正轨，ESM 现在已经成为标准。'
 - en: So what's the big deal? Why did we go through all that pain?
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么这究竟是怎么回事？我们为什么要经历所有这些痛苦？
 - en: Because `import` isn't just a new syntax for `require`. It fundamentally changes
     the module loading lifecycle. Where `require()` is a synchronous, dynamic, and
     frankly a bit dumb function, `import` is asynchronous, static, and much much smarter.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为 `import` 不只是 `require` 的新语法。它从根本上改变了模块加载的生命周期。`require()` 是一个同步、动态、坦白说有点笨拙的函数，而
+    `import` 是异步的、静态的，并且要聪明得多。
 - en: The New Three-Phase Lifecycle of ESM
+  id: totrans-83
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: ESM 的新三阶段生命周期
 - en: Remember how `require()` just reads and runs a file, blocking everything while
     it does it? ESM handles this with a completely different approach. It happens
     in three phases, and your code doesn't even run until the last one.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 记得 `require()` 只是读取并运行一个文件，在执行过程中会阻塞一切吗？ESM 使用完全不同的方法来处理这个问题。它分为三个阶段，你的代码甚至不会在最后一个阶段运行之前执行。
 - en: The phase 1 is the parsing (aka **Construction**) phase. When Node encounters
     an `import`, it doesn't execute the file. Instead, it parses it, looking *only*
     for other `import` and `export` statements. It follows these imports recursively,
@@ -453,16 +639,24 @@
     single line of your actual logic. This is a huge deal. It can find missing files
     or syntax errors before your app even starts. `require()` would just crash midway
     through booting.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一阶段是解析阶段（也称为**构建**阶段）。当 Node 遇到 `import` 时，它不会执行文件。相反，它会解析它，只查找其他 `import`
+    和 `export` 语句。它会递归地跟随这些导入，构建整个应用程序的完整依赖图，而不会运行你实际逻辑的任何一行。这是一件大事。它可以在你的应用程序甚至开始之前就找到缺失的文件或语法错误。`require()`
+    只会在启动过程中崩溃。
 - en: ℹ️Note
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: It's important to note that the dynamic `import()` and other runtime resolution
     mechanisms (conditional imports, loaders) introduce runtime graph changes and
     may not be known at construction time.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要注意，动态`import()`和其他运行时解析机制（条件导入、加载器）引入了运行时图的变化，并且可能在构建时不知道。
 - en: Phase 2 is for instantiation. This is the magic part. Once it has the full graph,
     Node walks through it and allocates memory for all the exported variables. It
     then "wires up" the imports to point to the memory locations of the exports. Think
@@ -470,87 +664,123 @@
     the `importedThing` in `moduleB.js` now point to the *exact same spot in memory*.
     They are live bindings, not copies. But - and this is key - they don't have any
     values yet.
+  id: totrans-88
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 第二阶段是实例化。这是魔法部分。一旦它有了完整的图，Node 就会遍历它，为所有导出变量分配内存。然后它“连接”导入，使其指向导出的内存位置。想象一下创建了一堆指针。`moduleA.js`中的`exportedThing`和`moduleB.js`中的`importedThing`现在指向内存中的**确切相同位置**。它们是活绑定，不是副本。但——这是关键——它们还没有任何值。
 - en: The final phase is the **Evaluation** phase. *Now*, finally, Node starts executing
     the code. It runs the code in each module to "fill in the blanks" for the exported
     values it already allocated memory for. Because it has the full dependency graph,
     it can be smart and start evaluating from the bottom up; modules with no dependencies
     go first.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后的阶段是**评估**阶段。*现在*，终于，节点开始执行代码。它运行每个模块中的代码以“填补”已为其分配内存的导出值。因为它拥有完整的依赖图，所以它可以智能地从下往上开始评估；没有依赖的模块先执行。
 - en: This is a complete paradigm shift. `require()` mixes finding, loading, and running
     into one blocking step. ESM separates them, which allows for some incredible things.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个完全的范式转变。`require()`将查找、加载和运行混合成一个阻塞步骤。ESM 将它们分开，这允许做一些令人难以置信的事情。
 - en: But...
+  id: totrans-91
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 但...
 - en: Even though this new system is powerful, it's going to trip you up if you're
     coming from a CJS world.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管这个新系统很强大，但如果你是从 CJS 世界过来的，它可能会让你感到困惑。
 - en: First, the bad news. All those handy variables you took for granted? Gone.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，坏消息。所有那些你理所当然认为有用的变量？消失了。
 - en: '[PRE2]'
+  id: totrans-94
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Yeah, that `import.meta.url` thing is the new standard. It's more explicit but
     definitely less convenient. You get used to it.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 是的，那个`import.meta.url`东西是新的标准。它更明确，但肯定不那么方便。你会习惯的。
 - en: 'But now for the genuinely cool part. The payoff for all this complexity: **Top-Level
     `await`**.'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 但现在到了真正酷的部分。所有这些复杂性的回报：**顶级`await`**。
 - en: Because the ESM loader is asynchronous, you can now use `await` at the top level
     of your module, outside of an `async` function. Remember our async bootstrap pattern
     from before? It gets way simpler.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为 ESM 加载器是异步的，你现在可以在模块的顶层使用`await`，而不在`async`函数之外。还记得我们之前的异步引导模式吗？它变得简单多了。
 - en: '[PRE3]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: This is a massive improvement. It makes the startup sequence linear and easy
     to read, eliminating a whole class of boilerplate. The process will simply wait
     at this point in the Evaluation phase until the promise resolves before moving
     on. It's how things should have always been.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个巨大的改进。它使启动序列线性且易于阅读，消除了整个类别的样板代码。该过程将在评估阶段的这个点简单地等待，直到承诺解决后再继续。这正是事情应该一直以来的样子。
 - en: So, What's the Real-World Impact?
+  id: totrans-100
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 那么，真实世界的影响是什么？
 - en: Okay, so why should you care about this three-phase loading and top-level await?
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，那么你为什么应该关心这个三阶段加载和顶级`await`？
 - en: '**Faster, Smarter Startups (in theory)**. Because Node can build the dependency
     graph first, it can potentially load modules over the network or from disk in
     parallel. While `require()` is a serial conga line of file I/O, `import` is more
     like a coordinated team effort.'
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**更快、更智能的启动（理论上）**。因为 Node 可以首先构建依赖图，所以它可以潜在地在网络上或从磁盘并行加载模块。而`require()`是一个串行的文件
+    I/O 队列，`import`则更像是一个协调的团队努力。'
 - en: Support for **Static Analysis & Tree Shaking**. Because `import { thing } from
     '...'` is static and declarative, tools can analyze your code without running
     it. This is what allows bundlers like Rollup or Webpack to do "tree shaking" -
     if you never use an exported function, it can be completely removed from the final
     bundle, making your code smaller. You just can't do that reliably with the dynamic
     nature of `require()`.
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对**静态分析和树摇**的支持。因为`import { thing } from '...'`是静态和声明的，工具可以在不运行代码的情况下分析你的代码。这就是允许打包器如
+    Rollup 或 Webpack 进行“树摇”的原因——如果你从未使用过导出函数，它可以从最终包中完全删除，使你的代码更小。你无法用`require()`的动态特性可靠地做到这一点。
 - en: '**The Module Cache is Different**. The ESM loader still has a cache (it''s
     called the Module Map internally), but unlike `require.cache`, it''s not a public
     API you can mess with. You can''t just reach in and delete a module to force a
     reload. This is a good thing for stability, but it takes away a "power user" hack
     that many of us used (and abused) in the CJS world.'
+  id: totrans-104
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**模块缓存是不同的**。ESM加载器仍然有一个缓存（在内部称为模块映射），但与`require.cache`不同，它不是一个公开的API你可以随意操作。你不能简单地深入其中并删除一个模块来强制重新加载。这对稳定性是个好事，但它剥夺了我们在CJS世界中使用（并滥用）的“高级用户”技巧。'
 - en: Honestly, the ecosystem is still in transition. You'll run into packages that
     only support `require`, and you'll have to use dynamic `import()` statements to
     load them, which feels like a step backward. But the direction is clear. ESM's
@@ -558,237 +788,343 @@
     and performant applications. It fixes fundamental design quirks of CommonJS, and
     while the migration has been painful, it's setting Node up for a much smarter
     future.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 说实话，生态系统仍在过渡中。你会遇到只支持`require`的包，你将不得不使用动态的`import()`语句来加载它们，这感觉像是退步了一步。但方向是明确的。ESM的静态特性和以异步为首要的方法更适合构建大型、复杂和性能良好的应用程序。它解决了CommonJS的基本设计缺陷，虽然迁移过程很痛苦，但它为Node搭建了一个更加智能的未来。
 - en: Process Bootstrapping Patterns
+  id: totrans-106
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 进程引导模式
 - en: 'Alright, so once Node has done its thing and finally handed control over to
     your main application file, the next phase begins: your application''s own bootstrap.
     This is where you load your config, connect to your database, set up your web
     server, and get ready to do actual work. This part is entirely on you, which means
     it''s a prime spot for both big wins and huge mistakes.'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，一旦Node完成了它的事情，最终将控制权交给你的主应用程序文件，下一个阶段就开始了：你应用程序自己的引导。这是你加载配置、连接到数据库、设置你的Web服务器，并准备实际工作的地方。这部分完全取决于你，这意味着它是一个既能取得巨大成功又能犯下巨大错误的好地方。
 - en: A typical server bootstrap looks something like this. And let's be honest, we've
     all written this code. Don't judge me, but I do this a lot when I want to write
     a script quickly or create a test http server (well, for testing purposes).
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器引导的典型模式看起来像这样。坦白说，我们所有人都写过这样的代码。不要评判我，但当我想要快速编写脚本或创建一个测试http服务器时（嗯，为了测试目的），我经常这样做。
 - en: '[PRE4]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Looks fine, right? But it's hiding some nasty anti-patterns.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 看起来不错，对吧？但它隐藏了一些糟糕的反模式。
 - en: All those top-level `require()` calls are synchronous. If `./config` or `./database`
     do anything even slightly complex, they block the entire startup. We already saw
     how this lead to a 45-second startup.
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 所有那些顶层`require()`调用都是同步的。如果`./config`或`./database`做任何事情甚至稍微复杂一点，它们都会阻塞整个启动。我们之前已经看到这导致了45秒的启动时间。
 - en: The `database.connect()` call is async, which is good. But what if the database
     is down? The process logs an error and exits with code 1\. In Kubernetes, this
     immediately triggers a restart. So your app starts again, tries to connect to
     the still-down database, fails, exits, and restarts. You've just created a `CrashLoopBackOff`
     that's hammering your poor database.
+  id: totrans-112
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`database.connect()`调用是异步的，这是好的。但如果数据库关闭了怎么办？进程记录一个错误并以代码1退出。在Kubernetes中，这会立即触发重启。所以你的应用程序又开始了，试图连接到仍然关闭的数据库，失败，退出，然后重启。你刚刚创建了一个`CrashLoopBackOff`，它在猛击你那可怜的数据库。'
 - en: The order you `require` things in starts to matter. If `./app` needs the database
     module but you haven't connected yet, you can get into some really weird race
     conditions.
+  id: totrans-113
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你`require`东西的顺序开始变得重要。如果`./app`需要数据库模块但你还没有连接，你可能会遇到一些非常奇怪的竞争条件。
 - en: A Better Way - The Async Initializer
+  id: totrans-114
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 更好的方法 - 异步初始化器
 - en: A much more robust pattern is to wrap all your startup logic in an explicit
     `async` function.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个更稳健的模式是将所有启动逻辑包裹在一个显式的`async`函数中。
 - en: '[PRE5]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 🚨Caution
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨注意
 - en: Instead of just retrying in a loop, add a proper backoff - let each retry wait
     a little longer than the last, and add some randomness (jitter) so a bunch of
     processes don’t all retry at the same time. Use a library that already does this
     well. Also, make sure the thing you’re retrying is safe to run more than once,
     or guard it with a lock. And if the service stays down, have a circuit breaker
     or health check so you don’t just hammer it endlessly.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 而不是仅仅在循环中重试，添加适当的退避 - 让每次重试等待的时间比上一次长，并添加一些随机性（抖动），这样就不会有一堆进程同时重试。使用已经做得很好的库。同时，确保你正在重试的东西可以安全地运行多次，或者用锁来保护它。如果服务一直处于关闭状态，那么有一个断路器或健康检查，这样你就不会无休止地猛击它。
 - en: This is so much better.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样要好得多。
 - en: '**It''s Explicit**. The startup logic is all in one place. It''s obvious what
     happens and in what order.'
+  id: totrans-120
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**明确性**。启动逻辑全部集中在一个地方，发生什么以及顺序如何一目了然。'
 - en: '**It''s Resilient**. The database connection now has a retry mechanism. It
     won''t just fall over if there''s a transient network blip.'
+  id: totrans-121
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**弹性**。数据库连接现在有了重试机制。如果出现短暂的网络中断，它不会立即崩溃。'
 - en: '**It''s Testable**. By passing dependencies like the database connection into
     the app (`dependency injection`), you make your code way easier to test in isolation.'
+  id: totrans-122
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**可测试性**。通过将数据库连接等依赖项注入到应用程序中（`依赖注入`），你使得你的代码在隔离状态下更容易测试。'
 - en: '**It''s Honest**. The app only considers itself "started" after the server
     is *actually* listening for connections. This is a much more reliable signal to
     send to Kubernetes.'
+  id: totrans-123
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**诚实性**。应用程序只有在服务器实际上正在监听连接后才会将自己视为“已启动”。这是一个发送给 Kubernetes 的更可靠的信号。'
 - en: Bootstrapping isn't just about getting the server running. It's about getting
     it running in a way that's predictable, resilient, and observable. Every second
     you spend here is a second your service is down. Optimizing it is not a "nice-to-have"
     - it's a hallmark of a production-grade application.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 引导启动不仅仅是让服务器运行起来。它是关于以可预测、弹性、可观察的方式运行。你在这里花费的每一秒都是你的服务关闭的一秒。优化它不是一个“锦上添花”的事情——它是生产级应用程序的一个标志。
 - en: Signal Handling and Process Communication
+  id: totrans-125
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 信号处理和进程通信
 - en: Okay, your app is bootstrapped and running. But it can't run forever. Eventually,
     something - a developer, a deployment script, a container orchestrator - is going
     to tell it to stop. And that conversation happens using **signals**.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 好的，你的应用程序已经引导启动并运行。但它们不能永远运行。最终，某个东西——一个开发者、一个部署脚本、一个容器编排器——会告诉它停止。而这个对话是通过**信号**来进行的。
 - en: This is some old-school Unix stuff, but it's absolutely non-negotiable for writing
     services that don't just crash and burn.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一些老式的 Unix 东西，但对于编写不会直接崩溃和燃烧的服务来说，这是绝对不可协商的。
 - en: A signal is basically a software interrupt sent by the OS to your process. When
     you hit `Ctrl+C` in your terminal, you're sending the `SIGINT` (Signal Interrupt)
     signal. When Kubernetes wants to shut down your pod, it sends `SIGTERM` (Signal
     Terminate).
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 信号基本上是操作系统发送给你的进程的软件中断。当你你在终端中按 `Ctrl+C` 时，你正在发送 `SIGINT`（信号中断）信号。当 Kubernetes
+    想要关闭你的 pod 时，它会发送 `SIGTERM`（信号终止）。
 - en: 'These are the signals you actually need to care about:'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是你实际上需要关注的信号：
 - en: '**`SIGINT`** - The "interrupt" signal from `Ctrl+C`.'
+  id: totrans-130
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**`SIGINT`** - 来自 `Ctrl+C` 的“中断”信号。'
 - en: '**`SIGTERM`** - The "please terminate gracefully" signal. This is the one that
     orchestrators like Kubernetes use. **This is your primary shutdown signal.**'
+  id: totrans-131
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**`SIGTERM`** - “请优雅地终止”信号。这是编排器如 Kubernetes 使用的信号。**这是你的主要关闭信号**。'
 - en: '**`SIGHUP`** - The "hang up" signal. Daemons often use this to trigger a config
     reload without a full restart.'
+  id: totrans-132
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**`SIGHUP`** - “挂起”信号。守护进程通常使用这个信号来触发配置重新加载，而无需完全重启。'
 - en: '**`SIGKILL`** - The kill shot. This signal cannot be caught or ignored. The
     OS terminates your process immediately. No cleanup, no last words. This is what
     Kubernetes sends when your process ignores `SIGTERM` for too long.'
+  id: totrans-133
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**`SIGKILL`** - 杀死信号。这个信号不能被捕获或忽略。操作系统会立即终止你的进程。没有清理，没有遗言。这是 Kubernetes 在你的进程长时间忽略
+    `SIGTERM` 时发送的信号。'
 - en: '**`SIGUSR1` / `SIGUSR2`** - User-defined signals. You can use these for whatever
     you want, like triggering a heap dump or clearing a cache on demand.'
+  id: totrans-134
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**`SIGUSR1` / `SIGUSR2`** - 用户定义的信号。你可以用这些信号做任何你想做的事情，比如触发堆转储或按需清除缓存。'
 - en: ⚠️Warning
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: To create reliable, cross-platform shutdown logic, you should only handle `SIGINT`
     and `SIGTERM` signals, as others like `SIGUSR1` are not supported on Windows.
     For maximum compatibility, especially in Windows services, supplement this by
     also creating an explicit programmatic trigger for shutdowns, such as an IPC message.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了创建可靠、跨平台的关闭逻辑，你应该只处理 `SIGINT` 和 `SIGTERM` 信号，因为像 `SIGUSR1` 这样的信号在 Windows
+    上不受支持。为了最大兼容性，特别是在 Windows 服务中，还应通过创建显式的程序触发器来补充，例如 IPC 消息。
 - en: In Node, you listen for signals on the `process` object, which is an `EventEmitter`
     -
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Node 中，你可以在 `process` 对象上监听信号，它是一个 `EventEmitter` -
 - en: '[PRE6]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: You can test this. Run the script, get its PID, then from another terminal,
     run `kill -s SIGTERM <PID>`.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以测试这个。运行脚本，获取其 PID，然后在另一个终端中运行 `kill -s SIGTERM <PID>`。
 - en: 🚨Caution
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨注意
 - en: A process that fails to call `process.exit()` in the current signal handler,
     will not terminate upon receiving `SIGINT` (`Ctrl + C`) or `SIGTERM` signals.
     Send a `SIGTSTP` signal with `Ctrl + Z` to suspend its execution.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果当前信号处理程序没有调用 `process.exit()`，则进程在收到 `SIGINT` (`Ctrl + C`) 或 `SIGTERM` 信号时不会终止。使用
+    `Ctrl + Z` 发送 `SIGTSTP` 信号来挂起其执行。
 - en: Signal Handling Issues
+  id: totrans-142
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 信号处理问题
 - en: 'You’ve probably been thinking signal handling is simple, but now you’re in
     the messy real world. You burn an entire day debugging a service that just will
     not shut down cleanly. You have a `SIGTERM` handler, but it never seems to fire.
     The process just vanishes after 30 seconds (or `terminationGracePeriodSeconds`),
     and you know what that means: it’s getting `SIGKILL`''d.'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能一直在想信号处理很简单，但现在你进入了混乱的真实世界。你花了一整天的时间调试一个服务，它就是无法干净地关闭。你有一个 `SIGTERM` 处理程序，但它似乎永远不会触发。进程在
+    30 秒（或 `terminationGracePeriodSeconds`）后消失，你知道这意味着什么：它正在被 `SIGKILL` 杀死。
 - en: Where do you even start looking?
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 你甚至从哪里开始查找？
 - en: 'After hours of digging, you find the culprit: a third-party metrics library.
     You discover it has its own shutdown logic, and when it initialized, it registered
     its *own* `SIGTERM` handler. Worse, you find it doing something equivalent to
     `process.removeAllListeners(''SIGTERM'')` before adding its own. It completely
     nuked your shutdown logic without so much as a warning.'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 经过数小时的挖掘，你找到了罪魁祸首：一个第三方指标库。你发现它有自己的关闭逻辑，并且在初始化时，它注册了自己的 *自己的* `SIGTERM` 处理程序。更糟糕的是，你发现它在添加自己的处理程序之前做了相当于
+    `process.removeAllListeners('SIGTERM')` 的事情。它完全摧毁了你的关闭逻辑，甚至没有发出警告。
 - en: '**This is where you bust a major misconception -** Your `process.on(''SIGTERM'',
     ...)` handler is not sacred. You now realize that any of your dependencies could
     be messing with it. A truly robust system, you decide, must register its critical
     signal handlers last, or have a central shutdown manager that everything else
     hooks into.'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '**这就是你打破一个重大误解的地方 -** 你的 `process.on(''SIGTERM'', ...)` 处理程序并不是神圣不可侵犯的。你现在意识到，你的任何依赖项都可能正在干扰它。你决定，一个真正健壮的系统必须最后注册其关键信号处理程序，或者有一个中央关闭管理器，所有其他组件都连接到它。'
 - en: ℹ️Note
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: However, if no one removes listeners, `process.on` simply **adds** another handler
     to the queue. When the signal arrives, **all registered handlers will fire** in
     the order they were added. The real danger, is a library that *removes* other
     listeners. You shouldn't blindly trust everything inside `node_modules`.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，如果没有人移除监听器，`process.on` 简单地 **添加** 另一个处理程序到队列中。当信号到达时，**所有注册的处理程序都将按添加的顺序触发**。真正的危险是，一个库
+    *移除* 其他监听器。你不应该盲目地信任 `node_modules` 中的所有内容。
 - en: So you fix that. But now you have to be super careful about what you do *inside*
     a signal handler. Don't try to do complex async operations directly in there.
     You should realize the best pattern is to just use the signal to flip a switch
     and let your main application logic handle the actual shutdown sequence.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以你修复了它。但现在你必须非常小心你在信号处理程序中做的事情 *内部*。不要试图直接在那里执行复杂的异步操作。你应该意识到最好的模式就是仅仅使用信号来切换开关，并让你的主应用程序逻辑处理实际的关闭序列。
 - en: So, what does that safer pattern look like? This is what you may end up with
     -
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，这个更安全的模式看起来是什么样子？这可能是你最终得到的结果 -
 - en: '[PRE7]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: Look at how much more robust this is. Your signal handler's only job is to call
     `gracefulShutdown`. That function then manages the state and sequence for you.
     And crucially, you've added a timeout. That's your safety fallback mechanism.
     It prevents the process from hanging forever and ensures **you** exit on your
     own terms, long before the `SIGKILL` hammer falls.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 看看这有多健壮。你的信号处理程序的唯一任务是调用 `gracefulShutdown`。然后该函数为你管理状态和序列。最重要的是，你添加了一个超时。这是你的安全回退机制。它防止进程永远挂起，并确保
+    **你** 在 `SIGKILL` 锤子落下之前以自己的方式退出。
 - en: ⚠️Warning
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: It’s better to have one place that controls shutdown, instead of letting every
     module add its own signal handler. Think of it like a shutdown manager or event
     bus that everything registers with. That way, you can be sure the important handlers
@@ -796,29 +1132,40 @@
     can’t mess with it. Keep an eye on how many listeners are attached, and log if
     something removes them. Don’t rely on the order you register handlers - that’s
     going to cause trouble.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一个控制关闭的地方比让每个模块添加自己的信号处理程序要好。把它想象成一个关闭管理器或事件总线，所有组件都会注册到那里。这样，你可以确保重要的处理程序总是运行。你甚至可以在自己的辅助函数中包装
+    `process.on`，这样随机的库就不能干扰它。注意监听器的数量，如果有什么东西移除了它们，就记录下来。不要依赖于你注册处理程序的顺序 - 那会带来麻烦。
 - en: Graceful Shutdown
+  id: totrans-155
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 优雅关闭
 - en: A graceful shutdown is the controlled termination of an application, ensuring
     that all in-progress tasks are completed, data integrity is maintained, and active
     connections are closed properly. It should function as the inverse of the bootstrap
     process, it should methodically releases resources to prevent errors such as data
     corruption.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 优雅的关闭是指有控制的程序终止，确保所有进行中的任务都已完成，数据完整性得到维护，并且活动连接被正确关闭。它应该作为引导过程的逆过程，应该有系统地释放资源以防止数据损坏等错误。
 - en: The core idea is a state transition - `Accepting Traffic -> Draining -> Closed`.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 核心思想是状态转换 - `接受流量 -> 排空 -> 关闭`。
 - en: The very first thing you should do is to **stop accepting new work**. You lock
     the front door. For a web server, this is `server.close()`. This tells the server
     to stop accepting new connections. It does *not* terminate existing connections;
     those are allowed to finish what they're doing.
+  id: totrans-158
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 你应该做的第一件事是**停止接受新的工作**。你锁上了前门。对于一个Web服务器来说，这是`server.close()`。这告诉服务器停止接受新的连接。它**不会**终止现有的连接；那些连接被允许完成它们正在做的事情。
 - en: Then you **finish in-flight work (draining)**. This is the most critical step
     and the one everyone gets wrong. Your app has to wait for everything it's currently
     doing to complete. That could be an HTTP request, a database transaction, a message
@@ -826,51 +1173,71 @@
     servers, the callback in `server.close()` helps, but it only tells you when the
     TCP connection is closed, not that your application logic for that request is
     done. You often need to implementation for this, and it can get quite hard TBF.
+  id: totrans-159
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后你**完成正在进行的任务（排空）**。这是最关键的一步，也是大家最容易出错的地方。你的应用程序必须等待它目前正在做的所有事情完成。这可能是一个HTTP请求、一个数据库事务、来自队列的消息，等等。跟踪这个“正在进行的”工作是最困难的部分。对于Web服务器，`server.close()`中的回调有所帮助，但它只能告诉你TCP连接何时关闭，而不是你的应用程序逻辑对该请求已完成。你通常需要实现这一点，而且可能会相当困难。
 - en: The second last step is to **clean up resources**. Once you're positive no more
     work is being done, you can start tearing things down. Close your database connection
     pools. Disconnect from Redis/Valkey or RabbitMQ. Flush your logs. The order here
     is critical - you can't close the database connection while a request is still
     trying to use it. This is why cleanup comes *after* draining.
+  id: totrans-160
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最后一步是**清理资源**。一旦你确定没有更多的工作在进行，你就可以开始拆解东西了。关闭你的数据库连接池。从Redis/Valkey或RabbitMQ断开连接。清除你的日志。这里的顺序至关重要——你不能在请求仍在尝试使用它时关闭数据库连接。这就是为什么清理总是在排空之后进行。
 - en: Finally, with everything cleaned up, the process can safely exit with a code
     of `0` to tell the world it was a successful, clean shutdown. `process.exit(0)`.
+  id: totrans-161
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最后，在清理完一切之后，进程可以安全地以代码`0`退出，告诉世界这是一个成功且干净的关闭。`process.exit(0)`。
 - en: Here's the flow -
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是这个流程 -
 - en: Here's a better example of a shutdown manager class -
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是一个更好的关闭管理类的例子 -
 - en: '[PRE8]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: '`process.exit()` is *not* a clean shutdown. It is the nuclear option. It''s
     an immediate, forceful termination. The event loop just stops. Any pending async
     work is abandoned. Any data in buffers is gone forever. It''s the software equivalent
     of pulling the power cord. It should *only* be called at the very end of a graceful
     shutdown sequence, after you''ve confirmed everything is clean. Using it to "just
     exit" is how you lose data. Period.'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '`process.exit()`**不是**一个干净的关闭。它是核选项。它是一种立即的、强制性的终止。事件循环停止。任何挂起的异步工作都被放弃。任何缓冲区中的数据都永远消失。它是软件上拔掉电源插头的等效操作。它**应该**只在优雅关闭序列的末尾调用，在你确认一切都很干净之后。使用它来“只是退出”是你丢失数据的方式。就是这样。'
 - en: Handle and Resource Management
+  id: totrans-166
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 处理和资源管理
 - en: Ever had a Node process that just... won't die? You've closed your server, you
     think everything is done, but the process just hangs there until you `Ctrl+C`
     it again or it gets `SIGKILL`'d.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 你有没有遇到过Node进程就是...不会死的情况？你已经关闭了服务器，你以为一切都已经完成，但进程仍然挂在那里，直到你再次按下`Ctrl+C`或者它被`SIGKILL`终止。
 - en: The reason is almost always a leaking "handle."
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 原因几乎总是“把手”泄漏。
 - en: 'I had an API server that, after a few deploys, would start failing with the
     dreaded `Error: EMFILE: too many open files`. A quick `lsof` on the server showed
     the process had tens of thousands of open file descriptors, mostly network sockets
@@ -879,130 +1246,195 @@
     left to clean up the sockets. The rapid restarts from the deployment created a
     backlog of these dying sockets that eventually exhausted the system''s file descriptor
     limit.'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '我有一个API服务器，部署了几次之后，开始出现令人恐惧的`Error: EMFILE: too many open files`错误。在服务器上快速运行`lsof`命令显示，进程有数万个打开的文件描述符，大多数是网络套接字处于`CLOSE_WAIT`状态。我的关闭逻辑是关闭服务器，但某些东西正在泄漏套接字。进程会挂起，被`SIGKILL`终止，操作系统留下清理套接字。快速重启部署产生了这些即将死亡套接字的队列，最终耗尽了系统的文件描述符限制。'
 - en: So what the heck is a "handle"? Like I already told, it's a libuv thing. Think
     of it as an object that represents a long-lived I/O resource. An active server,
     a socket, a timer (`setTimeout` or `setInterval`), a child process - these are
     all backed by handles.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么“句柄”到底是什么？就像我之前说的，这是一个libuv的东西。把它想象成一个表示长期I/O资源的对象。一个活跃的服务器、一个套接字、一个定时器（`setTimeout`或`setInterval`）、一个子进程——这些都是由句柄支持的。
 - en: By default, these handles are "referenced." A referenced handle is telling the
     event loop, "Hey, I'm still doing stuff, don't you dare exit." The process will
     only exit gracefully on its own when there are no more referenced handles left.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，这些句柄是“引用的”。一个引用的句柄是在告诉事件循环，“嘿，我还在做事情，你敢退出。”进程只有在没有更多引用句柄时才会自行优雅退出。
 - en: Check this, a simple server -
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 检查这个简单的服务器 -
 - en: '[PRE9]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: But you can also "un-reference" a handle. You can call `.unref()` on it. This
     tells the event loop, "You can exit even if I'm still running. I'm just a background
     task, don't wait for me."
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 但你也可以“取消引用”一个句柄。你可以调用`.unref()`。这告诉事件循环，“即使我还在运行，你也可以退出。我只是一个后台任务，不用等待我。”
 - en: '[PRE10]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: This `ref()`/`unref()` mechanism is key. In our `EMFILE` problem, we were leaking
     referenced socket handles. They were keeping the process alive, which led to the
     `SIGKILL`, which led to the resource leak.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个`ref()`/`unref()`机制是关键。在我们的`EMFILE`问题中，我们泄漏了引用的套接字句柄。它们使进程保持活跃，这导致了`SIGKILL`，进而导致了资源泄漏。
 - en: Here is a small snippet that will hang on shutdown if a client connection remains
     active. You can copy paste this in a file, and run it with `node server.js`
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个小片段，如果客户端连接保持活跃，则在关闭时将会挂起。你可以将其复制粘贴到文件中，并用`node server.js`运行它。
 - en: Let's create leaked handles
+  id: totrans-178
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 让我们创建泄漏的句柄
 - en: This server will keep track of all active connections. When it receives a `SIGTERM`
     signal, it will try to shut down gracefully, but will forcefully destroy any lingering
     connections after a 5-second timeout.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个服务器将跟踪所有活跃的连接。当它收到`SIGTERM`信号时，它将尝试优雅地关闭，但在5秒超时后将强制销毁任何挂起的连接。
 - en: '[PRE11]'
+  id: totrans-180
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Open your first terminal and run the script. Take note of the **Process ID (PID)**
     it prints.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开第一个终端并运行脚本。注意它打印的**进程ID (PID)**。
 - en: '[PRE12]'
+  id: totrans-182
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Now, open a **second terminal** and use `curl` to connect to the server. Because
     of the 20-second delay we added, this command will hang, keeping the socket connection
     open.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，打开一个**第二个终端**并使用`curl`连接到服务器。由于我们添加了20秒的延迟，这个命令将会挂起，保持套接字连接打开。
 - en: '[PRE13]'
+  id: totrans-184
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: The `curl` command will now be waiting. While `curl` is still waiting, open
     a third terminal and use the `kill` command with the PID from the previous output.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '`curl`命令现在将等待。当`curl`仍在等待时，打开第三个终端并使用前一个输出中的PID运行`kill`命令。'
 - en: '[PRE14]'
+  id: totrans-186
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Now look at your **first terminal** (where the server is running). You will
     see the following happen in order -
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，看看你的**第一个终端**（服务器正在运行的终端）。你会按以下顺序看到以下情况 -
 - en: The server immediately prints -
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器立即打印 -
 - en: '[PRE15]'
+  id: totrans-189
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'At this point, `server.close()` has been called, but the process **does not
     exit** because the `curl` connection is still active. **Wait 5 seconds...** The
     `setTimeout` in our shutdown logic will fire, because the `curl` connection is
     preventing a graceful exit. You will see:'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，已经调用了`server.close()`，但由于`curl`连接仍然活跃，进程**不会退出**。**等待5秒...** 我们关闭逻辑中的`setTimeout`将会触发，因为`curl`连接阻止了优雅的退出。你会看到：
 - en: '[PRE16]'
+  id: totrans-191
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'The script now destroys the lingering socket, finally allowing the process
     to terminate. Your `curl` command in the other terminal will likely fail with
     an error like `curl: (56) Recv failure: Connection reset by peer`.'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: '脚本现在销毁了挂起的套接字，最终允许进程终止。你另一个终端中的`curl`命令可能会因为错误而失败，例如`curl: (56) Recv failure:
+    Connection reset by peer`。'
 - en: ℹ️Note
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: For applications on Node version v18 or newer, you can simplify the server shutdown
     process. Instead of manually tracking sockets, consider using the built-in `server.closeAllConnections()`
     or `server.closeIdleConnections()` methods. These provide a safer and more direct
     way to proactively close keep-alive sockets. It's still important to combine this
     with application-level draining to gracefully handle any requests already in progress.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于 Node 版本 v18 或更高版本的应用程序，你可以简化服务器关闭过程。而不是手动跟踪套接字，考虑使用内置的 `server.closeAllConnections()`
+    或 `server.closeIdleConnections()` 方法。这些提供了更安全和更直接的方式来主动关闭保持连接的套接字。仍然重要的是要将此与应用程序级别的排空相结合，以优雅地处理任何正在进行的请求。
 - en: Debugging Handle Leaks
+  id: totrans-195
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 调试处理泄漏
 - en: 'Node has this undocumented function for debugging this: `process._getActiveHandles()`.
     It returns an array of everything that''s currently keeping your process alive.'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: Node 有一个用于调试的未记录功能：`process._getActiveHandles()`。它返回一个数组，包含目前维持你的进程活跃的所有内容。
 - en: 🚨Caution
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨 警告
 - en: The `process._getActiveHandles()` function is an internal part of the Node API.
     Its behavior can change, or it may be removed entirely in future versions without
     any notice. It should only be used for debugging and is not safe for production
     code. There are other alternatives packages like `wtfnode` that you could use.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: '`process._getActiveHandles()` 函数是 Node API 的一个内部部分。它的行为可能会改变，或者在未来版本中可能没有任何通知就被完全移除。它仅应用于调试，并且不适合生产代码。还有其他替代的包，如
+    `wtfnode`，你可以使用。'
 - en: '[PRE17]'
+  id: totrans-199
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: Run this, and you'll see a `Server` handle appear and then disappear. You might
     notice the `setInterval` doesn't add a visible `TIMER` handle to the list - that's
     because modern Node optimizes how it manages timers. But don't be fooled; that
@@ -1010,46 +1442,69 @@
     key takeaway is watching the `Server` handle vanish after you call `.close()`.
     If your process is hanging on exit, just call `printActiveHandles()` right before
     you think it should exit. It will tell you exactly what you forgot to close.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行这个，你会看到一个 `Server` 处理器出现然后消失。你可能会注意到 `setInterval` 并没有向列表中添加可见的 `TIMER` 处理器
+    - 这是因为现代 Node 对定时器的管理进行了优化。但不要被骗；那个定时器仍然在后台活跃，防止你的应用程序关闭。关键是要观察你在调用 `.close()`
+    之后 `Server` 处理器的消失。如果你的进程在退出时挂起，只需在你认为它应该退出之前调用 `printActiveHandles()`。它将告诉你你忘记关闭了什么。
 - en: ℹ️Note
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️ 备注
 - en: 'Node does *not* automatically clean up your resources for you. The garbage
     collector cleans up memory, sure, but it doesn''t know anything about file descriptors
     or network sockets. If you open a file, you have to close it. If you create a
     server, you have to call `.close()`. Forgetting to do this is the #1 cause of
     handle leaks.'
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: Node 并不会自动为你清理资源。垃圾回收器确实会清理内存，但它对文件描述符或网络套接字一无所知。如果你打开一个文件，你必须关闭它。如果你创建了一个服务器，你必须调用
+    `.close()`。忘记做这些是处理泄漏的主要原因。
 - en: Memory Lifecycle and Heap
+  id: totrans-203
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内存生命周期和堆
 - en: A Node process's memory usage isn't a single number. It's a living, breathing
     thing. Understanding how it grows and shrinks is how you diagnose memory leaks
     and stop your app from getting OOM-killed. When your process starts, its memory
     usage (the Resident Set Size, or RSS, which is what the OS actually sees) shoots
     up fast. This is due to the following -
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: Node 进程的内存使用不是一个单一的数字。它是一个活生生的、有呼吸的东西。了解它是如何增长和缩小的，这是诊断内存泄漏并阻止你的应用程序被 OOM 杀死的途径。当你的进程启动时，它的内存使用（常驻集大小，或
+    RSS，这是操作系统实际看到的）会迅速上升。这归因于以下原因 -
 - en: The first reason is **V8 Heap Initialization**. V8 grabs a big chunk of memory
     for the heap right away. The second reason is **Module Loading**. As you `require()`
     files, their code is read, compiled, and stuffed into memory. The `require.cache`
     holds onto every module you've ever loaded. For a big app, this cache alone can
     easily be 100-500MB. This is basically a fixed cost of doing business.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个原因是 **V8 堆初始化**。V8 立即为堆抓取一大块内存。第二个原因是 **模块加载**。当你使用 `require()` 加载文件时，它们的代码会被读取、编译并填充到内存中。`require.cache`
+    保留了你所加载的每个模块。对于大型应用程序，这个缓存本身就可以轻易达到 100-500MB。这基本上是业务运营的固定成本。
 - en: The memory growth at startup looks like a steep ramp -
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 启动时的内存增长看起来像是一个陡峭的斜坡 -
 - en: '[PRE18]'
+  id: totrans-207
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: You can see this yourself. Just log `process.memoryUsage()` before and after
     your big `require` statements. The jump will be obvious.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以自己查看。只需在你大的 `require` 语句前后记录 `process.memoryUsage()`。跳跃将很明显。
 - en: Once your server is running and handling requests, its memory usage settles
     into a pattern. Each request creates new objects, causing the `heapUsed` to go
     up. Periodically, V8's garbage collector (GC) runs and cleans up old, unreferenced
@@ -1058,182 +1513,262 @@
     leak is when the *trough* of the sawtooth keeps getting higher over time. The
     GC is running, but it can't free some memory that you're accidentally holding
     onto.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦您的服务器开始运行并处理请求，其内存使用就会进入一个模式。每个请求都会创建新的对象，导致`heapUsed`增加。定期地，V8的垃圾回收器（GC）运行并清理旧的、未引用的对象。在GC运行后，`heapUsed`会降回。在一个健康的应用程序中，这看起来像锯齿状的模式。当您工作时，它会上升，然后下降。内存泄漏是指锯齿形的谷底随着时间的推移而不断升高。GC正在运行，但它无法释放您意外保留的一些内存。
 - en: Here's something that trips up everyone - "external" memory. This is memory
     allocated outside of V8's heap, most commonly by `Buffer` objects. When you read
     a large file into a `Buffer`, that memory is not part of the V8 heap.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是每个人都容易出错的地方 - “外部”内存。这是在V8堆之外分配的内存，最常见的是通过`Buffer`对象。当您将大文件读入`Buffer`时，该内存不是V8堆的一部分。
 - en: This is important because your V8 heap might look totally fine, well under its
     limit, but your process's total RSS could be enormous because of Buffers. This
     can lead to OOM kills that are super confusing to debug if you're only looking
     at V8 heap snapshots. You have to remember that your process's memory is more
     than just the V8 heap.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 这很重要，因为您的V8堆可能看起来完全正常，远远低于其限制，但您的进程的总RSS可能因为缓冲区而非常大。这可能导致OOM杀戮，如果您只查看V8堆快照，那么调试起来会非常困惑。您必须记住，您的进程的内存不仅仅是V8堆。
 - en: Exit Codes and Process States
+  id: totrans-212
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 退出代码和进程状态
 - en: 'When your process finally terminates, it returns an **exit code** to whatever
     started it (your shell, a script, Kubernetes). This little integer is its final
     status report. Using them correctly is a very important part of building systems
     that don''t fail silently. The convention is simple: `0` means success. Anything
     else means failure.'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您的进程最终终止时，它会向启动它的任何东西（您的shell、脚本、Kubernetes）返回一个**退出代码**。这个小整数是它的最终状态报告。正确使用它们是构建不会默默失败的系统的重要组成部分。惯例很简单：`0`表示成功。其他任何东西都表示失败。
 - en: 'Node has a few built-in exit codes, but the most important one is `1`, which
     is the default for an uncaught exception. You can control the exit code in two
     ways:'
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: Node有几个内置的退出代码，但最重要的是`1`，这是未捕获异常的默认值。您可以通过两种方式控制退出代码：
 - en: '**`process.exit(code)`** - The bad way. As we''ve covered, this is an abrupt
     termination. Don''t use it unless you''re in a burning fire.'
+  id: totrans-215
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**`process.exit(code)`** - 这是一种不好的方法。正如我们之前提到的，这是一种突然终止。除非您处于火灾中，否则不要使用它。'
 - en: '**`process.exitCode = code`** - The good way. This is just a property you set.
     It doesn''t do anything immediately. It just tells Node, "Hey, whenever you''re
     done and exit gracefully, use this exit code."'
+  id: totrans-216
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**`process.exitCode = code`** - 这是正确的方法。这只是一个您设置的属性。它不会立即执行任何操作。它只是告诉Node，“嘿，无论何时您完成并优雅地退出，请使用此退出代码。”'
 - en: ℹ️Note
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Avoid calling `process.exit()` in servers and long-running services because
     it forces immediate termination and can skip async cleanup; prefer `process.exitCode`
     + graceful handle closure. But, for short-lived CLI tools or fatal early-startup
     failures where nothing else is initialized, `process.exit()` is acceptable and
     a preferred way to shutdown.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 避免在服务器和长时间运行的服务中调用`process.exit()`，因为它会强制立即终止并可能跳过异步清理；首选`process.exitCode`
+    + 优雅地处理关闭。但是，对于短期CLI工具或致命的早期启动失败，其中没有初始化其他任何内容，`process.exit()`是可以接受的，并且是首选的关闭方式。
 - en: This lets you separate your cleanup logic from your status reporting.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 这让您可以将清理逻辑与状态报告分离。
 - en: '[PRE19]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: Why Do Exit Codes Matter So Much in Production?
+  id: totrans-221
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 为什么退出代码在生产中如此重要？
 - en: Container orchestrators like Kubernetes live and die by exit codes. When a container
     exits, Kubernetes checks the code. If it's non-zero, it assumes failure and, depending
     on your `restartPolicy`, it will restart the container. If the code is `0`, it
     assumes the process finished its job on purpose and might not restart it.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 容器编排器如Kubernetes的生存和死亡都取决于退出代码。当容器退出时，Kubernetes会检查代码。如果它不是零，它假定失败，并根据您的`restartPolicy`重新启动容器。如果代码是`0`，它假定进程有意完成其工作，可能不会重新启动它。
 - en: You can create your own application-specific exit codes to make debugging a
     thousand times easier. Like -
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以创建自己的应用程序特定的退出代码，使调试变得容易一千倍。例如 -
 - en: '`70`: Database connection failed on startup.'
+  id: totrans-224
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`70`: 启动时数据库连接失败。'
 - en: '`71`: Invalid configuration file.'
+  id: totrans-225
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`71`: 无效配置文件。'
 - en: '`72`: Couldn''t bind to the required port. Now, when your service fails to
     start, an alert on exit code `70` immediately tells the person who''s looking
     at it that "it''s a database problem." They don''t have to waste time digging
     through logs to figure that out.'
+  id: totrans-226
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`72`: 无法绑定到所需的端口。现在，当你的服务无法启动时，退出代码 `70` 的警报会立即告诉查看它的人“这是一个数据库问题。”他们不必浪费时间挖掘日志来找出这一点。'
 - en: ℹ️Note
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Ignoring exit codes is like telling your infrastructure you can't tell the difference
     between success and a five-alarm fire. A process that fails to connect to the
     database but exits with code `0` will fool Kubernetes into thinking everything
     is fine. This leads to silent failures that you only find out about when your
     customers start screaming. Using meaningful exit codes is non-negotiable.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 忽略退出代码就像告诉你的基础设施你无法区分成功和五级火灾。一个无法连接到数据库但以代码 `0` 退出的进程会欺骗 Kubernetes 认为一切正常。这会导致无声的失败，直到你的客户开始尖叫你才会发现。使用有意义的退出代码是不可或缺的。
 - en: Child Processes and Cluster Lifecycle
+  id: totrans-229
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 子进程和集群生命周期
 - en: ℹ️Note
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: It's okay if you've never ever created a child process in your life. We're going
     to go really deep in child process, work threads and clustering in a later chapter.
     Bare with me for now.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你一生中从未创建过子进程，那也无可厚非。我们将在后面的章节中深入探讨子进程、工作线程和集群。请耐心等待。
 - en: So far we've talked about a single process. But to really use a multi-core server,
     you're probably using the `cluster` module or spawning worker processes with `child_process`.
     And now you're not just a process manager; you're a parent. And you're responsible
     for your kids.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们讨论的是单个进程。但为了真正使用多核服务器，你可能正在使用 `cluster` 模块或通过 `child_process` 启动工作进程。现在你不仅是一个进程管理器；你是一个父亲。你对你孩子负责。
 - en: The `cluster` Module
+  id: totrans-233
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '`cluster` 模块'
 - en: The `cluster` module is the standard way to do multi-process Node. The master
     process doesn't handle requests; its job is to manage the workers. This includes
     coordinating a graceful shutdown. The master process gets `SIGTERM`. The master
     does *not* exit. Instead, it tells each worker to shut down gracefully by calling
     `worker.disconnect()`. Each worker gets a `disconnect` event and triggers its
     own graceful shutdown logic (stop server, drain requests, etc.).
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: '`cluster` 模块是进行多进程 Node 的标准方式。主进程不处理请求；它的任务是管理工作进程。这包括协调优雅的关闭。主进程接收 `SIGTERM`
+    信号。主进程不会退出。相反，它会通过调用 `worker.disconnect()` 告诉每个工作进程优雅地关闭。每个工作进程都会收到一个 `disconnect`
+    事件并触发它自己的优雅关闭逻辑（停止服务器，排空请求等）。'
 - en: The master listens for the `exit` event from each worker. Only when *all* workers
     have exited does the master process finally clean up and exit itself. This prevents
     the "thundering herd" problem where you kill all the processes at once and drop
     every active connection.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 主进程监听来自每个工作进程的 `exit` 事件。只有当 *所有* 工作进程都已退出时，主进程才会最终清理并退出自己。这防止了“雷鸣般的群体”问题，即你一次性杀死所有进程并丢弃每个活动连接。
 - en: '`child_process` and the Orphan Problem'
+  id: totrans-236
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '`child_process` 和孤儿问题'
 - en: When you use `child_process.spawn()` or `fork()`, you are 100% responsible for
     that child's life.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你使用 `child_process.spawn()` 或 `fork()` 时，你100%负责该子进程的生命。
 - en: ℹ️Note
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Child processes do **not** automatically die when their parent dies. If you
     just `SIGKILL` the parent process, its children become "orphaned." They get adopted
     by the system's `init` process (PID 1) and will keep on running potentially chewing
     up resources.
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 子进程在其父进程死亡时不会自动死亡。如果你只是 `SIGKILL` 父进程，其子进程将成为“孤儿”。它们会被系统 `init` 进程（PID 1）收养并继续运行，可能会消耗资源。
 - en: A responsible parent process *must* clean up its children before it exits. The
     parent's `SIGTERM` handler needs to know about all its active children. It needs
     to loop through them and send each one a `SIGTERM`. It needs to *wait* for them
     all to exit before it proceeds with its own shutdown.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 负责任的父进程 *必须* 在退出前清理其子进程。父进程的 `SIGTERM` 处理程序需要了解所有其活动子进程。它需要遍历它们并向每个发送 `SIGTERM`。它需要
+    *等待* 所有子进程退出后才能继续自己的关闭。
 - en: '[PRE20]'
+  id: totrans-241
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: Failing to do this is a huge source of resource leaks.
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有这样做会导致资源泄漏的巨大来源。
 - en: ⚠️Warning
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: Manage your children. It's not an edge case; it's a requirement and a responsibility.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 管理你的子进程。这不是边缘情况；这是一个要求和责任。
 - en: Debugging Process Issues
+  id: totrans-245
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 调试进程问题
 - en: When things go wrong - slow startups, memory leaks, hung processes - `console.log`
     isn't going to cut it. You need a better toolkit. Here are the tools I reach for
     when a process is misbehaving.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 当事情出错时 - 启动缓慢、内存泄漏、挂起进程 - `console.log` 是不够的。你需要一个更好的工具包。以下是我当进程行为异常时使用的工具。
 - en: '**Problem** - The service takes forever to start. **My Go-To Tool** - `node
     --cpu-prof --cpu-prof-name=startup.cpuprofile server.js`. This generates a V8
     CPU profile of your startup. You can drag the `startup.cpuprofile` file into Chrome
@@ -1243,164 +1778,240 @@
     to our boot time. **The Other Go-To** - `node --trace-sync-io server.js`. As I
     mentioned before, this is the best way to find blocking I/O, which is almost always
     a `require()` call deep in your `node_modules`.'
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: '**问题** - 服务启动需要很长时间。**我的首选工具** - `node --cpu-prof --cpu-prof-name=startup.cpuprofile
+    server.js`。这会生成你的启动 V8 CPU 配置文件。你可以将 `startup.cpuprofile` 文件拖到 Chrome DevTools（性能标签页）中，得到一个漂亮的火焰图，它显示了哪些函数一直在消耗时间。这就是我发现一个验证库在启动时同步编译了数百个模式，增加了我们启动时间5秒的原因。**另一个首选工具**
+    - `node --trace-sync-io server.js`。正如我之前提到的，这是找到阻塞 I/O 的最佳方式，这几乎总是 `node_modules`
+    深处的 `require()` 调用。'
 - en: '**Problem** - Memory usage just keeps going up and up. **My Go-To Tool** -
     Heap Snapshots.'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: '**问题** - 内存使用量持续上升。**我的首选工具** - 堆快照。'
 - en: '[PRE21]'
+  id: totrans-249
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: Load the `.heapsnapshot` file into Chrome DevTools (Memory tab). The "Comparison"
     view is pure gold. Take one snapshot when the app starts, another after it's been
     running under load for a while, and compare them. It will show you exactly what
     kind of objects are being created and never released. This is how we found the
     `require.cache` leak.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 `.heapsnapshot` 文件加载到 Chrome DevTools（内存标签页）。"比较" 视图是纯金。当应用启动时拍一张快照，然后在它运行一段时间后再次拍一张，并比较它们。这将显示正在创建且从未释放的确切对象类型。这就是我们找到
+    `require.cache` 泄漏的方法。
 - en: '**Problem** - Your process won''t exit gracefully. **My Go-To Tool** - `process._getActiveHandles()`.
     Call this in your shutdown logic to see exactly what libuv resources are still
     open and keeping the event loop alive. **The Ground Truth**- `lsof -p <PID>`.
     This OS-level tool ("List Open Files") shows you every single file descriptor
     your process has open - network sockets, files, everything. It''s how we diagnosed
     our `EMFILE` issue.'
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: '**问题** - 你的进程不会优雅地退出。**我的首选工具** - `process._getActiveHandles()`。在你的关闭逻辑中调用此工具，以查看哪些
+    libuv 资源仍然打开并保持事件循环活跃。**真相大白** - `lsof -p <PID>`。这个操作系统级别的工具（"列出打开的文件"）显示了你的进程打开的每个文件描述符
+    - 网络套接字、文件，等等。这是我们诊断我们的 `EMFILE` 问题的方式。'
 - en: '**Problem** - The process just dies. **Your Last Line of Defense** - `process.on(''uncaughtException'',
     ...)` and `process.on(''unhandledRejection'', ...)`. You *must* have handlers
     for these. Their only job is to log the error with as much detail as possible
     and then gracefully shut down. **Do not ever try to keep running after an uncaught
     exception.** The application is in an unknown, probably corrupt state. Just log
     it and die.'
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: '**问题** - 进程突然死亡。**你的最后一道防线** - `process.on(''uncaughtException'', ...)` 和 `process.on(''unhandledRejection'',
+    ...)`。你必须为这些设置处理程序。它们唯一的任务是尽可能详细地记录错误，然后优雅地关闭。**绝对不要在未捕获的异常后尝试继续运行**。应用程序处于未知、可能已损坏的状态。只需记录并关闭。'
 - en: Okay, that was a lot. Here's some DOs and DONTs that you can keep handy - feel
     free to add more if you want.
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，这有很多。这里有一些你可以随时使用的 DOs 和 DONTs - 如果你想的话，随时可以添加更多。
 - en: DOs
+  id: totrans-254
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '**要做的**'
 - en: '**Profile your startup time.** Seriously. Don''t guess. Use `--cpu-prof`.'
+  id: totrans-255
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**分析启动时间**。真的。不要猜测。使用 `--cpu-prof`。'
 - en: '**Lazy load heavy modules.** If an endpoint is rarely used, `require()` its
     dependencies inside the handler, not at the top of the file.'
+  id: totrans-256
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**延迟加载大型模块**。如果一个端点很少使用，在处理程序内部而不是在文件顶部 `require()` 它的依赖项。'
 - en: '**Implement a real graceful shutdown.** Handle `SIGTERM`, stop taking new work,
     wait for old work to finish, then clean up. In that order.'
+  id: totrans-257
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**实现真正的优雅关闭**。处理 `SIGTERM`，停止接受新工作，等待旧工作完成，然后清理。按照这个顺序。'
 - en: '**Track all your resources.** Every `createServer` or `connect` needs a corresponding
     `close` or `disconnect` in your shutdown logic.'
+  id: totrans-258
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**跟踪所有资源**。每个 `createServer` 或 `connect` 都需要在你的关闭逻辑中有一个相应的 `close` 或 `disconnect`。'
 - en: '**Use meaningful exit codes.** `0` for success, non-zero for failure. Make
     them specific. Your on-call engineers will thank you.'
+  id: totrans-259
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**使用有意义的退出代码**。`0` 表示成功，非零表示失败。使它们具体。你的值班工程师会感谢你的。'
 - en: '**Be a good parent.** If you spawn child processes, you are responsible for
     terminating them when you shut down.'
+  id: totrans-260
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**做一个好家长**。如果你生成子进程，你负责在关闭时终止它们。'
 - en: DON'Ts
+  id: totrans-261
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '**不要做的事情**'
 - en: '**Don''t block the event loop at startup.** No synchronous I/O or heavy CPU
     work at the top level.'
+  id: totrans-262
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要在启动时阻塞事件循环**。不要在顶层进行同步 I/O 或重负载 CPU 工作。'
 - en: '**Don''t use `process.exit()` to shut down.** It''s not graceful. It''s a car
     crash. Use `process.exitCode` and let the process exit naturally.'
+  id: totrans-263
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要使用 `process.exit()` 来关闭。** 这不是优雅的。这是一个车祸。使用 `process.exitCode` 并让进程自然退出。'
 - en: '**Don''t assume `require()` is free.** It costs CPU time and memory. Never,
     ever use a dynamic variable in a `require()` call.'
+  id: totrans-264
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要假设 `require()` 是免费的。** 它会消耗 CPU 时间和内存。永远不要在 `require()` 调用中使用动态变量。'
 - en: '**Don''t ignore signals.** If you don''t handle `SIGTERM`, Kubernetes will
     just murder your process after 30 seconds or whatever the `terminationGracePeriodSeconds`
     is set to.'
+  id: totrans-265
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要忽视信号。** 如果你没有处理 `SIGTERM` 信号，Kubernetes 将在 30 秒或 `terminationGracePeriodSeconds`
+    设置的时间后直接杀死你的进程。'
 - en: '**Don''t trust third-party libraries.** They can leak handles or mess with
     your signal handlers. Verify their behavior.'
+  id: totrans-266
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要信任第三方库。** 它们可能会泄露句柄或干扰你的信号处理器。验证它们的行为。'
 - en: '**Don''t ignore uncaught exceptions.** They are fatal. Log them and shut down
     immediately.'
+  id: totrans-267
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要忽视未捕获的异常。** 它们是致命的。记录它们并立即关闭。'
 - en: Production Safety Checklist
+  id: totrans-268
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 生产安全检查清单
 - en: Before I approve any PR for a new service, I ask these questions -
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我批准任何新服务的 PR 之前，我会问这些问题 -
 - en: Have you actually measured the startup time?
+  id: totrans-270
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你实际测量过启动时间了吗？
 - en: Do we have a strategy for our modules (bundling, lazy-loading)?
+  id: totrans-271
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我们对于模块（打包、懒加载）有策略吗？
 - en: Is there a robust handler for `SIGTERM` and `SIGINT`?
+  id: totrans-272
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 是否有健壮的 `SIGTERM` 和 `SIGINT` 处理器？
 - en: Can you prove that every resource you open is closed during shutdown?
+  id: totrans-273
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你能证明在关闭期间你打开的每个资源都被关闭了吗？
 - en: Does the process exit with the correct code for success vs. different failures?
+  id: totrans-274
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 进程是否以正确的代码退出，以区分成功和不同的失败？
 - en: If you spawn children, are you absolutely sure you're cleaning them up?
+  id: totrans-275
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果你创建了子进程，你绝对确定你已经清理它们了吗？
 - en: Closing - Respecting the Process Lifecycle
+  id: totrans-276
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 关闭 - 尊重进程生命周期
 - en: We love to focus on the sexy stuff - the clever algorithm, the slick API design.
     We treat the process that runs our code as this boring, black box that just works.
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们喜欢关注那些性感的东西——聪明的算法、流畅的 API 设计。我们把运行我们代码的过程当作这个无聊的、黑盒，它只是正常工作。
 - en: But as we've seen, that box has a life of its own. It's born in a storm of C++
     and system calls, it grows by eating code and memory, it lives by the rhythm of
     the event loop, and it must, eventually, die. Your beautiful code might stand
     for a while, but eventually, the ground will shift, and it will all come crashing
     down. Data will get corrupted. Services will go down. Customers will get angry.
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 但正如我们所看到的，这个盒子有自己的生命。它诞生于 C++ 和系统调用的风暴中，它通过吞噬代码和内存而成长，它通过事件循环的节奏而生存，它最终必须死亡。你美丽的代码可能存在一段时间，但最终，地面会移动，一切都会崩溃。数据会被损坏。服务会中断。客户会生气。
 - en: Respecting the process lifecycle means treating your application not as a static
     script, but as a dynamic, living entity. It means thinking about its birth (fast
     startups), its life (resilient operation), and its death (clean shutdowns). It’s
     the shift from "just run my code" to "manage this process."
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: 尊重进程生命周期意味着将你的应用程序视为一个动态的、有生命的实体，而不是一个静态的脚本。这意味着要考虑它的诞生（快速启动）、它的生命（弹性运行）和它的死亡（干净关闭）。这是从“只是运行我的代码”到“管理这个进程”的转变。
 - en: And honestly, making that shift is what separates the junior developers from
     the senior engineers. It’s the foundation that all robust, reliable, production-ready
     systems are built on.
+  id: totrans-280
   prefs: []
   type: TYPE_NORMAL
+  zh: 诚实地讲，这种转变是区分初级开发人员和高级工程师的关键。它是所有健壮、可靠、生产就绪的系统的基础。

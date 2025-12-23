@@ -1,29 +1,41 @@
 - en: Inside the V8 JavaScript Engine
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: V8 JavaScript 引擎内部
 - en: 原文：[https://www.thenodebook.com/node-arch/v8-engine-intro](https://www.thenodebook.com/node-arch/v8-engine-intro)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://www.thenodebook.com/node-arch/v8-engine-intro](https://www.thenodebook.com/node-arch/v8-engine-intro)
 - en: ℹ️Note
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: A quick word on this chapter. We're deliberately getting into some advanced
     territory here. I'll introduce some big ideas now that we'll explore in much more
     detail later in Volume 3 (Ch 21 onwards).
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于本章的简要说明。我们故意进入了一些高级领域。现在我会介绍一些大概念，我们将在第三卷（第 21 章开始）中更详细地探讨。
 - en: Think of this as a quick overview - we're moving fast and focusing only on the
     most important points. Why? Because getting a strong understanding of how the
     v8 engine and memory works first is absolutely essential. It's the foundation
     that will make all the next lessons just click.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 将这视为一个快速概述——我们进展迅速，只关注最重要的点。为什么？因为首先对 v8 引擎和内存的工作原理有一个深入的理解是绝对必要的。这是所有后续课程的基础，将使所有课程都变得容易理解。
 - en: TL;DR
+  id: totrans-5
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: TL;DR
 - en: 'Let''s get one thing straight: **V8 is both an interpreter and a multi-tier
     JIT compiler**. When your Node.js application runs, your JavaScript is first interpreted
     by **Ignition**, which compiles it into bytecode and executes it directly. As
@@ -34,15 +46,24 @@
     "hot paths"), it''s ultimately compiled by TurboFan into highly optimized, speculative
     machine code that runs nearly as fast as C++. This sophisticated multi-tier pipeline
     balances fast startup with exceptional peak performance.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们明确一点：**V8 既是解释器又是多级 JIT 编译器**。当你的 Node.js 应用程序运行时，你的 JavaScript 首先由 **Ignition**
+    解释，将其编译成字节码并直接执行。随着你的代码逐渐热身，它将通过一个复杂的 4 级编译流程：**Sparkplug**（快速基线编译器）→ **Maglev**（中级优化编译器）→
+    **TurboFan**（高级优化编译器）。每一级都提供了越来越好的性能，但代价是编译时间。对于重要的代码（你的“热点路径”），最终由 TurboFan 编译成高度优化的、推测性的机器代码，其运行速度几乎与
+    C++ 相当。这个复杂的多级流程在快速启动和卓越的峰值性能之间取得了平衡。
 - en: ℹ️Note
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: V8 is both an interpreter and a multi-tier JIT compiler. Understanding this
     sophisticated compilation pipeline is crucial for performance optimization.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: V8 既是解释器又是多级 JIT 编译器。理解这个复杂的编译流程对于性能优化至关重要。
 - en: 'The entire performance model of V8 hinges on a critical assumption: that your
     code is predictable. V8 makes bets on the *shapes* of your objects and the *types*
     of your variables. It achieves this using an internal mechanism called **Hidden
@@ -50,8 +71,10 @@
     class. When you add a property, it transitions to a new hidden class. V8''s compilers,
     especially Maglev and TurboFan, generate machine code that is specialized for
     these hidden classes. This is incredibly fast - as long as the assumptions hold.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: V8 整个性能模型依赖于一个关键假设：你的代码是可预测的。V8 通过内部机制 **Hidden Classes**（或称为形状）对你的对象形状和变量类型进行下注。它通过这种机制为这些隐藏类生成专门的机器代码。这非常快——只要假设成立。
 - en: When your code breaks these assumptions - by creating objects with different
     property orders, mixing types in arrays, or using dynamic patterns - you trigger
     a performance cliff. V8 is forced to throw away the optimized machine code in
@@ -63,44 +86,59 @@
     stable object shapes and punishes dynamic, unpredictable ones - is the key to
     unlocking consistent, high-performance Node.js applications. Focus on writing
     "boring," monomorphic JavaScript that keeps the optimizing compilers happy.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你的代码打破了这些假设——通过创建具有不同属性顺序的对象、在数组中混合类型或使用动态模式——你会触发性能悬崖。V8被迫在称为**去优化**的过程中丢弃优化的机器代码，并回退到字节码解释器或更低的编译层级。去优化通常会导致从2倍到20倍的性能下降，具体取决于上下文。在紧密循环或极端热点路径中，惩罚可能会更严重（可能是100倍或更多），但100倍的减速是罕见的边缘情况。理解这个概念——V8奖励可预测、稳定的对象形状，并惩罚动态、不可预测的形状——是解锁一致、高性能Node.js应用程序的关键。专注于编写“无聊”的单态JavaScript，让优化编译器保持高兴。
 - en: The 100x Slowdown Mystery
+  id: totrans-11
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 100倍减速之谜
 - en: It started, as it always does, with a perfectly reasonable piece of code. We
     had an API endpoint responsible for processing configuration objects. It would
     take a base config, layer on some user-specific overrides, and then maybe some
     request-specific settings. Simple stuff. For months, it ran flawlessly, humming
     along at about 2-5ms per request.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 它就像往常一样，从一个完全合理的代码片段开始。我们有一个API端点，负责处理配置对象。它会取一个基本配置，添加一些用户特定的覆盖，然后可能是一些请求特定的设置。很简单的事情。数月来，它一直运行得毫无故障，每个请求大约2-5毫秒。
 - en: Then the latency alerts started screaming. P99 latency had shot up to over 200ms.
     Not 20ms. *Two hundred milliseconds*. A 100x slowdown. We thought it was a network
     issue, a database bottleneck, anything but the application code. The code was
     simple, clean, and correct. What could possibly be wrong?
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后延迟警报开始尖叫。P99延迟飙升至200毫秒以上。不是20毫秒。*两百毫秒*。100倍的减速。我们以为这是网络问题，数据库瓶颈，任何不是应用程序代码的问题。代码简单、干净、正确。可能出什么问题了？
 - en: We deployed a hotfix to add more logging. Nothing. We dove into the CPU profiler,
     and the flame graphs were a mess. They didn't point to a single culprit function;
     instead, the entire request handler was just... slow. It was as if the CPU had
     decided to run at 1/100th of its normal speed, but only for this specific endpoint.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们部署了一个热修复来添加更多的日志。没有效果。我们深入CPU分析器，火焰图一片混乱。它们并没有指向一个单一的罪魁祸首函数；相反，整个请求处理器只是……很慢。就好像CPU决定只以正常速度的1/100来运行，但只针对这个特定的端点。
 - en: The change that caused it was innocuous. A new feature required us to add a
     dynamic, optional property to the config object. A single `if (condition) { config.optionalFeature
     = true; }`. That was it. One line of code. One property addition.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 导致这种情况的变化是无害的。一个新功能要求我们向配置对象添加一个动态的、可选的属性。一行代码：`if (condition) { config.optionalFeature
+    = true; }`。就是这样。一行代码。一个属性的增加。
 - en: We were staring at a ghost. The code was logically identical in its "hot path,"
     yet it was orders of magnitude slower. This was my first real lesson in JavaScript
     performance. It's the moment you realize that the code you write is not the code
     that runs. You're not writing instructions for a simple interpreter; you're writing
     suggestions for a hyper-aggressive optimizing compiler. And we had, completely
     by accident, offended that compiler in the worst way possible.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们面对的是一个幽灵。代码在“热点路径”上逻辑上完全相同，但速度慢了几个数量级。这是我关于JavaScript性能的第一个真正教训。这是你意识到你写的代码并不是运行的代码的时刻。你并不是在为简单的解释器编写指令；你是在为超级积极的优化编译器提供建议。而我们，完全意外地，以最糟糕的方式冒犯了那个编译器。
 - en: 'We were treating our JavaScript objects like convenient hash maps, adding properties
     whenever we felt like it. We assumed, like most developers, that "JavaScript is
     JavaScript, right?" It''s a dynamic language, and this is how you use it. But
@@ -111,53 +149,77 @@
     a dramatically slower execution path. The function that went from 2ms to 200ms
     taught us a lesson no textbook could: you don''t just write JavaScript for other
     developers. You write it for V8.'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们以前把 JavaScript 对象当作方便的哈希表来处理，随时添加属性。我们像大多数开发者一样假设，“JavaScript 就是 JavaScript，对吧？”它是一种动态语言，这就是你使用它的方式。但在我们的代码下面，V8
+    引擎已经就我们的 `config` 对象的结构做出了一系列假设。它基于这个结构生成了高度专业化的机器代码。而我们添加的一个无辜的属性就使所有这些假设失效，迫使
+    V8 扔掉所有辛勤的工作，并回退到一个显著更慢的执行路径。那个从 2ms 提升到 200ms 的函数教会了我们一个任何教科书都无法传授的教训：你不仅仅是为其他开发者编写
+    JavaScript。你是为 V8 编写它。
 - en: '* * *'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: How V8 Actually Executes JavaScript
+  id: totrans-19
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: V8 实际上是怎样执行 JavaScript 的
 - en: 'Most of us start with a simple mental model: JavaScript is an interpreted language.
     You write code, an engine reads it line by line, and does what it says. This model
     is not just wrong; it''s dangerously wrong if you care about performance. V8 doesn''t
     interpret your code in the traditional sense. It compiles it through a sophisticated
     multi-tier pipeline.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们大多数人都有一个简单的心理模型：JavaScript 是一种解释型语言。你编写代码，引擎逐行读取它，并执行其指示。这种模型不仅错误，如果你关心性能，它甚至是非常危险的。V8
+    并不是以传统方式解释你的代码。它通过一个复杂的分层管道编译你的代码。
 - en: 'The journey from your `.js` file to executed machine code is a multi-stage
     pipeline designed for one thing: speed. Specifically, it''s designed for a fast
     startup (don''t spend too long compiling upfront) and incredible peak performance
     for code that runs frequently. This is the core idea of a **Just-In-Time (JIT)**
     compiler.'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 从你的 `.js` 文件到执行机器代码的过程是一个多阶段管道，设计目的是为了速度。具体来说，它设计用于快速启动（不要花费太多时间编译）以及频繁运行代码的惊人峰值性能。这是即时编译器（**Just-In-Time
+    (JIT)**）的核心思想。
 - en: 'Here''s the high-level flow:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是高级流程：
 - en: 'The first thing V8 does is parse your raw JavaScript source code. It doesn''t
     execute anything yet. The goal is to turn your string of characters into a structured
     representation the machine can understand. This process involves two key components:'
+  id: totrans-23
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: V8 首先要做的是解析你的原始 JavaScript 源代码。它还没有开始执行任何操作。目标是把字符序列转换成机器可以理解的有序表示。这个过程涉及两个关键组件：
 - en: '**Scanner:** Tokenizes the code, breaking it down into atomic pieces like `const`,
     `myVar`, `=`, `10`, `;`.'
+  id: totrans-24
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**扫描器**：将代码标记化，将其分解成原子片段，如 `const`、`myVar`、`=`、`10`、`;`。'
 - en: '**Parser:** Takes the stream of tokens and builds an **Abstract Syntax Tree
     (AST)**. The AST is a tree-like data structure that represents the grammatical
     structure of your code. An expression like `const a = 10;` becomes a tree with
     a `VariableDeclaration` node, which has a child for the identifier (`a`) and another
     for the value (`10`).'
+  id: totrans-25
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**解析器**：接收标记流并构建一个 **抽象语法树 (AST)**。AST 是一种树形数据结构，它表示了你的代码的语法结构。一个像 `const a
+    = 10;` 的表达式会变成一个具有 `VariableDeclaration` 节点的树，该节点有一个标识符（`a`）子节点和一个值（`10`）子节点。'
 - en: Once the AST is built, V8's interpreter, named **Ignition**, gets to work. Ignition
     walks the AST and generates **bytecode**. Bytecode is a low-level, platform-independent
     set of instructions. It's not machine code yet, but it's much closer to the metal
@@ -167,17 +229,23 @@
     For code that only runs once, this is often the beginning and end of the story.
     It's faster than a naive interpreter because it doesn't have to re-parse the source
     code every time.
+  id: totrans-26
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 一旦构建了抽象语法树（AST），V8 的解释器，名为 **Ignition**，就开始工作。Ignition 遍历 AST 并生成 **字节码**。字节码是一组低级、平台无关的指令。它还不是机器代码，但它比原始
+    JavaScript 更接近底层。例如，一个加法操作 `a + b` 可能会变成类似 `Ldar a`（使用 `a` 的值加载累加器），`Add b`（将
+    `b` 的值加到累加器）的字节码指令。Ignition 然后可以直接执行这些字节码。对于只运行一次的代码，这通常是故事的开始和结束。它比简单的解释器更快，因为它不必每次都重新解析源代码。
 - en: While Ignition is executing bytecode, it's also collecting profiling data. It's
     watching your code run. How many times is this function called? What types of
     values are being passed to it? What object shapes are being used? This feedback
     is crucial for the next steps. It's like a scout reporting back from the front
     lines, telling the generals where to focus their efforts.
+  id: totrans-27
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 当Ignition正在执行字节码时，它也在收集剖析数据。它在观察你的代码运行。这个函数被调用了多少次？传递给它的值类型是什么？使用了哪些对象形状？这种反馈对于下一步至关重要。它就像前线侦察兵向将军汇报，告诉他们应该在哪里集中精力。
 - en: When Ignition's profiler identifies a piece of code as "warm" (i.e., it's being
     executed somewhat frequently), it gets handed off to **Sparkplug**, the baseline
     compiler. Sparkplug takes the bytecode from Ignition and compiles it directly
@@ -185,9 +253,11 @@
     but doesn't have the overhead of advanced analysis. Sparkplug smooths out the
     performance cliff between interpreted and optimized code. It was introduced in
     2021 to fill a crucial gap in the compilation pipeline.
+  id: totrans-28
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 当Ignition的剖析器识别出一段代码为“热”代码（即，它被执行得相对频繁）时，它会被转交给**Sparkplug**，基线编译器。Sparkplug从Ignition接收字节码，并直接编译成机器代码，而不进行任何优化。这比解释字节码更快，但没有高级分析的开销。Sparkplug平滑了解释和优化代码之间的性能悬崖。它于2021年推出，以填补编译管道中的关键差距。
 - en: As functions continue to heat up and become "hot" (executed more frequently
     with consistent type feedback), they're promoted to **Maglev**, the mid-tier optimizing
     compiler introduced in Chrome M117 (December 2023). Maglev represents a sweet
@@ -198,9 +268,11 @@
     producing code that's significantly better than baseline but without the full
     heavyweight optimization. Maglev performs speculative optimizations based on the
     type feedback but with less aggressive assumptions than TurboFan.
+  id: totrans-29
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 随着函数变得越来越热门并成为“热门”函数（执行频率更高，并伴随一致的类型反馈），它们被提升到**磁悬浮列车**，这是Chrome M117（2023年12月）中引入的中端优化编译器。磁悬浮列车代表了编译管道中的最佳平衡点。它接收来自Ignition的字节码和类型反馈，并使用静态单赋值（SSA）形式和控制流图生成优化的机器代码。磁悬浮的哲学是“足够好的代码，足够快”——它的编译速度比Sparkplug慢约10倍，但比TurboFan快约10倍，生成的代码比基线代码显著更好，但没有全面的重型优化。磁悬浮基于类型反馈进行推测性优化，但比TurboFan的假设更为保守。
 - en: Finally, for the absolute hottest code paths that have been executed thousands
     of times with very stable type feedback, V8 promotes functions to **TurboFan**,
     the advanced optimizing compiler. TurboFan takes the bytecode from Ignition and
@@ -210,9 +282,11 @@
     Based on this bet, it generates highly optimized, low-level machine code specific
     to that assumption. This machine code can bypass many of the checks and overhead
     of the interpreter, leading to massive speedups.
+  id: totrans-30
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最后，对于执行了数千次且类型反馈非常稳定的绝对热门代码路径，V8将函数提升到**TurboFan**，高级优化编译器。TurboFan从Ignition接收字节码和丰富的剖析反馈，并进行激进的**推测性优化**。它说：“好吧，这个函数已经被调用了10,000次，而且每次传递给参数`x`的值都是数字。我要赌它将**总是**是数字。”基于这个赌注，它生成针对这个假设的高度优化、低级的机器代码。这种机器代码可以绕过解释器中的许多检查和开销，从而实现巨大的速度提升。
 - en: What happens if any of the optimizing compilers' bets were wrong? What if, on
     the 10,001st call, you pass a string to that function instead of a number? V8
     detects this assumption violation, immediately discards the optimized machine
@@ -221,222 +295,315 @@
     It ensures correctness, but it comes at a performance cost. If it happens repeatedly,
     your application will be stuck in a deadly loop of optimizing and deoptimizing,
     destroying your performance.
+  id: totrans-31
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果优化编译器的任何赌注都失败了怎么办？如果在第10,001次调用时，你传递了一个字符串而不是一个数字给那个函数呢？V8检测到这个假设违反，立即丢弃优化的机器代码，并无缝地将执行切换回较低层级——无论是磁悬浮列车、Sparkplug，还是直接回到Ignition的字节码。这被称为**去优化**。它确保了正确性，但这也带来了性能成本。如果这种情况反复发生，你的应用程序将陷入优化和去优化的致命循环，破坏你的性能。
 - en: Let's clear a common myth right here.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们在这里澄清一个常见的误解。
 - en: 'Myth 1: "V8 is just an interpreter"'
+  id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 误解1：“V8只是一个解释器”
 - en: This is fundamentally untrue. While it *has* an interpreter (Ignition), its
     main goal is to get to optimized machine code through its multi-tier compilation
     pipeline. The bytecode Ignition produces is an implementation detail, a stepping
     stone to the optimizing compilers.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 这在本质上是不真实的。虽然它确实有一个解释器（Ignition），但其主要目标是通过对多层级编译管道的优化，得到优化的机器码。Ignition产生的字节码是一个实现细节，是通往优化编译器的垫脚石。
 - en: 'Here''s a simple diagram of the modern 4-tier process:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是现代4层过程的简单图示：
 - en: This pipeline is the heart of V8\. Your job as a performance-conscious engineer
     is to write code that flows smoothly up the tiers to TurboFan and *stays there*.
     Every time your code causes a deoptimization, you're forcing V8 to climb back
     down to a slower tier, and the performance penalty can be staggering.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个管道是V8的核心。作为一位注重性能的工程师，你的任务是编写能够顺畅地流经层级到TurboFan并停留在那里的代码。每次你的代码导致去优化，你都在迫使V8爬回一个较慢的层级，性能惩罚可能非常巨大。
 - en: '* * *'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: 'The Compilation Pipeline: Ignition to TurboFan'
+  id: totrans-38
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 编译管道：从Ignition到TurboFan
 - en: Let's zoom in on that pipeline. Understanding the progression through each tier
     is critical because it's where all the performance magic - and all the performance
     cliffs - happen.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们放大查看这个管道。理解每个层级中的进展至关重要，因为所有性能魔法——以及所有性能悬崖——都发生在这里。
 - en: It all starts after parsing. The AST is now in memory.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这一切都始于解析之后。现在AST已经在内存中。
 - en: 'Ignition''s Role: Baseline Performance'
+  id: totrans-41
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 点火器的作用：基准性能
 - en: Ignition's primary job is to get your code running *quickly*. Full-blown optimization
     is a heavy process; it consumes CPU and memory. For code that might only run once
     during application startup, it would be wasteful to spin up a massive compiler.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: Ignition的主要任务是让你的代码快速运行。完整的优化是一个重过程；它消耗CPU和内存。对于可能在应用程序启动期间只运行一次的代码，启动一个庞大的编译器将是浪费的。
 - en: So, Ignition walks the AST and emits bytecode. This is a one-to-one process;
     there's no complex optimization happening here. The design of this bytecode is
     fascinating. It's a register-based machine rather than a stack-based one, which
     reduces the number of instructions needed and aligns better with the architecture
     of real CPUs.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，Ignition遍历AST并生成字节码。这是一个一对一的过程；这里没有复杂的优化发生。这种字节码的设计非常迷人。它是一个基于寄存器的机器，而不是基于堆栈的，这减少了所需的指令数量，并且更好地与真实CPU的架构相匹配。
 - en: While executing this bytecode, Ignition gathers feedback. The main piece of
     data it collects is called **Type Feedback**. For every operation in your code
     (like property access `obj.x`, or an addition `a + b`), V8 creates a **Feedback
     Vector** slot. As the code runs, Ignition populates this vector with observed
     types.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 在执行这个字节码的过程中，Ignition收集反馈。它收集的主要数据称为**类型反馈**。对于你代码中的每个操作（如属性访问`obj.x`或加法`a +
+    b`），V8都会创建一个**反馈向量**槽。随着代码的运行，Ignition会填充这个向量中的观察到的类型。
 - en: 'For example, for the code `function add(a, b) { return a + b; }`:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，对于代码`function add(a, b) { return a + b; }`：
 - en: 'Ignition sees `add(1, 2)`. It records in the feedback vector: "Saw `a` as Small
     Integer, `b` as Small Integer, operation resulted in Small Integer."'
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Ignition看到了`add(1, 2)`。它在反馈向量中记录：“看到了`a`作为小整数，`b`作为小整数，操作结果为小整数。”
 - en: It sees `add(10, 20)`. The feedback is consistent.
+  id: totrans-47
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它看到了`add(10, 20)`。反馈是一致的。
 - en: The function is called 100 times with integers. The feedback vector is now very
     confident about the types involved.
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 函数被以整数调用100次。现在反馈向量对涉及的类型非常有信心。
 - en: This feedback is the fuel for all the optimizing compilers. Without it, they
     would be flying blind.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 这条反馈是所有优化编译器的燃料。没有它，它们就会盲目飞行。
 - en: 'Sparkplug: The Fast Baseline'
+  id: totrans-50
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Sparkplug：快速基准
 - en: '**Sparkplug** is a baseline compiler introduced in 2021 that serves as the
     first optimization tier. It takes Ignition''s bytecode and compiles it directly
     to machine code without any optimizations or type specialization. This is faster
     than interpreting bytecode but doesn''t have the overhead of advanced analysis.'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Sparkplug**是2021年引入的基准编译器，作为第一个优化层级。它将Ignition的字节码直接编译成机器码，没有任何优化或类型专门化。这比解释字节码快，但没有高级分析的开销。'
 - en: The key insight behind Sparkplug is that even unoptimized machine code is often
     better than interpreted bytecode. It provides a smooth transition from Ignition
     to the more aggressive optimizing compilers, reducing the performance cliff that
     used to exist.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: Sparkplug背后的关键洞察是，即使是未优化的机器码通常也比解释的字节码要好。它提供了从Ignition到更激进的优化编译器的平滑过渡，减少了曾经存在的性能悬崖。
 - en: 'Maglev: The Mid-Tier Optimizer'
+  id: totrans-53
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Maglev：中层的优化器
 - en: '**Maglev** is V8''s newest addition to the compilation pipeline, introduced
     in Chrome M117 (December 2023). It fills a crucial gap between Sparkplug''s fast-but-unoptimized
     code and TurboFan''s slow-to-compile-but-highly-optimized code.'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Maglev**是V8编译管道中的最新成员，于Chrome M117（2023年12月）引入。它填补了Sparkplug的快速但未优化的代码和TurboFan的慢速编译但高度优化的代码之间的关键差距。'
 - en: Maglev's design philosophy is "good enough code, fast enough." Here's what makes
     it special -
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: Maglev的设计理念是“足够好的代码，足够快”。以下是它特殊之处 -
 - en: Unlike Sparkplug's direct bytecode-to-machine-code translation, Maglev builds
     a proper Static Single Assignment (SSA) form representation with a control flow
     graph. This allows it to perform meaningful optimizations while keeping compilation
     time reasonable.
+  id: totrans-56
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 与Sparkplug直接将字节码转换为机器码的翻译不同，Maglev通过控制流图构建了适当的静态单赋值（SSA）形式表示。这使得它能够在保持编译时间合理的同时执行有意义的优化。
 - en: It uses the type feedback from Ignition to generate specialized code. If a function
     always receives integers, Maglev will generate integer-specific machine code.
     But it's less aggressive than TurboFan - it makes safer bets that are less likely
     to require deoptimization.
+  id: totrans-57
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 它使用Ignition的类型反馈来生成专用代码。如果一个函数总是接收整数，Maglev将生成特定于整数的机器码。但它的侵略性不如TurboFan - 它做出更安全的赌注，不太可能需要去优化。
 - en: It compiles approximately 10x slower than Sparkplug but 10x faster than TurboFan.
     This makes it perfect for code that's hot enough to benefit from optimization
     but not so critical that it needs TurboFan's heavyweight treatment.
+  id: totrans-58
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 它的编译速度大约比Sparkplug慢10倍，但比TurboFan快10倍。这使得它非常适合那些足够热以从优化中受益但又不那么关键以至于需要TurboFan的重型处理的代码。
 - en: One of it's surprising benefits is reduced energy consumption. By providing
     good-enough optimization quickly, it prevents the CPU from spinning in less efficient
     code while waiting for TurboFan to finish its compilation.
+  id: totrans-59
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 其中一个令人惊讶的好处是减少了能耗。通过快速提供足够的优化，它防止CPU在等待TurboFan完成编译时在效率较低的代码中空转。
 - en: Maglev serves as a proving ground. Code that performs well in Maglev with stable
     type feedback becomes a strong candidate for TurboFan optimization.
+  id: totrans-60
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Maglev作为一个试验场。在Maglev中表现良好的代码，具有稳定的类型反馈，成为TurboFan优化的强有力候选者。
 - en: Here's the modern four-tier compilation pipeline -
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是现代的四层编译管道 -
 - en: 'TurboFan''s Trigger: The Hotness Counter'
+  id: totrans-62
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: TurboFan的触发器：热度计数器
 - en: How does V8 decide when to optimize? It uses a combination of counters and heuristics.
     Every time a function is executed, V8 might increment its hotness counter. When
     this counter reaches certain thresholds, V8 promotes the function to the next
     tier.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: V8如何决定何时进行优化？它使用计数器和启发式算法的组合。每次函数执行时，V8可能会增加其热度计数器。当这个计数器达到某些阈值时，V8将函数提升到下一级。
 - en: 'The thresholds aren''t fixed - V8 adjusts them based on various factors:'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 阈值不是固定的 - V8根据各种因素进行调整：
 - en: Loop iterations count more than function calls
+  id: totrans-65
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 循环迭代次数比函数调用多
 - en: Functions with stable type feedback are promoted more aggressively
+  id: totrans-66
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 具有稳定类型反馈的函数被更积极地提升
 - en: Available CPU resources influence promotion decisions
+  id: totrans-67
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可用的CPU资源影响提升决策
 - en: 'Once flagged for TurboFan optimization, the **compilation job** is sent to
     a background thread. This is important: V8 doesn''t block your main application
     thread to compile your code. It does the heavy lifting in parallel, ensuring your
     app remains responsive.'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦标记为TurboFan优化，**编译任务**将被发送到后台线程。这很重要：V8不会阻塞你的主应用程序线程来编译你的代码。它并行处理繁重的工作，确保你的应用程序保持响应。
 - en: TurboFan's Speculative Optimization
+  id: totrans-69
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: TurboFan的推测性优化
 - en: 'TurboFan now has three things: the **bytecode from Ignition**, the **rich Type
     Feedback**, and potentially **optimized code from Maglev** to analyze. It begins
     its work, which is a masterclass in speculation.'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: TurboFan现在有三个东西：来自Ignition的**字节码**、丰富的**类型反馈**，以及可能来自Maglev的**优化代码**进行分析。它开始工作，这是一门关于推测的精湛课程。
 - en: TurboFan doesn't work with bytecode directly. It converts it into an internal
     graph representation called a "**sea of nodes.**" This graph makes it easier to
     apply advanced compiler optimizations like redundant/dead code elimination, [constant
     folding](https://en.wikipedia.org/wiki/Constant_folding), and [loop unrolling](https://en.wikipedia.org/wiki/Loop_unrolling).
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: TurboFan 不直接与字节码工作。它将其转换为称为“**节点海洋**”的内部图表示。这个图使得应用高级编译器优化（如冗余/死代码消除、[常量折叠](https://en.wikipedia.org/wiki/Constant_folding)、[循环展开](https://en.wikipedia.org/wiki/Loop_unrolling)）变得更容易。
 - en: 'TurboFan looks at the feedback vector and makes its most aggressive bets. "The
     feedback for `obj.x` says it has always seen the same object shape. I will generate
     machine code that assumes this shape." This means instead of a generic "look up
     property `x` on this object" operation (which involves a hash map lookup), it
     can generate a direct memory access: `mov rax, [rbx + 0x18]`. This is the difference
     between a slow, multi-step process and a single, blazing-fast CPU instruction.'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: TurboFan 会查看反馈向量并做出最激进的猜测。“对于 `obj.x` 的反馈表明它总是看到相同的对象形状。我将生成假设这个形状的机器代码。”这意味着它可以直接生成内存访问：`mov
+    rax, [rbx + 0x18]`，而不是一个通用的“在这个对象上查找属性 `x`”操作（这涉及到哈希表查找）。这是缓慢的多步骤过程和单个快速 CPU 指令之间的区别。
 - en: ℹ️Note
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Don't worry if you haven't seen assembly code before. This instruction is a
     direct command to fetch data from a precise memory location. It calculates the
     address using the object's location (rbx) plus a fixed offset (+ 0x18), completely
     skipping a slow property lookup.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你之前没有见过汇编代码，不要担心。这条指令是直接从精确内存位置获取数据的命令。它使用对象的位置（rbx）加上一个固定偏移量（+ 0x18）来计算地址，完全跳过了缓慢的属性查找。
 - en: If a hot function `foo()` calls another function `bar()`, TurboFan might decide
     to **inline** `bar()`. It essentially copies the machine code for `bar()` directly
     into the code for `foo()`, eliminating the overhead of a function call. This is
     one of the most powerful optimizations V8 performs.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个热门函数 `foo()` 调用了另一个函数 `bar()`，TurboFan 可能会决定 **内联** `bar()`。它本质上是将 `bar()`
+    的机器代码直接复制到 `foo()` 的代码中，消除了函数调用的开销。这是 V8 执行的最强大的优化之一。
 - en: What if a function is already running when it becomes hot? Imagine a long-running
     `for` loop. The function was called once, but the loop has been spinning for millions
     of iterations. V8 can't wait for the function to return to swap in the optimized
@@ -445,181 +612,272 @@
     background. Once it's ready, V8 can pause execution *in the middle of the loop*,
     replace the execution frame on the stack with the new optimized frame, and resume
     execution in the fast machine code.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个函数在变得热门时已经开始运行呢？想象一下一个长时间运行的 `for` 循环。函数被调用了一次，但循环已经进行了数百万次迭代。V8 不能等待函数返回来交换优化后的代码。这就是
+    **栈上替换**（OSR）发挥作用的地方。当循环在慢速的 Ignition 字节码中运行时，TurboFan 在后台编译一个优化版本。一旦准备好，V8 可以在循环的中间暂停执行，用新的优化帧替换栈上的执行帧，然后在快速机器码中继续执行。
 - en: 'What you get from TurboFan is a block of machine code that''s been highly optimized
     based on the behavior Ignition observed. This code is extremely fast, but there''s
     a catch: it''s totally dependent on those early observations holding true.'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 从 TurboFan 获得的是一个基于 Ignition 观察到的行为高度优化的机器代码块。这段代码非常快，但有一个问题：它完全依赖于那些早期观察结果的真实性。
 - en: Hidden Classes
+  id: totrans-78
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 隐藏类
 - en: '**This is it**. If you only learn one thing about V8 internals, make it this.
     **Hidden Classes** (also called "Shapes" or "Maps" in V8''s source code) are the
     mechanism V8 uses to implement fast property access on JavaScript objects. They
     are the foundation upon which all the optimizing compilers build their optimizations.'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '**这就是关键**。如果你只想了解关于 V8 内部的一个知识点，那就让它成为这个。**隐藏类**（在 V8 的源代码中也称为“形状”或“映射”）是 V8
+    用于在 JavaScript 对象上实现快速属性访问的机制。它们是所有优化编译器构建优化基础的部分。'
 - en: Let's bust another myth.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们打破另一个误区。
 - en: 'Myth 2: "JavaScript objects are like hash maps"'
+  id: totrans-81
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '误区 2: “JavaScript 对象就像哈希表”'
 - en: In your mind, you probably picture a JavaScript object as a dictionary or a
     hash map, where property names map to values. While this is the *logical* model,
     it's not the physical reality for V8\. Hash map lookups are relatively slow. To
     make property access fast, V8 pretends that JavaScript has classes.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你的脑海中，你可能将 JavaScript 对象想象成一个字典或哈希表，其中属性名映射到值。虽然这是 *逻辑* 模型，但不是 V8 的物理现实。哈希表查找相对较慢。为了使属性访问快速，V8
+    假设 JavaScript 有类。
 - en: When you create an object, V8 creates a **hidden class** for it behind the scenes.
     This hidden class stores meta-information about the object's shape, specifically
     the layout of its properties.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你创建一个对象时，V8 在幕后为它创建一个 **隐藏类**。这个隐藏类存储有关对象形状的元信息，特别是其属性布局。
 - en: Let's watch it happen.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看它是如何发生的。
 - en: '[PRE0]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 🚨Caution
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨 警告
 - en: V8 intrinsics (like `%HaveSameMap`) are internal, unsupported APIs that change
     between V8 versions. Use them only for experiments with `--allow-natives-syntax`.
     Never use in production code.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: V8 内置函数（如 `%HaveSameMap`）是内部、不受支持的 API，它们在 V8 版本之间会发生变化。仅在使用 `--allow-natives-syntax`
+    进行实验时使用它们。切勿在生产代码中使用。
 - en: Transition Trees
+  id: totrans-88
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 转换树
 - en: V8 doesn't just create a new hidden class for every possible object shape. It
     creates **transition chains**.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: V8 并不仅仅为每个可能的对象形状创建一个新的隐藏类。它创建 **转换链**。
 - en: When you create `const p1 = {}`, `p1` gets a base hidden class, let's call it
     `C0`.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你创建 `const p1 = {}` 时，`p1` 获得一个基本隐藏类，让我们称它为 `C0`。
 - en: 'When you add `p1.x = 5`, V8 checks if a transition for property `x` already
     exists from `C0`. If not, it creates a new hidden class `C1` and records a transition:
     `C0 + ''x'' => C1`. The hidden class `C1` now knows that objects with its shape
     have a property `x` at a specific offset in memory. `p1`''s hidden class is updated
     to `C1`.'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你添加 `p1.x = 5` 时，V8 会检查是否存在从 `C0` 到属性 `x` 的转换。如果没有，它会创建一个新的隐藏类 `C1` 并记录一个转换：`C0
+    + 'x' => C1`。隐藏类 `C1` 现在知道具有其形状的对象在内存中具有一个特定偏移量的属性 `x`。`p1` 的隐藏类被更新为 `C1`。
 - en: 'When you add `p1.y = 10`, it does the same thing: it creates `C2` and a transition:
     `C1 + ''y'' => C2`.'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你添加 `p1.y = 10` 时，它做的是同样的事情：它创建 `C2` 和一个转换：`C1 + 'y' => C2`。
 - en: Now, if you create another object, `const p2 = {}`, it starts at `C0`. If you
     then add `p2.x = 15`, V8 sees the existing transition and simply moves `p2` to
     hidden class `C1`. If you then add `p2.y = 20`, it moves to `C2`. Now, `p1` and
     `p2` have the *exact same hidden class*. V8 can optimize any code that operates
     on these objects because it knows they have the same memory layout.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，如果你创建另一个对象，`const p2 = {}`，它从 `C0` 开始。如果你然后添加 `p2.x = 15`，V8 会看到现有的转换，并简单地将
+    `p2` 移动到隐藏类 `C1`。如果你然后添加 `p2.y = 20`，它将移动到 `C2`。现在，`p1` 和 `p2` 拥有 **完全相同的隐藏类**。V8
+    可以优化任何操作这些对象的代码，因为它知道它们具有相同的内存布局。
 - en: Here's the killer. What if you create `const p3 = {}` and add the properties
     in a different order? `p3.y = 1;` `p3.x = 2;`
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是关键。如果你创建 `const p3 = {}` 并以不同的顺序添加属性？`p3.y = 1;` `p3.x = 2;`
 - en: This creates a completely different transition path! `C0 + 'y' => C3` `C3 +
     'x' => C4`
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 这创建了一个完全不同的转换路径！`C0 + 'y' => C3` `C3 + 'x' => C4`
 - en: Even though `p2` and `p3` have the same properties, they have **different hidden
     classes**. To V8, they are fundamentally different shapes.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使 `p2` 和 `p3` 具有相同的属性，它们却拥有 **不同的隐藏类**。对 V8 来说，它们是根本不同的形状。
 - en: The "Config Object" disaster we had
+  id: totrans-97
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 我们遇到的“配置对象”灾难
 - en: 'This is exactly what killed us in the 100x slowdown mystery. Our code looked
     something like this:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 这正是我们在 100 倍减速之谜中遇到的问题。我们的代码看起来像这样：
 - en: '[PRE1]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: Because `userOverrides` added keys in an unpredictable order and `optionalFeature`
     was only sometimes present, we were creating dozens, sometimes hundreds, of different
     hidden classes for objects that were logically the same. When the optimizing compiler
     (TurboFan) tried to optimize functions that used these `config` objects, they
     saw chaos. They couldn't make any reliable bets, so they just gave up. Or worse,
     they would optimize for one shape, then immediately deoptimize when they saw another.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于 `userOverrides` 添加键的顺序不可预测，而 `optionalFeature` 只有时存在，我们为逻辑上相同的对象创建了数十个，有时甚至数百个不同的隐藏类。当优化编译器（TurboFan）尝试优化使用这些
+    `config` 对象的函数时，它们看到了混乱。它们无法做出任何可靠的猜测，因此只能放弃。或者更糟，它们会针对一个形状进行优化，然后在看到另一个形状时立即降级。
 - en: 'Here''s how the hidden class fork happened in our config object:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是如何在我们的配置对象中发生隐藏类分支的：
 - en: 'The fix was deceptively simple for our hot-path config objects: **pre-initialize
     properties that are frequently accessed**, even with `null` or `undefined`.'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于我们的热点路径配置对象，修复方法是欺骗性地简单：**预先初始化频繁访问的属性**，即使使用 `null` 或 `undefined`。
 - en: '[PRE2]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'By creating a stable initial shape, we ensured that almost all our config objects
     shared the same hidden class. This allowed the optimizing compilers to generate
     highly optimized code for handling them, and our latency dropped from 200ms back
     down to 2ms. We learned a brutal lesson: **property addition order is not just
     a stylistic choice, it''s a critical performance determinant**.'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过创建一个稳定的初始形状，我们确保了几乎所有我们的配置对象都共享相同的隐藏类。这使得优化编译器能够为它们生成高度优化的代码，并且我们的延迟从 200ms
+    降至 2ms。我们学到了一个残酷的教训：**属性添加顺序不仅仅是一个风格选择，它是一个关键的性能决定因素**。
 - en: 🚨Caution
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 🚨注意
 - en: Pre-initializing all properties stabilizes shapes but can waste memory with
     large objects. Only do this for performance-critical objects on hot paths. For
     general-purpose objects, favor readability and maintainability.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 预先初始化所有属性可以稳定形状，但可能会浪费大对象的内存。仅对性能关键的对象在热点路径上这样做。对于通用对象，优先考虑可读性和可维护性。
 - en: Inline Caching and Monomorphism
+  id: totrans-107
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内联缓存和多态性
 - en: 'So, V8 uses **Hidden Classes** to create a secret blueprint for your objects.
     That''s the "what." Now for the "how": how does V8 actually *use* that blueprint
     to make your code scream? The answer is a brilliant piece of runtime optimization
     called an **Inline Cache (IC)**. This is the mechanism that connects the theory
     of Hidden Classes to real-world speed.'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，V8 使用 **隐藏类** 为你的对象创建一个秘密蓝图。这就是“是什么”。现在来说“如何”：V8 如何实际 *使用* 这个蓝图让你的代码飞快运行？答案是运行时优化的一件杰作，称为
+    **内联缓存 (IC)**。这是将隐藏类的理论连接到实际速度的机制。
 - en: 'First, let''s nail down a key piece of jargon: the **call site**. A call site
     isn''t some abstract idea; it''s a literal, physical place in your code where
     a dynamic operation happens.'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们确定一个关键术语：**调用点**。调用点不是一个抽象的概念；它是在你的代码中发生动态操作的一个实际的、物理的位置。
 - en: '[PRE3]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: The line `return point.x;` is a single, unique call site. No matter what object
     you pass to `getX`, V8 is always executing that *same line* to access the `x`
     property. This specific location is what V8 optimizes.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 这行代码 `return point.x;` 是一个单一、独特的调用点。无论你传递什么对象给 `getX`，V8 总是执行相同的这一行来访问 `x` 属性。这个特定的位置就是
+    V8 优化的地方。
 - en: 'Think of an IC as targeted muscle memory. The first time you access `obj.x`
     at a particular call site, V8 has to do the slow, painful lookup:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 IC 想象成有针对性的肌肉记忆。第一次你在特定的调用点上访问 `obj.x`，V8 必须进行慢速、痛苦的查找：
 - en: Get the hidden class of `obj`.
+  id: totrans-113
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 获取 `obj` 的隐藏类。
 - en: Scan that hidden class's metadata for the memory offset of property `x`.
+  id: totrans-114
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 检查那个隐藏类的元数据以获取属性 `x` 的内存偏移量。
 - en: Jump to that offset in the object's memory and get the value.
+  id: totrans-115
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 跳转到对象内存中的那个偏移量并获取值。
 - en: 'After doing all that work, V8 doesn''t just forget. It rewrites a tiny stub
     of machine code at that exact call site. This stub is the Inline Cache. The next
     time that line of code is executed, the IC does a single, super-fast check: **"Is
@@ -627,101 +885,143 @@
     the answer is yes, it completely skips the slow lookup and uses the cached offset
     to access the property directly. A dynamic lookup just became as fast as a direct
     memory access in C++. This is a massive win.'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 在完成所有这些工作后，V8 并不会忘记。它会在那个确切的调用点上重写一小段机器代码的存根。这个存根就是内联缓存。下次执行那行代码时，IC 会进行一次单一、超级快速的检查：**“这个新对象的隐藏类和我上次看到的是否相同？”**
+    如果答案是肯定的，它将完全跳过慢速查找，并使用缓存的偏移量直接访问属性。动态查找现在变得和 C++ 中的直接内存访问一样快。这是一个巨大的胜利。
 - en: 'This brings us to the different "modes" or states an IC can be in. This is
     where the terminology gets important:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将我们引向 IC 可以处于的不同“模式”或状态。这是术语变得重要的地方：
 - en: '**Uninitialized -** The IC is a clean slate before the first execution of that
     line of code.'
+  id: totrans-118
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**未初始化 -** 在执行那行代码之前，IC 是一张白纸。'
 - en: '**Monomorphic -** This is the golden state. The IC has only ever seen **one**
     hidden class at this call site. `Mono` means one. This is the fastest possible
     state because V8 can generate machine code that is hyper-specialized for this
     single shape.'
+  id: totrans-119
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**单态型 -** 这是黄金状态。在这个调用点上，IC 只看到了 **一个** 隐藏类。`Mono` 意味着一个。这是可能的最快状态，因为 V8 可以生成针对这个单一形状的超专用机器代码。'
 - en: '**Polymorphic -** The IC has seen a small number of different hidden classes
     (typically 2 to 4). `Poly` means many. V8 can still handle this, but it''s slower.
     It has to add checks: "Is it shape A? If so, use offset X. Is it shape B? If so,
     use offset Y?" This is still faster than a full dynamic lookup.'
+  id: totrans-120
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**多态型 -** IC 看到了少数不同的隐藏类（通常是 2 到 4 个）。`Poly` 意味着多个。V8 仍然可以处理这种情况，但速度较慢。它必须添加检查：“这是形状
+    A 吗？如果是，使用偏移量 X。这是形状 B 吗？如果是，使用偏移量 Y？”这仍然比完整的动态查找要快。'
 - en: '**Megamorphic -** The IC has seen too many different hidden classes. `Mega`
     means huge. At this point, V8 gives up. The IC is considered "polluted," and V8
     falls back to the slow, generic lookup. Performance goes off a cliff.'
+  id: totrans-121
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**巨形态 -** IC已经看到了太多不同的隐藏类。`Mega`意味着巨大。在这个时候，V8放弃了。IC被认为是“污染的”，V8退回到慢速的通用查找。性能直线下降。'
 - en: Here's how an IC transitions through these states -
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是IC如何通过这些状态转换的 -
 - en: When the IC is polymorphic, it's essentially running a series of checks like
     this internally -
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 当IC是多态的，它实际上是在内部运行一系列这样的检查 -
 - en: A small example
+  id: totrans-124
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 一个小例子
 - en: Talk is cheap. Let's see what this performance difference actually looks like
     with a real benchmark. This pattern is incredibly common in data processing.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 谈话是廉价的。让我们看看这个性能差异在真实基准测试中实际上看起来是什么样子。这种模式在数据处理中非常常见。
 - en: '[PRE4]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 'On my machine running Node.js v23, the results are obvious (your results may
     vary): `Monomorphic: 16.05ms` `Polymorphic: 47.23ms`'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我的机器上运行Node.js v23时，结果很明显（你的结果可能会有所不同）：`单态：16.05ms` `多态：47.23ms`
 - en: The polymorphic version is nearly **3x slower**. And that's with only *two*
     shapes. Imagine a function that receives objects from five different sources,
     each with a slightly different structure. That call site will become megamorphic,
     and the performance penalty could easily be 10-50x.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 多态版本几乎**慢3倍**。而且这仅仅是**两种**形状。想象一个接收来自五个不同来源的对象的函数，每个对象的结构略有不同。那个调用点将变成巨形态，性能惩罚可能会高达10-50倍。
 - en: 'The goal is to write functions that operate on predictable data structures.
     When you see a function that can receive "either a User object or a Company object,"
     your performance senses should be tingling. It might be better to have two separate,
     monomorphic functions: `processUser(user)` and `processCompany(company)`. Boring,
     repetitive code is often the fastest code.'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 目标是编写操作可预测数据结构的函数。当你看到一个可以接收“用户对象或公司对象”的函数时，你的性能感觉应该会发痒。可能更好的做法是拥有两个独立的、单态的函数：`processUser(user)`和`processCompany(company)`。无聊、重复的代码通常是最快的代码。
 - en: Deoptimization - When V8 Gives Up
+  id: totrans-130
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 去优化 - 当V8放弃
 - en: Deoptimization is V8's emergency eject button. It's the process of throwing
     away fast, optimized machine code and falling back to a lower compilation tier.
     It is, without a doubt, the single biggest cause of mysterious performance problems
     in Node.js applications.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 去优化是V8的紧急弹出按钮。它是丢弃快速优化的机器代码并退回到较低编译层的过程。毫无疑问，它是Node.js应用程序中神秘性能问题的最大原因。
 - en: Remember, the optimized machine code from Maglev and TurboFan is *speculative*.
     It's built on a pile of assumptions (type feedback) gathered by Ignition. Deoptimization
     occurs whenever one of those assumptions is proven false at runtime.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住，来自磁悬浮和TurboFan的优化机器代码是**推测性的**。它建立在Ignition收集的一堆假设（类型反馈）之上。每当这些假设之一在运行时被证明是错误的，就会发生去优化。
 - en: Common Deoptimization Triggers
+  id: totrans-133
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 常见去优化触发器
 - en: V8 will deoptimize for many reasons, but some culprits are far more common than
     others.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: V8会因许多原因去优化，但某些原因比其他原因更常见。
 - en: '**Hidden Class Mismatch -** This is the big one. TurboFan compiled a function
     assuming it would always see objects with hidden class `C2`. Suddenly, an object
     with `C4` arrives. The specialized machine code is now invalid. **Bailout!**'
+  id: totrans-135
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**隐藏类不匹配 -** 这是最大的问题。TurboFan编译了一个函数，假设它将始终看到具有隐藏类`C2`的对象。突然，一个具有`C4`的对象到达了。专门的机器代码现在无效。**退出！**'
 - en: '**Changing Array Element Kinds -** V8 tracks the "kind" of elements in an array.
     Is it all small integers? All doubles? All objects? It optimizes based on this.
     If you have an array `[1, 2, 3]` (packed small integers, the fastest kind) and
@@ -730,35 +1030,48 @@
     code that assumed an integer array may need to deoptimize. Not all transitions
     cause persistent slowdowns - V8 handles many efficiently - but in hot loops with
     large arrays, these transitions can impact performance.'
+  id: totrans-136
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**改变数组元素类型 -** V8跟踪数组中元素的“类型”。它是所有小整数？所有双精度浮点数？所有对象？它根据这个来优化。如果你有一个所有元素都是小整数的数组
+    `[1, 2, 3]`（打包的小整数，最快的类型），你突然推入一个字符串 `arr.push(''a'')`，你就强制了一个存储转换。V8动态升级数组以处理新的元素类型，任何假设整数数组的优化代码可能需要去优化。并非所有转换都会导致持续的减速
+    - V8高效地处理了许多转换 - 但在大型数组的热点循环中，这些转换可能会影响性能。'
 - en: '**`try...catch` Blocks (Historical Issue) -** This was problematic in older
     V8 versions, where the machinery needed to handle exceptions could interfere with
     TurboFan''s optimizations. Modern V8 (Node v16+) has largely resolved this issue.
     In current Node versions (v22-24), `try...catch` has minimal performance impact
     in most cases. Use error handling freely for correctness – the old advice to avoid
     `try...catch` is outdated.'
+  id: totrans-137
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**`try...catch` 块（历史问题） -** 在较老的V8版本中，这个问题很成问题，因为处理异常所需的机制可能会干扰TurboFan的优化。现代V8（Node
+    v16+）在很大程度上解决了这个问题。在当前的Node版本（v22-24）中，`try...catch`在大多数情况下对性能的影响最小。为了正确性，可以自由地使用错误处理——避免`try...catch`的旧建议已经过时。'
 - en: 💡Tip
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 💡提示
 - en: Modern V8 (Node 16+) optimizes `try...catch` blocks reasonably well. Use them
     freely for correctness; only profile before considering refactoring out of extreme
     hot paths.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 现代V8（Node 16+）对`try...catch`块进行了合理的优化。为了正确性，可以自由地使用它们；只有在考虑重构出极端热路径之前，才需要进行分析。
 - en: '**Using `arguments` Object -** The `arguments` object is a classic deoptimizer.
     It''s an "array-like" object, but it''s not a true array and has some magic properties
     that make it difficult for compilers to reason about. Using it, especially in
     older versions of Node, was a guaranteed way to kill performance. Modern V8 is
     better, but a function that leaks `arguments` can still be problematic. Rest parameters
     (`...args`) are almost always a better, optimization-friendly choice.'
+  id: totrans-140
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**使用 `arguments` 对象 -** `arguments` 对象是一个经典的去优化器。它是一个“类似数组”的对象，但它不是一个真正的数组，并且有一些魔法属性，这使得编译器难以推理。特别是在Node的较老版本中使用它，是保证降低性能的一种方式。现代V8更好，但一个泄漏`arguments`的函数仍然可能存在问题。剩余参数（`...args`）几乎总是更好的、优化友好的选择。'
 - en: '**The `delete` Keyword -** While V8 has improved its handling of `delete` over
     the years, it still degrades performance on hot objects. Using `delete obj.x`
     can force V8 to switch the object into "dictionary mode," where properties are
@@ -766,281 +1079,405 @@
     on a hot path, use `obj.x = undefined`. However, if you need the property truly
     gone for correctness (e.g., for key enumeration or the `in` operator), `delete`
     remains the right choice – just avoid it in performance-critical paths.'
+  id: totrans-141
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**`delete` 关键字 -** 虽然V8多年来对其`delete`的处理有了改进，但它仍然会降低热对象的性能。使用`delete obj.x`可以强制V8将对象切换到“字典模式”，其中属性存储在较慢的类似哈希表的结构中。如果你只需要在热路径上清除一个值，请使用`obj.x
+    = undefined`。然而，如果你需要属性真正消失以确保正确性（例如，用于键枚举或`in`运算符），则`delete`仍然是正确的选择——只是避免在性能关键路径上使用它。'
 - en: 📌Important
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: Avoid `delete` on hot objects, but remember that setting to `undefined` is not
     semantically equivalent. Properties set to `undefined` still exist for `Object.keys()`,
     `in` operator, and iteration.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 避免在热对象上使用`delete`，但请记住，设置为`undefined`在语义上并不等价。设置为`undefined`的属性仍然存在于`Object.keys()`、`in`运算符和迭代中。
 - en: Caught Off Guard by BigInt Deoptimization
+  id: totrans-144
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 被BigInt去优化所惊吓
 - en: We were running a high-performance transaction simulation service for our trading
     platform. It monitored the mempool, simulating thousands of transactions per second
     to front-run profitable opportunities. The service would fire up, blazing fast,
     but over the course of an hour, its simulated TPS would drop off a cliff until
     it was missing every arbitrage window. A restart was the only cure, but the relief
     was temporary.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们正在为我们的交易平台运行一个高性能的交易模拟服务。它监控着交易池，每秒模拟数千笔交易以抢占有利可图的机会。该服务会迅速启动，速度极快，但在一个小时内，其模拟的TPS会急剧下降，直到错过了每一个套利窗口。重启是唯一的解决办法，但缓解只是暂时的。
 - en: 'We were burning our heads against the wall. Finally, we attached the V8 inspector
     with some flags: `node --trace-opt --trace-deopt simulator.js`. The logs were
     a torrential downpour of data, but one line screamed at us, repeated thousands
     of times:'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们一直在头破血流。最后，我们使用一些标志附加了V8检查器：`node --trace-opt --trace-deopt simulator.js`。日志如暴雨般倾泻而下，但有一行信息对我们大声疾呼，重复了数千次：
 - en: '`[deoptimizing: begin 0x... <validateTransaction> (opt #3) at bytecode offset
     68, reason=unexpected BigInt]`'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '`[去优化：开始 0x... <validateTransaction> (opt #3) 在字节码偏移量 68，原因=意外的BigInt]`'
 - en: The `validateTransaction` function - our hottest code path - was being beautifully
     optimized by TurboFan, only to be immediately thrown out. Over and over. A quick
     look at the code corresponding to that bytecode offset pointed to a line where
     we were calculating potential [slippage](https://en.wikipedia.org/wiki/Slippage_(finance))
     on a token swap amount.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '`validateTransaction`函数——我们最热的代码路径——被TurboFan优化得非常漂亮，但随即被立即丢弃。一次又一次。快速查看对应于该字节码偏移量的代码，指向了我们计算代币兑换潜在[滑点](https://en.wikipedia.org/wiki/Slippage_(finance))的那一行。'
 - en: The problem? The vast majority of transactions we processed - standard ETH transfers,
     small DEX swaps - had values that fit neatly into a standard JavaScript `Number`.
     But every so often, a whale would move a massive amount of a high-decimal token
     (think SHIB). Those values are so large they can **only** be represented as a
     `BigInt`.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 问题是什么？我们处理的大多数交易——标准的ETH转账、小型的DEX兑换——其价值都能完美地适应标准的JavaScript `Number`。但时不时地，某个“鲸鱼”会转移大量高精度代币（比如SHIB）。这些数值如此之大，只能用`BigInt`来表示。
 - en: TurboFan had seen millions of `Number` types and bet the farm on it. It generated
     hyper-optimized machine code for fast, floating-point arithmetic. When the `BigInt`
     showed up, the JIT's worldview shattered. **Bailout!** The function deoptimized.
     A few thousand transactions later, V8 would try again, re-optimizing for `Number`.
     Then another whale transfer would hit. Lather, rinse, repeat.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: TurboFan已经看到了数百万个`Number`类型，并对其下了重注。它为快速浮点运算生成了超优化的机器代码。当`BigInt`出现时，JIT的世界观崩溃。**退出！**函数去优化。几千笔交易后，V8会再次尝试，重新优化为`Number`。然后另一个鲸鱼转账会到来。重复上述过程。
 - en: 'This is the "Deoptimization Loop of Death" in the wild:'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是野外的“去优化循环死亡”：
 - en: '* * *'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: 'The Fix: Enforcing Type Consistency'
+  id: totrans-153
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 解决方案：强制执行类型一致性
 - en: Our first instinct was to normalize the data. We knew we couldn't just convert
     everything to `BigInt` and keep our floating-point math, as that would immediately
     throw a `TypeError`.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的第一直觉是标准化数据。我们知道我们不能简单地将所有内容转换为`BigInt`并保留浮点数数学，因为这会立即抛出一个`TypeError`。
 - en: '[PRE5]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The solution had to be holistic. We chose to enforce absolute type consistency
     by treating all monetary values as scaled integers from the moment they entered
     our system. This is a common pattern in finance to avoid floating-point inaccuracies
     anyway.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决方案必须是全面的。我们选择通过将所有货币价值视为从进入我们系统的那一刻起就缩放为整数的绝对类型一致性来强制执行。这本身就是金融中避免浮点数不精确的常见模式。
 - en: '**Our Fix: Normalize to BigInt and Use Scaled Integer Math**'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: '**我们的解决方案：将数据标准化为BigInt并使用缩放整数数学**'
 - en: We represented our slippage constant in basis points (1 basis point = 0.01%)
     as a `BigInt` and performed all calculations using `BigInt` arithmetic.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将滑点常数表示为基础点（1个基点=0.01%）作为`BigInt`，并使用`BigInt`算术进行所有计算。
 - en: '[PRE6]'
+  id: totrans-159
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: This solved the deoptimization loop completely. TurboFan now only ever saw `BigInt`s
     in this function and generated stable, optimized code for that specific type.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 这完全解决了去优化循环。现在，TurboFan在这个函数中只看到`BigInt`，并为该特定类型生成了稳定、优化的代码。
 - en: Trade-offs and Alternative Fixes
+  id: totrans-161
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: 权衡和替代解决方案
 - en: 'While our scaled-integer approach worked, it''s not the only solution, and
     it comes with a trade-off: **`BigInt`** arithmetic is generally slower than `Number`
     arithmetic for values that fit within a standard **number**. We were potentially
     slowing down 99.9% of our transactions to safely handle the 0.1% of whale transfers.'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然我们的缩放整数方法有效，但这不是唯一的解决方案，并且它有一个权衡：对于适合标准**数字**的值，`BigInt`算术通常比`Number`算术慢。我们可能正在减慢99.9%的交易速度，以安全地处理0.1%的鲸鱼转账。
 - en: For our specific use case, stability was worth the trade-off. However, here
     are two other powerful, practical patterns for solving this problem.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于我们的特定用例，稳定性值得这个权衡。然而，这里还有两种其他强大、实用的模式来解决此问题。
 - en: The Dispatcher - What we decided to use
+  id: totrans-164
   prefs:
   - PREF_H5
   type: TYPE_NORMAL
+  zh: 调度器——我们决定使用
 - en: This is what was - according to our team - the highest-performance solution,
     we could think of. The idea is to have two separate, specialized hot functions
     and a single "dispatcher" that routes transactions to the correct one. This keeps
     each hot path **monomorphic** (only ever seeing one type), which is exactly what
     the JIT loves.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 这据我们团队所说，是我们能想到的最高性能解决方案。想法是拥有两个独立的、专门的“热点”函数和一个单一的“调度器”，该调度器将交易路由到正确的函数。这保持了每个热点路径**单态性**（只看到一种类型），这正是JIT所爱的。
 - en: '[PRE7]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'Alternative B: The Guarded Branch (Pragmatic Middle Ground)'
+  id: totrans-167
   prefs:
   - PREF_H6
   type: TYPE_NORMAL
+  zh: 替代方案B：受保护的分支（实用折中方案）
 - en: If you want to keep your logic in a single function, you can use an explicit
     `typeof` check. This creates two different paths within the same function. While
     this makes the function **polymorphic** (seeing multiple types), it's a clear
     signal to V8 and is often optimized well - certainly better than incurring repeated
     deopts.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你想将你的逻辑保持在单个函数中，你可以使用显式的 `typeof` 检查。这会在同一个函数内创建两个不同的路径。虽然这使得函数 **多态**（看到多种类型），但它是对
+    V8 的一个明确信号，并且通常被很好地优化——肯定比重复 deopts 优化得更好。
 - en: '[PRE8]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ⚠️Warning
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: A single function that contains both a bigint path and a number path (via typeof
     checks) is polymorphic. That's often fine - but in very hot loops it can make
     V8 generate slower, less-stable machine code than splitting those paths into two
     monomorphic functions and dispatching once up-front. Pick the dispatcher for raw
     performance in the hot path; pick the guarded-branch for simplicity when the branch
     is predictable or the path isn't super hot.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 包含 bigint 路径和数字路径（通过 typeof 检查）的单个函数是多态的。这通常没问题——但在非常热的循环中，它可能会使 V8 生成比将那些路径拆分为两个单态函数并提前分发一次更慢、更不稳定的机器代码。在热路径上选择性能调度器；当分支可预测或路径不是超级热时，选择受保护的分支以保持简单。
 - en: Memory Layout and Object Representation
+  id: totrans-172
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内存布局和对象表示
 - en: To truly understand V8 performance, you have to go one level deeper and think
     about how your JavaScript values are actually laid out in your computer's memory.
     This isn't just academic; it has direct performance implications.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 要真正理解 V8 的性能，你必须再深入一层，思考你的 JavaScript 值实际上是如何在你的计算机内存中布局的。这不仅仅是一个学术问题；它有直接的性能影响。
 - en: V8 uses a clever trick called pointer tagging to distinguish between immediate
     values (like small integers) and pointers to objects on the heap. While a 64-bit
     system uses 64-bit machine words, V8's default pointer compression optimization
     means that these tagged values are often stored in compact 32-bit slots on the
     heap to save memory.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: V8 使用一个称为指针标记的巧妙技巧来区分立即值（如小整数）和堆上对象的指针。虽然 64 位系统使用 64 位机器字，但 V8 的默认指针压缩优化意味着这些标记值通常存储在堆上的紧凑
+    32 位槽中，以节省内存。
 - en: Small Integers (SMI)
+  id: totrans-175
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 小整数（SMI）
 - en: If the last bit of a 64-bit word is a `0`, V8 knows the remaining bits represent
     a **Small Integer**, or **Smi**. This is an incredibly important optimization.
     On 64-bit builds with pointer compression (the default), Smis are 31-bit signed
     integers, giving a range of approximately -1 billion to +1 billion. V8 doesn't
     need to allocate any extra memory on the heap for these values. The number *is*
     the pointer.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果 64 位字的最末位是 `0`，V8 就知道剩余的位表示一个 **Small Integer**，或 **Smi**。这是一个极其重要的优化。在具有指针压缩（默认）的
+    64 位构建中，Smi 是 31 位有符号整数，范围大约为 -1 亿到 +1 亿。V8 不需要在堆上为这些值分配任何额外的内存。这个数字 *就是* 指针。
 - en: ℹ️Note
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: On 64-bit builds with pointer compression, Smis are 31-bit signed integers.
     On 32-bit builds, the range is slightly different. Always assume ~±1 billion as
     the safe range, not full 32-bit.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 在具有指针压缩的 64 位构建中，Smi 是 31 位有符号整数。在 32 位构建中，范围略有不同。始终假设 ~±1 亿为安全范围，而不是完整的 32
+    位。
 - en: Arithmetic on Smis is lightning fast. The CPU's integer arithmetic logic unit
     (ALU) can operate on them directly. This is why `for` loops with integer counters
     are so much faster than loops dealing with floating-point numbers or objects.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: Smi 的算术运算非常快。CPU 的整数算术逻辑单元（ALU）可以直接操作它们。这就是为什么使用整数计数器的 `for` 循环比处理浮点数或对象的循环要快得多。
 - en: 'A 64-bit word representing a Smi (e.g., the number 5):'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 表示 Smi（例如，数字 5）的 64 位字：
 - en: Heap Objects
+  id: totrans-181
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 堆对象
 - en: So, what happens when that special tag bit is a `1`? This signals that the word
     isn't the value itself, but a **pointer** - a memory address that references the
     actual data's location on the V8 heap.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，当那个特殊的标签位是 `1` 时会发生什么？这表示该字不是值本身，而是一个 **指针**——一个引用 V8 堆上实际数据位置的内存地址。
 - en: 'This is how V8 handles all the complex data that can''t be represented as a
     Smi: from strings and arrays to objects, and even numbers with decimal points.'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是 V8 处理所有无法表示为 Smi 的复杂数据的方式：从字符串和数组到对象，甚至带有小数点的数字。
 - en: To keep its memory usage low, V8 uses a fantastic optimization by default called
     **pointer compression**. This means that even on a 64-bit system, these pointers
     are often stored in compact **32-bit** slots.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了保持其内存使用量低，V8 默认使用一个称为 **指针压缩** 的出色优化。这意味着即使在 64 位系统上，这些指针通常也存储在紧凑的 **32 位**槽中。
 - en: 'Here''s a simplified look at a tagged pointer in V8''s memory-saving mode:'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是 V8 内存节省模式下标签指针的简化视图：
 - en: Let's take a number like `const a = 3.14;`. In the classic sense, V8 would handle
     this by creating a `HeapNumber` object, which involves a few steps -
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们以一个数字`const a = 3.14;`为例。在经典意义上，V8会通过创建一个`HeapNumber`对象来处理这个问题，这涉及几个步骤 -
 - en: First, it allocates a small chunk of memory on the heap.
+  id: totrans-187
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 首先，它在堆上分配一小块内存。
 - en: Then, it writes the floating-point representation of `3.14` into that memory.
+  id: totrans-188
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后，它将`3.14`的浮点表示写入那个内存。
 - en: Finally, it stores a tagged pointer to that new location in the variable `a`.
+  id: totrans-189
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 最后，它将指向那个新位置的标记指针存储在变量`a`中。
 - en: But this is where the story gets exciting. The V8 team has spent years optimizing
     this process, and modern V8 has some amazing tricks up its sleeve to avoid that
     heap trip for frequently executed code -
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 但这正是故事变得精彩的地方。V8团队已经花费多年优化这个过程，现代V8有一些惊人的技巧来避免频繁执行代码的堆之旅 -
 - en: '**Unboxing -** V8 can store a number''s raw value directly inside another object''s
     memory, avoiding the need to allocate a separate `HeapNumber` object.'
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**解包** - V8可以直接在另一个对象的内存中存储数字的原始值，从而避免分配单独的`HeapNumber`对象的需要。'
 - en: '**Escape Analysis -** If a number is created and used only within a single
     function and never "escapes" to an outer scope, V8 is smart enough to avoid heap
     allocation altogether.'
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**逃逸分析** - 如果一个数字仅在一个函数内部创建和使用，并且从未“逃逸”到外部作用域，V8足够智能，可以完全避免堆分配。'
 - en: So, while there's a performance cost when heap allocation *does* occur (it requires
     managing memory and following pointers), all thanks to V8's incredible engineering
     that this happens far less often than you might think.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，虽然堆分配确实会产生性能成本（需要管理内存和跟踪指针），但多亏了V8的惊人工程，这种情况发生的频率比你想象的要低得多。
 - en: Object Layout in Memory
+  id: totrans-194
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 内存中的对象布局
 - en: When an object is created, V8 allocates memory for it on the heap. This memory
     block contains 1) a pointer to its **hidden class**. This is the first and most
     important field and 2) space for its properties.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 当创建对象时，V8在堆上为其分配内存。这个内存块包含1)指向其**隐藏类**的指针。这是第一个也是最重要的字段，2)其属性的空间。
 - en: For objects with "fast properties" (i.e., not in dictionary mode), the properties
     are stored directly inside the object's memory block at fixed offsets determined
     by the hidden class.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于具有“快速属性”的对象（即不在字典模式中），属性直接存储在对象的内存块中，偏移量由隐藏类确定。
 - en: 'Let''s imagine our `Point` object: `const p = { x: 1, y: 2 }`. Its memory might
     look like this -'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '让我们想象我们的`Point`对象：`const p = { x: 1, y: 2 }`。它的内存可能看起来像这样 -'
 - en: When TurboFan optimizes `p.y`, it gets the hidden class from `p`, sees it's
     `C2`, knows from `C2` that `y` is at offset +8 bytes (for example), and generates
     machine code to just read the memory at `[address of p + 8]`. No hash map lookups.
     No string comparisons. Just raw, fast memory access.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 当TurboFan优化`p.y`时，它会从`p`中获取隐藏类，看到它是`C2`，并从`C2`知道`y`位于偏移量+8字节（例如）的位置，然后生成机器代码来直接读取`[p地址
+    + 8]`处的内存。没有哈希表查找。没有字符串比较。只是直接的、快速的内存访问。
 - en: String Internalization
+  id: totrans-199
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 字符串内化
 - en: 'Strings are another area with a clever optimization. When you have the same
     string literal multiple times in your code, like `''success''`, V8 only stores
     it in memory once. This is called **string internalization** or "interning." All
@@ -1048,100 +1485,148 @@
     This saves memory and makes string comparisons much faster: V8 can just compare
     the pointers (a single CPU instruction) instead of comparing the strings character
     by character.'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 字符串是另一个有巧妙优化的领域。当你的代码中多次出现相同的字符串字面量，比如`'success'`，V8只会将其存储在内存中一次。这被称为**字符串内化**或“内部化”。所有指向该字符串字面量的变量都将指向相同的内存地址。这节省了内存，并使字符串比较变得更快：V8只需比较指针（一个CPU指令）而不是逐字符比较字符串。
 - en: 'Here''s how string internalization works in memory:'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是字符串内化在内存中的工作方式：
 - en: Understanding this memory model helps explain many V8 performance characteristics
     -
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解这个内存模型有助于解释许多V8的性能特性 -
 - en: '**Why integer math is fast?** Smis avoid heap allocation and indirection.'
+  id: totrans-203
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**为什么整数运算快？** Smis避免堆分配和间接引用。'
 - en: '**Why hidden classes are key?** They enable fixed-offset property access.'
+  id: totrans-204
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**为什么隐藏类很重要？** 它们使得固定偏移量属性访问成为可能。'
 - en: '**Why `delete` is slow?** It forces a change from this clean, array-like property
     storage to a complex, slow dictionary-based one.'
+  id: totrans-205
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**为什么`delete`操作慢？** 它迫使从这种干净、类似数组的属性存储方式转变为复杂、缓慢的基于字典的方式。'
 - en: Common Performance Cliffs
+  id: totrans-206
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 常见性能悬崖
 - en: After seeing hundreds of production performance issues, you start to see the
     same patterns over and over. These are the common cliffs that developers, even
     senior ones, fall off when they don't understand the engine.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 在看到数百个生产性能问题之后，你开始一次又一次地看到相同的模式。这些是开发者，即使是高级开发者，在不了解引擎的情况下容易掉入的常见陷阱。
 - en: 'Cliff #1: Unstable Object Shapes (Hidden Class Explosions)'
+  id: totrans-208
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 'Cliff #1: 不稳定的对象形状（隐藏类爆炸）'
 - en: This is the big one we saw in our recent discussion. Any code that creates objects
     with different property orders, different total properties, or conditional properties
     is a minefield.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我们最近讨论中看到的大问题。任何创建具有不同属性顺序、不同总属性或条件属性的对象的代码都是一个雷区。
 - en: '**Symptom -** Code that processes objects is mysteriously slow. Flame graphs
     are wide and flat, with no single hot function.'
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**症状 -** 处理对象的代码神秘地变慢。火焰图宽而平，没有单个热点函数。'
 - en: '**Cause?** Megamorphic inline caches due to an explosion of hidden classes.'
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**原因？** 由于隐藏类的爆炸，巨形态内联缓存。'
 - en: '[PRE9]'
+  id: totrans-212
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: '[PRE10]'
+  id: totrans-213
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'Cliff #2: Polymorphic and Megamorphic Functions'
+  id: totrans-214
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 'Cliff #2: 多态和巨形态函数'
 - en: Functions that are designed to handle many different types of inputs are an
     enemy of the JIT compiler.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 设计用于处理多种不同类型输入的函数是 JIT 编译器的敌人。
 - en: '**Symptom -** A specific utility function or event handler is a bottleneck.'
+  id: totrans-216
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**症状 -** 特定的实用函数或事件处理器是瓶颈。'
 - en: '**Cause?** An IC at a property access or function call site has become polymorphic
     or megamorphic.'
+  id: totrans-217
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**原因？** 在属性访问或函数调用位置上的 IC 变成了多态或巨形态。'
 - en: '[PRE11]'
+  id: totrans-218
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: '[PRE12]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 'Cliff #3: Using `delete` on Objects'
+  id: totrans-220
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 'Cliff #3: 在对象上使用 `delete`'
 - en: We built a simple in-memory caching layer for our Node.js service. It was just
     a big JavaScript object. When an item expired, we'd remove it from the cache using
     `delete cache[key]`. Simple, right? I've also posted about this on [Reddit](https://www.reddit.com/r/webdev/comments/1n23rbi/i_stopped_deleting_and_my_hot_paths_calmed_down/)
     in case you're interested.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们为我们的 Node.js 服务构建了一个简单的内存缓存层。它只是一个大型的 JavaScript 对象。当一个项目过期时，我们会使用 `delete
+    cache[key]` 从缓存中删除它。很简单，对吧？我还在 [Reddit](https://www.reddit.com/r/webdev/comments/1n23rbi/i_stopped_deleting_and_my_hot_paths_calmed_down/)
+    上发了一篇关于这个话题的文章，以防你感兴趣。
 - en: The service throughput was disappointing, about 35-40% of what we expected.
     Profiling showed a huge amount of time being spent inside property access functions
     for the cache object. The flame graph was dominated by dictionary lookups and
     megamorphic inline cache misses.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务的吞吐量令人失望，大约只有我们预期的 35-40%。分析显示，大量时间被花费在缓存对象的属性访问函数中。火焰图主要由字典查找和巨形态内联缓存缺失主导。
 - en: The problem was `delete`. When you use `delete`, you are not just removing a
     property. You are fundamentally changing the object's structure in a way that
     V8 cannot optimize with a simple hidden class transition. Using `delete` forces
@@ -1149,50 +1634,74 @@
     properties are stored in a slower, hash map-like data structure. Every single
     property access on that object, *even for keys you didn't delete*, now becomes
     a slow dictionary lookup. Our entire cache object was kneecapped.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 问题在于 `delete`。当你使用 `delete` 时，你不仅仅是删除一个属性。你从根本上改变了对象的结构，V8 无法通过简单的隐藏类转换来优化。使用
+    `delete` 强制 V8 将对象的属性切换到 **字典模式**。在这种模式下，属性存储在一个较慢的、类似哈希表的数据结构中。该对象上每个属性访问，*即使是未删除的键*，现在都变成了慢速的字典查找。我们的整个缓存对象受到了削弱。
 - en: The fix? **Never use `delete` on hot objects.** Instead, set the property to
     `undefined`.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决方案？**永远不要在热点对象上使用 `delete`。相反，将属性设置为 `undefined`**。
 - en: '[PRE13]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: Assigning `undefined` preserves the hidden class and keeps the object in "fast
     mode." Our throughput instantly jumped by 3-4x after we replaced all `delete`
     calls with assignments to `undefined`.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 `undefined` 分配给变量可以保留隐藏类并保持对象处于“快速模式”。在我们将所有 `delete` 调用替换为对 `undefined` 的赋值后，我们的吞吐量立即提高了
+    3-4 倍。
 - en: 'Cliff #4: Mixing Element Kinds in Arrays'
+  id: totrans-227
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 'Cliff #4: 在数组中混合元素种类'
 - en: 'V8 optimizes arrays heavily based on their contents and dynamically upgrades
     between element kinds:'
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: V8 根据其内容对数组进行大量优化，并在元素种类之间动态升级：
 - en: '`PACKED_SMI_ELEMENTS` - The fastest. A contiguous block of memory holding only
     small integers.'
+  id: totrans-229
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PACKED_SMI_ELEMENTS` - 最快的。只包含小整数的内存连续块。'
 - en: '`PACKED_DOUBLE_ELEMENTS` - Still fast. A contiguous block of doubles.'
+  id: totrans-230
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PACKED_DOUBLE_ELEMENTS` - 仍然很快。连续的双精度浮点数块。'
 - en: '`PACKED_ELEMENTS` - A contiguous block of pointers to heap objects.'
+  id: totrans-231
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PACKED_ELEMENTS` - 指向堆对象的指针的连续块。'
 - en: '`HOLEY_ELEMENTS` - An array with empty slots (e.g., `const a = [1, , 3]`).
     Slower, because V8 has to check for holes.'
+  id: totrans-232
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`HOLEY_ELEMENTS` - 具有空槽的数组（例如，`const a = [1, , 3]`）。较慢，因为 V8 必须检查空槽。'
 - en: '`DICTIONARY_ELEMENTS` - The slowest. The array is basically a hash map.'
+  id: totrans-233
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`DICTIONARY_ELEMENTS` - 最慢的。数组基本上是一个哈希表。'
 - en: If you start with `[1, 2, 3]` and then `push('hello')`, V8 has to convert the
     entire underlying storage from `PACKED_SMI_ELEMENTS` to `PACKED_ELEMENTS`. This
     transition is one-way and affects performance primarily in hot loops where the
@@ -1200,293 +1709,421 @@
     transitions efficiently, but in performance-critical numeric computations or when
     processing large datasets, maintaining stable element kinds can provide significant
     benefits.
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你从 `[1, 2, 3]` 开始，然后 `push('hello')`，V8 必须将整个底层存储从 `PACKED_SMI_ELEMENTS` 转换为
+    `PACKED_ELEMENTS`。这种转换是单向的，主要影响在数组被重复访问的热点循环中的性能。对于大多数日常数组使用，V8 高效地处理这些转换，但在性能关键的数值计算或处理大数据集时，保持稳定的元素类型可以提供显著的好处。
 - en: 📌Important
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: Mixing element kinds forces storage transitions, which can hurt performance
     in hot loops. For most everyday use, the impact is negligible, but in tight numeric
     loops or large datasets, stable element kinds matter.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 混合元素类型会强制进行存储转换，这可能会在热点循环中损害性能。对于大多数日常使用，这种影响可以忽略不计，但在紧密的数值循环或大数据集中，稳定的元素类型很重要。
 - en: Patterns that work
+  id: totrans-237
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 有效的模式
 - en: So how do we stay in V8's good graces? By writing boring, predictable, monomorphic
     code. It might feel less "clever," but it will be orders of magnitude faster.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，我们如何保持 V8 的好感？通过编写无聊、可预测、单态的代码。这可能感觉不那么“聪明”，但它将快得多。
 - en: The V8-Friendly Code Pattern
+  id: totrans-239
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: V8 友好的代码模式
 - en: Here's a blueprint for a performance-critical data structure and the function
     that processes it.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个性能关键数据结构和处理它的函数的蓝图。
 - en: '[PRE14]'
+  id: totrans-241
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 'Optimization Strategy: A Checklist'
+  id: totrans-242
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 优化策略：检查清单
 - en: 'Before you even think about changing code, follow this process:'
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你考虑更改代码之前，遵循以下流程：
 - en: Don't guess. Use `--prof` or the Chrome DevTools inspector to find your actual
     hot paths. Optimizing code that only runs 0.1% of the time is a waste of effort.
+  id: totrans-244
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 不要猜测。使用 `--prof` 或 Chrome DevTools 检查器来找到你的实际热点路径。优化只运行 0.1% 时间的代码是徒劳的。
 - en: Zoom in on the 1-3 functions that consume the most CPU. This is where your focus
     should be - "identifying the hot paths".
+  id: totrans-245
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 专注于消耗最多 CPU 的 1-3 个函数。这就是你应该关注的焦点——“识别热点路径”。
 - en: For each hot function, analyze the data it receives. Are the object shapes consistent?
     Are array element kinds stable? Use `console.log(%HaveSameMap(a, b))` to verify.
+  id: totrans-246
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 对于每个热点函数，分析它接收到的数据。对象形状是否一致？数组元素类型是否稳定？使用 `console.log(%HaveSameMap(a, b))`
+    来验证。
 - en: Run your hot path in a tight loop with `--trace-deopt` and `grep` for your function's
     name. Look at the reasons V8 gives for bailing out.
+  id: totrans-247
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用 `--trace-deopt` 和 `grep` 查找你的函数名称，在紧密循环中运行你的热点路径。查看 V8 提供的退出原因。
 - en: Refactor your code for predictability -
+  id: totrans-248
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 重新构建你的代码以实现可预测性 -
 - en: Initialize objects with all properties (`null` or `undefined` is fine).
+  id: totrans-249
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用所有属性（`null` 或 `undefined` 是可以的）初始化对象。
 - en: Use constructors or factory functions to enforce a single creation path.
+  id: totrans-250
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用构造函数或工厂函数来强制执行单个创建路径。
 - en: If a function needs to handle different shapes, split it into multiple, monomorphic
     functions.
+  id: totrans-251
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果一个函数需要处理不同的形状，将其拆分为多个单态函数。
 - en: Replace `delete` with `obj.prop = undefined`.
+  id: totrans-252
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将 `delete` 替换为 `obj.prop = undefined`。
 - en: Avoid mixing element kinds in performance-critical arrays.
+  id: totrans-253
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 避免在性能关键数组中混合元素类型。
 - en: After refactoring, run the profiler again. Did the change work? Is the time
     spent in that function lower?
+  id: totrans-254
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 重构后，再次运行分析器。变化是否有效？在该函数中花费的时间是否降低？
 - en: V8 Flags and Runtime Options
+  id: totrans-255
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: V8 标志和运行时选项
 - en: The Node.js runtime provides a powerful set of V8 flags that let you tune, debug,
     and examine the engine's behavior. You can list all available flags for your version
     of Node with `node --v8-options`. Here are some of the most critical ones for
     performance engineering.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 运行时提供了一组强大的 V8 标志，允许你调整、调试和检查引擎的行为。你可以使用 `node --v8-options` 列出你 Node.js
+    版本的所有可用标志。以下是一些对性能工程最关键的标志。
 - en: Informational Flags
+  id: totrans-257
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 信息性标志
 - en: These flags don't change behavior but provide a stream of diagnostic information.
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些标志不会改变行为，但提供了一串诊断信息。
 - en: '`--trace-opt`: As mentioned, this logs every function that the optimizing compilers
     (Sparkplug, Maglev, TurboFan) successfully optimize. It''s great for confirming
     that your hot paths are actually being compiled.'
+  id: totrans-259
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--trace-opt`：如前所述，它会记录优化编译器（Sparkplug、Maglev、TurboFan）成功优化的每个函数。这对于确认你的热点路径实际上正在被编译非常有用。'
 - en: '`--trace-deopt`: Logs every deoptimization, including the function name, bytecode
     offset, and the reason. This is arguably the most important performance debugging
     flag.'
+  id: totrans-260
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--trace-deopt`: 记录每次去优化，包括函数名、字节码偏移和原因。这可能是最重要的性能调试标志。'
 - en: '`--trace-ic`: Shows the state transitions of Inline Caches. Useful for diagnosing
     polymorphic and megamorphic call sites. You can see a property access go from
     `1` (monomorphic) to `P` (polymorphic) to `N` (megamorphic).'
+  id: totrans-261
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--trace-ic`: 显示内联缓存的州转换。对于诊断多态和巨形态调用点非常有用。你可以看到属性访问从`1`（单态）变为`P`（多态）到`N`（巨形态）。'
 - en: '`--trace-gc`: Prints a log line for every garbage collection event, showing
     how much memory was collected and how long it took. Useful for diagnosing memory
     pressure and GC pauses.'
+  id: totrans-262
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--trace-gc`: 为每次垃圾回收事件打印一条日志行，显示收集了多少内存以及花费了多长时间。对于诊断内存压力和GC暂停非常有用。'
 - en: Behavioral Flags
+  id: totrans-263
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 行为标志
 - en: These flags can alter how V8 optimizes and executes code. Use with caution.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些标志可以改变V8优化和执行代码的方式。使用时请谨慎。
 - en: '`--allow-natives-syntax`: Exposes the `%` functions for scripting V8''s internals.
     Helpful for detailed analysis and benchmarking, but never for production.'
+  id: totrans-265
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--allow-natives-syntax`: 提供了`%`函数来脚本化V8的内部结构。对于详细分析和基准测试很有帮助，但绝不应该用于生产环境。'
 - en: '`--optimize-for-size`: Asks V8 to be more conservative with optimizations to
     reduce the memory footprint of compiled code. This can be useful in low-memory
     environments.'
+  id: totrans-266
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--optimize-for-size`: 请求V8在优化时更加保守，以减少编译代码的内存占用。这在内存受限的环境中非常有用。'
 - en: '`--max-old-space-size=<megabytes>`: Sets the maximum size of the old generation
     heap. Increasing this can reduce GC frequency for memory-intensive applications,
     but also lead to longer GC pauses when they do occur.'
+  id: totrans-267
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--max-old-space-size=<megabytes>`: 设置旧生代堆的最大大小。增加这个值可以减少内存密集型应用程序的GC频率，但也会导致GC发生时的暂停时间更长。'
 - en: '`--jitless`: This is an interesting one. It completely disables the JIT (Sparkplug,
     Maglev, TurboFan). Your code will only ever be run by the Ignition interpreter.
     This provides better security (by preventing runtime code generation) at a significant
     performance cost. It''s useful for establishing a "baseline" performance to see
     how much the optimizing compilers are actually helping.'
+  id: totrans-268
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`--jitless`: 这是一个有趣的选择。它完全禁用了JIT（Sparkplug、Maglev、TurboFan）。你的代码将只由Ignition解释器运行。这提供了更好的安全性（通过防止运行时代码生成），但会以显著的性能成本为代价。这对于建立“基线”性能以查看优化编译器实际帮助了多少非常有用。'
 - en: How to Use Flags
+  id: totrans-269
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 如何使用标志
 - en: 'You pass these flags to the `node` executable before your script name: `node
     --trace-deopt --max-old-space-size=4096 my_app.js`'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: 你在脚本名称之前传递这些标志给`node`可执行文件：`node --trace-deopt --max-old-space-size=4096 my_app.js`
 - en: 'You can also set them via the `NODE_OPTIONS` environment variable, which is
     often more convenient for development environments or CI/CD pipelines: `export
     NODE_OPTIONS="--trace-deopt --max-old-space-size=4096"` `node my_app.js`'
+  id: totrans-271
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以通过`NODE_OPTIONS`环境变量来设置它们，这对于开发环境或CI/CD管道通常更方便：`export NODE_OPTIONS="--trace-deopt
+    --max-old-space-size=4096"` `node my_app.js`
 - en: Knowing how to use these flags is like having a diagnostic toolkit for the engine.
     When performance goes wrong, you're no longer guessing; you can ask V8 directly
     what's happening.
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 了解如何使用这些标志就像拥有了一个针对引擎的诊断工具包。当性能出现问题时，你不再需要猜测；你可以直接询问V8发生了什么。
 - en: From Full-Codegen to TurboFan
+  id: totrans-273
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 从全代码生成到TurboFan
 - en: The V8 architecture we've discussed - the 4-tier pipeline with Ignition, Sparkplug,
     Maglev, and TurboFan - is the result of years of evolution. To appreciate its
     design, it's helpful to understand what came before it.
+  id: totrans-274
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们讨论过的V8架构——包含Ignition、Sparkplug、Maglev和TurboFan的4层管道——是多年演化的结果。要欣赏其设计，了解其前身是有帮助的。
 - en: For many years, V8's pipeline consisted of two main components -
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 多年来，V8的管道由两个主要组件组成 -
 - en: '**Full-Codegen -** A simple, non-optimizing compiler. Its job was to take JavaScript
     and produce machine code as quickly as possible. It was fast to compile but produced
     slow machine code. It was the "good enough for now" compiler.'
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Full-Codegen -** 一个简单、非优化的编译器。其任务是尽可能快地将JavaScript转换为机器代码。它编译速度快，但生成的机器代码较慢。它是“现在足够好”的编译器。'
 - en: '**Crankshaft -** The optimizing compiler. Like TurboFan, Crankshaft would take
     hot functions and re-compile them into highly optimized machine code. It used
     a technique called **Static Single Assignment (SSA)** form and had a sophisticated
     optimization pipeline.'
+  id: totrans-277
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Crankshaft -** 优化编译器。与TurboFan类似，Crankshaft会将热函数重新编译成高度优化的机器代码。它使用了一种称为**静态单赋值（SSA）**的形式，并具有复杂的优化流程。'
 - en: 'However, this architecture had several problems:'
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，这个架构有几个问题：
 - en: There was a huge performance gap between the code produced by Full-Codegen and
     Crankshaft. Your code was either slow or very fast, with little in between.
+  id: totrans-279
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Full-Codegen和Crankshaft生成的代码之间有很大的性能差距。你的代码要么很慢，要么非常快，中间很少有。
 - en: Deoptimization (or "bailout" as it was(is) often called) from Crankshaft was
     a complex and slow process.
+  id: totrans-280
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从Crankshaft（或常被称为“退出”的过程）中退化的过程是复杂且缓慢的。
 - en: Full-Codegen generated a lot of machine code, and the Crankshaft pipeline itself
     was memory-intensive.
+  id: totrans-281
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Full-Codegen生成了大量的机器代码，而Crankshaft流水线本身也相当消耗内存。
 - en: The two compilers didn't share much code. Adding new language features often
     meant implementing them twice, in two different ways.
+  id: totrans-282
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 两个编译器共享的代码不多。添加新的语言特性通常意味着以两种不同的方式实现它们两次。
 - en: 'The New Pipeline: Ignition and TurboFan (and later Sparkplug and Maglev)'
+  id: totrans-283
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 新的流水线：Ignition和TurboFan（以及后来的Sparkplug和Maglev）
 - en: The V8 team undertook a massive project to re-architect the engine from the
     ground up. This resulted in the modern pipeline -
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: V8团队承担了一个庞大的项目，从底层重新架构引擎。这导致了现代的流水线 -
 - en: '**Ignition (Interpreter) -** The team realized that for much of the web and
     Node.js applications, compiling to machine code upfront (even with Full-Codegen)
     was overkill. An interpreter that generates and runs bytecode would have a much
     lower memory footprint and faster startup time. This was a key insight: **bytecode
     is often better than unoptimized machine code**. The memory savings were substantial,
     especially on mobile devices.'
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Ignition（解释器）-** 团队意识到，对于许多Web和Node.js应用程序，预先编译成机器代码（即使是Full-Codegen）都是过度行为。一个生成和运行字节码的解释器将具有更低的内存占用和更快的启动时间。这是一个关键的洞察：**字节码通常比未优化的机器代码更好**。内存节省是显著的，尤其是在移动设备上。'
 - en: '**TurboFan (Compiler) -** TurboFan was designed from the start to be a more
     advanced and flexible optimizing compiler.'
+  id: totrans-286
   prefs: []
   type: TYPE_NORMAL
+  zh: '**TurboFan（编译器）-** TurboFan从一开始就被设计成一个更先进和灵活的优化编译器。'
 - en: It has a cleaner architecture based on the "sea of nodes" graph representation.
+  id: totrans-287
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它有一个基于“节点海洋”图表示的更清晰的架构。
 - en: It was designed to optimize not just JavaScript, but also WebAssembly and other
     languages.
+  id: totrans-288
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它旨在优化不仅仅是JavaScript，还包括WebAssembly和其他语言。
 - en: It has a much better-defined "tiering" model. The path from Ignition to TurboFan
     is smoother, and deoptimization is less catastrophic.
+  id: totrans-289
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它有一个定义得更好的“分层”模型。从Ignition到TurboFan的路径更平滑，退化过程不那么灾难性。
 - en: It can handle constructs like `try...catch` and `with` much more gracefully
     than Crankshaft ever could.
+  id: totrans-290
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它可以比Crankshaft更优雅地处理像`try...catch`和`with`这样的结构。
 - en: '**Sparkplug (2021) -** Added as a baseline compiler to smooth the transition
     between interpreter and optimizer.'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Sparkplug（2021）-** 作为基准编译器添加，以平滑解释器和优化器之间的过渡。'
 - en: '**Maglev (2023) -** The latest addition, providing a mid-tier optimization
     level that balances compilation speed with code quality. This new pipeline, which
     evolved from V8 v5.9 (2017) through to the current 4-tier system, provided significant
     real-world benefits that we talked about in this chapter.'
+  id: totrans-292
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Maglev（2023）-** 最新加入的，提供了一种平衡编译速度和代码质量的中间层优化级别。这个从V8 v5.9（2017）到当前4层系统的演变，提供了我们在本章中讨论的显著的实际好处。'
 - en: Here's how the architecture evolved -
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是架构演变的过程 -
 - en: This history clears up another myth.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 这段历史澄清了另一个神话。
 - en: 'Myth 3: "Modern V8 optimizes everything"'
+  id: totrans-295
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 神话3：“现代V8优化一切”
 - en: Not even close. V8 doesn't *want* to optimize everything. Optimization is expensive.
     The entire design of the modern Ignition/Sparkplug/Maglev/TurboFan pipeline is
     based on the idea of **tiered compilation**. It does the absolute minimum work
@@ -1494,179 +2131,266 @@
     the small percentage of your code that is actually performance-critical. Your
     job is to make that small percentage of code easy for the optimizing compilers
     to understand and optimize.
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 差得远。V8并不想优化一切。优化是昂贵的。现代Ignition/Sparkplug/Maglev/TurboFan流水线的整个设计基于**分层编译**的理念。它只做必要的最小工作来运行你的代码（Ignition），并且只将CPU周期用于优化那些真正性能关键的小部分代码。你的任务是让这部分代码易于优化编译器理解和优化。
 - en: Best practices for V8 performance
+  id: totrans-297
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: V8性能的最佳实践
 - en: This is the actionable summary. If you're in a performance review and need a
     checklist, this is it.
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是可操作的总结。如果你正在进行性能审查并需要一个清单，这就是它。
 - en: '**DO''s -**'
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: '**DO''s -**'
 - en: Use constructors, classes, or factory functions to ensure objects have the same
     hidden class. Initialize all members, even with `null` or `undefined`.
+  id: totrans-300
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用构造函数、类或工厂函数确保对象具有相同的隐藏类。初始化所有成员，即使是 `null` 或 `undefined`。
 - en: Write functions that operate on a single, predictable object shape (monomorphic).
     If you must handle multiple shapes, consider breaking the function into smaller,
     monomorphic ones.
+  id: totrans-301
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 编写操作单一、可预测对象形状（单形）的函数。如果您必须处理多个形状，考虑将函数分解成更小的、单形的函数。
 - en: Leverage the fast path for Small Integers (Smis) whenever possible.
+  id: totrans-302
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 尽可能利用小整数（Smis）的快速路径。
 - en: Don't guess where your bottlenecks are. Use `node --prof` or the Chrome Inspector
     to find them.
+  id: totrans-303
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不要猜测瓶颈在哪里。使用 `node --prof` 或 Chrome 检查器来查找它们。
 - en: Use `--trace-deopt` to find and fix deoptimization loops.
+  id: totrans-304
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 `--trace-deopt` 来查找和修复去优化循环。
 - en: Clever, dynamic code is often the enemy of the JIT compiler. Simple, straightforward
     code is easier for V8 to optimize.
+  id: totrans-305
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 聪明、动态的代码通常是 JIT 编译器的敌人。简单、直接的代码更容易被 V8 优化。
 - en: '**DON''Ts -**'
+  id: totrans-306
   prefs: []
   type: TYPE_NORMAL
+  zh: '**不要做的事情 -**'
 - en: Never use `delete` on objects in a hot path. Set properties to `undefined` instead.
+  id: totrans-307
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 永远不要在热点路径上的对象上使用 `delete`。将属性设置为 `undefined`。
 - en: Avoid writing functions where arguments can be one of many different shapes
     or types.
+  id: totrans-308
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 避免编写参数可以是多种不同形状或类型的函数。
 - en: Avoid adding properties to objects after they've been created.
+  id: totrans-309
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 避免在对象创建后添加属性。
 - en: '**Don''t use the `arguments` object.** Use rest parameters (`...args`) instead.
     They are fully optimizable.'
+  id: totrans-310
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要使用 `arguments` 对象。** 使用剩余参数（`...args`）代替。它们是完全可优化的。'
 - en: '**Don''t `eval` or use `with` statements.** These are black boxes for the compiler
     and kill performance.'
+  id: totrans-311
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要使用 `eval` 或 `with` 语句。** 这些对编译器来说是黑盒，会降低性能。'
 - en: '**Don''t ignore deoptimizations.** A deopt in a hot function is a critical
     performance bug.'
+  id: totrans-312
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**不要忽略去优化。** 热函数中的去优化是一个关键的性能错误。'
 - en: A checklist you can keep handy
+  id: totrans-313
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 您可以随时携带的清单
 - en: Do my critical data objects have consistent, stable shapes?
+  id: totrans-314
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我的临界数据对象是否有一致、稳定的形状？
 - en: Are my performance-critical functions monomorphic?
+  id: totrans-315
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我的性能关键函数是否是单形的？
 - en: Have I run `--trace-deopt` on my hot paths to check for optimization bailouts?
+  id: totrans-316
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我是否在我的热点路径上运行了 `--trace-deopt` 以检查优化退出？
 - en: Have I profiled my application under load to confirm where the bottlenecks are?
+  id: totrans-317
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我是否在负载下对应用程序进行了性能分析，以确认瓶颈在哪里？
 - en: Is the memory layout of my objects and arrays as efficient as possible (e.g.,
     avoiding holes, using Smis)?
+  id: totrans-318
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我的对象和数组的内存布局是否尽可能高效（例如，避免空隙，使用 Smis）？
 - en: Have I measured the "before" and "after" to confirm my optimizations had a positive
     impact?
+  id: totrans-319
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我是否测量了“之前”和“之后”，以确认我的优化产生了积极的影响？
 - en: 'Appendix: V8 profiling commands'
+  id: totrans-320
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 附录：V8 性能分析命令
 - en: A quick reference for the commands you'll use most often.
+  id: totrans-321
   prefs: []
   type: TYPE_NORMAL
+  zh: 您最常使用的命令的快速参考。
 - en: '**Basic CPU Profiling:**'
+  id: totrans-322
   prefs: []
   type: TYPE_NORMAL
+  zh: '**基本 CPU 性能分析：**'
 - en: '[PRE15]'
+  id: totrans-323
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: '**Remote Debugging & Profiling with Chrome DevTools:**'
+  id: totrans-324
   prefs: []
   type: TYPE_NORMAL
+  zh: '**使用 Chrome 开发者工具进行远程调试和性能分析：**'
 - en: '[PRE16]'
+  id: totrans-325
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Then open `chrome://inspect` in your Chrome browser.
+  id: totrans-326
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后在您的 Chrome 浏览器中打开 `chrome://inspect`。
 - en: '**Tracing JIT Compiler Behavior:**'
+  id: totrans-327
   prefs: []
   type: TYPE_NORMAL
+  zh: '**跟踪 JIT 编译器行为：**'
 - en: '[PRE17]'
+  id: totrans-328
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: '**Using V8 Intrinsics for Benchmarking/Debugging:**'
+  id: totrans-329
   prefs: []
   type: TYPE_NORMAL
+  zh: '**使用 V8 内置函数进行基准测试/调试：**'
 - en: '[PRE18]'
+  id: totrans-330
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'Common intrinsics: `%HaveSameMap(obj1, obj2)`, `%GetOptimizationStatus(func)`,
     `%OptimizeFunctionOnNextCall(func)`.'
+  id: totrans-331
   prefs: []
   type: TYPE_NORMAL
+  zh: 常见内置函数：%HaveSameMap(obj1, obj2)，%GetOptimizationStatus(func)，%OptimizeFunctionOnNextCall(func)。
 - en: '* * *'
+  id: totrans-332
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: Closing - thinking like V8
+  id: totrans-333
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 关闭 - 思考像 V8 一样
 - en: 'We started this journey with a mystery: a simple line of code causing a 100x
     slowdown. The solution wasn''t a clever algorithm or a complex refactor. It''s
     about peeking under the hood to see what really makes your JavaScript go *vroom*.'
+  id: totrans-334
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们开始这段旅程时带着一个谜团：一行简单的代码导致性能降低了 100 倍。解决方案不是一种巧妙的算法或复杂的重构。这是关于揭开盖子，看看真正让您的 JavaScript
+    发动起来的原因。
 - en: 'The biggest shift you can make as a Node.js developer is to stop seeing V8
     as an unpredictable black box. It''s not. It''s a highly opinionated, deterministic
     system. It has strong preferences: it likes stable object shapes, it likes monomorphic
     functions, it likes integer arithmetic, and it hates unpredictability.'
+  id: totrans-335
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为 Node.js 开发者，您可以做出的最大转变是停止将 V8 视为一个不可预测的黑盒。它不是。它是一个高度有意见、确定性的系统。它有强烈的偏好：它喜欢稳定的对象形状，它喜欢单形函数，它喜欢整数运算，它讨厌不可预测性。
 - en: Your job isn't to outsmart the compiler. You will lose. Your job is to write
     code that makes the compiler's job easy. Feed it a steady diet of the simple,
     predictable patterns it's designed to devour, and it will reward you with sweet
     speed. Create chaos with dynamic shapes and polymorphic calls, and it will protect
     itself - and your application's correctness - by retreating to the slow path.
+  id: totrans-336
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的工作不是要战胜编译器。你会失败的。你的工作是要编写让编译器工作变得容易的代码。给它提供它设计来吞噬的简单、可预测的模式的稳定饮食，它将会以甜美的速度回报你。通过动态形状和多态调用制造混乱，它将会通过退回到慢速路径来保护自己——以及你应用程序的正确性。
 - en: 'The next time you''re facing a weird performance issue, don''t just look at
     your code''s logic. Ask yourself: "How would V8 see this?" Think about the hidden
     classes you''re creating. Think about the type feedback you''re generating. Think
     about how your code progresses through the 4-tier compilation pipeline. Think
     like V8, and the performance issues will start to solve themselves.'
+  id: totrans-337
   prefs: []
   type: TYPE_NORMAL
+  zh: 下次你遇到奇怪的性能问题时，不要只关注你代码的逻辑。问问自己：“V8会如何看待这个问题？”思考你正在创建的隐藏类。思考你正在生成的类型反馈。思考你的代码是如何通过四层编译管道的。像V8一样思考，性能问题将会开始自行解决。
 - en: '* * *'
+  id: totrans-338
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'

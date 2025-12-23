@@ -1,1013 +1,1504 @@
 - en: Transform & Duplex Streams
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 转换与双工流
 - en: 原文：[https://www.thenodebook.com/streams/transform-streams](https://www.thenodebook.com/streams/transform-streams)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://www.thenodebook.com/streams/transform-streams](https://www.thenodebook.com/streams/transform-streams)
 - en: '`Readable` streams produce data. `Writable` streams consume it. But sometimes
     you need both, or you need a stream where the two directions aren''t related,
     or you need transformation between input and output.'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Readable`流产生数据。`Writable`流消费它。但有时你需要两者，或者你需要一个两个方向不相关的流，或者你需要输入和输出之间的转换。'
 - en: '`Duplex` streams are both readable and writable at the same time, with **two
     independent sides** operating in parallel. `Transform` streams are a specialized
     version of `Duplex` where the writable side feeds into the readable side through
     a transformation function. The distinction between these two types affects how
     you build data processing pipelines.'
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: '`双工`流同时具有可读性和可写性，**两个独立的部分**并行操作。`转换`流是`双工`流的一个特殊版本，其中可写部分通过转换函数将数据传递到可读部分。这两种类型之间的区别会影响你构建数据处理管道的方式。'
 - en: Both stream types work differently. `Duplex` streams have independent sides.
     `Transform` streams, which are more common in application code, connect the writable
     input to the readable output through a transformation function. We'll implement
     several custom `Transform` streams to show the patterns, then cover when to choose
     `Duplex` versus `Transform`.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两种流类型的工作方式不同。`双工`流具有独立的部分。`转换`流，在应用代码中更为常见，通过转换函数将可写输入连接到可读输出。我们将实现几个自定义的`转换`流来展示模式，然后讨论何时选择`双工`与`转换`。
 - en: Duplex Streams
+  id: totrans-5
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 双工流
 - en: '`Duplex` streams come first. They''re the foundation that makes `Transform`
     streams make sense. A `Duplex` stream is simultaneously readable and writable.
     You can call both `read()` and `write()` on the same object. You can attach both
     `''data''` listeners and pass chunks to `write()`. The stream has all the properties
     and events of both `Readable` and `Writable`.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '`双工`流是基础。它是使`转换`流有意义的基石。`双工`流同时具有可读性和可写性。你可以在同一个对象上调用`read()`和`write()`。你可以附加`''data''`监听器并将块传递给`write()`。流具有`Readable`和`Writable`的所有属性和事件。'
 - en: 'The critical detail: the **readable side** and the **writable side** are **independent**.
     Data you write to a `Duplex` stream doesn''t automatically appear on the readable
     side. The two sides are separate channels that happen to exist on the same object.
     Think of it like a phone line - you can speak into it and listen through it, but
     what you say doesn''t echo back to you. The two directions are independent.'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键细节：**可读部分**和**可写部分**是**独立的**。你写入`双工`流的数据不会自动出现在可读部分。这两部分是独立的通道，恰好存在于同一个对象上。想象一下电话线——你可以对着它说话并通过它来听，但你说的内容不会回声给你。两个方向是独立的。
 - en: This independence exists because `Duplex` streams model bidirectional communication
     channels. The canonical example is a TCP socket. When you have a socket connection,
     you can send data to the remote endpoint by writing to the socket, and you can
     receive data from the remote endpoint by reading from it. The data you send isn't
     the data you receive - they're two separate streams of communication happening
     simultaneously over the same connection.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种独立性存在是因为`双工`流模拟了双向通信通道。典型的例子是TCP套接字。当你有一个套接字连接时，你可以通过写入套接字向远程端点发送数据，也可以通过从它读取来接收数据。你发送的数据不是你接收的数据——它们是两个在相同连接上同时发生的独立通信流。
 - en: At the class level, `Duplex` streams have a specific structure. The `stream.Duplex`
     class extends `Readable`, but it also implements the `Writable` interface. Internally,
     it maintains separate state for the readable side (`_readableState`) and the writable
     side (`_writableState`). When you implement a custom `Duplex` stream, you provide
     both `_read()` and `_write()` methods.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 在类级别上，`双工`流具有特定的结构。`stream.Duplex`类扩展了`Readable`，同时也实现了`Writable`接口。内部，它为可读部分（`_readableState`）和可写部分（`_writableState`）维护了独立的状态。当你实现自定义的`双工`流时，你需要提供`_read()`和`_write()`方法。
 - en: 'A minimal Duplex stream implementation:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 最小化双工流实现：
 - en: '[PRE0]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: The `_read()` method is called when the readable side needs data. The `_write()`
     method is called when something writes to the writable side. These two methods
     don't interact. They're completely independent.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 当可读部分需要数据时，会调用`_read()`方法。当有数据写入可写部分时，会调用`_write()`方法。这两个方法不相互交互。它们是完全独立的。
 - en: 'Using this stream:'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用此流：
 - en: '[PRE1]'
+  id: totrans-14
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'When you run this, you''ll see "Received: written data" from the `_write()`
     side and "Read: readable data" from the `_read()` side. They''re not connected.
     You''re not transforming "written data" into "readable data" - they''re two separate
     flows.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '当你运行这个程序时，你会从 `_write()` 端看到 "Received: written data"，从 `_read()` 端看到 "Read:
+    readable data"。它们不是连接的。你并不是将 "written data" 转换为 "readable data"——它们是两个独立的流程。'
 - en: 'The `allowHalfOpen` option is `Duplex`-specific and changes how the stream
     handles ending. When you create a `Duplex` stream, you can set `allowHalfOpen:
     false` to change what happens when one side ends.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '`allowHalfOpen` 选项是 `Duplex` 特有的，它改变了流处理结束的方式。当你创建一个 `Duplex` 流时，你可以设置 `allowHalfOpen:
+    false` 来改变当一方结束时会发生什么。'
 - en: By default, `allowHalfOpen` is `true`. This means the readable side can end
     while the writable side is still open, and vice versa. You can finish writing
     and call `end()` on the writable side, but the readable side continues to produce
     data. Or the readable side can `push(null)` to signal EOF, but you can still write
     to the writable side.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，`allowHalfOpen` 是 `true`。这意味着可读端可以在可写端仍然打开时结束，反之亦然。你可以在可写端完成写入并调用 `end()`，但可读端会继续产生数据。或者可读端可以
+    `push(null)` 来表示 EOF，但你仍然可以向可写端写入。
 - en: Network sockets work this way. When a TCP connection is **half-closed**, one
     endpoint has finished sending but can still receive. The connection isn't fully
     closed until both sides have finished.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 网络套接字就是这样工作的。当一个 TCP 连接处于 **半关闭** 状态时，一个端点已经完成发送但仍然可以接收。只有当双方都完成发送后，连接才会完全关闭。
 - en: 'If you set `allowHalfOpen: false`, the stream enforces that when either side
     ends, the other side ends too. If the readable side pushes `null`, the writable
     side is automatically ended. If you call `end()` on the writable side, the readable
     side automatically pushes `null`.'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '如果你设置 `allowHalfOpen: false`，流将强制执行当任何一方结束时，另一方也必须结束。如果可读端推送 `null`，可写端会自动结束。如果你在可写端调用
+    `end()`，可读端会自动推送 `null`。'
 - en: '[PRE2]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'With `allowHalfOpen: false`, calling `duplex.end()` causes the readable side
     to end immediately. Use this when modeling something that doesn''t support half-open
     states, like request-response protocols where the stream should close completely
     when either direction finishes.'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '当 `allowHalfOpen: false` 时，调用 `duplex.end()` 会导致可读端立即结束。当你模拟不支持半开放状态的东西时，可以使用这个选项，比如请求-响应协议，其中流应该在任一方向完成时完全关闭。'
 - en: The real-world use cases for raw `Duplex` streams are mostly about I/O primitives.
     The `net.Socket` class from Node's networking module is a `Duplex` stream. When
     you create a TCP socket, you get a `Duplex`. The writable side sends data over
     the network. The readable side receives data from the network. The two sides are
     independent because you're communicating with a remote endpoint - what you send
     isn't what you receive.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 原始 `Duplex` 流的实际应用案例大多与 I/O 原语有关。Node 网络模块中的 `net.Socket` 类是一个 `Duplex` 流。当你创建一个
+    TCP 套接字时，你会得到一个 `Duplex`。可写端通过网络发送数据。可读端从网络接收数据。由于你正在与远程端点通信，这两端是独立的——你发送的内容并不等于你接收的内容。
 - en: Another example is a subprocess's `stdin` and `stdout`. When you spawn a child
     process, its `stdin` is writable (you send data to the process) and its `stdout`
     is readable (you receive data from the process). These are modeled as a `Duplex`
     stream where the two sides communicate with the external process, not with each
     other.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个例子是子进程的 `stdin` 和 `stdout`。当你启动一个子进程时，它的 `stdin` 是可写的（你向进程发送数据），而它的 `stdout`
+    是可读的（你从进程接收数据）。这些被建模为一个 `Duplex` 流，其中两端与外部进程通信，而不是彼此之间。
 - en: 'Application code rarely implements `Duplex` streams from scratch. `Transform`
     streams are more common for data transformation. But first, a slightly more realistic
     `Duplex` example:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用代码很少从头开始实现 `Duplex` 流。`Transform` 流在数据转换中更为常见。但首先，一个稍微更现实的 `Duplex` 示例：
 - en: 'This `Duplex` stream maintains an in-memory buffer. Data written to it is stored
     in an internal array, and data read from it comes from that array:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个 `Duplex` 流维护一个内存缓冲区。写入的数据存储在一个内部数组中，从它读取的数据来自该数组：
 - en: '[PRE3]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: Now the two sides interact through shared state (the `this.buffer` array). When
     you write, chunks are added to the buffer. When the readable side needs data,
     chunks are pulled from the buffer. This is a basic queue implementation using
     a `Duplex` stream.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，两端通过共享状态（`this.buffer` 数组）进行交互。当你写入时，数据块会被添加到缓冲区。当可读端需要数据时，数据块会被从缓冲区中取出。这是使用
+    `Duplex` 流实现的基本队列实现。
 - en: Even though there's shared state, the `_read()` and `_write()` methods don't
     call each other. They just access the same data structure. The stream's internal
     machinery handles calling `_read()` when the readable side needs data and calling
     `_write()` when something writes to the writable side.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管存在共享状态，`_read()`和`_write()`方法并不互相调用。它们只是访问相同的数据结构。流的内部机制处理在可读侧需要数据时调用`_read()`，以及在可写侧有写入时调用`_write()`。
 - en: Using a `Duplex` to implement a queue or buffer works, but it's not the primary
     use case. Most often, if you're building something that transforms or processes
     data in a pipeline, you want a `Transform` stream, not a `Duplex`.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`Duplex`来实现队列或缓冲区是可行的，但这不是主要用例。通常，如果你正在构建在管道中转换或处理数据的程序，你想要一个`Transform`流，而不是`Duplex`。
 - en: 'One more detail about `Duplex` streams: error handling works differently because
     of the two independent sides. Because a `Duplex` has two independent sides, an
     error on one side doesn''t automatically propagate to the other. If an error occurs
     in `_write()`, the stream emits an `''error''` event, but the readable side continues
     operating unless you explicitly destroy it. Similarly, an error in `_read()` doesn''t
     stop the writable side.'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于`Duplex`流的一个额外细节：由于两侧独立，错误处理方式不同。因为`Duplex`有两个独立的侧面，一侧的错误不会自动传播到另一侧。如果在`_write()`中发生错误，流会发出一个`'error'`事件，但除非你明确地销毁它，否则可读侧会继续运行。同样，`_read()`中的错误也不会停止可写侧。
 - en: However, when you call `destroy()` on a `Duplex` stream, both sides are destroyed.
     This is the correct behavior - destroying the stream means the entire resource
     is being shut down, not just one direction.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，当你对一个`Duplex`流调用`destroy()`时，两侧都会被销毁。这是正确的行为 - 销毁流意味着整个资源正在关闭，而不仅仅是单向。
 - en: '[PRE4]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: This matters when you're handling cleanup or cancellation. If you're using a
     `Duplex` to model a network connection, and the connection drops, you destroy
     the stream, which shuts down both sending and receiving.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你处理清理或取消时，这很重要。如果你使用`Duplex`来模拟网络连接，并且连接断开，你将销毁流，这将关闭发送和接收。
 - en: Transform Streams
+  id: totrans-34
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Transform Streams
 - en: '`Transform` streams are what most developers reach for when building data processors.
     A `Transform` stream is a specialized `Duplex` where the writable input is connected
     to the readable output through a transformation function. Data flows in one side,
     gets processed, and flows out the other side.'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Transform`流是大多数开发者在构建数据处理程序时首先想到的。`Transform`流是一种特殊的`Duplex`流，其中可写输入通过一个转换函数连接到可读输出。数据从一侧流入，经过处理，然后从另一侧流出。'
 - en: Unlike raw `Duplex` streams where the two sides are independent, `Transform`
     streams create a **causal relationship** between them. What you write to the writable
     side directly affects what comes out of the readable side. You're not just implementing
     two separate channels - you're implementing a function that takes input chunks
     and produces output chunks.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 与两侧独立的原始`Duplex`流不同，`Transform`流在它们之间创建了一种**因果关系**。你写入可写侧的内容会直接影响可读侧输出的内容。你不仅仅是实现两个独立的通道
+    - 你实现的是一个函数，该函数接收输入块并生成输出块。
 - en: The most common examples of `Transform` streams in Node.js's standard library
     are compression and encryption. The `zlib.createGzip()` function returns a `Transform`
     stream. You write uncompressed data to it, and you read compressed data from it.
     The `crypto.createCipheriv()` function returns a `Transform` stream. You write
     plaintext to it, and you read ciphertext from it. The transformation happens inside
     the stream.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Node.js的标准库中，`Transform`流的常见例子包括压缩和加密。`zlib.createGzip()`函数返回一个`Transform`流。你将未压缩的数据写入它，然后从它那里读取压缩数据。`crypto.createCipheriv()`函数返回一个`Transform`流。你将明文写入它，然后从它那里读取密文。转换在流内部进行。
 - en: 'The `Transform` class differs from `Duplex` in a few key ways. `Transform`
     extends `Duplex`, so it has all the properties and methods of a `Duplex`. But
     instead of implementing `_read()` and `_write()`, you implement a different method:
     `_transform()`.'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Transform`类在几个关键方面与`Duplex`不同。`Transform`扩展了`Duplex`，因此它具有`Duplex`的所有属性和方法。但不是实现`_read()`和`_write()`，而是实现一个不同的方法：`_transform()`。'
 - en: 'The `_transform()` method has this signature:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_transform()`方法具有以下签名：'
 - en: '[PRE5]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: It receives a **chunk** from the writable side, processes it, and pushes zero
     or more output chunks to the readable side. When it's done processing, it invokes
     the **callback** to signal that it's ready for the next chunk.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 它接收来自可写侧的一个**块**，对其进行处理，并将零个或多个输出块推送到可读侧。当它完成处理时，它会调用**回调**来表示它已准备好接收下一个块。
 - en: 'A simple `Transform` that converts text to uppercase:'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个简单的 `Transform`，将文本转换为大写：
 - en: '[PRE6]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: The `_transform()` method receives a chunk (which is a `Buffer` by default),
     converts it to a string, uppercases it, pushes the result to the readable side
     using `this.push()`, and then calls the callback to indicate the transformation
     is complete.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_transform()` 方法接收一个数据块（默认情况下是一个 `Buffer`），将其转换为字符串，转换为大写，使用 `this.push()`
+    将结果推送到可读的一侧，然后调用回调以指示转换已完成。'
 - en: 'Using this stream:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用这个流：
 - en: '[PRE7]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'Output: "HELLO" and "WORLD". Each chunk you write is transformed and emerges
     on the readable side.'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出："HELLO" 和 "WORLD"。你写入的每个数据块都会被转换，并在可读的一侧出现。
 - en: '`Transform`''s `_read()` method is already implemented for you, unlike `Duplex`.
     You don''t override it. The `Transform` base class handles pulling data from an
     internal buffer that''s populated by your `_transform()` method. Similarly, `Transform`''s
     `_write()` method is implemented to call your `_transform()` method. You only
     implement the **transformation logic** - the stream plumbing is handled by the
     base class.'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Transform` 的 `_read()` 方法已经为你实现，与 `Duplex` 不同。你不需要重写它。`Transform` 基类处理从由你的
+    `_transform()` 方法填充的内部缓冲区中拉取数据。同样，`Transform` 的 `_write()` 方法也是实现为调用你的 `_transform()`
+    方法。你只需实现 **转换逻辑** - 流的管道处理由基类处理。'
 - en: This makes `Transform` streams simpler to implement than raw `Duplex` streams.
     You focus on "what do I do with this chunk" instead of "how do I manage two independent
     sides."
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 这使得 `Transform` 流比原始 `Duplex` 流更容易实现。你专注于“我对这个数据块做什么”，而不是“我如何管理两个独立的一侧”。
 - en: The callback parameter in `_transform()` does two things. It signals that you're
     done processing the current chunk, and it allows you to report errors.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_transform()` 中的回调参数执行两个操作。它表示你已完成当前数据块的处理，并允许你报告错误。'
 - en: 'If an error occurs during transformation, you pass it to the callback:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果转换过程中发生错误，你将其传递给回调：
 - en: '[PRE8]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: If you pass an error to the callback, the stream emits an `'error'` event and
     stops processing. Any buffered data is discarded, and the stream enters an **errored
     state**.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你将错误传递给回调，流将发出 `'error'` 事件并停止处理。任何缓冲的数据都将被丢弃，流进入 **错误状态**。
 - en: You can also use `this.push()` multiple times in a single `_transform()` call.
     This is called a **one-to-many transformation**. For every input chunk, you produce
     multiple output chunks.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以在单个 `_transform()` 调用中使用 `this.push()` 多次。这被称为 **一对一转换**。对于每个输入数据块，你产生多个输出数据块。
 - en: 'This `Transform` splits input into individual lines:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个 `Transform` 将输入分割成单独的行：
 - en: '[PRE9]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'If you write `"hello\nworld\n"`, the transform pushes two chunks: `"hello\n"`
     and `"world\n"`. One input chunk becomes multiple output chunks.'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你写入 `"hello\nworld\n"`，转换器将推送两个数据块：`"hello\n"` 和 `"world\n"`。一个输入数据块变成了多个输出数据块。
 - en: 'You can also push nothing. If your transformation decides to drop a chunk (filter
     it out), you just call the callback without pushing:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以不推送任何内容。如果你的转换决定丢弃一个数据块（过滤掉它），你只需调用回调而不推送：
 - en: '[PRE10]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: This transform filters out chunks that start with `"#"`. Some chunks pass through,
     others are dropped.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换器过滤掉以 `"#"` 开头的数据块。一些数据块通过，其他则被丢弃。
 - en: What about **many-to-one transformations**, where you need to accumulate multiple
     input chunks before producing output? This is common when parsing structured data
     that might be split across chunk boundaries. You use instance state to buffer
     incomplete data.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么 **多对一转换** 呢？在这种情况下，你需要累积多个输入数据块才能产生输出。这在解析可能跨越数据块边界的结构化数据时很常见。你使用实例状态来缓冲不完整的数据。
 - en: 'This `Transform` accumulates chunks until it sees a delimiter, then emits the
     accumulated data:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个 `Transform` 累积数据块，直到它看到分隔符，然后发出累积的数据：
 - en: '[PRE11]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: This transform maintains a `this.buffer` that accumulates incoming data. Each
     time `_transform()` is called, it appends the new chunk to the buffer, splits
     on the delimiter, and pushes complete parts. The last part (which might be incomplete)
     is kept in the buffer for the next call.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换器维护一个 `this.buffer`，用于累积传入的数据。每次调用 `_transform()` 时，它将新的数据块追加到缓冲区，根据分隔符进行分割，并推送完整的部分。最后一个部分（可能是不完整的）将保留在缓冲区中，以便下一次调用。
 - en: 'This is a fundamental pattern in `Transform` streams: **maintaining state**
     across calls to `_transform()` to handle data structures that span multiple chunks.
     This is **stateful transformation**.'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是在 `Transform` 流中的一个基本模式：在 `_transform()` 调用之间 **维护状态**，以处理跨越多个数据块的数据结构。这是
+    **有状态转换**。
 - en: The above implementation has a problem. When the stream ends, any leftover data
     in the buffer is lost. The stream finishes without emitting that final incomplete
     chunk. This is where `_flush()` comes in.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 上述实现有一个问题。当流结束时，缓冲区中的任何剩余数据都会丢失。流结束而没有发出那个最后的未完成块。这就是`_flush()`的作用。
 - en: The _flush() Method
+  id: totrans-67
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '`_flush()`方法'
 - en: '`Transform` streams have a second method you can implement: `_flush()`. This
     method is called after all input chunks have been processed (after `end()` is
     called on the writable side) but before the readable side pushes `null` to signal
     EOF. It''s your opportunity to emit any remaining data.'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Transform`流有一个你可以实现的方法：`_flush()`。这个方法在所有输入块都处理完毕后（在可写侧调用`end()`之后）被调用，但在可读侧推送`null`以发出EOF信号之前。这是你发出任何剩余数据的机会。'
 - en: 'The `_flush()` signature is:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_flush()`的签名是：'
 - en: '[PRE12]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: It receives only a callback, no chunk. You can call `this.push()` to emit final
     data, and then you call the callback to signal that flushing is complete.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 它只接收一个回调，没有块。你可以调用`this.push()`来发出最终数据，然后调用回调来表示刷新完成。
 - en: 'The delimiter parser with `_flush()` added:'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加了`_flush()`的定界符解析器：
 - en: '[PRE13]'
+  id: totrans-73
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: Now when the stream ends, `_flush()` is called. If there's leftover data in
     the buffer, it's pushed as the final chunk. Then the callback is invoked, and
     the stream pushes `null` to signal EOF on the readable side.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在当流结束时，`_flush()`被调用。如果缓冲区中还有剩余数据，它将被作为最后一个块推送。然后调用回调，流将推送`null`以在可读侧发出EOF信号。
 - en: Without `_flush()`, data that doesn't end with a delimiter is lost. With `_flush()`,
     it's emitted as the final chunk. Parsers, decoders, and any `Transform` that accumulates
     state need this.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有实现`_flush()`，不以分隔符结束的数据会丢失。有了`_flush()`，它会被作为最后一个块发出。解析器、解码器和任何累积状态的`Transform`都需要这个。
 - en: 'The `_flush()` callback works the same way as the `_transform()` callback.
     If an error occurs, you pass it to the callback:'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_flush()`回调的工作方式与`_transform()`回调相同。如果发生错误，你将其传递给回调：'
 - en: '[PRE14]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: If you pass an error to the callback, the stream emits an `'error'` event instead
     of ending cleanly.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你将错误传递给回调，流将发出一个`'error'`事件而不是干净地结束。
 - en: 'One more detail about `_flush()`: it''s **optional**. If you don''t implement
     it, the stream just ends without a final processing step. Transforms that don''t
     accumulate state (like the uppercase transform) don''t need this. Each chunk is
     independent, so there''s nothing to flush when the stream ends.'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于`_flush()`的一个更多细节：它是**可选的**。如果你不实现它，流将直接结束而没有最后的处理步骤。不累积状态的转换（如大写转换）不需要这个。每个块都是独立的，所以当流结束时没有要刷新的内容。
 - en: But for any transform that buffers across chunks - parsers, decoders, aggregators
     - you must implement `_flush()` to avoid losing data.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是对于任何跨块缓冲的转换（解析器、解码器、聚合器）- 你必须实现`_flush()`以避免数据丢失。
 - en: 'A more complete example: parsing **NDJSON** (newline-delimited JSON) where
     each line is a separate JSON document.'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个更完整的例子：解析**NDJSON**（换行分隔的JSON），其中每一行都是一个单独的JSON文档。
 - en: '[PRE15]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: This transform operates in `objectMode`, which means it pushes JavaScript objects
     instead of buffers. Each line is parsed as JSON, and the resulting object is pushed
     to the readable side. If a line is incomplete at the end of a chunk, it's buffered
     until the next chunk arrives. When the stream ends, `_flush()` parses any remaining
     buffered line.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换在`objectMode`模式下运行，这意味着它推送JavaScript对象而不是缓冲区。每一行都被解析为JSON，然后生成的对象被推送到可读的一侧。如果一块的末尾有一行不完整，它将被缓冲，直到下一块到达。当流结束时，`_flush()`解析任何剩余的缓冲行。
 - en: If `JSON.parse()` throws, we pass the error to the callback. This stops the
     stream and emits an error event. We use `return callback(err)` to exit early -
     we don't want to continue processing after an error.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果`JSON.parse()`抛出错误，我们将错误传递给回调。这停止了流并发出一个错误事件。我们使用`return callback(err)`来提前退出
+    - 我们不希望在错误后继续处理。
 - en: This pattern (buffer across chunks, split on delimiter, parse complete units,
     flush remaining data) appears in most `Transform` streams for structured data.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式（跨块缓冲，按分隔符分割，解析完整单元，刷新剩余数据）出现在大多数结构化数据的`Transform`流中。
 - en: Implementing Custom Transform Streams
+  id: totrans-86
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实现自定义转换流
 - en: Now that you understand the mechanics, we'll implement several `Transform` streams.
     These cover **filtering**, **mapping**, **splitting**, **joining**, and **stateful
     parsing**.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你已经理解了机制，我们将实现几个`Transform`流。这些包括**过滤**、**映射**、**分割**、**连接**和**状态解析**。
 - en: '**Filter transforms** pass through chunks that meet a condition and drop chunks
     that don''t. This transform filters out empty lines:'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '**过滤转换**会通过满足条件的块，并丢弃不满足条件的块。这个转换过滤掉了空行：'
 - en: '[PRE16]'
+  id: totrans-89
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Simple. If the chunk (after trimming whitespace) has content, push it. Otherwise,
     skip it. The callback is always invoked to signal completion, even when we don't
     push.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单。如果块（在去除空白后）有内容，则推入。否则，跳过。回调总是被调用以表示完成，即使我们没有推入。
 - en: '**Map transforms** convert each input chunk to a different output chunk, typically
     in `objectMode`. This transform takes JSON objects and extracts specific fields:'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '**映射转换**将每个输入块转换为不同的输出块，通常在`objectMode`中。这个转换接受JSON对象并提取特定字段：'
 - en: '[PRE17]'
+  id: totrans-92
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: Each input object is mapped to a new object with only the specified fields.
     One object in, one object out. This is a **one-to-one transform**.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个输入对象都映射到一个新对象，只包含指定的字段。一个对象输入，一个对象输出。这是一个**一对一转换**。
 - en: '**Split transforms** break input into smaller pieces. We''ve seen a line splitter,
     but here''s a byte-level splitter that breaks a stream into fixed-size chunks:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: '**分割转换**将输入拆分成更小的部分。我们看到了行分割器，但这里有一个字节级别的分割器，它将流分割成固定大小的块：'
 - en: '[PRE18]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: This transform accumulates incoming data in a buffer. When the buffer reaches
     `chunkSize`, it slices off a chunk and pushes it. The loop continues until there's
     less than `chunkSize` left in the buffer. When the stream ends, `_flush()` emits
     any remaining data as a final partial chunk.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换在缓冲区中累积传入的数据。当缓冲区达到`chunkSize`时，它切下一个块并将其推入。循环继续，直到缓冲区中剩余的数据少于`chunkSize`。当流结束时，`_flush()`将任何剩余的数据作为最后的部分块发出。
 - en: '**Join transforms** combine multiple input chunks into a single output chunk.
     This transform accumulates objects into an array and emits the array when a certain
     count is reached:'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '**连接转换**将多个输入块合并成一个输出块。这个转换将对象累积到数组中，并在达到一定数量时发出数组：'
 - en: '[PRE19]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: This is a **many-to-one transform**. It accumulates `batchSize` objects, then
     pushes the array. If the stream ends with a partial batch, `_flush()` emits it.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个**多对一转换**。它累积`batchSize`个对象，然后推入数组。如果流以部分批次结束，`_flush()`将发出它。
 - en: '**Stateful parsing transforms** maintain state across chunks to parse structured
     data. We''ve seen delimiter parsing, but here''s a more complex example: a parser
     for **length-prefixed binary messages**.'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '**有状态解析转换**在块之间维护状态以解析结构化数据。我们看到了分隔符解析，但这里有一个更复杂的例子：一个**长度前缀的二进制消息解析器**。'
 - en: In a length-prefixed protocol, each message starts with a 4-byte length field
     (a `uint32`) indicating how many bytes follow. To parse this, we need to read
     the length, then read that many bytes, then repeat.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 在长度前缀协议中，每个消息都以一个4字节的长度字段（一个`uint32`）开头，指示后面有多少字节。为了解析它，我们需要读取长度，然后读取那么多字节，然后重复。
 - en: '[PRE20]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: This transform uses a **state machine**. The `expectedLength` variable tracks
     whether we're waiting to read a length header or waiting to read the message body.
     The loop reads as many complete messages as possible from the buffer, pushing
     each one, and then calls the callback.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换使用一个**状态机**。`expectedLength`变量跟踪我们是否正在等待读取长度头或等待读取消息体。循环从缓冲区中读取尽可能多的完整消息，并将每个消息推入，然后调用回调。
 - en: There's no `_flush()` here. If the stream ends with incomplete data (a partial
     length header or a partial message body), that data is lost. Whether this is correct
     depends on your protocol. Some protocols treat partial data at EOF as an error.
     Others emit a final incomplete message or emit an error in `_flush()`.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里没有`_flush()`。如果流以不完整的数据结束（部分长度头或部分消息体），则该数据将丢失。这是否正确取决于你的协议。一些协议将EOF处的部分数据视为错误。其他协议在`_flush()`中发出一个最终的不完整消息或发出错误。
 - en: Most transforms you implement will be variations of these patterns.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 你实现的大多数转换将是这些模式的变体。
 - en: The Chunking Boundary Problem
+  id: totrans-106
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '**分块边界问题**'
 - en: Data structures that span chunk boundaries cause problems in nearly every `Transform`
     implementation. This is the source of many subtle bugs in streaming code.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 跨块边界的**数据结构**在几乎每一个`Transform`实现中都会引起问题。这是流代码中许多微妙错误的来源。
 - en: When you're processing a stream of bytes or text, the chunks you receive are
     **arbitrary**. The stream doesn't know or care about the structure of your data.
     If you're parsing JSON objects separated by newlines, a newline might appear in
     the middle of a chunk, or it might fall exactly on a chunk boundary, or a JSON
     object might be split across two chunks.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你处理字节流或文本流时，你接收到的块是**任意的**。流不知道也不关心你的数据结构。如果你正在解析由换行符分隔的JSON对象，换行符可能出现在块的中间，或者它可能正好落在块边界上，或者一个JSON对象可能被分割在两个块之间。
 - en: You can't assume that each chunk is a complete unit. You have to handle **partial
     data**.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 你不能假设每个块都是一个完整的单元。你必须处理**部分数据**。
 - en: We've seen this in the delimiter parser and the length-prefixed parser. **Buffering**
     solves this. You maintain an internal buffer (often a string or `Buffer`) that
     accumulates incoming data. You process complete units from the buffer and leave
     incomplete units for the next call.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在分隔符解析器和长度前缀解析器中看到了这一点。**缓冲**解决了这个问题。您维护一个内部缓冲区（通常是字符串或`Buffer`），累积传入的数据。您从缓冲区中处理完整的单元，并留下不完整的单元供下一次调用。
 - en: 'The pattern in abstract form:'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 抽象形式的模式：
 - en: '[PRE21]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: The `extractCompleteUnit()` method tries to parse one complete unit from the
     buffer. If it succeeds, it returns the parsed data and the remaining buffer. If
     there's not enough data to parse a complete unit, it returns null. The loop continues
     extracting units until the buffer is empty or incomplete.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '`extractCompleteUnit()`方法尝试从缓冲区中解析一个完整的单元。如果成功，它返回解析的数据和剩余的缓冲区。如果没有足够的数据来解析一个完整的单元，它返回null。循环继续提取单元，直到缓冲区为空或不完整。'
 - en: This pattern handles arbitrary chunk boundaries correctly. It doesn't matter
     where the chunks split - the parser accumulates data until it has a complete unit,
     parses it, and continues.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个模式正确地处理了任意块边界。块在哪里分割并不重要——解析器累积数据直到它有一个完整的单元，解析它，然后继续。
 - en: 'Concrete example: parsing CSV rows from a stream. A CSV file is lines separated
     by newlines, and each line is fields separated by commas. A line might be split
     across chunks, and a field might contain a newline if it''s quoted.'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 具体示例：从流中解析CSV行。CSV文件是由换行符分隔的行，每行由逗号分隔的字段。一行可能被分割在块之间，如果字段被引号包围，它可能包含换行符。
 - en: 'A simplified CSV parser (without handling quoted fields):'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个简化的CSV解析器（不处理引号字段）：
 - en: '[PRE22]'
+  id: totrans-117
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: This handles line boundaries correctly. If a line is split across chunks, the
     partial line is buffered until the newline arrives in a subsequent chunk.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 这正确地处理了行边界。如果一个行被分割在块之间，部分行将被缓冲，直到后续块中到达换行符。
 - en: But this doesn't handle quoted fields. If a field is `"hello\nworld"`, the newline
     inside the quotes shouldn't split the line. Handling this correctly requires a
     more complex state machine that tracks whether we're inside quotes.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 但这并不能处理引号字段。如果一个字段是`"hello\nworld"`，引号内的换行符不应该分割行。正确处理这需要更复杂的有限状态机，该状态机跟踪我们是否处于引号内。
 - en: Proper `Transform` implementations must account for the possibility that data
     structures span chunks. Buffering and state machines are the tools you use to
     handle this.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 正确的`Transform`实现必须考虑到数据结构可能跨越块的可能性。缓冲区和状态机是您用来处理这些的工具。
 - en: Push Behavior and Backpressure in Transforms
+  id: totrans-121
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 在`Transform`中的推行为和背压
 - en: Calling `this.push()` in a `Transform` is more subtle than it appears, because
     `push` is the interface to the readable side, and it respects **backpressure**.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`Transform`中调用`this.push()`比它看起来更微妙，因为`push`是可读端的接口，并且它尊重**背压**。
 - en: When you call `this.push(chunk)`, the chunk is added to the readable side's
     internal buffer. If the buffer is below its `highWaterMark`, `push` returns `true`.
     If the buffer is at or above `highWaterMark`, `push` returns `false`, signaling
     backpressure.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你调用`this.push(chunk)`时，块被添加到可读端的内部缓冲区。如果缓冲区低于其`highWaterMark`，`push`返回`true`。如果缓冲区达到或超过`highWaterMark`，`push`返回`false`，表示背压。
 - en: 'You can check this return value in `_transform()`:'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以在`_transform()`中检查这个返回值：
 - en: '[PRE23]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: The return value of `push` in `_transform()` doesn't usually affect your logic.
     You still have to call the callback. The `Transform` stream handles backpressure
     for you by not calling `_transform()` again until the readable side drains. You
     don't need to implement pause/resume logic yourself.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_transform()`中`push`的返回值通常不会影响你的逻辑。你仍然需要调用回调。`Transform`流通过在你不再调用`_transform()`之前不调用它来为你处理背压。你不需要自己实现暂停/恢复逻辑。'
 - en: This is different from implementing a `Readable` stream, where you check `push`'s
     return value and stop calling `_read()` if it returns `false`. In a `Transform`,
     the base class handles this. You just implement the transformation logic.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 这与实现一个`Readable`流不同，在`Readable`流中，你检查`push`的返回值，如果它返回`false`，则停止调用`_read()`。在`Transform`中，基类处理这一点。你只需实现转换逻辑。
 - en: 'However, if you''re pushing multiple chunks in a single `_transform()` call
     (a one-to-many transform), you might want to check `push`''s return value and
     stop pushing if backpressure is signaled:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，如果你在一个单次`_transform()`调用中推送多个块（一对一到多一的转换），你可能想要检查`push`的返回值，并在背压信号时停止推送：
 - en: '[PRE24]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: But this adds complexity. Most of the time, you just push all your output chunks
     and let the stream's buffering handle the backpressure. The readable side's buffer
     will grow until it hits `highWaterMark`, at which point the stream stops calling
     `_transform()` until the buffer drains.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 但这增加了复杂性。大多数时候，你只是推送所有输出块，让流的缓冲处理背压。可读方面的缓冲区会增长，直到达到 `highWaterMark`，此时流停止调用
+    `_transform()`，直到缓冲区排空。
 - en: This automatic backpressure handling makes `Transform` streams much easier to
     work with than raw `Duplex` streams. You don't have to coordinate the two sides
     manually - the base class does it for you.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种自动背压处理使得 `Transform` 流比原始 `Duplex` 流更容易使用。你不需要手动协调两边 - 基类为你处理。
 - en: PassThrough
+  id: totrans-132
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: PassThrough
 - en: 'There''s a built-in `Transform` stream that does nothing: `stream.PassThrough`.
     It''s a `Transform` where `_transform()` just pushes the input chunk unchanged.'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一个内置的 `Transform` 流什么都不做：`stream.PassThrough`。这是一个 `Transform`，其中 `_transform()`
+    只是原样推送输入块。
 - en: '[PRE25]'
+  id: totrans-134
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: 'Use cases: observing or intercepting data without modifying it.'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 用例：观察或拦截数据而不修改它。
 - en: 'One use case is adding event listeners. You can insert a `PassThrough` into
     a pipeline and attach `''data''` listeners to it to observe the data flowing through
     without affecting the pipeline:'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个用例是添加事件监听器。你可以在管道中插入一个 `PassThrough` 并将其 `'data'` 监听器附加到它，以观察通过而不影响管道的数据：
 - en: '[PRE26]'
+  id: totrans-137
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: Another use case is implementing a **tee** or **broadcast** pattern, where you
     split a stream to multiple destinations. You can pipe a stream to multiple `PassThrough`s,
     and each `PassThrough` can be piped to a different destination.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个用例是实现一个 **tee** 或 **broadcast** 模式，其中你将流分割到多个目的地。你可以将流管道到多个 `PassThrough`，每个
+    `PassThrough` 可以被管道到不同的目的地。
 - en: '`PassThrough` is also useful in testing. You can create a `PassThrough`, write
     test data to it, and then read from it to verify that your stream processing logic
     works correctly.'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PassThrough` 也在测试中很有用。你可以创建一个 `PassThrough`，向其中写入测试数据，然后从中读取以验证你的流处理逻辑是否正确工作。'
 - en: 'Implementing `PassThrough` yourself:'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现 `PassThrough`：
 - en: '[PRE27]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: 'The `callback(null, chunk)` is a shorthand for pushing the chunk and then calling
     the callback. It''s equivalent to:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '`callback(null, chunk)` 是推送块然后调用回调的简写。它等价于：'
 - en: '[PRE28]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: This pattern of passing the chunk to the callback is common when you want to
     push exactly one chunk per input chunk.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你想要每个输入块正好推送一个块时，将块传递给回调的这种模式很常见。
 - en: Transform vs Duplex - When to Use Each
+  id: totrans-145
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: Transform vs Duplex - 何时使用每个
 - en: We've covered both `Duplex` and `Transform` streams. The choice between them
     matters for API design.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经介绍了 `Duplex` 和 `Transform` 流。它们之间的选择对 API 设计很重要。
 - en: '`Transform` streams fit data pipelines where input chunks become output chunks.
     The output depends on the input. Compression, encryption, parsing, formatting,
     filtering, and mapping all work this way.'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Transform` 流适合数据管道，其中输入块成为输出块。输出取决于输入。压缩、加密、解析、格式化、过滤和映射都是这样工作的。'
 - en: '`Duplex` streams model bidirectional communication channels where the readable
     and writable sides are independent. Network sockets, IPC channels, proxy connections,
     and bidirectional message passing all work this way.'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Duplex` 流模拟双向通信通道，其中可读和可写方面是独立的。网络套接字、IPC 通道、代理连接和双向消息传递都是这样工作的。'
 - en: Does what you write affect what you read? If yes, use `Transform`. If no, use
     `Duplex`.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 你写入的内容会影响你读取的内容吗？如果是，使用 `Transform`。如果不是，使用 `Duplex`。
 - en: 'Application-level code mostly uses `Transform` streams. `Duplex` streams appear
     at the system level: networking and IPC modules that model channels rather than
     transformations.'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用层代码主要使用 `Transform` 流。`Duplex` 流出现在系统层：网络和 IPC 模块，它们模拟通道而不是转换。
 - en: 'Concrete examples:'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 具体示例：
 - en: 'A **Transform** that compresses data:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个压缩数据的 **Transform**：
 - en: '[PRE29]'
+  id: totrans-153
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: What you write to `gzip` (uncompressed data) directly determines what you read
     from it (compressed data). It's a transformation.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 你写入 `gzip`（未压缩数据）的内容直接决定了你从中读取的内容（压缩数据）。这是一个转换。
 - en: 'A **Duplex** that represents a TCP socket:'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 代表 TCP 套接字的 **Duplex**：
 - en: '[PRE30]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: What you write to `socket` (your request) doesn't produce the data you read
     from `socket` (the server's response). They're independent. It's a channel.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 你写入 `socket`（你的请求）的内容不会产生你从 `socket`（服务器的响应）读取的数据。它们是独立的。这是一个通道。
 - en: 'There''s a subtle case where you might implement a `Duplex` instead of a `Transform`:
     when you need to model something that has independent input and output, but the
     two sides share state. For example, a stream that encrypts outgoing data and decrypts
     incoming data using the same encryption key. The two sides are independent (encrypting
     A doesn''t produce decrypted B), but they share configuration.'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一种微妙的情况，你可能需要实现一个`Duplex`而不是`Transform`：当你需要模拟具有独立输入和输出但两边共享状态的东西时。例如，一个使用相同的加密密钥加密输出数据和解密输入数据的流。两边是独立的（加密A不会产生解密B），但它们共享配置。
 - en: In practice, you'd probably implement this as two separate `Transform` streams
     (one for encryption, one for decryption) rather than a single `Duplex`, because
     it's cleaner and more composable. But it's technically a valid `Duplex` use case.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，你可能将这实现为两个独立的`Transform`流（一个用于加密，一个用于解密）而不是一个单一的`Duplex`，因为这更干净且更易于组合。但技术上这是一个有效的`Duplex`用例。
 - en: 'The rule of thumb: if you''re building something that fits naturally into a
     pipeline with other transforms, make it a `Transform`. If you''re building something
     that sits at the edge of your system, communicating with external entities, make
     it a `Duplex`.'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 常规做法：如果你正在构建一个自然地适合与其他转换一起组成管道的东西，就将其做成一个`Transform`。如果你正在构建位于系统边缘、与外部实体通信的东西，就将其做成一个`Duplex`。
 - en: Real-World Transform Examples
+  id: totrans-161
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 真实世界的转换示例
 - en: 'A few `Transform` streams you might actually use in production:'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些你可能在生产中实际使用的`Transform`流：
 - en: '**1) JSON Line Stringifier**'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: '**1) JSON行字符串化器**'
 - en: 'This transform takes JavaScript objects and outputs newline-delimited JSON:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换接受JavaScript对象并输出换行符分隔的JSON：
 - en: '[PRE31]'
+  id: totrans-165
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 'The `writableObjectMode: true` setting here: the writable side accepts objects,
     but the readable side emits strings (or buffers). You can mix modes - writable
     in `objectMode`, readable in byte mode, or vice versa.'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '这里设置的`writableObjectMode: true`：可写端接受对象，但可读端发出字符串（或缓冲区）。你可以混合模式——可写端在`objectMode`中，可读端在字节模式中，反之亦然。'
 - en: '**2) Line Counter**'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '**2) 行数计数器**'
 - en: 'This transform counts lines and emits a summary object at the end:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换计算行数并在结束时发出一个总结对象：
 - en: '[PRE32]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: This transform doesn't push anything during `_transform()`, just accumulates
     statistics. In `_flush()`, it pushes a single summary object. This is a valid
     pattern - transforms don't have to produce output for every input chunk.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换在`_transform()`期间不推送任何内容，只是累积统计数据。在`_flush()`中，它推送一个单独的总结对象。这是一个有效的模式——转换不需要为每个输入块产生输出。
 - en: '**3) Rate Limiter**'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: '**3) 速率限制器**'
 - en: 'This transform delays chunks to enforce a maximum throughput:'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换延迟块以强制最大吞吐量：
 - en: '[PRE33]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: This transform uses a token bucket to rate-limit throughput. If there aren't
     enough tokens for the current chunk, it delays the callback until enough time
     has passed. This is a useful pattern for throttling data flow to match downstream
     capacity.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转换使用令牌桶来限制吞吐量。如果当前块没有足够的令牌，它将延迟回调，直到有足够的时间过去。这是一个用于限制数据流以匹配下游容量的有用模式。
 - en: '**4) Deduplicator**'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '**4) 去重器**'
 - en: 'This transform in objectMode removes duplicate objects based on a key:'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 在objectMode中，这个转换会根据键移除重复的对象：
 - en: '[PRE34]'
+  id: totrans-177
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: This maintains a set of keys it's seen. If an object's key is new, it's pushed.
     Otherwise, it's dropped. This is a stateful filter transform.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 这维护了一个它已看到的键的集合。如果一个对象的键是新的，它就会被推送。否则，它会被丢弃。这是一个有状态的过滤转换。
 - en: These examples show the versatility of Transform streams. They can aggregate,
     filter, format, throttle, deduplicate, and more. Any operation that takes a stream
     of chunks and produces a stream of chunks is a candidate for a Transform.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些示例展示了转换流的通用性。它们可以聚合、过滤、格式化、节流、去重等。任何接受块流并产生块流的操作都是转换的候选。
 - en: Error Handling and Cleanup
+  id: totrans-180
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 错误处理和清理
 - en: Transform streams inherit error handling from both Readable and Writable. If
     an error occurs in `_transform()` or `_flush()`, you pass it to the callback,
     and the stream emits an 'error' event.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 转换流从可读和可写继承错误处理。如果在`_transform()`或`_flush()`中发生错误，你将其传递给回调，并且流会发出一个'error'事件。
 - en: '[PRE35]'
+  id: totrans-182
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: If `this.process()` throws, the error is caught and passed to the callback.
     The stream emits 'error', and processing stops.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果`this.process()`抛出异常，错误将被捕获并传递给回调。流会发出'error'事件，处理停止。
 - en: 'You can also use async functions for `_transform()` and `_flush()`:'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以为`_transform()`和`_flush()`使用异步函数：
 - en: '[PRE36]'
+  id: totrans-185
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: 'Or omit the callback and return a promise:'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者省略回调并返回一个Promise：
 - en: '[PRE37]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: If the promise rejects, Node.js treats it as an error and invokes the callback
     with the rejection reason.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果Promise被拒绝，Node.js将其视为错误，并使用拒绝原因调用回调。
 - en: 'For cleanup, you can implement `_destroy()`, which is called when the stream
     is destroyed:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于清理，你可以实现`_destroy()`，当流被销毁时会调用它：
 - en: '[PRE38]'
+  id: totrans-190
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: This is useful if your transform allocates resources (file handles, database
     connections, timers) that need to be released when the stream is destroyed.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你的变换分配了需要在流销毁时释放的资源（文件句柄、数据库连接、计时器），这将很有用。
 - en: 'Always attach an ''error'' listener to Transform streams you create or use:'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 总是给创建或使用的变换流附加一个'error'监听器：
 - en: '[PRE39]'
+  id: totrans-193
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: Without an error listener, an error will crash your process.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有错误监听器，错误会导致你的进程崩溃。
 - en: ObjectMode Considerations for Transforms
+  id: totrans-195
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 对变换的ObjectMode考虑
 - en: We've mentioned objectMode several times. With Transform streams, you can mix
     modes between the writable and readable sides.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们多次提到了objectMode。在Transform流中，你可以在可写端和可读端之间混合模式。
 - en: 'By default, both sides are in byte mode. But you can set:'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，两端都是字节模式。但你可以设置：
 - en: '`writableObjectMode: true` - writable side accepts objects, readable side emits
     buffers/strings'
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`writableObjectMode: true` - 可写端接受对象，可读端发出缓冲区/字符串'
 - en: '`readableObjectMode: true` - writable side accepts buffers/strings, readable
     side emits objects'
+  id: totrans-199
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`readableObjectMode: true` - 可写端接受缓冲区/字符串，可读端发出对象'
 - en: '`objectMode: true` - both sides in objectMode'
+  id: totrans-200
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`objectMode: true` - 两端都在objectMode'
 - en: 'Example: a Transform that parses JSON from bytes to objects:'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 示例：一个将字节解析为对象的变换：
 - en: '[PRE40]'
+  id: totrans-202
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: The writable side is in byte mode (accepts buffers), the readable side is in
     objectMode (emits objects).
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写端处于字节模式（接受缓冲区），可读端处于objectMode（发出对象）。
 - en: 'Conversely, a Transform that stringifies objects to JSON:'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，一个将对象转换为JSON的变换：
 - en: '[PRE41]'
+  id: totrans-205
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: The writable side is in objectMode (accepts objects), the readable side is in
     byte mode (emits strings/buffers).
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写端处于objectMode（接受对象），可读端处于字节模式（发出字符串/缓冲区）。
 - en: This flexibility lets you build pipelines that seamlessly transition between
     byte streams and object streams. You can have a byte stream that reads from a
     file, a Transform that parses bytes into objects, a Transform that processes objects,
     and another Transform that serializes objects back to bytes before writing to
     a destination.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种灵活性让你可以构建无缝地在字节流和对象流之间转换的管道。你可以有一个从文件读取的字节流，一个将字节解析为对象的变换，一个处理对象的变换，以及一个在写入目的地之前将对象序列化为字节的其他变换。
 - en: Simplified Transform Creation
+  id: totrans-208
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 简化的变换创建
 - en: 'For simple transforms, you don''t have to create a class. You can pass options
     with `transform` and `flush` functions inline:'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于简单的变换，你不需要创建一个类。你可以通过`transform`和`flush`函数内联传递选项：
 - en: '[PRE42]'
+  id: totrans-210
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: This is convenient for one-off transforms. You pass a `transform` function and
     optionally a `flush` function in the options object. Node.js creates the Transform
     and calls your functions as `_transform()` and `_flush()`.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 这对于一次性变换来说很方便。你在选项对象中传递一个`transform`函数和可选的`flush`函数。Node.js创建Transform并调用你的函数作为`_transform()`和`_flush()`。
 - en: 'You can also use `stream.pipeline()` with transform functions directly:'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以直接使用带有变换函数的`stream.pipeline()`：
 - en: '[PRE43]'
+  id: totrans-213
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: This async generator becomes a Transform. Each `yield` pushes a chunk. This
     is even more concise for simple transforms and fits naturally with async iteration.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个异步生成器变成了一个Transform。每个`yield`推送一个块。这对于简单的变换来说更加简洁，并且与异步迭代自然地结合。
 - en: For complex stateful transforms, use a class. For simple one-off transforms
     in a pipeline, use inline options or a generator.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于复杂的状态化变换，使用一个类。对于管道中的简单一次性变换，使用内联选项或生成器。
 - en: Performance Considerations
+  id: totrans-216
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 性能考虑
 - en: '`Transform` streams add a layer of abstraction, which has a performance cost.
     Every chunk passes through the `Transform`''s internal machinery - buffering,
     event emission, callback invocation. For high-throughput applications, this overhead
     can matter.'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Transform`流添加了一层抽象，这会有性能成本。每个块都会通过`Transform`的内部机制 - 缓冲、事件发射、回调调用。对于高吞吐量应用，这个开销可能很重要。'
 - en: If you're processing millions of small chunks per second, the overhead of creating
     `Transform` instances and invoking `_transform()` for each chunk might be measurable.
     In such cases, consider **batching**. Instead of processing one object at a time,
     process arrays of objects. This reduces the number of `Transform` invocations.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你每秒处理数百万个小块，创建`Transform`实例和为每个块调用`_transform()`的开销可能是可测量的。在这种情况下，考虑**批处理**。一次处理一个对象，而是处理对象数组。这减少了`Transform`调用的次数。
 - en: 'For example, instead of:'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，而不是：
 - en: '[PRE44]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: 'Batch with:'
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用以下方式批处理：
 - en: '[PRE45]'
+  id: totrans-222
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: The `BatchAccumulator` transform we implemented earlier does this.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们之前实现的`BatchAccumulator`变换就是这样做的。
 - en: Another performance consideration is buffer copying. If your `Transform` calls
     `Buffer.concat()` repeatedly to accumulate data, you're allocating and copying
     buffers on every chunk. For large data volumes, this is slow. Consider using a
     more efficient data structure, like a linked list of buffers or a `BufferList`
     from the `'bl'` npm package.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个性能考虑因素是缓冲区复制。如果你的`Transform`反复调用`Buffer.concat()`来累积数据，你会在每个数据块上分配和复制缓冲区。对于大量数据，这会很慢。考虑使用更高效的数据结构，如缓冲区的链表或来自`'bl'`
+    npm包的`BufferList`。
 - en: For transforms that don't need to accumulate state, make sure you're not accidentally
     buffering. If your `_transform()` immediately pushes each chunk, the transform
     is efficient. If it accumulates chunks in an array or buffer before pushing, you're
     adding memory pressure and latency.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于不需要累积状态的转换，确保你没有意外地缓冲。如果你的`_transform()`立即推送每个数据块，转换是高效的。如果你在推送之前在数组或缓冲区中累积数据块，你正在增加内存压力和延迟。
 - en: Measure performance before optimizing. Use Node.js's built-in profiler or `clinic.js`
     to identify bottlenecks. Many transforms are fast enough already, but high-throughput
     pipelines need attention to these details.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 在优化之前测量性能。使用Node.js的内置分析器或`clinic.js`来识别瓶颈。许多转换已经足够快，但高吞吐量管道需要关注这些细节。
 - en: Testing Custom Transforms
+  id: totrans-227
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 测试自定义转换
 - en: When you implement a custom `Transform`, you need to test it. Here are patterns
     for testing transforms reliably.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你实现自定义`Transform`时，你需要测试它。以下是一些可靠测试转换的模式。
 - en: '**Test by writing and reading:**'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: '**通过读写测试：**'
 - en: '[PRE46]'
+  id: totrans-230
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: You create a `Readable` source with known data, pipe it through your `Transform`,
     collect the output in a `Writable`, and assert the result.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 你创建一个具有已知数据的`Readable`源，将其通过你的`Transform`，在`Writable`中收集输出，并断言结果。
 - en: '**Test edge cases:** empty input, single chunks, many small chunks, large chunks,
     incomplete data at EOF, and invalid data. Write a test for each scenario.'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: '**测试边缘情况：**空输入、单个数据块、许多小数据块、大数据块、EOF处的未完整数据，以及无效数据。为每种情况编写一个测试。'
 - en: '**Test backpressure:**'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: '**测试背压：**'
 - en: 'Create a slow `Writable` destination and verify that the `Transform` respects
     backpressure:'
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个慢速的`Writable`目标并验证`Transform`是否尊重背压：
 - en: '[PRE47]'
+  id: totrans-235
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: If the `Transform` doesn't respect backpressure, it will finish much faster
     than expected because it's not waiting for the slow destination.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果`Transform`不尊重背压，它将比预期快得多，因为它没有等待慢速目标。

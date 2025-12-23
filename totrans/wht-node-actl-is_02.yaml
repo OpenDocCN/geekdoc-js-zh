@@ -1,135 +1,189 @@
 - en: What Node.js Actually Is
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Node.js实际上是什么
 - en: 原文：[https://www.thenodebook.com/node-arch/what-is-nodejs](https://www.thenodebook.com/node-arch/what-is-nodejs)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://www.thenodebook.com/node-arch/what-is-nodejs](https://www.thenodebook.com/node-arch/what-is-nodejs)
 - en: What Node.js Actually Is
+  id: totrans-2
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: Node.js实际上是什么
 - en: So, you're here to *really* understand Node.js. Good.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以，你在这里是为了真正理解Node.js。很好。
 - en: Maybe you've used it for a while. You’ve built an API with Express, you’ve wrestled
     with `npm install`, and you’ve seen your fair share of `callback is not a function`.
     You know it’s "asynchronous" and "non-blocking," and you can write an `async`
     function in your sleep.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 也许你已经使用了一段时间。你用Express构建了一个API，你与`npm install`斗争过，你也见过不少`callback is not a function`的错误。你知道它是“异步”和“非阻塞”的，你可以在睡梦中编写`async`函数。
 - en: But there’s this nagging feeling, isn’t there? A sense that under the hood,
     there’s a whole world of machinery you’ve never quite seen. What *is* the event
     loop, really? When people say Node is "single-threaded," what do they actually
     mean, and why does your server handle thousands of users at once? How does a JavaScript
     file, something that used to just run in a browser, suddenly have the power to
     write to files and open network sockets?
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 但有一种令人不安的感觉，不是吗？一种感觉，在底层，有一个你从未真正见过的整个机械世界。那么，事件循环究竟是什么？当人们说Node是“单线程”时，他们实际上是什么意思，为什么你的服务器能同时处理成千上万的用户？一个JavaScript文件，曾经只是运行在浏览器中的东西，突然有了写入文件和打开网络套接字的能力？
 - en: This chapter is our entry point into that engine room. We’re not just going
     to define Node.js. We’re going to dissect it. We’ll look at the historical accident
     that led to its creation, inspect the core components that make it tick, and understand
     the cultural phenomenon - the ecosystem - that grew around it.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 这章是我们进入那个发动机室的大门。我们不仅将定义Node.js。我们将剖析它。我们将查看导致其创建的历史事件，检查使其运转的核心组件，并理解围绕其产生的文化现象——生态系统。
 - en: 'My goal isn''t just to give you facts. It''s to give you a *mental model*.
     By the end of this, when you write `fs.readFile()`, I want you to see the journey
     that request takes: from your JavaScript, through the C++ bindings, into the libuv
     library, handed off to the operating system, and the response bubbling all the
     way back up through the event loop.'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 我的目的是不仅仅提供事实。而是提供一个*心智模型*。到这一步结束时，当你编写`fs.readFile()`时，我希望你能看到这个请求的旅程：从你的JavaScript代码，通过C++绑定，进入libuv库，传递给操作系统，然后响应通过事件循环一路返回。
 - en: Before we dive in, I'm going to assume a few things about you. Don't worry,
     this isn't a test. It just helps us stay focused on the deep stuff.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们深入之前，我将假设一些关于你的事情。别担心，这不是考试。这只是为了帮助我们专注于深入的内容。
 - en: '| Prerequisite (≤5) | Why it matters / what to skim |'
+  id: totrans-9
   prefs: []
   type: TYPE_TB
+  zh: '| 前置知识（≤5） | 为什么它很重要/可以快速浏览 |'
 - en: '| --- | --- |'
+  id: totrans-10
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- |'
 - en: '| JavaScript `async/await` and Promises | Our examples will use modern async
     syntax; a quick refresher is all you need if you''re rusty. |'
+  id: totrans-11
   prefs: []
   type: TYPE_TB
+  zh: '| JavaScript `async/await`和Promises | 我们的示例将使用现代异步语法；如果你不太熟悉，快速复习一下就足够了。|'
 - en: '| Basic Terminal & Shell Commands | We''ll be running commands like `node`,
     `npm`, and simple performance tools (`curl`, `htop`). |'
+  id: totrans-12
   prefs: []
   type: TYPE_TB
+  zh: '| 基本终端与Shell命令 | 我们将运行像`node`、`npm`以及简单的性能工具（`curl`、`htop`）这样的命令。|'
 - en: '| Familiarity with a web framework (e.g., Express) | Knowing the basics of
     building an API helps contextualize why Node''s performance model matters. |'
+  id: totrans-13
   prefs: []
   type: TYPE_TB
+  zh: '| 熟悉Web框架（例如，Express） | 了解构建API的基本知识有助于理解Node的性能模型为什么很重要。|'
 - en: '| The concept of I/O (Input/Output) | We''ll talk a lot about file I/O and
     network I/O. Just know it means "talking to the outside world." |'
+  id: totrans-14
   prefs: []
   type: TYPE_TB
+  zh: '| I/O（输入/输出）的概念 | 我们将大量讨论文件I/O和网络I/O。只需知道它意味着“与外界交流。”|'
 - en: If you’re solid on those, you’re ready. Let's get our hands dirty.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你对这些内容掌握牢固，那么你已经准备好了。让我们动手实践吧。
 - en: TL;DR
+  id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: TL;DR
 - en: 'For those who need the key takeaways right now and will read the details later:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于那些现在需要关键要点并稍后阅读详细内容的人：
 - en: 'Node.js is not a language, framework or library; it''s a **runtime**. It''s
     a program that executes your JavaScript code outside of a web browser. It''s composed
     of three main parts:'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js不是一个语言、框架或库；它是一个**运行时**。它是一个在浏览器之外执行你的JavaScript代码的程序。它由三个主要部分组成：
 - en: '**The V8 JavaScript Engine.** The same high-performance engine from Google
     Chrome. It compiles your JS into native machine code.'
+  id: totrans-19
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**V8 JavaScript引擎**。来自Google Chrome的高性能引擎。它将你的JS编译成原生机器代码。'
 - en: '**The `libuv` Library.** A C library that provides the asynchronous, non-blocking
     I/O model. This is where the magic of the event loop and the worker thread pool
     happens. This is Node''s secret weapon.'
+  id: totrans-20
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**`libuv`库**。一个提供异步、非阻塞I/O模型的C库。这里是事件循环和线程池魔法发生的地方。这是Node的秘密武器。'
 - en: '**C++ Bindings & Node.js Core APIs.** The "glue" that connects your JavaScript
     (`require(''fs'')`) to the underlying C++ and `libuv` functionality, allowing
     you to access the filesystem, network, etc.'
+  id: totrans-21
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**C++绑定与Node.js核心API**。这是连接您的JavaScript（`require(''fs'')`）到底层C++和`libuv`功能的“胶水”，允许您访问文件系统、网络等。'
 - en: '**Its core philosophy is non-blocking I/O.** Node was created to solve the
     problem of web servers getting stuck waiting for slow operations (like database
     queries or file reads). Instead of waiting, Node''s event loop allows it to start
     an I/O operation, register a callback, and immediately move on to serving other
     requests. This makes it incredibly efficient at handling many concurrent connections
     with minimal memory.'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '**其核心哲学是非阻塞I/O**。Node的创建是为了解决Web服务器在等待缓慢操作（如数据库查询或文件读取）时陷入停滞的问题。而不是等待，Node的事件循环允许它启动一个I/O操作，注册一个回调，然后立即转到处理其他请求。这使得它在处理大量并发连接时效率极高，同时内存使用最小。'
 - en: '**It''s "single-threaded" in a specific way.** Your JavaScript code runs on
     a single main thread. You don''t have to worry about locks or race conditions
     in your application logic. However, for heavy lifting (some file I/O, crypto,
     etc.), `libuv` maintains a small pool of background threads. So, while your code
     sees one thread, Node uses a few threads under the hood to avoid blocking.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '**它是以一种特定的“单线程”方式运行的**。您的JavaScript代码在一个主线程上运行。您不需要担心应用程序逻辑中的锁或竞争条件。然而，对于重负载（一些文件I/O、加密等），`libuv`维护一个小型的后台线程池。因此，尽管您的代码看到的是一个线程，Node在底层使用几个线程来避免阻塞。'
 - en: '**The ecosystem is as important as the runtime.** Node''s core is intentionally
     minimal. Its power comes from **npm** (Node Package Manager), the largest software
     registry in the world. This culture of small, reusable modules allows for rapid
     development but also introduces challenges like dependency management and supply
     chain security (as we''ll see with the `left-pad` incident).'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '**生态系统与运行时一样重要**。Node的核心是有意简化的。它的力量来自于**npm**（Node包管理器），这是世界上最大的软件注册库。这种小型、可重用模块的文化允许快速开发，但也引入了依赖管理、供应链安全等挑战（正如我们将在`left-pad`事件中看到的那样）。'
 - en: '**Your mental model should be that of an "evented" system.** Think of Node
     as a hyper-efficient event coordinator. It takes requests, delegates slow tasks
     to the OS or its thread pool, and keeps a list of "things to do when those tasks
     are done." It spends almost no time waiting and almost all its time working or
     delegating.'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '**您的心理模型应该是“事件驱动”系统的模型**。将Node视为一个超级高效的事件协调器。它接收请求，将慢速任务委托给操作系统或其线程池，并保留一个“任务完成时要做的事情”的列表。它几乎不花费时间等待，几乎所有时间都在工作或委托。'
 - en: ⚠️Warning
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: Your JavaScript application logic runs on a single main thread which avoids
     many traditional thread-locking problems, but you still must think about concurrent
     access to shared state. Asynchronous callbacks, multiple Node processes, worker_threads,
@@ -137,60 +191,87 @@
     concurrency concerns and potential race conditions - design for immutable state,
     atomic updates, or use appropriate synchronization when needed. Don't worry, we're
     going to cover each one of those in greater details.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 您的JavaScript应用程序逻辑在一个主线程上运行，这避免了许多传统的线程锁定问题，但您仍然必须考虑对共享状态的并发访问。异步回调、多个Node进程、worker_threads、原生插件以及任何共享内存的使用（例如，SharedArrayBuffer）都引入了并发问题和潜在的竞争条件
+    - 设计为不可变状态、原子更新，或在需要时使用适当的同步。别担心，我们将更详细地介绍这些内容。
 - en: '* * *'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: '**The Runtime - A Guided Tour Under the Hood**'
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '**运行时 - 内部导览**'
 - en: Why Blocking I/O Was a Party Everyone Hated
+  id: totrans-30
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 为什么阻塞I/O是每个人都讨厌的派对
 - en: 'To understand *why* Node.js is the way it is, you have to go back to 2009\.
     The web server landscape was dominated by giants like Apache. If you were building
     a web application, the standard model was something like this:'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 要理解Node.js为什么是这样的，您必须追溯到2009年。当时，Web服务器领域被Apache等巨头所主导。如果您正在构建Web应用程序，标准模型可能如下所示：
 - en: A user's request comes in.
+  id: totrans-32
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 用户请求到来。
 - en: The server (Apache) dedicates a thread (or a whole process) to handle that request.
+  id: totrans-33
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 服务器（Apache）为处理该请求分配一个线程（或整个进程）。
 - en: Your application code runs on that thread.
+  id: totrans-34
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 您的应用程序代码运行在该线程上。
 - en: If your code needs to do something slow - like query a database, read a file
     from disk, or call another API - that thread just… stops. It sits there, blocked,
     holding onto memory and CPU resources, waiting for the slow thing to finish.
+  id: totrans-35
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果你的代码需要执行一些缓慢的操作——比如查询数据库、从磁盘读取文件或调用另一个API——那么这个线程就会……停止。它坐在那里，阻塞，占用内存和CPU资源，等待缓慢的操作完成。
 - en: Once the slow thing is done, the thread wakes up, finishes generating the response,
     sends it back, and is finally free to handle another request.
+  id: totrans-36
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 一旦缓慢的操作完成，线程就会醒来，完成响应的生成，发送它，最后终于可以处理另一个请求。
 - en: This model is simple to reason about. Each request is a neat, linear sequence
     of steps. But it has a fatal flaw.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个模型很容易理解。每个请求都是一系列整洁的线性步骤。但它有一个致命的缺陷。
 - en: ℹ️Note
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: It's important to note that this describes the classic model; modern multi-threaded
     servers and language runtimes have evolved significantly with hybrid event-driven/threaded
     models and more efficient threading implementations to mitigate these original
     scaling issues.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要注意，这描述的是经典模型；现代的多线程服务器和语言运行时已经通过混合事件驱动/线程模型和更有效的线程实现显著发展，以减轻这些原始的扩展问题。
 - en: Imagine a popular coffee shop. Their model is one barista per customer, from
     start to finish. You walk in, Barista A takes your order, walks over to the machine,
     grinds the beans, pulls the espresso shot, steams the milk, and finally gives
@@ -198,137 +279,200 @@
     They can't help anyone else. If ten people walk in at once, you need ten baristas
     and ten espresso machines. If a thousand people walk in? You have a big, expensive
     problem.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一家热门的咖啡店。他们的模式是每位顾客一位咖啡师，从头到尾。你走进去，咖啡师A接受你的订单，走到机器旁，磨豆，抽出浓缩咖啡，加热牛奶，最后给你拿铁。在整个五分钟的过程中，咖啡师A是你的咖啡师。他们不能帮助其他人。如果同时进来十个人，你需要十位咖啡师和十台浓缩咖啡机。如果进来一千个人呢？你将面临一个庞大且昂贵的难题。
 - en: This is the "thread-per-request" model of old web servers. Threads are expensive.
     They consume memory (for their stack) and CPU time (for context switching). Handling
     thousands of concurrent users meant running thousands of threads, which was incredibly
     inefficient. This was known as the [C10k problem](http://www.kegel.com/c10k.html)
     - the challenge of handling ten thousand concurrent connections on a single server.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是旧式Web服务器的“每个请求一个线程”模型。线程很昂贵。它们消耗内存（用于栈）和CPU时间（用于上下文切换）。处理数千个并发用户意味着运行数千个线程，这非常低效。这被称为[C10k问题](http://www.kegel.com/c10k.html)——在单个服务器上处理十万个并发连接的挑战。
 - en: '**The "Aha!" Moment**'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '**“啊哈！”时刻**'
 - en: A developer named Ryan Dahl was looking at this problem and thought it was fundamentally
     broken. He saw that the slowest parts of any web application were always the I/O
     operations - waiting for the network, waiting for the disk. The CPU itself was
     often just sitting idle while the thread was blocked.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 一位名叫Ryan Dahl的开发者看到了这个问题，并认为它从根本上是有缺陷的。他看到任何Web应用中最慢的部分总是I/O操作——等待网络，等待磁盘。CPU本身经常只是空闲着，而线程被阻塞。
 - en: 'He looked at how high-performance servers like Nginx solved this: with an **event-driven,
     non-blocking architecture**. Instead of dedicating a worker to each customer,
     what if you had one super-fast barista (the event loop) who just took orders?'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 他观察了高性能服务器如Nginx是如何解决这个问题：使用**事件驱动、非阻塞架构**。与其为每位顾客分配一个工作者，为什么不有一个超级快的咖啡师（事件循环）只接受订单呢？
 - en: Customer 1 wants a latte. The barista writes the order on a ticket, hands it
     to a machine (the OS/kernel), and immediately turns to the next customer.
+  id: totrans-45
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 第一位顾客想要拿铁。咖啡师在票上写下订单，递给机器（操作系统/内核），然后立即转向下一位顾客。
 - en: Customer 2 wants a drip coffee. The barista writes the order, hands it to another
     machine, and is instantly available again.
+  id: totrans-46
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 第二位顾客想要滴滤咖啡。咖啡师写下订单，递给另一台机器，然后立即又可用。
 - en: The barista never waits. They just process events ("new order") and delegate
     the slow work. When a drink is ready, a bell rings (an event is emitted). The
     barista grabs the finished drink, hands it to the right customer, and moves on.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 咖啡师永远不会等待。他们只是处理事件（“新订单”）并将缓慢的工作委托出去。当饮料准备好时，铃声响起（发出事件）。咖啡师拿起完成的饮料，递给正确的顾客，然后继续。
 - en: This is the core idea of Node.js.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是Node.js的核心思想。
 - en: Dahl saw that JavaScript, a language born in the browser, was perfectly suited
     for this model. Why? Because browser-based JavaScript is already event-driven.
     You don't write code that says `wait for 5 seconds for the user to click this
     button`. You write `button.addEventListener('click', function() { ... })`. You
     register a callback for an event and let the environment (the browser) notify
     you when it happens.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: Dahl 发现，JavaScript，一种在浏览器中诞生的语言，非常适合这种模式。为什么？因为基于浏览器的 JavaScript 已经是事件驱动的。你不会编写代码说“等待
+    5 秒，直到用户点击这个按钮”。你会写 `button.addEventListener('click', function() { ... })`。你为事件注册一个回调，并让环境（浏览器）在事件发生时通知你。
 - en: So, he took the fastest JavaScript engine he could find - Google's open-source
     V8 engine from the Chrome browser - and combined it with a new C library he wrote
     (which would eventually be replaced by the more robust `libuv`) to handle this
     asynchronous I/O. He created a runtime environment that could execute JavaScript
     on a server, but with this powerful, event-driven, non-blocking I/O model at its
     core.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，他选择了他能找到的最快的 JavaScript 引擎 - 来自 Chrome 浏览器的谷歌开源 V8 引擎 - 并将其与他编写的新 C 库（最终被更健壮的
+    `libuv` 所取代）结合起来，以处理这种异步 I/O。他创建了一个运行时环境，可以在服务器上执行 JavaScript，但它的核心是一个强大、事件驱动、非阻塞的
+    I/O 模型。
 - en: ℹ️Note
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Early Node prototypes relied on existing event libraries (libev/libeio) for
     the kernel integration; later the project transitioned to libuv - a cross-platform
     C library (primarily maintained by contributors such as Ben Noordhuis and others)
     that unified event loop, async filesystem, threadpool, and platform abstractions.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 早期的 Node 原型依赖于现有的事件库（libev/libeio）进行内核集成；后来项目转向了 libuv - 一个跨平台的 C 库（主要由 Ben
+    Noordhuis 和其他贡献者维护），它统一了事件循环、异步文件系统、线程池和平台抽象。
 - en: He presented this new creation, "Node.js," at a conference in 2009\. The demo
     was simple but profound. He showed a server that could handle a huge number of
     concurrent connections with a tiny memory footprint, all because it never waited.
     It was a direct solution to the C10k problem, and it changed the way a generation
     of developers thought about building web services.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 他在 2009 年的一次会议上展示了这个新创建的“Node.js”。演示简单但深刻。他展示了一个服务器，它可以处理大量的并发连接，但内存占用很小，所有这一切都是因为它从不等待。这是对
+    C10k 问题的直接解决方案，它改变了一代开发者对构建网络服务的思考方式。
 - en: 'This history is crucial because it''s baked into Node''s DNA. Every design
     decision, every API, is built around this central premise: **never block the main
     thread**. It’s why the default file reading method, `fs.readFile`, takes a callback.
     It’s why you use Promises and `async/await`. You are always, always telling Node,
     "Hey, go do this slow thing, and just let me know when you''re done. I''ve got
     other work to do."'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个历史至关重要，因为它已经融入了 Node 的 DNA。每一个设计决策，每一个 API，都是围绕这个中心前提构建的：**永远不要阻塞主线程**。这就是为什么默认的文件读取方法
+    `fs.readFile` 需要一个回调。这就是为什么你使用 Promises 和 `async/await`。你总是、总是告诉 Node，“嘿，去做这个慢活，完成后告诉我。我还有其他工作要做。”
 - en: ℹ️Note
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Historically `fs.readFile` used callbacks; modern code should prefer `fs.promises`
     with async/await or streaming APIs when appropriate.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 历史上 `fs.readFile` 使用回调；现代代码应优先考虑 `fs.promises` 与 async/await 或适当的流式 API。
 - en: The Core Components - V8, libuv, and the Glue
+  id: totrans-57
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 核心组件 - V8、libuv 和粘合层
 - en: When you type `node my_app.js` and hit enter, you're not just running a JavaScript
     interpreter. You are starting a complex, finely-tuned piece of software. Let's
     peel back the layers.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你输入 `node my_app.js` 并按回车键时，你不仅仅是在运行一个 JavaScript 解释器。你正在启动一个复杂、精心调校的软件。让我们一层层揭开它的面纱。
 - en: 'At a high level, the Node.js architecture looks something like this:'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 从高层次来看，Node.js 的架构看起来像这样：
 - en: '*The layers of the Node.js runtime, from your code down to the OS.*'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Node.js 运行时的层级，从你的代码到操作系统。*'
 - en: ℹ️Note
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: 'Diagram is simplified: exact internals differ by API and platform - e.g. networking
     uses kernel readiness APIs, some filesystem/DNS calls are handled by libuv’s threadpool,
     and libuv may use different kernel features (epoll/kqueue/IOCP/io_uring) depending
     on platform and libuv version.'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 图表简化了：确切的内部结构因 API 和平台而异 - 例如，网络使用内核就绪 API，一些文件系统/DNS 调用由 libuv 的线程池处理，并且 libuv
+    可能根据平台和 libuv 版本使用不同的内核功能（epoll/kqueue/IOCP/io_uring）。
 - en: Let's break down each major component.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们逐一分析每个主要组件。
 - en: '**V8: The JavaScript Engine**'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '**V8: JavaScript 引擎**'
 - en: This is the piece that most people know about. V8 is Google's open-source, high-performance
     JavaScript and WebAssembly engine, written in C++. It's the engine that powers
     Google Chrome. When Node.js started, using V8 was a brilliant move. It meant Node
     got a world-class, incredibly fast, and constantly improving JS engine for free.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是大多数人所知道的部分。V8是Google的开源、高性能JavaScript和WebAssembly引擎，用C++编写。它是驱动Google Chrome的引擎。当Node.js开始时，使用V8是一个绝妙的举措。这意味着Node可以免费获得一个世界级的、极快且不断改进的JS引擎。
 - en: But what does an "engine" actually do?
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 但一个“引擎”实际上做什么呢？
 - en: It doesn't just read your JavaScript line by line. It compiles it into highly-optimized
     native machine code. This process is called Just-In-Time (JIT) compilation.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 它不仅仅是一行一行地读取你的JavaScript代码。它会将其编译成高度优化的本地机器代码。这个过程被称为即时编译（JIT）。
 - en: '**V8''s Compilation Pipeline:** When V8 sees your JS code, it first uses a
     baseline compiler called **Ignition** to quickly turn it into bytecode. As your
     code runs, V8''s profiler watches for "hot" functions - code that gets executed
@@ -338,30 +482,42 @@
     false, V8 performs a "de-optimization" and falls back to the slower bytecode.
     *(We''ll do a much deeper dive into V8 internals and how to write optimization-friendly
     code in **Chapter 21**.)*'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '**V8的编译管道**：当V8看到你的JS代码时，它首先使用一个基线编译器**Ignition**，快速将其转换为字节码。随着你的代码运行，V8的剖析器会监视“热点”函数——经常执行的代码。这些热点函数随后被传递给优化编译器**TurboFan**，它会对你的代码做出假设（例如，“这个变量将始终是一个数字”）以生成快速的机器代码。如果这些假设有任何错误，V8会执行“去优化”并回退到较慢的字节码。（我们将在第21章深入探讨V8的内部结构和如何编写优化友好型代码。）'
 - en: 'For now, the key takeaway is this: **V8 is what makes JavaScript fast enough
     for the server.** It takes a dynamic, interpreted language and gives it performance
     that can compete with more traditional server-side languages.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前，关键要点是：**V8使得JavaScript在服务器上运行足够快**。它将动态的、解释型语言转化为可以与传统服务器端语言相媲美的性能。
 - en: But V8 knows nothing about files, networks, or timers. It's a pure JavaScript
     engine. If you tried to run `require('fs')` inside a plain V8 instance, it would
     throw an error. It lives in a sandbox. To do anything useful on a server, V8 needs
     help.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 但V8对文件、网络或计时器一无所知。它是一个纯JavaScript引擎。如果你尝试在一个普通的V8实例中运行`require('fs')`，它会抛出一个错误。它生活在沙盒中。要在服务器上做任何有用的事情，V8需要帮助。
 - en: '**libuv**'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: '**libuv**'
 - en: This is the unsung hero of Node.js. `libuv` is a C library, originally written
     for Node.js, that provides the core asynchronous, event-driven functionality.
     It's the component that makes Node... well, *Node*.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是Node.js的默默无闻的英雄。`libuv`是一个C库，最初是为Node.js编写的，它提供了核心的异步、事件驱动功能。它是使Node...成为Node的关键组件。
 - en: 'Its main responsibilities are:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 它的主要职责包括：
 - en: '**The Event Loop.** This is the central mechanism. It''s an endless loop that
     processes events from a queue. When you call `setTimeout`, `fs.readFile`, or `http.createServer`,
     you are essentially registering an event handler. The loop continuously asks the
@@ -370,27 +526,36 @@
     When the OS says yes, the event loop takes the corresponding callback function
     from your code and executes it. We will dissect the event loop''s phases in detail
     later, but for now, think of it as the tireless coordinator.'
+  id: totrans-74
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**事件循环**。这是核心机制。它是一个处理事件队列的无限循环。当你调用`setTimeout`、`fs.readFile`或`http.createServer`时，你实际上是在注册一个事件处理器。循环持续不断地询问操作系统：“我等待的事情有没有发生？”（例如，“那个文件是否已经读取完成？”“是否有新的连接在这个套接字上？”）。当操作系统回答是时，事件循环会从你的代码中取出相应的回调函数并执行它。我们将在稍后详细剖析事件循环的阶段，但现在，把它想象成一个不知疲倦的协调者。'
 - en: '**Asynchronous I/O.** `libuv` abstracts the non-blocking I/O capabilities of
     the underlying operating system. On Linux, it uses `epoll`. On macOS/BSD, it uses
     `kqueue`. On Windows, it uses `IOCP` (I/O Completion Ports). You, the Node developer,
     don''t have to care about any of this. You just write JavaScript, and `libuv`
     picks the best strategy for the platform it''s running on to ensure I/O operations
     don''t block the main thread.'
+  id: totrans-75
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**异步 I/O**。`libuv` 抽象了底层操作系统的非阻塞 I/O 功能。在 Linux 上，它使用 `epoll`。在 macOS/BSD 上，它使用
+    `kqueue`。在 Windows 上，它使用 `IOCP`（I/O 完成端口）。作为 Node 开发者，你不需要关心这些。你只需编写 JavaScript，`libuv`
+    会根据其运行的平台选择最佳策略，以确保 I/O 操作不会阻塞主线程。'
 - en: '**The Thread Pool.** Wait, I thought Node was single-threaded? Here''s the
     most common point of confusion. Your JavaScript code runs on a single thread (the
     event loop thread). But some operations can''t be done asynchronously by the OS
     in a non-blocking way. If these ran on the main thread, they would block the event
     loop, defeating the entire purpose of Node. This includes most file system APIs
     and CPU-intensive tasks like in the `crypto` and `zlib` modules.'
+  id: totrans-76
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**线程池**。等等，我以为 Node 是单线程的呢？这里是最常见的误解点。你的 JavaScript 代码是在一个线程（事件循环线程）上运行的。但是，一些操作不能通过操作系统以非阻塞方式异步执行。如果这些操作在主线程上运行，它们会阻塞事件循环，从而违背了
+    Node 的整个目的。这包括大多数文件系统 API 和像 `crypto` 和 `zlib` 模块这样的 CPU 密集型任务。'
 - en: To solve this, `libuv` maintains a small, fixed-size **thread pool** (defaulting
     to 4 threads, but configurable via `UV_THREADPOOL_SIZE` before the pool is created;
     max ≈ `1024`). When you call a function that lacks a non-blocking equivalent at
@@ -398,251 +563,374 @@
     Critically, network I/O is handled directly by the OS's non-blocking mechanisms
     (like epoll, kqueue, IOCP) and does *not* use the thread pool, allowing a single
     thread to handle tens of thousands of concurrent connections.
+  id: totrans-77
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 为了解决这个问题，`libuv` 维护了一个小型、固定大小的 **线程池**（默认为 4 个线程，但在创建池之前可以通过 `UV_THREADPOOL_SIZE`
+    进行配置；最大约为 `1024`）。当你调用一个在操作系统级别没有非阻塞等效函数的函数（如 `fs.readFile`）时，`libuv` 将工作调度到其线程池。关键的是，网络
+    I/O 是由操作系统的非阻塞机制（如 epoll、kqueue、IOCP）直接处理的，并且 **不** 使用线程池，允许单个线程处理成千上万的并发连接。
 - en: ℹ️Note
+  id: totrans-78
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: 'Most network socket I/O is handled via the OS’s non-blocking I/O facilities
     (epoll/kqueue/IOCP) and doesn’t use the libuv worker pool. Exceptions exist: hostname
     lookups (e.g. dns.lookup which uses getaddrinfo) and many filesystem operations
     are offloaded to the libuv threadpool - those tasks do consume worker threads.'
+  id: totrans-79
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 大多数网络套接字 I/O 都是通过操作系统的非阻塞 I/O 设施（epoll/kqueue/IOCP）处理的，并且不使用 libuv 工作池。存在例外：主机名查找（例如，dns.lookup
+    使用 getaddrinfo）和许多文件系统操作都卸载到 libuv 线程池 - 这些任务确实消耗工作线程。
 - en: Once a thread in the pool finishes its task, it informs the event loop, which
     then executes your JavaScript callback with the result.
+  id: totrans-80
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 一旦线程池中的线程完成其任务，它会通知事件循环，然后事件循环会使用结果执行你的 JavaScript 回调。
 - en: So, Node.js *is* single-threaded from your perspective, but it uses a few threads
     under the hood to handle specific types of work. This is a crucial distinction.
     *(We dive deep into `libuv`'s internals, the event loop phases, and the thread
     pool in **Chapter 23**.)*
+  id: totrans-81
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 因此，从你的角度来看，Node.js **确实是**单线程的，但它底层使用了一些线程来处理特定类型的工作。这是一个重要的区别。（我们在第 23 章深入探讨了
+    `libuv` 的内部结构、事件循环阶段和线程池。）
 - en: '**C++ Bindings & Node.js Core APIs: The Bridge**'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '**C++ 绑定与 Node.js 核心API：桥梁**'
 - en: So we have V8 (for running JS) and `libuv` (for async I/O). How do they talk
     to each other?
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，我们有 V8（用于运行 JS）和 `libuv`（用于异步 I/O）。它们是如何互相通信的呢？
 - en: That's the job of the C++ bindings.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是 C++ 绑定的作用。
 - en: 'When you write `const fs = require(''fs'');`, you are not getting a pure JavaScript
     object. You''re getting a JavaScript module that has "bindings" to underlying
     C++ code. When you call `fs.readFile(''/path/to/file'', callback)`, the following
     sequence happens:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你编写 `const fs = require('fs');` 时，你并不是得到一个纯 JavaScript 对象。你得到的是一个具有“绑定”到底层
+    C++ 代码的 JavaScript 模块。当你调用 `fs.readFile('/path/to/file', callback)` 时，以下序列会发生：
 - en: The JavaScript `readFile` function in Node's core `fs` module is called.
+  id: totrans-86
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Node 的核心 `fs` 模块中的 JavaScript `readFile` 函数被调用。
 - en: This function calls down into a C++ function via the bindings.
+  id: totrans-87
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 此函数通过绑定调用到 C++ 函数。
 - en: The C++ code prepares the request and then passes it to `libuv`, saying "please
     read this file."
+  id: totrans-88
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: C++ 代码准备请求，然后将其传递给 `libuv`，并说“请读取此文件。”
 - en: '`libuv` gets the request and submits it to its thread pool for execution.'
+  id: totrans-89
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`libuv` 获取请求并将其提交给其线程池以执行。'
 - en: Crucially, your JavaScript code continues executing immediately. The `readFile`
     call has returned `undefined`.
+  id: totrans-90
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 关键的是，你的JavaScript代码会立即继续执行。`readFile`调用已返回`undefined`。
 - en: Sometime later, a thread in the pool finishes reading the file. It informs `libuv`
     of the completion.
+  id: totrans-91
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在某个时候，线程池中的一个线程完成了文件的读取。它通知`libuv`完成情况。
 - en: '`libuv` then places the result and the associated callback into a queue for
     the event loop to process.'
+  id: totrans-92
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`libuv`随后将结果和相关回调放入队列，由事件循环进行处理。'
 - en: During a future tick of the event loop, it sees the completed job in the queue
     and executes the original JavaScript callback you provided, passing in the data
     or error.
+  id: totrans-93
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在事件循环的下一个tick中，它看到队列中的完成作业并执行你提供的原始JavaScript回调，传递数据或错误。
 - en: This bridge is what makes Node.js a cohesive runtime. It exposes the power of
     low-level libraries like `libuv` through a clean, easy-to-use JavaScript API.
     The `http`, `crypto`, `path`, and other core modules are all part of this layer.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个桥梁使得Node.js成为一个统一的运行时环境。它通过一个干净、易于使用的JavaScript API暴露了像`libuv`这样的低级库的强大功能。`http`、`crypto`、`path`和其他核心模块都是这个层的一部分。
 - en: Let's See It in Action - A Tiny Measurement Experiment
+  id: totrans-95
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 让我们看看实际效果——一个小型测量实验
 - en: Theory is great, but seeing is believing. Let's demonstrate the profound difference
     between a blocking and a non-blocking I/O model with a simple experiment.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 理论是伟大的，但眼见为实。让我们通过一个简单的实验来展示阻塞和非阻塞I/O模型之间的深刻差异。
 - en: 'We will create two tiny web servers:'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将创建两个微型网络服务器：
 - en: '**A Python server.** We''ll use Flask, a popular web framework. To simulate
     a slow database query or API call, we''ll make it sleep for 2 seconds on every
     request. This is a classic **blocking** operation.'
+  id: totrans-98
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**Python服务器**。我们将使用Flask，一个流行的Web框架。为了模拟慢速数据库查询或API调用，我们将在每个请求上让它休眠2秒。这是一个经典的**阻塞**操作。'
 - en: 📌Important
+  id: totrans-99
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: The example uses Flask’s built-in development server (single-threaded) to illustrate
     blocking; you do not use the dev server in production. Production Python services
     typically run under a WSGI/ASGI server (Gunicorn, uWSGI, or uvicorn) with multiple
     workers or async event loops - which change the concurrency model. Thus the demo
     only shows a simple contrast, not a blanket statement about Python’s capabilities.
+  id: totrans-100
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 示例使用Flask的内置开发服务器（单线程）来展示阻塞；在生产环境中，你不会使用这个开发服务器。生产Python服务通常在WSGI/ASGI服务器（Gunicorn、uWSGI或uvicorn）下运行，具有多个工作者或异步事件循环——这改变了并发模型。因此，这个演示只展示了简单的对比，而不是关于Python能力的全面声明。
 - en: '**A Node.js server.** We''ll use the built-in `http` module. To simulate the
     same slow operation, we''ll use `setTimeout` for 2 seconds before responding.
     This is a **non-blocking** operation.'
+  id: totrans-101
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**Node.js服务器**。我们将使用内置的`http`模块。为了模拟相同的慢速操作，我们在响应之前使用`setTimeout`等待2秒。这是一个**非阻塞**操作。'
 - en: Then, we'll hit both servers with 10 concurrent requests and observe the behavior.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，我们将对两个服务器发起10个并发请求并观察其行为。
 - en: '**The Blocking Server (Python/Flask)**'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '**阻塞服务器（Python/Flask**）'
 - en: First, make sure you have Python and Flask installed. `pip install Flask`
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，确保你已经安装了Python和Flask。`pip install Flask`
 - en: 'Save this code as `blocking_server.py`:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 将此代码保存为`blocking_server.py`：
 - en: '[PRE0]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: This server is designed to be naive. The `time.sleep(2)` call completely freezes
     the server. It can do absolutely nothing else until those two seconds are up.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个服务器设计得非常简单。`time.sleep(2)`调用完全冻结了服务器。在这两秒钟过去之前，它什么也不能做。
 - en: 'Run it: `python blocking_server.py`'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行它：`python blocking_server.py`
 - en: '**The Non-Blocking Server (Node.js)**'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '**非阻塞服务器（Node.js**）'
 - en: 'Save this code as `non_blocking_server.js`:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 将此代码保存为`non_blocking_server.js`：
 - en: '[PRE1]text'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: '[PRE1]text'
 - en: '[!NOTE]'
+  id: totrans-112
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '[!NOTE]'
 - en: '>'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '>'
 - en: It is crucial to note that setTimeout represents a 'perfectly idle' wait, consuming
     no system resources. While this experiment brilliantly demonstrates the non-blocking
     nature of the event loop, a real-world application handling 10 concurrent database
     queries would still open 10 sockets and use memory for each connection's I/O buffers.
     The magic of Node.js is not that it makes I/O work free, but that it prevents
     the main thread from being blocked while that work is in flight.
+  id: totrans-114
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 重要的是要注意，setTimeout代表一种“完全空闲”的等待，不消耗任何系统资源。虽然这个实验巧妙地展示了事件循环的非阻塞特性，但在现实世界中处理10个并发数据库查询的应用程序仍然会为每个连接的I/O缓冲区打开10个套接字并使用内存。Node.js的魔力不在于它使I/O工作免费，而在于它防止主线程在工作进行时被阻塞。
 - en: '> [!IMPORTANT]'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '> [!IMPORTANT]'
 - en: '>'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '>'
 - en: A timer schedules a callback for a future turn of the event loop; it is lightweight
     compared to CPU work but still allocates a handle and can keep the process alive
     (unless you call .unref() on the timer). Timers are not free - creating large
     numbers of timers or relying on timers as a concurrency primitive can increase
     memory and scheduling overhead.
+  id: totrans-117
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 一个计时器为事件循环的下一个轮次安排了一个回调；与CPU工作相比，它很轻量，但仍然分配了一个句柄，并且可以保持进程活跃（除非你在计时器上调用`.unref()`）。计时器不是免费的——创建大量计时器或依赖计时器作为并发原语可能会增加内存和调度开销。
 - en: Here, `setTimeout` doesn't pause execution. It tells the Node.js runtime, "In
     about 2000 milliseconds, please run this function." The main thread is immediately
     freed up to handle more incoming requests.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，`setTimeout`不会暂停执行。它告诉Node.js运行时，“大约2000毫秒后，请运行这个函数。”主线程立即释放出来以处理更多传入的请求。
 - en: 'Run it: `node non_blocking_server.js`'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行它：`node non_blocking_server.js`
 - en: '**The Test**'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '**测试**'
 - en: Now, let's use a simple command-line tool, `curl`, to simulate 10 users hitting
     our servers at roughly the same time. Open a new terminal.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们使用一个简单的命令行工具，`curl`，来模拟大约同时击打我们的服务器10个用户。打开一个新的终端。
 - en: First, let's test the **blocking server**. Run these 10 `curl` commands in quick
     succession. The `&` makes each command run in the background. The `time` command
     will show us the total real time it took.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们测试**阻塞服务器**。快速连续运行这10个`curl`命令。`&`使得每个命令在后台运行。`time`命令将显示总实际时间。
 - en: '[PRE2]text'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '[PRE2]text'
 - en: '**Observation (Blocking Server):**'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '**观察（阻塞服务器）：**'
 - en: 'Look at the console output of `blocking_server.py`. You''ll see something like
     this:'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看`blocking_server.py`的控制台输出。你会看到类似这样：
 - en: '[PRE3]text'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[PRE3]text'
 - en: Notice the sequential nature. It processes one request _completely_ before even
     _starting_ the next.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意其顺序性。它会在开始下一个请求之前，先完全处理一个请求。
 - en: The total time reported by the `time` command will be **approximately 20 seconds**
     (10 requests \* 2 seconds/request).
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '`time`命令报告的总时间将是**大约20秒**（10个请求 \* 2秒/请求）。'
 - en: Now, let's test the **non-blocking server**.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们测试**非阻塞服务器**。
 - en: '[PRE4]text'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '[PRE4]text'
 - en: '**Observation (Non-Blocking Server):**'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '**观察（非阻塞服务器）：**'
 - en: 'Look at the console output of `non_blocking_server.js`. You''ll see something
     dramatically different:'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看控制台输出`non_blocking_server.js`。你会看到一些戏剧性的不同：
 - en: '[PRE5]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The server accepted *all 10 requests* immediately, scheduled all 10 timeouts,
     and then, about two seconds later, all 10 timers fired and sent their responses.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器立即接受了所有10个请求，安排了所有10个超时，然后，大约两秒后，所有10个计时器触发并发送了它们的响应。
 - en: The total time reported by the `time` command will be **just over 2 seconds**.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '`time`命令报告的总时间将是**略超过2秒**。'
 - en: This is it. This is the magic. The Node server handled 10 concurrent "slow"
     operations in the time it took the Python server to handle just one. It achieved
     this concurrency not with 10 threads, but with one single, efficient event loop.
@@ -650,67 +938,95 @@
     `htop` or `ps`), you'd see a single `node` process with a tiny memory footprint,
     happily juggling all the requests at once. The blocking server, by contrast, would
     be completely saturated by a single request.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是它。这就是魔法。Node服务器在Python服务器处理一个请求的时间内处理了10个并发的“慢速”操作。它不是通过10个线程实现的这种并发，而是一个单一、高效的循环事件。如果你在它运行时检查进程列表（使用像`htop`或`ps`这样的工具），你会看到一个内存占用极小的单个`node`进程，愉快地同时处理所有请求。相比之下，阻塞服务器会被单个请求完全饱和。
 - en: This simple experiment is the most important mental model you can have for Node.js
     performance.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个简单的实验是你可以拥有的最重要的Node.js性能心理模型。
 - en: '* * *'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: '**The Ecosystem**'
+  id: totrans-139
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '**生态系统**'
 - en: You cannot talk about Node.js without talking about its ecosystem. The runtime
     itself is powerful, but it's just a foundation. The true force of Node comes from
     the community and the universe of open-source packages built on top of it.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 你不能谈论Node.js而不谈论它的生态系统。运行时本身很强大，但只是基础。Node.js的真正力量来自于社区和建立在它之上的开源包的宇宙。
 - en: If Node.js is the engine, then **npm** is the factory that produces every conceivable
     part you might need, from tiny screws to entire transmissions.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果Node.js是引擎，那么**npm**就是生产你可能需要的每一个可想象部分的工厂，从小螺丝到整个传动系统。
 - en: npm - The World's Biggest (and Sometimes Loudest) Toybox
+  id: totrans-142
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: npm - 世界上最大（有时也是最嘈杂）的玩具箱
 - en: When Node.js first came out, there was no standard way to share code. If you
     wanted to use someone's library, you'd probably copy-paste it or use a git submodule.
     It was messy.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 当Node.js首次推出时，没有标准的方式来共享代码。如果你想使用某人的库，你可能需要复制粘贴或者使用git子模块。这很混乱。
 - en: In 2010, Isaac Z. Schlueter created **npm** (Node Package Manager). It was a
     simple command-line tool to download and manage dependencies for Node projects.
     It was bundled with Node.js starting in 2011, and this decision changed everything.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 2010年，Isaac Z. Schlueter创建了**npm**（Node包管理器）。这是一个简单的命令行工具，用于下载和管理Node项目的依赖项。从2011年开始，它捆绑在Node.js中，这个决定改变了所有的一切。
 - en: It made sharing and reusing code ridiculously easy. Had a useful function? `npm
     publish`. Needed a web framework? `npm install express`. This ease of use, combined
     with the growing popularity of Node, led to an explosion of packages.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 它使得代码的共享和复用变得极其简单。有一个有用的函数？`npm publish`。需要网络框架？`npm install express`。这种易用性，加上Node的日益流行，导致了软件包的爆炸式增长。
 - en: 'The philosophy that emerged was heavily influenced by the Unix philosophy:
     **"Write programs that do one thing and do it well."** This led to a culture of
     very small, focused modules. Need to pad a string? There’s a package for that.
     Need to check if a number is odd? There’s a package for that.'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 出现的哲学深受Unix哲学的影响：“**编写只做一件事且做得好的程序。”**这导致了非常小、专注的模块文化。需要填充字符串？有一个包可以做到。需要检查一个数字是否为奇数？也有一个包可以做到。
 - en: 'This has pros and cons:'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 这既有优点也有缺点：
 - en: '**Pro:** You can compose complex applications very quickly by plugging together
     these small, well-tested pieces. You don''t have to reinvent the wheel.'
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**优点：**通过将这些小型、经过良好测试的模块组合起来，你可以非常快速地构建复杂的应用程序。你不必重新发明轮子。'
 - en: '**Con:** Your project''s `node_modules` directory can quickly become a behemoth,
     containing thousands of packages pulled in as dependencies of dependencies. A
     simple `npm install` can feel like downloading half the internet.'
+  id: totrans-149
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**缺点：**你的项目的`node_modules`目录可以迅速变成一个庞然大物，包含成千上万的作为依赖项的依赖项。一个简单的`npm install`可能感觉像是下载了半个互联网。'
 - en: Today, the npm registry is the [largest software registry in the world](https://www.npmjs.com/package/all-the-packages),
     with millions of packages. It is, without a doubt, one of Node's greatest strengths.
     It's also the source of some of its biggest headaches. Over the years, competitors
@@ -718,90 +1034,125 @@
     and dependency resolution, pushing the official npm client to get better. *(We'll
     cover the practicalities of package management, lockfiles, and choosing between
     npm/yarn/pnpm in **Chapter 37**.)*
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天，npm注册表是世界上[最大的软件注册表](https://www.npmjs.com/package/all-the-packages)，拥有数百万个软件包。毫无疑问，这是Node最伟大的优势之一。它也是Node最大的头痛来源之一。多年来，像`yarn`和`pnpm`这样的竞争对手出现了，以解决npm的性能、安全性和依赖项解析问题，推动官方npm客户端变得更好。（我们将在**第37章**中介绍包管理、锁文件以及选择npm/yarn/pnpm的实用性。）
 - en: The Day `left-pad` Broke the Internet
+  id: totrans-151
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 《左填充》打破互联网的那一天
 - en: For a while, the "small modules" culture was celebrated as the pinnacle of code
     reuse. Then, on March 22, 2016, the world saw the downside.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 一段时间内，“小型模块”文化被推崇为代码复用的巅峰。然而，在2016年3月22日，世界见证了它的负面影响。
 - en: 'The story is now legendary in the developer community. A developer named Azer
     Koçulu had published over 250 packages to npm. One of them was a tiny, 11-line
     function called `left-pad`, which did exactly what it sounds like: it padded a
     string with characters on the left. It was a simple utility, but it was used by
     thousands of other projects, including hugely popular ones like Babel (a core
     part of the JavaScript toolchain).'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个故事在开发者社区中已经成为传奇。一位名叫Azer Koçulu的开发者已经在npm上发布了250多个软件包。其中之一是一个名为`left-pad`的微小、11行的函数，它确实做了它听起来像的事情：在字符串的左侧填充字符。这是一个简单的实用工具，但它被成千上万的其它项目使用，包括像Babel（JavaScript工具链的核心部分）这样非常受欢迎的项目。
 - en: Azer got into a naming dispute with another company, Kik, over a different package.
     In protest, he unpublished *all* of his packages from npm, including `left-pad`.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: Azer与另一家公司Kik就不同软件包的命名发生了争议。作为抗议，他将自己在npm上发布的所有软件包，包括`left-pad`，全部下架。
 - en: The effect was immediate and catastrophic.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种影响是立即且灾难性的。
 - en: 'Across the globe, CI/CD pipelines started failing. Developers trying to install
     dependencies for their projects saw their builds break with an error: `404 Not
     Found: left-pad`. Because Babel depended on `left-pad`, and thousands of projects
     depended on Babel, a huge portion of the JavaScript ecosystem was suddenly, completely
     broken.'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: '全球范围内的CI/CD管道开始失败。试图为他们的项目安装依赖的开发者发现他们的构建因错误而中断：`404 Not Found: left-pad`。因为Babel依赖于`left-pad`，而数千个项目依赖于Babel，JavaScript生态系统中很大一部分突然完全崩溃。'
 - en: I remember that day clearly. Our team's Slack channel lit up. "CI is red across
     the board." "Is it AWS? Did S3 go down again?" Someone posted the error. "...'left-pad'
     not found? What the hell is a left-pad?"
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 我清楚地记得那天。我们团队的Slack频道亮了起来。“CI全面变红。”“是AWS吗？S3又出故障了？”有人发布了错误。“...找不到'left-pad'？什么是什么鬼？”
 - en: The ugly truth was that our multi-million dollar software platform relied on
     an 11-line piece of code written by a single developer, who could remove it on
     a whim. It was a massive wake-up call for the entire industry about the fragility
     of the open-source supply chain.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 丑陋的事实是，我们的价值数百万美元的软件平台依赖于一位开发者编写的11行代码，他可以随意将其删除。这对整个行业来说是一个巨大的警钟，关于开源供应链的脆弱性。
 - en: 'NPM eventually took the unprecedented step of "un-unpublishing" the package
     to fix the immediate crisis. But the damage was done, and the lessons were learned:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: NPM最终采取了前所未有的步骤，将包“重新发布”，以解决眼前的危机。但损害已经造成，教训已经吸取：
 - en: '**Dependencies are a liability.** Every `npm install` is an act of trust. You
     are running code written by strangers on your machine.'
+  id: totrans-160
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**依赖项是一种负担**。每次`npm install`都是对陌生人的信任行为。你正在运行你机器上的陌生人编写的代码。'
 - en: '**Transitive dependencies matter.** You might not have directly depended on
     `left-pad`, but one of your dependencies did. You are responsible for your entire
     dependency tree.'
+  id: totrans-161
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**传递依赖很重要**。你可能没有直接依赖`left-pad`，但你的某个依赖项确实使用了它。你对整个依赖树负有责任。'
 - en: '**Tooling and governance are critical.** The incident spurred the development
     of better tools like lockfiles (`package-lock.json`, `yarn.lock`) to ensure reproducible
     builds, and security auditing tools (`npm audit`) to scan for vulnerabilities.'
+  id: totrans-162
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**工具和治理至关重要**。这次事件促使开发了更好的工具，如锁文件（`package-lock.json`，`yarn.lock`）以确保可重复构建，以及安全审计工具（`npm
+    audit`）来扫描漏洞。'
 - en: 'The `left-pad` incident is the perfect encapsulation of the Node ecosystem''s
     dual nature: its incredible velocity and collaborative spirit, paired with its
     potential for chaos and supply chain risk. *(We''ll cover modern security practices,
     dependency auditing, and supply chain hygiene in **Chapter 19**.)*'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: '`left-pad`事件完美地体现了Node生态系统双重性质：其惊人的速度和协作精神，以及其潜在的混乱和供应链风险。（我们将在**第19章**中介绍现代安全实践、依赖项审计和供应链卫生。）'
 - en: Node Is Everywhere - It's Not Just for Servers Anymore
+  id: totrans-164
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: Node无处不在 - 它不再只是服务器
 - en: While Node was born as a solution for scalable web servers, its success has
     propelled it far beyond that initial use case. The fact that it provides a powerful
     environment for executing JavaScript on a local machine has made it the foundation
     for a staggering number of tools and platforms.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然Node最初是为了可扩展的Web服务器而生的解决方案，但其成功已经将其远远超出了最初的使用案例。它为在本地机器上执行JavaScript提供了一个强大的环境，这使得它成为大量工具和平台的基础。
 - en: When you think "Node.js" today, you shouldn't just think "backend API." You
     should think of it as a general-purpose JavaScript platform.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你今天想到“Node.js”时，你不应该只想到“后端API”。你应该将其视为一个通用的JavaScript平台。
 - en: '**Build Tooling and Frontend Development:** This is arguably the biggest area
     of growth. Tools like [Webpack](https://webpack.js.org/), [esbuild](https://esbuild.github.io/),
     [Vite](https://vitejs.dev/), and the TypeScript compiler are all Node.js applications.
@@ -809,134 +1160,190 @@
     you have used Node.js extensively, even if you never wrote a single line of backend
     code. The entire development workflow - bundling, transpiling, code-linting, running
     a dev server - is powered by the Node runtime.'
+  id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**构建工具和前端开发**：这可能是增长最大的领域。像[Webpack](https://webpack.js.org/)、[esbuild](https://esbuild.github.io/)、[Vite](https://vitejs.dev/)和TypeScript编译器这样的工具都是Node.js应用程序。如果你曾经参与过现代前端项目（React、Vue、Angular等），你已经在很大程度上使用了Node.js，即使你从未编写过一行后端代码。整个开发工作流程——打包、转译、代码检查、运行开发服务器——都是由Node运行时驱动的。'
 - en: '**Desktop Applications:** Frameworks like [Electron](https://www.electronjs.org/)
     (which powers VS Code, Slack, Discord, and Figma) and [Tauri](https://tauri.app/)
     allow you to build cross-platform desktop applications using web technologies
     (HTML, CSS, JavaScript). They do this by bundling a browser rendering engine (Chromium)
     with the Node.js runtime, giving your JavaScript code access to the full capabilities
     of the host operating system.'
+  id: totrans-168
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**桌面应用程序：** 如 [Electron](https://www.electronjs.org/)（为 VS Code、Slack、Discord
+    和 Figma 提供动力）和 [Tauri](https://tauri.app/) 等框架允许你使用 Web 技术构建跨平台桌面应用程序（HTML、CSS、JavaScript）。它们通过将浏览器渲染引擎（Chromium）与
+    Node.js 运行时捆绑在一起来实现这一点，使你的 JavaScript 代码能够访问宿主操作系统的全部功能。'
 - en: '**Command-Line Interface (CLI) Tools:** Node is an excellent choice for building
     fast and powerful CLI tools. The npm registry is full of them, from project scaffolder''s
     like `create-react-app` to cloud infrastructure tools like the AWS CDK. Its cross-platform
     nature and rich ecosystem make it easy to build complex command-line applications.'
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**命令行界面（CLI）工具：** Node 是构建快速且强大的 CLI 工具的绝佳选择。npm 注册表中有许多这样的工具，从项目脚手架如 `create-react-app`
+    到云基础设施工具如 AWS CDK。它的跨平台特性和丰富的生态系统使得构建复杂的命令行应用程序变得容易。'
 - en: '**Serverless and Edge Computing:** Node''s fast startup time and low memory
     footprint make it a perfect fit for serverless platforms like AWS Lambda, Google
     Cloud Functions, and Vercel. You can deploy small, single-purpose functions that
     spin up, handle an event, and spin down, paying only for what you use. This deployment
     model is a natural extension of Node''s event-driven philosophy.'
+  id: totrans-170
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**无服务器和边缘计算：** Node 的快速启动时间和低内存占用使其非常适合 AWS Lambda、Google Cloud Functions 和
+    Vercel 等无服务器平台。你可以部署小型、单一用途的函数，这些函数启动、处理事件然后关闭，只需为使用的部分付费。这种部署模型是 Node 事件驱动哲学的自然扩展。'
 - en: ⚠️Warning
+  id: totrans-171
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: 'Node’s fast startup often matches serverless workloads well, but beware cold
     starts for functions with large dependency trees or heavy initialization. Edge
     runtimes (V8 isolates) and serverless function containers are different: edge
     functions often limit APIs, memory, and CPU time.'
+  id: totrans-172
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: Node 的快速启动通常与无服务器工作负载很好地匹配，但要注意具有大型依赖树或重初始化的函数的冷启动。边缘运行时（V8 隔离）和无服务器函数容器是不同的：边缘函数通常限制
+    API、内存和 CPU 时间。
 - en: The point is, even if your primary job isn't writing Node.js backend services,
     you are almost certainly interacting with the Node.js runtime and its ecosystem
     on a daily basis. Understanding its architecture is no longer a niche skill for
     backend engineers; it's a foundational skill for any modern web or software developer.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 重点是，即使你的主要工作不是编写 Node.js 后端服务，你几乎肯定每天都在与 Node.js 运行时及其生态系统互动。理解其架构不再是后端工程师的利基技能；它是对任何现代
+    Web 或软件开发人员的基础技能。
 - en: Practical Checklist & Takeaways
+  id: totrans-174
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实用清单与要点
 - en: This was a dense chapter. If you walk away with nothing else, burn these ideas
     into your brain. This is your core mental model.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个内容密集的章节。如果你没有学到其他东西，请将这些想法刻在你的脑海中。这是你的核心思维模型。
 - en: '**Node is a runtime, not a language.** It executes JavaScript using the V8
     engine and gives it server-side powers (like file and network access) through
     the `libuv` library.'
+  id: totrans-176
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**Node 是一个运行时，而不是一种语言。** 它使用 V8 引擎执行 JavaScript，并通过 `libuv` 库赋予它服务器端功能（如文件和网络访问）。'
 - en: '**The mission: Don''t Block The Event Loop.** Every design choice in Node pushes
     you towards an asynchronous, non-blocking pattern. A blocked loop means your server
     is dead in the water, unable to handle new requests.'
+  id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**使命：不要阻塞事件循环。** Node 的每个设计选择都推动你走向异步、非阻塞的模式。阻塞的循环意味着你的服务器将陷入停滞，无法处理新的请求。'
 - en: '**Your JS is single-threaded; the runtime is not.** You write your application
     code on a single main thread, which simplifies concurrency. But `libuv` uses a
     small thread pool in the background for certain heavy operations to protect the
     main thread from blocking.'
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**你的 JavaScript 是单线程的；运行时不是。** 你在单个主线程上编写应用程序代码，这简化了并发。但 `libuv` 在后台使用一个小型线程池来执行某些重操作，以保护主线程不被阻塞。'
 - en: '**Think in events, not sequences.** Instead of a linear script, a Node application
     is a collection of event handlers (callbacks, Promises) waiting to be triggered
     by the event loop. Your job is to set up these listeners correctly.'
+  id: totrans-179
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**以事件为导向，而不是序列。** Node 应用程序不是线性脚本，而是一组等待由事件循环触发的处理程序（回调、Promise）。你的任务是正确设置这些监听器。'
 - en: '**The ecosystem (`npm`) is both your greatest asset and a potential liability.**
     It gives you incredible speed, but you must be mindful of your dependency tree.
     Use lockfiles and security auditing tools religiously.'
+  id: totrans-180
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**生态系统（`npm`）既是你的最大资产，也是潜在的负债。** 它给你带来惊人的速度，但你必须注意你的依赖树。虔诚地使用锁文件和安全审计工具。'
 - en: '**Node is bigger than the backend.** It''s the engine driving modern frontend
     development, desktop apps, CLIs, and serverless computing. Understanding it is
     fundamental to being a modern developer.'
+  id: totrans-181
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**Node不仅仅是后端。** 它是推动现代前端开发、桌面应用程序、命令行界面和无服务器计算的动力引擎。理解它是成为现代开发者的基础。'
 - en: Closing Thoughts
+  id: totrans-182
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 收尾之语
 - en: We've covered a lot of ground - from a historical problem with web servers to
     the architecture of the runtime and the culture of its ecosystem.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经覆盖了很多内容——从网络服务器的历史问题到运行时架构及其生态系统文化。
 - en: The most important thing you can take from this is a robust mental model. Don't
     think of Node as just "JavaScript on the server."
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以从这里获得的最重要的事情是一个强大的心智模型。不要把Node仅仅看作是“服务器上的JavaScript。”
 - en: Think of it as an **asynchronous event-driven I/O platform that happens to use
     JavaScript as its scripting language.**
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象它是一个**异步事件驱动的I/O平台，碰巧使用JavaScript作为其脚本语言。**
 - en: That's a mouthful, but every word matters.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然话很多，但每个词都很重要。
 - en: '**Asynchronous:** It doesn''t wait for slow things.'
+  id: totrans-187
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**异步：** 它不会等待缓慢的事情。'
 - en: '**Event-driven:** It reacts to events as they complete.'
+  id: totrans-188
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**事件驱动：** 它在事件完成时做出反应。'
 - en: '**I/O platform:** Its specialty is shuffling data around - from networks to
     disks to databases - with extreme efficiency.'
+  id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**I/O平台：** 它的专长是在网络、磁盘和数据库之间高效地移动数据。'
 - en: V8 makes it fast. `libuv` makes it asynchronous. The ecosystem gives it reach.
     Together, these three elements created a platform that fundamentally changed how
     we build for the web.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: V8让它变得快速。`libuv`让它异步。生态系统赋予它广泛的应用。这三个元素共同创造了一个平台，从根本上改变了我们在网络上构建的方式。
 - en: Now that we have the 30,000-foot overview, it's time to zoom in. In the next
     chapter, we're going to get our hands dirty with one of the most fundamental concepts
     of Node.js - the v8 compiler (`Ignition`, `SparkPlug` and `Turbofan`).
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经有了30,000英尺的概览，是时候放大视角了。在下一章，我们将深入探讨Node.js最基本的概念之一——v8编译器（`Ignition`、`SparkPlug`和`Turbofan`）。

@@ -1,25 +1,34 @@
 - en: Readable Streams
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 可读流
 - en: 原文：[https://www.thenodebook.com/streams/readable-streams](https://www.thenodebook.com/streams/readable-streams)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: '[https://www.thenodebook.com/streams/readable-streams](https://www.thenodebook.com/streams/readable-streams)'
 - en: 'Now you understand why streams exist. You know they solve the problem of processing
     large datasets without loading everything into memory. You''ve seen the conceptual
     difference between push and pull models, and you know that Node.js streams blend
     both approaches. Now comes the practical question: how do you actually use Readable
     streams in your code, and more importantly, how do they work internally?'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你理解了流存在的意义。你知道它们解决了处理大型数据集而不必将所有内容加载到内存中的问题。你已经看到了推送和拉模型之间的概念差异，并且知道 Node.js
+    流结合了这两种方法。现在的问题是：你如何在代码中实际使用可读流，更重要的是，它们在内部是如何工作的？
 - en: Readable streams are the entry point to streaming in Node.js. They produce data
     - from files, from network connections, from in-memory structures, from anywhere.
     Understanding how Readable streams manage their internal state, how they buffer
     data, and how they communicate with consumers is important to work effectively
     with streams in any capacity.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 可读流是 Node.js 中流式处理的入口点。它们产生数据——来自文件、来自网络连接、来自内存结构、来自任何地方。理解可读流如何管理其内部状态、如何缓冲数据以及如何与消费者通信对于有效地使用流至关重要。
 - en: We're going to build that understanding methodically. First, we'll explore the
     `Readable` stream class itself - its options, its contract, its events. Then we'll
     talk about the two operating modes and what triggers transitions between them.
@@ -28,26 +37,38 @@
     we'll implement our own Readable streams and explore all the ways to consume them.
     By the end, you'll have a complete mental model of how data moves from a source
     through a Readable stream to a consumer.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将有条不紊地构建这种理解。首先，我们将探索 `Readable` 流类本身——它的选项、它的契约、它的事件。然后，我们将讨论两种操作模式以及它们之间转换的触发因素。之后，我们将详细检查内部缓冲，因为这是内存管理发生的地方，也是
+    `highWaterMark` 真正起作用的地方。最后，我们将实现我们自己的可读流并探索所有消费它们的方式。到那时，你将有一个完整的心智模型，了解数据是如何从一个源通过可读流传输到消费者的。
 - en: The Readable Stream Class
+  id: totrans-5
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可读流类
 - en: Let's start with the object itself. When you import `stream` from Node and access
     `stream.Readable`, you're getting a class that extends `EventEmitter`. This inheritance
     is significant. Every Readable stream is fundamentally an event emitter, which
     means it can emit events like `data`, `end`, `error`, and `readable`. Much of
     the Readable stream's behavior is expressed through these events.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从对象本身开始。当你从 Node 导入 `stream` 并访问 `stream.Readable` 时，你得到的是一个扩展了 `EventEmitter`
+    的类。这种继承关系非常重要。每个可读流本质上都是一个事件发射器，这意味着它可以发射诸如 `data`、`end`、`error` 和 `readable`
+    等事件。可读流的大部分行为都是通过这些事件来表达的。
 - en: Creating a Readable stream directly is uncommon in application code. More often,
     you receive Readable streams from Node.js APIs like `fs.createReadStream()` or
     `http.IncomingMessage`. But when you do create one, either by extending the class
     or using `new stream.Readable(options)`, you provide a configuration object that
     controls the stream's behavior.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在应用程序代码中直接创建可读流是不常见的。更常见的是，你从 Node.js API 如 `fs.createReadStream()` 或 `http.IncomingMessage`
+    接收可读流。但当你创建一个时，无论是通过扩展类还是使用 `new stream.Readable(options)`，你都会提供一个配置对象，该对象控制流的行为。
 - en: The most important option is `highWaterMark`. This is a number representing
     the maximum number of bytes (or objects, if you're in `objectMode`) that the stream
     will buffer internally before it stops pulling data from the underlying source.
@@ -55,8 +76,11 @@
     bytes, which is 64 kilobytes. This default is not a random number - it represents
     a balance between memory usage and system call efficiency that the Node team settled
     on through experimentation and production usage.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 最重要的选项是 `highWaterMark`。这是一个表示流在停止从底层源拉取数据之前内部可以缓冲的最大字节数（如果你处于 `objectMode`，则是对象）。想象一下，这是流用于缓冲的内存预算。默认值是
+    65536 字节，即 64 千字节。这个默认值不是随机的数字——它代表了 Node 团队通过实验和生产使用所确定的内存使用和系统调用效率之间的平衡。
 - en: Why does this matter? Because the Readable stream doesn't just pass data directly
     from the source to the consumer. It maintains an internal buffer. When the consumer
     is ready for data, it pulls from this buffer. When the buffer runs low, the stream
@@ -65,280 +89,402 @@
     for more data." If the buffer contains bytes equal to or exceeding `highWaterMark`,
     the stream will not request more data from the source until the buffer is drained
     below that threshold.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 这为什么很重要？因为可读流不仅仅是直接从源到消费者的数据。它维护一个内部缓冲区。当消费者准备好数据时，它会从这个缓冲区中拉取。当缓冲区变低时，流会从底层源请求更多数据以填充它。`highWaterMark`控制流何时决定“我的缓冲区已经足够满了，我应该停止从源请求更多数据。”如果缓冲区包含等于或超过`highWaterMark`的字节，流将不会从源请求更多数据，直到缓冲区低于该阈值。
 - en: 'Let''s see what this looks like:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看它是什么样子：
 - en: '[PRE0]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: Here we've created a Readable stream with a 1KB buffer threshold. If this stream
     is reading from a file, it will not request more than 1KB of data ahead of the
     consumer's consumption rate.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，我们创建了一个具有1KB缓冲阈值的可读流。如果这个流从文件中读取数据，它将不会请求超过消费者消费速率的1KB数据。
 - en: 'Another critical option is `objectMode`. By default, Readable streams work
     with `Buffer` objects and strings. But sometimes you want to stream arbitrary
     JavaScript objects. Setting `objectMode: true` changes the stream''s behavior.
     Instead of buffering bytes, it buffers objects. Instead of `highWaterMark` representing
     a byte count, it represents an object count. In `objectMode`, the default `highWaterMark`
     is 16 objects, not 64KB.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '另一个关键选项是`objectMode`。默认情况下，可读流与`Buffer`对象和字符串一起工作。但有时你想要流式传输任意JavaScript对象。将`objectMode:
+    true`设置为流的行为。它不再缓冲字节，而是缓冲对象。`highWaterMark`不再表示字节数，而是表示对象数。在`objectMode`中，默认的`highWaterMark`是16个对象，而不是64KB。'
 - en: '[PRE1]'
+  id: totrans-14
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: This is useful when you're building pipelines that process structured data.
     For instance, if you're reading rows from a database and want to stream them through
     transform stages, `objectMode` makes each row a single unit in the stream, which
     is conceptually cleaner than converting rows to buffers and back.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你构建处理结构化数据的管道时，这很有用。例如，如果你正在从数据库中读取行并将其通过转换阶段流式传输，`objectMode`使得每一行成为流中的单个单元，这在概念上比将行转换为缓冲区再转换回来要干净。
 - en: The `encoding` option is another configurational detail. By default, Readable
     streams emit `Buffer` objects when you read from them. If you set an encoding
     like `'utf8'`, the stream automatically converts those buffers to strings using
     that encoding. This is purely a convenience - you can always call `buffer.toString('utf8')`
     yourself - but it can make code cleaner when you know you're always working with
     text.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '`encoding`选项是另一个配置细节。默认情况下，当你从可读流中读取时，它会发射`Buffer`对象。如果你设置了一个编码，如`''utf8''`，流会自动使用该编码将这些缓冲区转换为字符串。这纯粹是一种便利
+    - 你始终可以自己调用`buffer.toString(''utf8'')` - 但当你知道你总是在处理文本时，它可以使代码更简洁。'
 - en: '[PRE2]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Now when this stream emits data, it will emit strings, not buffers.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在这个流发射数据时，它将发射字符串，而不是缓冲区。
 - en: These are the foundational options. There are others - `read` (a function to
     implement reading logic inline), `destroy` (a cleanup function), and `autoDestroy`
     (whether to automatically destroy the stream after it ends) - but `highWaterMark`,
     `objectMode`, and `encoding` are the ones you'll configure most frequently, and
     they're the ones that most significantly affect the stream's runtime behavior.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些是基础选项。还有其他选项 - `read`（一个用于实现读取逻辑的函数）、`destroy`（一个清理函数）和`autoDestroy`（是否在流结束后自动销毁流）
+    - 但`highWaterMark`、`objectMode`和`encoding`是配置最频繁的选项，它们对流的运行时行为影响最大。
 - en: Events
+  id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 事件
 - en: Readable streams communicate with the outside world primarily through events.
     Let's check each one and understand when it fires and what it means.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 可读流主要通过事件与外界通信。让我们检查每个事件，了解它何时触发以及它的含义。
 - en: The `data` event is the most straightforward. When a Readable stream is in flowing
     mode, it emits `data` events whenever it has data available. Each `data` event
     carries a chunk of data - either a `Buffer`, a string (if `encoding` is set),
     or an object (if `objectMode` is true).
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '`data`事件是最直接的。当一个可读流处于流动模式时，每当它有可用数据时，它都会发射`data`事件。每个`data`事件携带一块数据 - 要么是一个`Buffer`，要么是一个字符串（如果设置了`encoding`），要么是一个对象（如果`objectMode`为真）。'
 - en: '[PRE3]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: When you attach a `data` event listener to a Readable stream, you are implicitly
     switching the stream into flowing mode. This is important. The act of listening
     for `data` changes the stream's behavior. Data will begin flowing as soon as it's
     available, pushed to your listener. You don't have to pull. The stream pushes.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你将一个`data`事件监听器附加到一个可读流上时，你实际上是隐式地将流切换到流动模式。这很重要。监听`data`的行为会改变流的行为。一旦数据可用，就会将其推送到你的监听器。你不需要拉取。流会推送。
 - en: 'The `end` event fires when the stream has no more data to provide. The underlying
     source has been fully consumed. If you''re reading a file, `end` fires when you''ve
     reached the end of the file. If you''re reading from an HTTP response, `end` fires
     when the server has finished sending the response body. This event has no arguments.
     It''s just a signal: "I''m done."'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 当流没有更多数据提供时，`end`事件会触发。底层源已被完全消耗。如果你正在读取文件，当到达文件末尾时，`end`事件会触发。如果你正在从HTTP响应中读取，当服务器完成发送响应体时，`end`事件会触发。此事件没有参数。它只是一个信号：“我完成了。”
 - en: '[PRE4]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: The `error` event fires when something goes wrong. Maybe the file you're reading
     was deleted mid-read. Maybe the network connection dropped. Maybe the underlying
     source threw an error for some reason. When an error occurs, the stream emits
     an `error` event with the error object. If you don't have an `error` event listener
     attached, Node.js will throw the error, potentially crashing your app. This is
     why you should **always** attach an error handler to streams.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 当发生错误时，`error`事件会触发。可能你正在读取的文件在读取过程中被删除了。可能网络连接断开了。可能底层源由于某种原因抛出了错误。当发生错误时，流会发出一个带有错误对象的`error`事件。如果你没有附加`error`事件监听器，Node.js会抛出错误，这可能会导致你的应用程序崩溃。这就是为什么你应该**始终**将错误处理程序附加到流上的原因。
 - en: '[PRE5]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The `readable` event is more subtle. It fires when data is available to be read
     from the stream. This event is relevant primarily when the stream is in paused
     mode (we read bout **flowing** and **paused** modes in the previous chapter, don't
     worry, we'll clarify modes again shortly). The `readable` event is a signal that
     says "I have data in my internal buffer. If you call `read()`, you'll get something."
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '`readable`事件更为微妙。当流中有数据可供读取时，它会触发。这个事件主要与流处于暂停模式相关（我们在上一章中提到了**流动**和**暂停**模式，不用担心，我们很快会再次澄清模式）。`readable`事件是一个信号，表示“我的内部缓冲区中有数据。如果你调用`read()`，你会得到一些东西。”'
 - en: '[PRE6]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: Here's what's happening. The `readable` event fires. Inside the handler, we
     call `readable.read()` in a loop, pulling chunks from the internal buffer until
     `read()` returns `null`, which means the buffer is empty. This is a pull-based
     consumption pattern, as opposed to the push-based pattern of the `data` event.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是发生的事情。`readable`事件触发。在处理程序内部，我们循环调用`readable.read()`，从内部缓冲区中拉取块，直到`read()`返回`null`，这意味着缓冲区为空。这是一种基于拉的消费模式，与`data`事件的基于推的模式相反。
 - en: There's also a `close` event that fires when the stream and any underlying resources
     have been closed. This is distinct from `end`. The `end` event means "no more
     data," but resources might still be open. The `close` event means "resources have
     been released." Not all streams emit `close`, and in many cases you don't need
     to listen for it, but it's there if you need to know when cleanup has completed.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，当流及其任何底层资源被关闭时，也会触发一个`close`事件。这与`end`事件不同。`end`事件意味着“没有更多数据”，但资源可能仍然打开。`close`事件意味着“资源已被释放”。并非所有流都会发出`close`事件，在许多情况下你不需要监听它，但如果你需要知道清理何时完成，它就在那里。
 - en: These events form the API surface of Readable streams. Your interactions with
     Readable streams, whether you're consuming them or implementing them, will revolve
     around these events and their semantics.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些事件构成了可读流的API表面。无论你是消费它们还是实现它们，你与可读流的交互都将围绕这些事件及其语义展开。
 - en: Flowing mode vs Paused mode (recap)
+  id: totrans-34
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 流动模式与暂停模式（回顾）
 - en: 'Now let''s address the concept that I explained briefly in the previous chapter:
     operating modes. Every Readable stream is in one of two modes at any given time:
     **flowing mode** or **paused mode**. The mode determines how data moves from the
     stream''s internal buffer to your code.'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们来探讨我在上一章中简要解释的概念：操作模式。在任何给定时间，每个可读流都处于两种模式之一：**流动模式**或**暂停模式**。模式决定了数据如何从流的内部缓冲区移动到您的代码中。
 - en: In **paused mode**, data does not flow automatically. The stream will fill its
     internal buffer up to the `highWaterMark`, but it will not push that data to you.
     You must explicitly call `readable.read()` to pull data from the buffer. Paused
     mode is the default state when you create a new Readable stream.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 **暂停模式** 下，数据不会自动流动。流会填充其内部缓冲区直到 `highWaterMark`，但它不会将数据推送到你那里。你必须显式调用 `readable.read()`
+    来从缓冲区中拉取数据。暂停模式是在创建新的可读流时的默认状态。
 - en: In **flowing mode**, data flows automatically. As soon as data is available
     in the internal buffer, the stream emits `data` events with chunks of data. You
     don't call `read()`. The data comes to you.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 **流动模式** 下，数据自动流动。一旦内部缓冲区中有数据可用，流就会发出带有数据块的事件。你不需要调用 `read()`。数据会自动推送到你那里。
 - en: Why have two modes? Because different consumption patterns benefit from different
     control flows. Sometimes you want the stream to push data to you as fast as possible,
     and you'll handle backpressure by pausing and resuming the stream. Other times,
     you want fine-grained control over when data is pulled, reading exactly when you're
     ready for more. Paused mode gives you that control. Flowing mode optimizes for
     simplicity and throughput when you're ready to process data as fast as it arrives.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 为什么有两个模式？因为不同的消费模式从不同的控制流程中受益。有时你希望流尽可能快地将数据推送到你那里，而你将通过暂停和恢复流来处理背压。其他时候，你希望对数据何时被拉取有精细的控制，正好在你准备好读取更多数据时进行读取。暂停模式为你提供了这种控制。流动模式在准备好以尽可能快的速度处理数据时，优化了简单性和吞吐量。
 - en: 'Let''s see how you switch between modes. When a Readable stream is created,
     it starts in paused mode. You switch to flowing mode by doing any of the following:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看你是如何在不同模式之间切换的。当创建一个可读流时，它从暂停模式开始。你可以通过以下任何一种方式切换到流动模式：
 - en: Attaching a `data` event listener
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 添加 `data` 事件监听器
 - en: Calling the `resume()` method
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 调用 `resume()` 方法
 - en: Calling the `pipe()` method to pipe the stream to a Writable stream
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 调用 `pipe()` 方法将流管道连接到可写流
 - en: Conversely, you switch from flowing mode back to paused mode by calling the
     `pause()` method (but only if there are no `pipe()` destinations).
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，你可以通过调用 `pause()` 方法（但只有当没有 `pipe()` 目标时）从流动模式切换回暂停模式。
 - en: There's a subtlety here. If you've piped a Readable stream to a Writable stream
     using `pipe()`, calling `pause()` doesn't actually pause the stream. The `pipe()`
     mechanism manages flow control internally, and it will continue operating based
     on the backpressure signals from the Writable stream. This is by design - `pipe()`
     is a higher-level abstraction that handles backpressure for you, and manual `pause()`/`resume()`
     calls would interfere with that.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个微妙之处。如果你已经使用 `pipe()` 将可读流管道连接到可写流，调用 `pause()` 实际上并不会暂停流。`pipe()` 机制内部管理流控制，并且它将根据可写流的背压信号继续运行。这是设计上的考虑
+    - `pipe()` 是一个更高级别的抽象，为你处理背压，而手动 `pause()`/`resume()` 调用会干扰这一点。
 - en: 'Let''s look at paused mode consumption:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看暂停模式下的数据消费：
 - en: '[PRE7]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: Here the stream stays in paused mode. The `readable` event tells us data is
     available. We call `read()` repeatedly until it returns `null`. We're in control
     of when data is pulled.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，流保持在暂停模式。`readable` 事件告诉我们数据可用。我们反复调用 `read()` 直到它返回 `null`。我们控制着何时拉取数据。
 - en: 'Now let''s look at flowing mode consumption:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们看看流动模式下的数据消费：
 - en: '[PRE8]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: As soon as we attach the `data` listener, the stream switches to flowing mode.
     Data is pushed to us automatically. If `processChunk()` is slow, data will buffer
     in memory waiting to be processed, unless we implement backpressure by pausing.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦我们添加了 `data` 监听器，流就会切换到流动模式。数据会自动推送到我们这里。如果 `processChunk()` 很慢，数据将在内存中缓冲，等待处理，除非我们通过暂停来实现背压。
 - en: 'Here''s how you implement backpressure in flowing mode:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是如何在流动模式下实现背压的：
 - en: '[PRE9]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: When `processChunk()` indicates it can't keep up, we pause the stream. This
     stops the flow of `data` events. Later, when processing catches up (perhaps in
     a callback or a resolved promise), we call `resume()` to restart the flow.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 `processChunk()` 指示它跟不上的情况下，我们暂停流。这停止了 `data` 事件的流动。稍后，当处理赶上（可能在回调或已解决的承诺中）时，我们调用
+    `resume()` 来重新启动流动。
 - en: 'There''s a third, less common way to consume a stream: the `read(size)` method
     in paused mode without a `readable` listener. You can call `readable.read(size)`
     directly at any time to pull a specific number of bytes from the internal buffer.
     If the buffer doesn''t have that many bytes, `read()` returns whatever is available,
     or `null` if the buffer is empty.'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 消费流还有第三种、较少见的方法：在暂停模式下，没有 `readable` 监听器的 `read(size)` 方法。你可以在任何时候直接调用 `readable.read(size)`
+    来从内部缓冲区拉取特定数量的字节。如果缓冲区没有那么多字节，`read()` 返回可用的任何内容，或者如果缓冲区为空，则返回 `null`。
 - en: '[PRE10]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: This gives you precise control over how much data you pull at a time, which
     can be useful when implementing protocols with fixed-size headers or structures.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 这让你能够精确控制每次拉取多少数据，这在实现具有固定大小头或结构的协议时可能很有用。
 - en: The key is that these modes reflect different strategies for managing memory
     and concurrency. Paused mode gives you control and makes backpressure explicit.
     Flowing mode gives you simplicity and performance when your processing can keep
     up with the data rate. Understanding when and how to use each mode is part of
     mastering streams.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键在于这些模式反映了不同的内存和并发管理策略。暂停模式赋予你控制权，并使背压变得明确。流动模式在你处理能力能够跟上数据速率时，提供了简单性和性能。理解何时以及如何使用每种模式是掌握流的一部分。
 - en: Internal Buffering
+  id: totrans-58
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内部缓冲
 - en: Let's dig further into what's really happening inside a Readable stream. When
     you create a Readable stream and start reading from it, data doesn't teleport
     directly from the underlying source (a file, a socket, a generator) to your consumption
     code. It passes through an internal buffer maintained by the stream.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们进一步探讨在可读流内部真正发生的事情。当你创建一个可读流并开始从中读取数据时，数据不会直接从底层源（文件、套接字、生成器）传送到你的消费代码。它通过流维护的内部缓冲区传递。
 - en: The internal buffer is a queue of chunks. When the stream pulls data from the
     underlying source, those chunks are added to the buffer. When you consume data
     from the stream (either by calling `read()` in paused mode or by receiving `data`
     events in flowing mode), chunks are removed from the buffer. The buffer grows
     when the source is producing faster than the consumer is consuming, and it shrinks
     when the consumer catches up.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 内部缓冲是一个块队列。当流从底层源拉取数据时，这些块会被添加到缓冲区。当你从流中消费数据（在暂停模式下通过调用 `read()` 或在流动模式下接收 `data`
+    事件）时，块会从缓冲区中移除。当源生产速度超过消费者消费速度时，缓冲区会增长；当消费者赶上时，缓冲区会缩小。
 - en: The buffer is not a single `Buffer` object. It's actually an array of chunks
     (earlier it was a linked list, but this was changed for better performance). Each
     chunk remains in its original allocated `Buffer`, and the array just tracks the
     sequence. While arrays require occasional resizing, JavaScript's array implementation
     handles this efficiently, and the benefits of better cache locality and simpler
     iteration typically outweighs the occasional reallocation cost.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓冲区不是一个单一的 `Buffer` 对象。实际上，它是一个块数组（之前是一个链表，但为了更好的性能进行了更改）。每个块都保留在其原始分配的 `Buffer`
+    中，而数组只是跟踪序列。虽然数组需要偶尔调整大小，但 JavaScript 的数组实现处理得非常高效，更好的缓存局部性和更简单的迭代通常超过了偶尔重新分配的成本。
 - en: You can inspect the current state of the buffer using the `_readableState` property.
     This property is technically internal (the underscore prefix signals that), but
     it's useful for debugging and understanding what's happening.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以使用 `_readableState` 属性来检查缓冲区的当前状态。这个属性在技术上属于内部属性（下划线前缀表示），但它对调试和理解正在发生的事情非常有用。
 - en: '[PRE11]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: The `state.length` tells you how many bytes are currently buffered. The `state.buffer`
     is the array itself, and `state.buffer.length` tells you how many chunks are in
     the array. The `state.highWaterMark` is the threshold we configured or the default
     64KB if not configured.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '`state.length` 告诉你当前缓冲了多少字节。`state.buffer` 是数组本身，而 `state.buffer.length` 告诉你数组中有多少块。`state.highWaterMark`
+    是我们配置的阈值，如果没有配置，则为默认的 64KB。'
 - en: Now, here's the critical mechanism. When the buffer's total length is below
     the `highWaterMark` and the stream needs more data (either because a consumer
     is reading or because the stream is in flowing mode), the stream calls an internal
@@ -347,72 +493,106 @@
     custom Readable stream, you provide the `_read()` implementation. If you're using
     a built-in stream like `fs.createReadStream()`, the Node internals provide the
     `_read()` implementation.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，这是关键机制。当缓冲区的总长度低于 `highWaterMark` 且流需要更多数据（无论是由于消费者正在读取还是因为流处于流动模式）时，流会调用一个内部方法，称为
+    `_read()`。此方法负责从底层源获取更多数据并将其推入缓冲区。如果你正在实现自定义 Readable 流，你需要提供 `_read()` 实现如果你正在使用内置流，如
+    `fs.createReadStream()`，Node 内部提供了 `_read()` 实现。
 - en: 'When `_read()` is called, it''s being told: "The buffer has space. Please fetch
     more data." The implementation of `_read()` should fetch data from the source
     and push it into the buffer using the `push()` method. Here''s a simplified version:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 `_read()` 被调用时，它会被告知：“缓冲区有空间。请获取更多数据。” `_read()` 的实现应该从源获取数据并使用 `push()` 方法将其推入缓冲区。以下是一个简化的版本：
 - en: '[PRE12]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: The `_read(size)` method receives a size hint - typically the `highWaterMark`
     value - suggesting how much data it should fetch. This is only a hint. You're
     allowed to push more or less. The stream will adapt. But respecting the hint helps
     optimize I/O efficiency.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_read(size)` 方法接收一个大小提示 - 通常为 `highWaterMark` 值 - 建议它应该获取多少数据。这只是一个提示。你可以推送更多或更少的数据。流会进行适配。但尊重这个提示有助于优化
+    I/O 效率。'
 - en: When you call `this.push(chunk)`, several things happen. First, the chunk is
     added to the internal buffer. Second, if the stream is in flowing mode, the chunk
     may be immediately emitted as a `data` event (bypassing the buffer entirely if
     there's a consumer ready). Third, if the stream is in paused mode, a `readable`
     event may be emitted to signal that data is available.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你调用 `this.push(chunk)` 时，会发生几件事情。首先，块被添加到内部缓冲区。其次，如果流处于流动模式，块可能会立即作为 `data`
+    事件发出（如果有一个消费者准备好，则完全绕过缓冲区）。第三，如果流处于暂停模式，可能会发出一个 `readable` 事件来表示数据可用。
 - en: Importantly, `push()` returns a boolean. If `push()` returns `false`, it means
     the buffer has reached or exceeded the `highWaterMark` (specifically, when `state.length
     >= state.highWaterMark`), and the stream is requesting that the source stop producing
     data. In response, your `_read()` implementation should stop fetching data from
     the source. The stream will call `_read()` again later when the buffer drains
     back below the `highWaterMark`.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是，`push()` 返回一个布尔值。如果 `push()` 返回 `false`，则表示缓冲区已达到或超过 `highWaterMark`（具体来说，当
+    `state.length >= state.highWaterMark` 时），并且流正在请求源停止产生数据。作为回应，你的 `_read()` 实现应该停止从源获取数据。流将在缓冲区再次低于
+    `highWaterMark` 时稍后再次调用 `_read()`。
 - en: 'Here''s a more complete example:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是一个更完整的示例：
 - en: '[PRE13]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: This is a simplified file reader. When `_read()` is called, it reads `size`
     bytes from the file descriptor and pushes them into the stream. If `fs.read()`
     returns zero bytes, we've reached the end of the file, so we push `null` to signal
     EOF. If an error occurs, we destroy the stream with the error.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个简化的文件读取器。当 `_read()` 被调用时，它从文件描述符读取 `size` 字节并将它们推入流。如果 `fs.read()` 返回零字节，则表示已到达文件末尾，因此我们推送
+    `null` 来表示 EOF。如果发生错误，我们使用错误销毁流。
 - en: The Node.js stream implementation guarantees that `_read()` will not be called
     again until we call `push()`, so even though `fs.read()` is asynchronous, we don't
     need to track a flag to prevent overlapping calls. The stream's internal state
     machine handles this automatically. Backpressure is also handled automatically
     - `_read()` won't be called again until the buffer drains below the `highWaterMark`,
     ensuring we respect backpressure even with asynchronous data sources.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 流实现保证在调用 `push()` 之前不会再次调用 `_read()`，因此尽管 `fs.read()` 是异步的，我们也不需要跟踪一个标志来防止重叠调用。流的内部状态机会自动处理这一点。背压也会自动处理
+    - 只有当缓冲区低于 `highWaterMark` 时才会再次调用 `_read()`，确保即使与异步数据源一起也能尊重背压。
 - en: The buffer's behavior also differs between `objectMode` and byte mode. In byte
     mode, the buffer tracks total bytes buffered and compares it against a byte-based
     `highWaterMark`. In `objectMode`, the buffer tracks the number of objects buffered
     and compares it against an object-count-based `highWaterMark`. Internally, the
     same structure is used, but the accounting changes.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓冲区的行为在 `objectMode` 和字节模式之间也有所不同。在字节模式下，缓冲区跟踪缓冲的总字节数，并将其与基于字节的 `highWaterMark`
+    进行比较。在 `objectMode` 中，缓冲区跟踪缓冲的对象数量，并将其与基于对象计数的 `highWaterMark` 进行比较。内部使用相同的结构，但会计方式不同。
 - en: One more detail. The stream doesn't just drain the buffer when you call `read()`
     or when `data` events fire. There's also a concept of a "reading state" tracked
     internally. If the stream is actively reading (meaning `_read()` has been called
     and hasn't yet pushed new data or pushed `null`), the stream won't call `_read()`
     again until the current read completes. This prevents redundant reads and keeps
     the source from being overwhelmed by concurrent read requests.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个额外的细节。流不仅在您调用 `read()` 或 `data` 事件触发时清空缓冲区。还有一个内部跟踪的“读取状态”的概念。如果流正在积极读取（意味着
+    `_read()` 已被调用且尚未推送新数据或推送 `null`），则流不会在当前读取完成之前再次调用 `_read()`。这防止了重复读取，并防止源被并发读取请求淹没。
 - en: All of this buffering machinery exists to smooth out mismatches between the
     source's data rate and the consumer's consumption rate. If the source produces
     data in bursts (for example, reading from a network socket that receives data
@@ -421,243 +601,359 @@
     write to complete), the buffer holds data until the consumer is ready again. The
     `highWaterMark` controls the size of this buffer, which directly controls the
     trade-off between memory usage and throughput.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些缓冲机制都是为了平滑源数据速率和消费者消费速率之间的不匹配。如果源以突发方式产生数据（例如，从接收数据包的网络套接字读取），缓冲区会累积这些突发，以便消费者看到稳定的流。如果消费者偶尔暂停（例如，等待数据库写入完成），缓冲区会保留数据，直到消费者再次准备好。`highWaterMark`
+    控制这个缓冲区的大小，这直接控制了内存使用和吞吐量之间的权衡。
 - en: Implementing Custom Readable Streams
+  id: totrans-78
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实现自定义可读流
 - en: Now that we understand the internals, let's implement our own Readable streams.
     This is less common than consuming streams, but it's very very important for building
     libraries, creating custom data sources, or deeply understanding stream behavior.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经了解了内部机制，让我们来实现自己的可读流。这比消费流要少见得多，但对于构建库、创建自定义数据源或深入理解流的行为非常重要。
 - en: 'The standard approach is to extend the `Readable` class and implement the `_read()`
     method. Let''s start with a simple example: a stream that emits numbers from 1
     to N.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 标准方法是扩展 `Readable` 类并实现 `_read()` 方法。让我们从一个简单的例子开始：一个从 1 到 N 发出数字的流。
 - en: '[PRE14]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: This stream pushes each number as a string. When the counter exceeds `max`,
     it pushes `null` to signal the end. Notice we don't check `push()`'s return value.
     Since we're producing data synchronously and the stream is calling `_read()` when
     it needs more data, the flow control is already handled by the stream's internal
     logic. If the buffer fills up, the stream won't call `_read()` again until it
     drains.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个流将每个数字作为字符串推送。当计数器超过 `max` 时，它会推送 `null` 来表示结束。注意我们并没有检查 `push()` 的返回值。因为我们正在同步产生数据，并且流在需要更多数据时调用
+    `_read()`，所以流控已经由流内部逻辑处理。如果缓冲区满了，流不会再次调用 `_read()`，直到它被清空。
 - en: 'Let''s consume this stream:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们消费这个流：
 - en: '[PRE15]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'Output:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 输出：
 - en: '[PRE16]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'Now let''s implement something more realistic: a stream that reads lines from
     a text file. This is a common pattern when processing large log files or CSV files.'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们来实现一个更现实的东西：一个从文本文件中读取行的流。当处理大型日志文件或 CSV 文件时，这是一种常见的模式。
 - en: ℹ️Note
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Don't worry if you do not understand the code related to the 'fs' API below.
     We're going to dive deep into files in the next chapter.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您不理解下面与 'fs' API 相关的代码，请不要担心。我们将在下一章深入探讨文件。
 - en: '[PRE17]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: This stream reads chunks from a file, accumulates them in an internal string
     buffer, and pushes complete lines to the stream. When it encounters a newline,
     it pushes the line (without the newline) and continues. If there's leftover data
     in the buffer when the file ends, it pushes that as the final line.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个流从文件中读取块，将它们累积在一个内部字符串缓冲区中，并将完整的行推送到流中。当它遇到换行符时，它会推送该行（不带换行符）并继续。如果文件结束时缓冲区中还有剩余数据，它会将其作为最后一行推送。
 - en: 'Notice the `_destroy()` method. This is a cleanup hook that''s called when
     the stream is destroyed. By default, Readable streams have `autoDestroy: true`,
     which means `_destroy()` will be called **automatically** after the stream ends
     (after `push(null)`). We use it to close the file descriptor, ensuring we don''t
     leak file handles. We check if `this.fd` is defined before closing to handle edge
     cases safely.'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: '注意 `_destroy()` 方法。这是一个在流销毁时被调用的清理钩子。默认情况下，可读流有 `autoDestroy: true`，这意味着在流结束后（在
+    `push(null)` 之后）将自动调用 `_destroy()`。我们使用它来关闭文件描述符，确保我们不会泄露文件句柄。我们在关闭之前检查 `this.fd`
+    是否已定义，以安全地处理边缘情况。'
 - en: Also notice that inside the `while` loop, we check the return value of `push()`.
     If `push()` returns `false`, we return early from `_read()`, stopping further
     pushes. This respects backpressure. If the consumer pauses or the buffer fills
     up, we won't push more lines until `_read()` is called again.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 还要注意，在 `while` 循环内部，我们检查 `push()` 的返回值。如果 `push()` 返回 `false`，我们提前从 `_read()`
+    返回，停止进一步的推送。这尊重了背压。如果消费者暂停或缓冲区填满，我们不会推送更多行，直到再次调用 `_read()`。
 - en: 'As we saw in the previous chapter, there''s a simpler way to create Readable
     streams for many use cases: `stream.Readable.from()`. This utility function creates
     a Readable stream from an iterable or async iterable. If you have an array, a
     generator, or an async generator, you can turn it into a Readable stream with
     one line.'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们在上一章中看到的，对于许多用例，创建可读流有一个更简单的方法：`stream.Readable.from()`。这个实用函数可以从可迭代对象或异步可迭代对象创建可读流。如果你有一个数组、生成器或异步生成器，你可以用一行代码将其转换为可读流。
 - en: '[PRE18]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: This is incredibly convenient. The `Readable.from()` method handles all the
     heavy-lifting. It calls the async generator's `next()` method, waits for the promise
     to resolve, pushes the value into the stream, and repeats until the generator
     is done. If you're building a Readable stream from structured data or implementing
     a simple custom data source, `Readable.from()` can eliminate the need to extend
     `Readable` manually.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 这非常方便。`Readable.from()` 方法处理所有繁重的工作。它调用异步生成器的 `next()` 方法，等待承诺解析，将值推入流中，并重复此过程直到生成器完成。如果你正在从结构化数据构建可读流或实现简单的自定义数据源，`Readable.from()`
+    可以消除手动扩展 `Readable` 的需求。
 - en: One more consideration when implementing Readable streams is **handling errors**.
     If an error occurs while fetching data from the source, you should destroy the
     stream with that error. This stops the stream, emits an `error` event, and cleans
     up resources.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实现可读流时，还有一个需要考虑的因素是 **错误处理**。如果在从源获取数据时发生错误，你应该用该错误销毁流。这会停止流，发出 `error` 事件，并清理资源。
 - en: '[PRE19]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: Calling `this.destroy(err)` transitions the stream to a destroyed state. No
     more `_read()` calls will be made, and the `error` event will be emitted with
     the error object. If you've implemented `_destroy()`, it will be called to clean
     up resources.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 调用 `this.destroy(err)` 将流转换为已销毁状态。不会进行更多 `_read()` 调用，并且会发出带有错误对象的 `error` 事件。如果你实现了
+    `_destroy()`，它将被调用以清理资源。
 - en: Consuming Patterns
+  id: totrans-100
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 消费模式
 - en: We've seen bits and pieces of consumption throughout this chapter. Now let's
     systematically cover all the ways to consume Readable streams, with tips on when
     to use each approach.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在本章中看到了一些消费的片段。现在，让我们系统地介绍所有消费可读流的方法，并提供何时使用每种方法的建议。
 - en: '**Event-based consumption (flowing mode)** is the most straightforward. Attach
     `data` and `end` listeners, and the stream pushes data to you.'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: '**基于事件的消费（流动模式）** 是最直接的方式。附加 `data` 和 `end` 监听器，流就会将数据推送到你。'
 - en: '[PRE20]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: This pattern is simple and performant when your processing is fast. However,
     if `processChunk()` is slow or asynchronous, you need to implement backpressure
     manually by calling `pause()` and `resume()`, which adds complexity.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你的处理速度快时，这种模式简单且性能良好。然而，如果 `processChunk()` 慢或异步，你需要手动通过调用 `pause()` 和 `resume()`
+    来实现背压，这增加了复杂性。
 - en: '**Async iteration consumption** is the most modern, straight-forward and ergonomic
     approach. Readable streams are async iterables, so you can consume them with `for
     await...of`.'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '**异步迭代消费** 是最现代、最直接且最直观的方法。可读流是异步可迭代对象，因此你可以使用 `for await...of` 来消费它们。'
 - en: '[PRE21]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: This pattern handles backpressure automatically. If `processChunk()` returns
     a promise, the loop waits for it to resolve before pulling the next chunk. This
     means the stream won't push more data until you're ready. It's clean, easy to
     reason about, and recommended for most use cases.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式自动处理背压。如果 `processChunk()` 返回一个承诺，循环将等待它解析后再拉取下一个块。这意味着流不会推送更多数据，直到你准备好。这是干净、易于推理的，并且对于大多数用例都是推荐的。
 - en: '**Explicit `read()` consumption (paused mode)** gives you fine-grained control.
     You call `read()` when you''re ready for data.'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '**显式 `read()` 消费（暂停模式）** 给你细粒度的控制。当你准备好数据时，你调用 `read()`。'
 - en: '[PRE22]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: You can also call `read(size)` to pull a specific number of bytes, which is
     useful for parsing binary protocols where you need to read fixed-size headers
     or structures.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 你还可以调用 `read(size)` 来拉取特定数量的字节，这在需要读取固定大小头或结构的二进制协议解析中很有用。
 - en: '[PRE23]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: This pattern is powerful but verbose and error-prone. You have to manage the
     state machine yourself, handling cases where not enough data is available yet.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式功能强大但冗长且容易出错。你必须自己管理状态机，处理数据尚未足够可用的情况。
 - en: '**Using `pipe()`** connects a Readable stream to a Writable stream, handling
     backpressure automatically. Don''t worry we have a dedicated sub-chapter on pipes
     and writable streams.'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '**使用 `pipe()`** 将可读流连接到可写流，并自动处理背压。不用担心，我们有一个专门的子章节介绍管道和可写流。'
 - en: '[PRE24]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: The `pipe()` method listens for `data` events on the Readable stream and calls
     `write()` on the Writable stream. If `write()` returns `false` (signaling that
     the Writable stream's buffer is full), `pipe()` calls `pause()` on the Readable
     stream. When the Writable stream emits a `drain` event (signaling that its buffer
     has space again), `pipe()` calls `resume()` on the Readable stream. This automatic
     backpressure handling is why `pipe()` is so convenient.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '`pipe()` 方法监听可读流上的 `data` 事件，并在可写流上调用 `write()`。如果 `write()` 返回 `false`（表示可写流的缓冲区已满），`pipe()`
+    在可读流上调用 `pause()`。当可写流发出 `drain` 事件（表示其缓冲区再次有空间）时，`pipe()` 在可读流上调用 `resume()`。这就是
+    `pipe()` 那么方便的原因，因为它自动处理背压。'
 - en: However, `pipe()` has limitations. Error handling is awkward as errors don't
     propagate automatically, so you must attach error listeners to both streams. Also,
     if an error occurs in the middle of piping, cleanup can be tricky. The streams
     might not be properly closed or destroyed.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，`pipe()` 有局限性。错误处理很尴尬，因为错误不会自动传播，所以你必须将错误监听器附加到两个流上。此外，如果在管道传输过程中发生错误，清理可能会很棘手。流可能没有被正确关闭或销毁。
 - en: '**Using `stream.pipeline()`** is the modern, robust alternative to `pipe()`.
     It connects multiple streams in a pipeline and handles errors and cleanup automatically.'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: '**使用 `stream.pipeline()`** 是 `pipe()` 的现代、健壮的替代方案。它将多个流连接到管道中，并自动处理错误和清理。'
 - en: '[PRE25]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: The `pipeline()` function from `stream/promises` returns a promise that resolves
     when the pipeline completes successfully or rejects if any stream emits an error.
     When an error occurs, `pipeline()` automatically destroys all streams in the pipeline,
     ensuring resources are cleaned up. This makes it the recommended way to compose
     streams in production code.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 来自 `stream/promises` 的 `pipeline()` 函数返回一个在管道成功完成时解析或如果任何流发出错误时拒绝的承诺。当发生错误时，`pipeline()`
+    自动销毁管道中的所有流，确保资源被清理。这使得它在生产代码中组合流时成为推荐的方式。
 - en: You can also pass transform functions to `pipeline()`, which we'll explore in
     later chapters when we cover Transform streams.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以将转换函数传递给 `pipeline()`，我们将在后续章节中探讨，当我们介绍转换流时。
 - en: Each consumption pattern has its place. For simple, fast processing, event-based
     consumption is fine. For async processing with clean backpressure handling, async
     iteration is ideal. For binary protocol parsing or fine-grained control, explicit
     `read()` is necessary. For piping streams together, `pipeline()` is the safest
     and most robust choice.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 每种消费模式都有其适用场景。对于简单、快速的处理，基于事件的消费就足够了。对于具有干净背压处理的异步处理，异步迭代是理想的。对于二进制协议解析或细粒度控制，显式
+    `read()` 是必要的。对于将流连接起来，`pipeline()` 是最安全、最健壮的选择。
 - en: Mode Transitions and State Management
+  id: totrans-122
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 模式转换和状态管理
 - en: We've discussed flowing and paused modes, but let's clarify exactly when transitions
     happen and what the internal state looks like. This can lead to bugs where data
     is lost or backpressure is not respected.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经讨论了流动和暂停模式，但让我们明确一下转换发生的时间以及内部状态是什么样的。这可能导致数据丢失或背压不被尊重的bug。
 - en: When a Readable stream is created, it's in paused mode, and its internal state
     has a flag `state.flowing` set to `null`. This is neither paused nor flowing -
     it's an initial state where the stream hasn't started yet.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 当创建一个可读流时，它处于暂停模式，其内部状态有一个标志 `state.flowing` 设置为 `null`。这既不是暂停也不是流动 - 它是一个初始状态，其中流尚未开始。
 - en: The first time you attach a `data` listener, `state.flowing` becomes `true`,
     and the stream switches to flowing mode. Data begins flowing immediately if the
     internal buffer has data, or as soon as data becomes available.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一次添加 `data` 监听器时，`state.flowing` 变为 `true`，流切换到流动模式。如果内部缓冲区有数据，数据将立即开始流动；如果没有数据，则数据一旦可用，流就会开始流动。
 - en: If you call `pause()`, `state.flowing` becomes `false`. The stream stops emitting
     `data` events. However, the internal buffer continues to fill up to the `highWaterMark`.
     The source keeps producing data until the buffer is full, at which point `_read()`
     stops being called.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你调用 `pause()`，`state.flowing` 变为 `false`。流停止发出 `data` 事件。然而，内部缓冲区会继续填充到 `highWaterMark`。源将继续产生数据，直到缓冲区满，此时
+    `_read()` 停止被调用。
 - en: If you call `resume()`, `state.flowing` becomes `true` again. The stream starts
     emitting `data` events from the buffer, and if the buffer drains below the `highWaterMark`,
     `_read()` is called to fetch more data from the source.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你调用 `resume()`，`state.flowing` 再次变为 `true`。流从缓冲区开始发出 `data` 事件，如果缓冲区排空到低于
+    `highWaterMark`，则调用 `_read()` 从源获取更多数据。
 - en: 'If you remove all `data` listeners (and the stream is not piped anywhere),
     `state.flowing` remains `true`. This is a slight nuance: the stream stays in flowing
     mode structurally, but with no listeners attached, `data` events have nowhere
@@ -667,120 +963,171 @@
     that was already emitted while no listener was attached). To actually pause the
     stream and stop it from processing data, you must explicitly call `pause()`, which
     sets `state.flowing` to `false`.'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你移除了所有 `data` 监听器（并且流没有被管道传输到任何地方），`state.flowing` 仍然保持 `true`。这是一个细微差别：流在结构上保持在流动模式，但没有监听器附加，`data`
+    事件没有地方去。流将继续排空其缓冲区并调用 `_read()`，但发出的数据实际上消失了。如果你稍后附加一个新的 `data` 监听器，流将立即开始向它发出事件（你不会收到在没有任何监听器附加时已发出的数据）。要实际暂停流并停止处理数据，你必须显式调用
+    `pause()`，这将 `state.flowing` 设置为 `false`。
 - en: This distinction matters when you're dynamically adding and removing listeners.
     Simply removing a `data` listener doesn't pause the stream - it just removes the
     destination for the events. The stream continues consuming from its source. If
     you want to temporarily stop data processing (perhaps to apply backpressure or
     wait for some condition), you need to explicitly `pause()` the stream.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你动态添加和删除监听器时，这种区别很重要。简单地移除 `data` 监听器并不会暂停流——它只是移除了事件的目的地。流将继续从其源消费数据。如果你想要暂时停止数据处理（可能是应用回压或等待某些条件），你需要显式
+    `pause()` 流。
 - en: Paused mode (`false`) requires an explicit `pause()` call or occurs when the
     stream is piped and the destination applies backpressure.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 暂停模式（`false`）需要显式调用 `pause()` 或在流被管道传输且目的地应用回压时发生。
 - en: You may ask, why? Because if you're dynamically adding and removing listeners,
     or if you're building middleware that wraps streams, you need to understand these
     state transitions to avoid accidentally losing data or failing to control when
     the stream processes data.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能会问，为什么？因为如果你正在动态添加和删除监听器，或者如果你正在构建包装流的中间件，你需要理解这些状态转换，以避免意外丢失数据或无法控制流处理数据的时间。
 - en: 'Here''s a snippet to observe these transitions:'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个片段来观察这些转换：
 - en: '[PRE26]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: 'The `readableFlowing` property is public and safe to read. It reflects the
     current state: `null`, `false`, or `true`.'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '`readableFlowing` 属性是公开的，可以安全读取。它反映了当前状态：`null`、`false` 或 `true`。'
 - en: 'There''s another state consideration: the `ended` flag. Once the stream has
     emitted `end`, no more data will be emitted. If you try to read from an ended
     stream, `read()` will return `null`. The stream remains in this ended state until
     it''s destroyed. Even if new data somehow becomes available (which shouldn''t
     happen in well-behaved streams), an ended stream will not emit it.'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个状态考虑因素是 `ended` 标志。一旦流发出 `end` 信号，将不再发出更多数据。如果你尝试从已结束的流中读取，`read()` 将返回 `null`。流将保持这种结束状态，直到它被销毁。即使以某种方式新数据变得可用（在表现良好的流中不应发生这种情况），已结束的流也不会发出它。
 - en: The `destroyed` flag is also tracked. Once a stream is destroyed, it will not
     emit any more events (except `close`), and attempts to read or write will fail.
     The stream's resources are released, and it's effectively dead.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 也会跟踪 `destroyed` 标志。一旦流被销毁，它将不再发出任何事件（除了 `close`），尝试读取或写入将失败。流释放了其资源，实际上已经死亡。
 - en: Understanding these state flags and transitions helps debug issues like "why
     isn't my stream emitting data?" or "why is my stream stuck?" Often, the stream
     is in a state you didn't expect - paused when you thought it was flowing, ended
     when you thought there was more data, or destroyed when you thought it was still
     active.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解这些状态标志和转换有助于调试像“为什么我的流没有发出数据？”或“为什么我的流卡住了？”这样的问题。通常，流处于你意想不到的状态——当你认为它在流动时被暂停，当你认为还有更多数据时它结束了，或者当你认为它仍然活跃时它被销毁了。
 - en: Backpressure in Practice
+  id: totrans-138
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实践中的背压
 - en: Let's make backpressure concrete. We've talked about it abstractly, but let's
     see what it looks like in real code and what happens if you ignore it.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们具体看看背压（backpressure）的概念。我们之前已经从抽象的角度讨论过它，但现在让我们看看在实际代码中它是如何表现的，以及如果你忽略了它会发生什么。
 - en: 'Suppose you''re reading a large file and processing each chunk by making an
     HTTP request to an API. Each request takes 100ms. Here''s naive code that ignores
     backpressure:'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设你正在读取一个大文件，并通过向API发起HTTP请求来处理每个块。每个请求需要100毫秒。以下是忽略背压的简单代码：
 - en: '[PRE27]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: What happens here? The stream emits `data` events as fast as it can read from
     the file. Each event fires the async handler, which initiates an HTTP request.
     But the handler doesn't block the stream. The stream keeps emitting `data` events,
     creating more and more concurrent HTTP requests. If the file is large and the
     chunks are small, you could end up with thousands of in-flight requests, exhausting
     memory and network resources.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里发生了什么？流尽可能快地读取文件并发出`data`事件。每个事件都会触发异步处理程序，该处理程序启动一个HTTP请求。但是处理程序不会阻塞流。流继续发出`data`事件，创建越来越多的并发HTTP请求。如果文件很大且块很小，你可能会结束成千上万的飞行请求，耗尽内存和网络资源。
 - en: This is a backpressure failure. The consumer (the HTTP request logic) is slower
     than the producer (the file read), but there's no mechanism to slow down the producer.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个背压失败。消费者（HTTP请求逻辑）比生产者（文件读取）慢，但没有机制来减缓生产者的速度。
 - en: 'Here''s how you fix it with explicit pause and resume:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是如何通过显式暂停和恢复来修复它的：
 - en: '[PRE28]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: Now, as soon as a `data` event is emitted, we pause the stream. This stops further
     `data` events. We process the chunk asynchronously. Once the HTTP request completes,
     we resume the stream, allowing the next `data` event to fire. This serializes
     the processing, ensuring only one request is in flight at a time. The file read
     rate matches the HTTP request rate.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，一旦发出`data`事件，我们就暂停流。这阻止了进一步的`data`事件。我们异步处理块。一旦HTTP请求完成，我们恢复流，允许下一个`data`事件触发。这序列化了处理，确保一次只有一个请求在飞行。文件读取速率与HTTP请求速率相匹配。
 - en: But honestly, this pattern is **awkward** and bad. The pause/resume calls clutter
     the logic, and if an error occurs, you might forget to resume, leaving the stream
     stuck.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 但说实话，这个模式是**尴尬**且不好的。暂停/恢复调用使逻辑变得混乱，如果发生错误，你可能会忘记恢复，导致流卡住。
 - en: 'The cleaner solution is async iteration:'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 更干净的方法是异步迭代：
 - en: '[PRE29]'
+  id: totrans-149
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: This achieves the same backpressure behavior automatically. The `for await...of`
     loop doesn't pull the next chunk until the current iteration completes. If the
     `fetch()` takes time, the stream waits. The producer's rate matches the consumer's
     rate, with no explicit pause or resume calls.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通过自动实现相同的背压行为。`for await...of`循环不会在当前迭代完成之前拉取下一个块。如果`fetch()`需要时间，流会等待。生产者的速率与消费者的速率相匹配，没有显式的暂停或恢复调用。
 - en: Now, what if you want controlled concurrency - say, up to 5 requests in flight
     at once? Async iteration alone doesn't give you that. You'd need to implement
     a concurrency limiter, which is beyond the scope of this chapter but is a common
     pattern in production and I am pretty sure you're smart enough to implement it
     yourself. If not, don't worry, libraries like `p-limit` or `async` provide utilities
     for this.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，如果你想要受控的并发——比如说，一次最多5个请求？仅仅异步迭代无法提供这一点。你需要实现一个并发限制器，这超出了本章的范围，但在生产中这是一个常见的模式，我相当确信你足够聪明可以自己实现它。如果不能，不要担心，像`p-limit`或`async`这样的库提供了这个功能的工具。
 - en: The key takeaway is that backpressure is not automatic unless you use mechanisms
     that enforce it. Event-based consumption with `data` listeners does not enforce
     backpressure by default. You must add it manually with pause/resume. Async iteration
@@ -788,280 +1135,403 @@
     backpressure automatically by monitoring the Writable stream's state. Choose your
     consumption pattern based on whether automatic backpressure handling is important
     to you.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键点是，除非你使用强制执行它的机制，否则背压不是自动的。使用`data`监听器的事件驱动消费默认不强制执行背压。你必须手动使用暂停/恢复来添加它。异步迭代通过设计强制执行背压。使用`pipe()`或`pipeline()`通过监控可写流的状
 - en: Reading in Object Mode
+  id: totrans-153
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 在对象模式下读取
 - en: Object mode changes the semantics of Readable streams slightly. Instead of pushing
     `Buffer` objects or strings, you push arbitrary JavaScript values. Instead of
     `highWaterMark` being a byte count, it's an object count. Let's see what this
     looks like in practice.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 对象模式略微改变了可读流的语义。不再是推送`Buffer`对象或字符串，而是推送任意的JavaScript值。`highWaterMark`不再是字节数，而是对象数。让我们看看这在实践中是什么样子。
 - en: 'Here''s a Readable stream that emits database rows:'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个发出数据库行的可读流：
 - en: '[PRE30]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 'This stream queries a database in batches of 100 rows. Each row is pushed as
     a JavaScript object. The stream''s internal buffer handles backpressure - when
     it fills up, `_read()` won''t be called again until space is available, naturally
     pausing database queries. The consumer sees a stream of row objects:'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 该流以100行为一批查询数据库。每一行作为一个JavaScript对象被推送。流的内部缓冲区处理背压 - 当它填满时，`_read()`不会再次被调用，直到有空间，自然地暂停数据库查询。消费者看到的是行对象的流：
 - en: '[PRE31]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: Object mode is powerful when you're working with structured data that doesn't
     naturally map to bytes. Instead of serializing rows to JSON, pushing the JSON
     as a `Buffer`, and then parsing it back in the consumer, you just push the objects
     directly. This is more efficient and cleaner.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你处理不自然映射到字节的有序数据时，对象模式非常强大。你不必将行序列化为JSON，然后将JSON作为`Buffer`推送，并在消费者那里再次解析它，你只需直接推送对象。这更高效、更简洁。
 - en: 📌Important
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: Since `highWaterMark` is an object count, not a byte count, the stream's memory
     usage depends entirely on the size of the objects you push. If you push 16 objects
     and each is 10MB, you're buffering 160MB, even though the `highWaterMark` is just
     16\. Node.js has no way to measure the byte size of arbitrary JavaScript objects,
     so it relies on the object count. This means you, as the programmer, must **carefully
     calculate** appropriate `highWaterMark` values based on expected object sizes.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于`highWaterMark`是对象数，而不是字节数，流的内存使用完全取决于你推送的对象的大小。如果你推送了16个对象，每个对象是10MB，你将缓冲160MB，即使`highWaterMark`只是16。Node.js没有方法来测量任意JavaScript对象的字节数，所以它依赖于对象数。这意味着你必须作为程序员，**仔细计算**基于预期对象大小的适当的`highWaterMark`值。
 - en: Edge Cases and Debugging
+  id: totrans-162
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 边界情况和调试
 - en: Readable streams have several edge cases that can trip you up if you're not
     aware of them. I'm going to cover a few.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 可读流有几个边界情况，如果你不知道它们，可能会让你陷入困境。我将介绍几个。
 - en: '**Empty streams.** A Readable stream can end immediately without pushing any
     data. If you call `push(null)` in `_read()` without ever pushing actual data,
     the stream will emit `end` without ever emitting `data`. This is valid and sometimes
     intentional (for example, reading an empty file), but it can surprise consumers
     who expect at least one `data` event.'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: '**空流。** 可读流可以立即结束而不推送任何数据。如果你在`_read()`中调用`push(null)`而从未推送实际数据，流将发出`end`事件而从未发出`data`事件。这是有效的，有时是故意的（例如，读取空文件），但它可能会让期望至少有一个`data`事件的消费者感到惊讶。'
 - en: '**Unhandled `error` events.** If a Readable stream emits an `error` event and
     there''s no listener, Node.js will throw the error, potentially crashing your
     app/process. Always attach an `error` listener, even if it just logs the error.'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '**未处理的`error`事件。** 如果可读流发出`error`事件而没有监听器，Node.js将抛出错误，可能会使你的应用程序/进程崩溃。始终附加一个`error`监听器，即使它只是记录错误。'
 - en: '**Destroyed streams.** Once a stream is destroyed, you cannot read from it
     anymore. If you destroy a stream prematurely (for example, calling `destroy()`
     while there''s still buffered data), that data is lost. If you need to clean up
     resources but still want to emit buffered data, call `push(null)` to signal the
     end gracefully, rather than destroying immediately.'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '**销毁流。** 一旦流被销毁，就无法再从中读取数据。如果你提前销毁流（例如，在仍有缓冲数据时调用 `destroy()`），这些数据就会丢失。如果你需要清理资源但仍然想优雅地发出缓冲数据，请调用
+    `push(null)` 来发出结束信号，而不是立即销毁。'
 - en: '**Mixing consumption patterns.** If you attach both a `readable` listener and
     a `data` listener to the same stream, the behavior can be confusing. Attaching
     a `readable` listener prevents the stream from entering flowing mode, even if
     a `data` listener is attached afterward. The `readable` listener takes precedence,
     and `data` events won''t fire as expected. Stick to one consumption pattern per
     stream.'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: '**混合消费模式。** 如果你将 `readable` 监听器和 `data` 监听器都附加到同一流上，行为可能会令人困惑。附加 `readable`
+    监听器会阻止流进入流动模式，即使之后附加了 `data` 监听器。`readable` 监听器具有优先权，并且 `data` 事件不会按预期触发。每个流坚持一种消费模式。'
 - en: '**Misunderstanding `read(size)`.** Calling `read(size)` does not guarantee
     you''ll get exactly `size` bytes. You''ll get up to `size` bytes, depending on
     what''s available in the buffer. If the buffer has fewer than `size` bytes, you
     get what''s there. If the buffer is empty, you get `null`. Don''t assume `read(size)`
     blocks or waits - it''s non-blocking and returns immediately.'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '**误解 `read(size)`。** 调用 `read(size)` 并不保证你会得到确切的 `size` 字节。你会得到缓冲区中可用的最多 `size`
+    字节。如果缓冲区中少于 `size` 字节，你会得到那里的所有内容。如果缓冲区为空，你会得到 `null`。不要假设 `read(size)` 会阻塞或等待
+    - 它是非阻塞的，并立即返回。'
 - en: '**Ignoring `readable.destroyed`.** If you''re implementing custom logic that
     interacts with streams, always check `readable.destroyed` before calling methods
     like `read()` or `push()`. Operating on a destroyed stream can lead to errors
     or unexpected behavior.'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '**忽略 `readable.destroyed`。** 如果你正在实现与流交互的自定义逻辑，在调用 `read()` 或 `push()` 等方法之前，始终检查
+    `readable.destroyed`。在已销毁的流上操作可能导致错误或意外行为。'
 - en: 'For debugging, the `_readableState` property is invaluable. It exposes the
     internal state of the stream:'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于调试，`_readableState` 属性非常有价值。它暴露了流的内部状态：
 - en: '[PRE32]'
+  id: totrans-171
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: This logs an object with properties like `buffer`, `length`, `highWaterMark`,
     `flowing`, `ended`, `endEmitted`, `reading`, `destroyed`, and more. If a stream
     is misbehaving, inspecting this state can reveal what's going wrong.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会记录一个具有 `buffer`、`length`、`highWaterMark`、`flowing`、`ended`、`endEmitted`、`reading`、`destroyed`
+    等属性的对象。如果流表现异常，检查这个状态可以揭示出问题所在。
 - en: 'You can also enable debug logging for streams by setting the `NODE_DEBUG` environment
     variable:'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 你还可以通过设置 `NODE_DEBUG` 环境变量来为流启用调试日志：
 - en: '[PRE33]'
+  id: totrans-174
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: This logs detailed internal stream events to stderr, showing when `_read()`
     is called, when data is pushed, when events are emitted, and more. It's verbose,
     but it's useful for understanding the exact sequence of operations.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 这会将详细的内部流事件记录到标准错误输出（stderr），显示何时调用 `_read()`，何时推送数据，何时发出事件，等等。它很详细，但对于理解操作的确切顺序非常有用。
 - en: Memory Implications and Choosing highWaterMark
+  id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内存影响和选择 highWaterMark
 - en: We've mentioned `highWaterMark` repeatedly, but let's discuss how to choose
     a good value. The default of 64KB is a reasonable compromise for most use cases,
     but it's not optimal for all scenarios.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经多次提到 `highWaterMark`，但让我们讨论如何选择一个好的值。对于大多数用例，默认的 64KB 是一个合理的折衷方案，但并不是所有场景都最优。
 - en: If you're streaming large files where the source and consumer are roughly balanced
     in speed, increasing the `highWaterMark` can improve throughput. A larger buffer
     means fewer system calls to read from the source. For example, if you're reading
     a file from a fast SSD, increasing `highWaterMark` to 128KB or 256KB can reduce
     the overhead of repeated `fs.read()` calls.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你正在流式传输大型文件，其中源和消费者的速度大致平衡，增加 `highWaterMark` 可以提高吞吐量。更大的缓冲区意味着从源读取的系统调用更少。例如，如果你正在从快速的
+    SSD 读取文件，将 `highWaterMark` 增加到 128KB 或 256KB 可以减少重复 `fs.read()` 调用的开销。
 - en: '[PRE34]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: However, larger buffers mean more memory usage. If you're processing thousands
     of streams concurrently (for example, in a high-traffic web server where each
     request reads from a file), the cumulative memory usage of all those buffers can
     be significant. In such cases, you might want to decrease the `highWaterMark`
     to reduce per-stream memory footprint.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，更大的缓冲区意味着更多的内存使用。如果您正在同时处理数千个流（例如，在高流量的 Web 服务器中，每个请求都从文件中读取），所有这些缓冲区的累积内存使用量可能会非常显著。在这种情况下，您可能希望降低
+    `highWaterMark` 以减少每个流的内存占用。
 - en: '[PRE35]'
+  id: totrans-181
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: There's also a latency consideration. If you're streaming real-time data (for
     example, a live video feed), a smaller `highWaterMark` means lower latency. The
     consumer gets data sooner because the stream doesn't wait to fill a large buffer
     before pushing data. Conversely, if latency is not a concern and throughput is
     paramount, a larger `highWaterMark` reduces overhead.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 同时也要考虑延迟问题。如果您正在流式传输实时数据（例如，实时视频流），较小的 `highWaterMark` 意味着更低的延迟。消费者可以更快地获取数据，因为流不需要等待填充大缓冲区后再推送数据。相反，如果延迟不是问题，而吞吐量至关重要，较大的
+    `highWaterMark` 可以减少开销。
 - en: In `objectMode`, the trade-off is similar, but the units are objects, not bytes.
     If each object is small, a `highWaterMark` of 16 might be too low, causing frequent
     `_read()` calls and reducing throughput. If each object is large, 16 might be
     too high, consuming too much memory.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 `objectMode` 中，权衡类似，但单位是对象而不是字节。如果每个对象都很小，16 的 `highWaterMark` 可能太低，导致频繁的
+    `_read()` 调用并降低吞吐量。如果每个对象都很大，16 可能太高，消耗过多的内存。
 - en: There's no one-size-fits-all answer. Profile your application. Measure memory
     usage and throughput with different `highWaterMark` values. The default is usually
     fine, but for performance-critical applications, tuning can make a difference.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有一种适合所有情况的答案。请分析您的应用程序。使用不同的 `highWaterMark` 值来测量内存使用量和吞吐量。默认值通常就足够了，但对于性能关键的应用程序，调整设置可能会有所帮助。
 - en: Readable.from() and Async Iterables
+  id: totrans-185
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '`Readable.from()` 和异步迭代器'
 - en: Before we close this chapter, let's revisit `Readable.from()` and understand
     why it's so powerful. This utility bridges the gap between async iterables (generators,
     arrays, async generators) and Readable streams, allowing you to leverage the stream
     API without manually implementing `_read()`.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们结束这一章之前，让我们回顾一下 `Readable.from()` 并了解为什么它如此强大。这个实用工具弥合了异步迭代器（生成器、数组、异步生成器）和可读流之间的差距，让您能够在不手动实现
+    `_read()` 的情况下利用流 API。
 - en: 'Suppose you have an async generator that fetches paginated data from an API:'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设您有一个异步生成器，它从 API 中获取分页数据：
 - en: '[PRE36]'
+  id: totrans-188
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: 'This generator fetches pages of items and yields each item. You can turn it
     into a Readable stream:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个生成器获取项目页面并产生每个项目。您可以将它转换成一个可读流：
 - en: '[PRE37]'
+  id: totrans-190
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: The `Readable.from()` method handles all the heavy-lifting. It calls the generator's
     `next()` method, waits for the promise to resolve, pushes the yielded value into
     the stream, and repeats. If the generator throws an error, the stream emits an
     `error` event. If the generator completes, the stream pushes `null` to signal
     the end.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Readable.from()` 方法处理所有繁重的工作。它调用生成器的 `next()` 方法，等待承诺解决，将产生的值推入流中，并重复。如果生成器抛出错误，流会发出
+    `error` 事件。如果生成器完成，流会推送 `null` 以表示结束。'
 - en: This pattern is incredibly composable. If you have a function that returns an
     async iterable, you can plug it into the stream ecosystem with a single line.
     You get all the benefits of streams - backpressure, event-based consumption, piping
     to Writable streams, compatibility with `pipeline()` - without writing any stream-specific
     code.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式具有极高的可组合性。如果您有一个返回异步迭代器的函数，您只需一行代码就可以将其连接到流生态系统。您将获得流的所有好处——背压、基于事件的消费、连接到可写流、与
+    `pipeline()` 兼容——而无需编写任何特定于流的代码。
 - en: 'You can also pass regular iterables, not just async ones:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 您也可以传递常规迭代器，而不仅仅是异步迭代器：
 - en: '[PRE38]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: This creates a Readable stream from an array. Each array element becomes a chunk
     in the stream. It's a simple way to convert synchronous data into a stream for
     testing or integration with stream-based APIs.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将从数组创建一个可读流。数组的每个元素都成为流中的一个块。这是一种简单地将同步数据转换为流以进行测试或与基于流的 API 集成的方法。
 - en: The lesson here is that Readable streams are not just about reading files or
     sockets. They're a general abstraction for producing sequences of values, whether
     those values come from I/O, computation, or iteration over data structures. `Readable.from()`
     makes that abstraction accessible to any code that produces an iterable or async
     iterable, lowering the barrier to adopting streams in your codebase.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的教训是，可读流不仅仅是关于读取文件或套接字。它们是产生值序列的一般抽象，无论这些值来自I/O、计算还是数据结构的迭代。`Readable.from()`使这种抽象对任何产生可迭代或异步可迭代的代码都变得可访问，降低了在代码库中采用流的门槛。
 - en: Wrapping Up
+  id: totrans-197
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: '**Aaaah… finally!** We''ve covered a lot of ground. Let''s do a quick recap
     on what we''ve covered.'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: '**啊哈……终于！** 我们已经覆盖了很多内容。让我们快速回顾一下我们所学的内容。'
 - en: A Readable stream is a producer of data. It pulls data from an underlying source
     (a file, a socket, a generator, a database query) and makes that data available
     to consumers. The stream maintains an internal buffer - an array of chunks - that
     sits between the source and the consumer, smoothing out rate mismatches and providing
     backpressure.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 可读流是一个数据的生产者。它从底层源（文件、套接字、生成器、数据库查询）中拉取数据，并将这些数据提供给消费者。流维护一个内部缓冲区——一个数据块数组——位于源和消费者之间，以平滑速率不匹配并提供反向压力。
 - en: 'The stream operates in one of two modes: paused or flowing. In paused mode,
     data must be explicitly pulled using `read()`. In flowing mode, data is automatically
     pushed via `data` events. You control the mode through event listeners and method
     calls like `pause()`, `resume()`, and `pipe()`.'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 流在两种模式之一中操作：暂停或流动。在暂停模式下，必须显式使用`read()`来拉取数据。在流动模式下，数据通过`data`事件自动推送。你通过事件监听器和`pause()`、`resume()`、`pipe()`等方法调用控制模式。
 - en: The `highWaterMark` option controls the buffer size threshold. When the buffer's
     length exceeds `highWaterMark`, the stream stops calling `_read()`, applying backpressure
     to the source. When the buffer drains below `highWaterMark`, the stream calls
     `_read()` again, requesting more data.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: '`highWaterMark`选项控制缓冲区大小的阈值。当缓冲区长度超过`highWaterMark`时，流停止调用`_read()`，对源应用反向压力。当缓冲区低于`highWaterMark`时，流再次调用`_read()`，请求更多数据。'
 - en: To implement a custom Readable stream, you extend the `Readable` class and implement
     `_read()`. Inside `_read()`, you fetch data from your source and call `push(chunk)`
     to add it to the buffer. When there's no more data, you call `push(null)` to signal
     the end. If an error occurs, you call `destroy(err)`.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 要实现自定义可读流，你扩展`Readable`类并实现`_read()`。在`_read()`内部，你从你的源获取数据并调用`push(chunk)`将其添加到缓冲区。当没有更多数据时，你调用`push(null)`来表示结束。如果发生错误，你调用`destroy(err)`。
 - en: 'To consume a Readable stream, you have several options: event-based consumption
     with `data` and `end` listeners, async iteration with `for await...of`, explicit
     `read()` calls in paused mode, piping with `pipe()`, or robust pipelines with
     `stream.pipeline()`. Each pattern has trade-offs in terms of simplicity, backpressure
     handling, and control.'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 要消费可读流，你有几种选择：基于事件的消费使用`data`和`end`监听器，异步迭代使用`for await...of`，在暂停模式下显式调用`read()`，使用`pipe()`进行管道传输，或者使用`stream.pipeline()`进行健壮的管道。每种模式在简单性、反向压力处理和控制方面都有权衡。
 - en: 'Readable streams emit events to communicate state changes: `data` for chunks,
     `end` for completion, `error` for errors, `readable` for data availability, and
     `close` for resource cleanup. Your code reacts to these events to process data
     and handle edge cases.'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 可读流通过事件来发出状态变化：`data`用于数据块，`end`用于完成，`error`用于错误，`readable`用于数据可用性，`close`用于资源清理。你的代码对这些事件做出反应，以处理数据和处理边缘情况。
 - en: Backpressure is critical to bounded memory usage. If your consumer is slower
     than the producer, you must either use a consumption pattern that enforces backpressure
     automatically (async iteration, `pipeline()`), or implement it manually (pause/resume).
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 反向压力对于有限的内存使用至关重要。如果你的消费者比生产者慢，你必须使用一种强制自动应用反向压力的消费模式（异步迭代、`pipeline()`），或者手动实现它（暂停/恢复）。
 - en: Object mode changes the stream's semantics from byte-based to object-based,
     allowing you to push arbitrary JavaScript values and treating `highWaterMark`
     as an object count rather than a byte count.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 对象模式将流的语义从基于字节更改为基于对象，允许你推送任意JavaScript值，并将`highWaterMark`视为对象计数而不是字节计数。
 - en: This mental model - source, buffer, `highWaterMark`, modes, events, backpressure
     - is the base for working with all streams in Node.js, not just Readable streams.
     Writable, Transform, and Duplex streams build on these same concepts, adding their
@@ -1069,5 +1539,8 @@
     you've mastered half of the streaming paradigm. The other half - writing data,
     transforming data, and composing streams - builds naturally on what you've learned
     here.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种心智模型——源（source）、缓冲区（buffer）、`highWaterMark`、模式（modes）、事件（events）、背压（backpressure）——是处理
+    Node.js 中所有流的基础，而不仅仅是可读流（Readable streams）。可写流（Writable）、转换流（Transform）、和双工流（Duplex）都是基于这些相同的概念，并添加了它们自己的特定行为和契约。深入理解可读流意味着你已经掌握了流式处理范式的一半。另一半——写入数据、转换数据、和组合流——自然地建立在你在本部分学到的内容之上。

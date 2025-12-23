@@ -1,31 +1,41 @@
 - en: Writable Streams
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 可写流
 - en: 原文：[https://www.thenodebook.com/streams/writable-streams](https://www.thenodebook.com/streams/writable-streams)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://www.thenodebook.com/streams/writable-streams](https://www.thenodebook.com/streams/writable-streams)
 - en: 'You''ve seen how Readable streams work. You understand how they maintain internal
     buffers, how they transition between modes, and how they deliver data to consumers.
     Now we need to flip the perspective and look at the other side of the streaming
     equation: **where does data go once it''s been produced?**'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 你已经看到了可读流是如何工作的。你理解了它们如何维护内部缓冲区，如何在模式之间转换，以及如何将数据传递给消费者。现在我们需要转换视角，看看流方程的另一边：**一旦数据被生成后，数据去哪里了？**
 - en: This is the domain of **Writable streams**. If Readable streams are about getting
     data out of a source, Writable streams are about getting data *into* a destination.
     Files on disk, network sockets, HTTP responses, compression algorithms, database
     connections - anywhere you're sending data chunk by chunk, you're working with
     some form of Writable stream.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是**可写流**的领域。如果可读流是关于从源获取数据，那么可写流则是关于将数据*输入*到目的地。磁盘上的文件、网络套接字、HTTP响应、压缩算法、数据库连接——任何你按块发送数据的地方，你都在使用某种形式的可写流。
 - en: Writing to a Writable stream isn't simple. It's not just "call `write()` with
     your data and move on." There's a critical feedback mechanism built into the API,
     and if you ignore it, you'll eventually see your process consume more memory than
     you expect. That feedback mechanism is **backpressure**, and understanding it
     is essential for production Node.js code that handles data streams.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 向可写流写入并不简单。不仅仅是“用你的数据调用`write()`然后继续”。API中内置了一个关键的反馈机制，如果你忽略它，最终你会看到你的进程消耗的内存比你预期的要多。这个反馈机制是**背压**，理解它是处理数据流的Node.js生产代码所必需的。
 - en: We're going to examine Writable streams from the ground up. First, we'll look
     at the `Writable` class itself - what options it takes, what events it emits,
     and what the `write()` method's return value actually means. Then we'll dive deep
@@ -34,36 +44,48 @@
     streams so you understand exactly what happens when data flows into a destination.
     Finally, we'll look at the correct patterns for writing to Writable streams in
     real applications.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将从底层开始检查可写流。首先，我们将查看`Writable`类本身——它接受哪些选项，它发出哪些事件，以及`write()`方法的返回值实际上意味着什么。然后我们将深入探讨**背压**，了解它的存在原因，内部缓冲如何创建它，以及忽略它会发生什么。之后，我们将实现自定义的可写流，以便你确切了解数据流入目的地时发生了什么。最后，我们将查看在实际应用程序中写入可写流的正确模式。
 - en: The Writable Stream Class
+  id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可写流类
 - en: When you create or receive a Writable stream, you're working with an object
     that extends `EventEmitter`, just like Readable. This should feel familiar by
     now. Streams in Node.js communicate through events because asynchronous I/O operations
     don't return values immediately - they signal completion or failure through events.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你创建或接收一个可写流时，你正在处理一个扩展了`EventEmitter`的对象，就像可读流一样。现在这应该感觉熟悉了。Node.js中的流通过事件进行通信，因为异步I/O操作不会立即返回值——它们通过事件来表示完成或失败。
 - en: 'The Writable stream''s job is straightforward in concept: accept chunks of
     data through its `write()` method, and send those chunks to some underlying destination.
     The destination could be anything. A file descriptor managed by the operating
     system. A TCP socket. An in-memory array. The Writable stream doesn''t care. It
     provides the interface and the buffering logic. The underlying destination is
     abstracted away into an internal method called `_write()`, which subclasses implement.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写流在概念上的任务是直接的：通过其`write()`方法接受数据块，并将这些块发送到某个底层目的地。目的地可以是任何东西。操作系统管理的文件描述符。TCP套接字。内存中的数组。可写流并不关心。它提供接口和缓冲逻辑。底层目的地被抽象成一个内部方法`_write()`，子类实现它。
 - en: The configuration options control how the Writable stream behaves under load.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 配置选项控制了在负载下可写流的行为。
 - en: The `highWaterMark` option works similarly to Readable streams, but its meaning
     is slightly different. For a Writable stream, `highWaterMark` represents the **maximum
     number of bytes** (or objects in `objectMode`) that the stream will buffer internally
     before it starts signaling backpressure. The default is `16384` bytes, the same
     16KB default that Readable streams use.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: '`highWaterMark`选项与可读流的工作方式类似，但其含义略有不同。对于可写流，`highWaterMark`表示在开始信号回压之前，流将内部缓冲的最大字节数（或在`objectMode`中为对象数量）。默认值为`16384`字节，与可读流使用的相同的16KB默认值。'
 - en: When you call `write()` on a Writable stream, that data doesn't necessarily
     get written to the underlying destination immediately. Instead, it gets added
     to an internal buffer. If the destination is fast (like writing to `/dev/null`
@@ -71,173 +93,245 @@
     complete quickly. But if the destination is slow (like writing to a mechanical
     hard drive during heavy I/O load, or sending data over a congested network), the
     buffer starts to fill up.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你在可写流上调用`write()`时，这些数据并不一定会立即写入底层目标。相反，它们被添加到内部缓冲区。如果目标快速（例如写入到`/dev/null`或具有大量带宽的套接字），缓冲区将保持大部分为空，写入操作会很快完成。但如果目标较慢（例如在重负载I/O期间写入机械硬盘，或在拥塞的网络中发送数据），缓冲区开始填满。
 - en: When the buffered data reaches or exceeds `highWaterMark`, the `write()` method
     **returns `false`**. This is the **backpressure signal**. The stream is saying
     "I'm buffering too much data. You need to slow down or stop writing until I tell
     you I'm ready again." If the application ignores this signal and keeps calling
     `write()`, the internal buffer keeps growing, consuming more and more memory until
     the process runs out.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 当缓冲数据达到或超过`highWaterMark`时，`write()`方法返回`false`。这是**回压信号**。流表示“我正在缓冲太多数据。你需要减慢速度或停止写入，直到我告诉你我准备好了。”如果应用程序忽略这个信号并继续调用`write()`，内部缓冲区会继续增长，消耗越来越多的内存，直到进程耗尽。
 - en: 'A Writable stream configuration looks like this:'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写流配置看起来像这样：
 - en: '[PRE0]'
+  id: totrans-14
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: This creates a Writable stream that will signal backpressure when its internal
     buffer reaches 8KB. Note that the stream doesn't stop accepting writes when backpressure
     is signaled - it just returns `false` to indicate that you should pause.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 这创建了一个可写流，当其内部缓冲区达到8KB时将发出回压信号。请注意，当发出回压信号时，流不会停止接受写入——它只是返回`false`以指示你应该暂停。
 - en: The `objectMode` option, just like with Readable streams, changes the stream
     from dealing with bytes to dealing with arbitrary JavaScript objects. In `objectMode`,
     `highWaterMark` represents the **number of objects** buffered, not the byte count.
     The default in `objectMode` is 16 objects.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '`objectMode`选项，就像在可读流中一样，将流从处理字节转换为处理任意JavaScript对象。在`objectMode`中，`highWaterMark`表示缓冲的对象数量，而不是字节数。在`objectMode`中的默认值是16个对象。'
 - en: '[PRE1]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: This is useful when you're building data processing pipelines where each chunk
     represents a logical unit - a database row, a parsed log entry, a JSON document
     - rather than a chunk of bytes.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你构建数据处理管道时，其中每个块代表一个逻辑单元——一个数据库行、一个解析的日志条目、一个JSON文档——而不是字节块时，这很有用。
 - en: The `decodeStrings` option controls whether strings passed to `write()` are
     converted to `Buffer` objects before being passed to the `_write()` method. By
     default, this is `true`. If you set it to `false`, strings are passed through
     as-is. Most of the time you won't need to touch this, but it matters if you're
     implementing a Writable stream that specifically wants to handle strings differently
     from buffers.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '`decodeStrings`选项控制传递给`write()`方法的字符串是否在传递给`_write()`方法之前转换为`Buffer`对象。默认情况下，这是`true`。如果你将其设置为`false`，字符串将原样传递。大多数情况下你不需要触碰这个设置，但如果你正在实现一个想要将字符串与缓冲区区别对待的特定可写流，这很重要。'
 - en: '[PRE2]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: There's also a `defaultEncoding` option that specifies the encoding used when
     strings are converted to buffers (if `decodeStrings` is `true`). The default is
     `'utf8'`, which is almost always what you want for text data.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，还有一个`defaultEncoding`选项，用于指定在字符串转换为缓冲区时使用的编码（如果`decodeStrings`为`true`）。默认值是`'utf8'`，这对于文本数据几乎总是你想要的。
 - en: Finally, there's an `emitClose` option that controls whether the stream emits
     a `close` event when it's destroyed. The default is `true`. Unless you have a
     specific reason to suppress the `close` event, you should leave this alone.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，还有一个`emitClose`选项，用于控制流在销毁时是否发出`close`事件。默认值是`true`。除非你有特定的理由要抑制`close`事件，否则你应该保持这个设置不变。
 - en: To use Writable streams effectively, you need to understand the events they
     emit and what they signal.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 要有效地使用可写流，您需要了解它们发出的事件以及它们所表示的含义。
 - en: Events on Writable Streams
+  id: totrans-24
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可写流上的事件
 - en: Writable streams emit several events that signal state changes. Each event fires
     at a specific point in the stream's lifecycle.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写流发出几个事件，以表示状态变化。每个事件都在流的特定生命周期点触发。
 - en: The most critical event for managing backpressure is **`drain`**. This event
     fires when the Writable stream's internal buffer was full (meaning `write()` was
     returning `false`) and has now drained below the `highWaterMark` threshold. The
     `drain` event is your signal to resume writing.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 管理背压的最关键事件是**`drain`**。当可写流的内部缓冲区已满（意味着`write()`返回`false`）并且现在已排空至`highWaterMark`阈值以下时，此事件会被触发。`drain`事件是您继续写入的信号。
 - en: 'The intended usage pattern:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 预期的使用模式：
 - en: '[PRE3]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: The `write()` call returns `false`, which means the buffer is full. So we attach
     a one-time `drain` event listener and pause our writing logic. When `drain` fires,
     the buffer has space again, and we can resume.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '`write()`调用返回`false`，这意味着缓冲区已满。因此，我们附加一个一次性`drain`事件监听器并暂停我们的写入逻辑。当`drain`触发时，缓冲区又有空间了，我们可以继续。'
 - en: If you've never worked with streams before, or haven't read my earlier chapters
     on streams, this might feel strange. **Blocking would defeat the entire purpose
     of Node.js's asynchronous I/O model.** If `write()` blocked, your entire event
     loop would freeze while waiting for the write to complete. By using an event-based
     signal, the event loop stays free to handle other work while the stream's internal
     buffer drains.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您之前从未使用过流，或者没有阅读我之前关于流的章节，这可能会感觉有些奇怪。**阻塞会违背Node.js异步I/O模型的整体目的**。如果`write()`被阻塞，您的整个事件循环将冻结，等待写入完成。通过使用基于事件的信号，事件循环保持空闲，以便在流内部缓冲区排空时处理其他工作。
 - en: The **`finish`** event fires when you call `end()` on the stream and all buffered
     data has been successfully written to the underlying destination. This is the
     signal that the stream has completed its work. Note that `finish` fires *before*
     `close`. The stream has finished writing, but it might not have closed its underlying
     resources yet.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您在流上调用`end()`并且所有缓冲数据都已成功写入底层目的地时，会触发**`finish`**事件。这是流完成其工作的信号。请注意，`finish`在`close`之前触发。流已完成写入，但它可能尚未关闭其底层资源。
 - en: '[PRE4]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: The `end()` method tells the stream "I'm not going to write any more data."
     After you call `end()`, calling `write()` will throw an error. The stream processes
     any remaining buffered data, and when everything has been written, it emits `finish`.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '`end()`方法告诉流“我不会再写入任何数据。”在您调用`end()`之后，调用`write()`将抛出错误。流处理任何剩余的缓冲数据，当所有数据都已写入时，它发出`finish`。'
 - en: The **`close`** event fires when the stream and its underlying resources have
     been closed. This happens *after* `finish`. Not all streams emit `close`, and
     whether they do depends on the implementation of the underlying resource. For
     file streams, `close` fires when the file descriptor is closed. For socket streams,
     `close` fires when the socket is closed.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: '**`close`**事件在流及其底层资源被关闭时触发。这发生在`finish`之后。并非所有流都会发出`close`，它们是否这样做取决于底层资源的实现。对于文件流，`close`在文件描述符关闭时触发。对于套接字流，`close`在套接字关闭时触发。'
 - en: '[PRE5]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: The **`error`** event fires when something goes wrong during writing. Maybe
     the file system is full. Maybe the network connection dropped. Maybe the underlying
     destination threw an error for some internal reason. When an error occurs, the
     stream emits `error` with the error object. Just like with Readable streams, if
     you don't have an error handler attached, the error will be thrown, potentially
     crashing your process.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '**`error`**事件在写入过程中出现问题时触发。可能是文件系统已满。可能是网络连接断开。可能是底层目的地由于某些内部原因抛出了错误。当发生错误时，流会发出带有错误对象的`error`。就像可读流一样，如果您没有附加错误处理程序，错误将被抛出，可能会使您的进程崩溃。'
 - en: '[PRE6]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: The **`pipe`** event fires when a Readable stream is piped into this Writable
     stream using the `pipe()` method. The event passes the source Readable stream
     as an argument. This is mainly useful for logging or debugging - knowing which
     Readable streams are currently piped into this Writable.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用`pipe()`方法将可读流管道连接到该可写流时，会触发**`pipe`**事件。事件将源可读流作为参数传递。这主要用于日志记录或调试——了解哪些可读流当前已管道连接到该可写流。
 - en: '[PRE7]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: Similarly, there's an **`unpipe`** event that fires when a Readable stream is
     unpiped from this Writable.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，当从该可写流中取消管道连接时，会触发**`unpipe`**事件。
 - en: 'These events form the API surface for interacting with Writable streams. But
     to really understand how to use them correctly, we need to dive into the core
     concept that governs flow control in streaming systems: **backpressure**.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些事件构成了与可写流交互的API界面。但为了真正理解如何正确使用它们，我们需要深入了解控制流系统中流量控制的核心理念：**背压**。
 - en: Understanding Backpressure
+  id: totrans-42
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 理解背压
 - en: Backpressure is one of those concepts that sounds abstract until you see what
     happens without it. Consider a concrete scenario.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 背压是那些听起来很抽象的概念之一，直到你看到没有它会发生什么。考虑一个具体的场景。
 - en: 'You''re writing a program that reads a large file and writes it to another
     location. The **naive approach** looks like this:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 你正在编写一个程序，该程序读取一个大型文件并将其写入另一个位置。**简单的方法**看起来像这样：
 - en: '[PRE8]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: This code reads chunks from `input.dat` and writes them to `output.dat`. Simple,
     right? But there's a **hidden problem**. What if the Readable stream produces
     data faster than the Writable stream can consume it?
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 这段代码从`input.dat`读取数据块并将其写入`output.dat`。简单，对吧？但有一个**隐藏的问题**。如果可读流产生的数据比可写流消耗得快怎么办？
 - en: The file system can read 100MB/sec from the source disk, but it can only write
     50MB/sec to the destination disk. The Readable stream is producing 100MB/sec worth
     of chunks, and you're calling `write()` for every chunk. The Writable stream can
@@ -245,186 +339,254 @@
     After one second, there's 50MB in the buffer. After two seconds, 100MB. After
     ten seconds, 500MB. The buffer keeps growing until your process runs out of memory
     and crashes.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 文件系统可以从源磁盘以100MB/sec的速度读取，但它只能以50MB/sec的速度将数据写入目标磁盘。可读流以100MB/sec的速度产生数据块，而你为每个数据块调用`write()`。可写流只能处理50MB/sec，所以其他50MB/sec的数据**积累在其内部缓冲区中**。一秒后，缓冲区中有50MB。两秒后，100MB。十秒后，500MB。缓冲区会不断增长，直到你的进程耗尽内存并崩溃。
 - en: This is the problem backpressure solves. The Writable stream signals to the
     producer "slow down, I can't keep up" by **returning `false` from `write()`**.
     The producer is then supposed to pause until the Writable stream emits `drain`,
     indicating that it's caught up and ready for more data.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 这正是背压解决的问题。可写流通过从`write()`返回`false`向生产者发出“慢点，我跟不上”的信号。然后，生产者应该暂停，直到可写流发出`drain`事件，表示它已经赶上并准备好接收更多数据。
 - en: 'The correct version:'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 正确的版本：
 - en: '[PRE9]'
+  id: totrans-50
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: When `write()` returns `false`, we pause the Readable stream. It stops emitting
     `data` events. The Writable stream's internal buffer drains as it writes data
     to the underlying destination. When the buffer drops below `highWaterMark`, `drain`
     fires, and we resume the Readable stream. **Data flow is regulated by the consumer's
     capacity, not the producer's speed.**
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 当`write()`返回`false`时，我们暂停可读流。它停止发出`data`事件。可写流内部缓冲区在将数据写入底层目标时排空。当缓冲区低于`highWaterMark`时，`drain`事件触发，我们恢复可读流。**数据流由消费者的容量调节，而不是生产者的速度。**
 - en: This pattern is so common that Node.js provides `pipe()` as a built-in method
     that handles this exact flow control automatically. We'll cover `pipe()` in depth
     in a later sub-chapter, but this illustrates that backpressure management is a
     fundamental part of the streaming model, important enough to warrant dedicated
     helper methods.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式如此常见，以至于Node.js提供了一个内置的`pipe()`方法来自动处理这种精确的流控制。我们将在后面的子章节中深入探讨`pipe()`，但这表明背压管理是流模型的一个基本部分，重要到足以需要专门的辅助方法。
 - en: What actually happens inside the Writable stream when you call `write()`?
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你调用`write()`时，可写流内部实际上发生了什么？
 - en: When you call `writable.write(chunk)`, the stream does several things. First,
     it checks if it's already writing data to the underlying destination. If it is,
     the chunk gets added to an internal buffer. If it's not currently writing, the
     chunk is passed immediately to the `_write()` method, which handles the actual
     I/O.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你调用`writable.write(chunk)`时，流会做几件事情。首先，它会检查是否已经在向底层目标写入数据。如果是，则将数据块添加到内部缓冲区。如果没有正在写入，则将数据块立即传递给`_write()`方法，该方法处理实际的I/O操作。
 - en: The internal buffer is a **linked list of write requests**. Each write request
     contains the chunk to write, the encoding (if it's a string), and a callback to
     invoke when the write completes. As you call `write()` repeatedly, more write
     requests are appended to this list.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 内部缓冲区是一个**写入请求的链表**。每个写入请求包含要写入的数据块、编码（如果是字符串）以及写入完成后要调用的回调函数。随着你反复调用`write()`，更多的写入请求被添加到这个列表中。
 - en: After adding the chunk to the buffer (or passing it to `_write()`), the stream
     calculates the current buffer size. For byte streams, this is the sum of all buffered
     chunk lengths. For `objectMode` streams, it's the count of buffered chunks. If
     this total meets or exceeds `highWaterMark`, `write()` returns `false`. Otherwise,
     it returns `true`.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 在将块添加到缓冲区（或传递给`_write()`）之后，流计算当前缓冲区大小。对于字节流，这是所有缓冲块长度的总和。对于`objectMode`流，这是缓冲块的数量。如果这个总数达到或超过`highWaterMark`，`write()`返回`false`。否则，它返回`true`。
 - en: 'A simplified mental model:'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 简化的心智模型：
 - en: '[PRE10]'
+  id: totrans-58
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: This simplified model captures the core idea. The `write()` method adds to a
     buffer and returns a boolean based on whether the buffer is below the threshold.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个简化的模型捕捉了核心思想。`write()`方法向缓冲区添加内容，并根据缓冲区是否低于阈值返回布尔值。
 - en: What determines how fast the buffer drains? That's entirely up to the `_write()`
     method's implementation and the underlying destination's performance. If you're
     writing to a fast SSD, the buffer drains quickly. If you're writing to a slow
     network connection, the buffer drains slowly. The Writable stream itself doesn't
     control the drain rate - it only measures it and signals when the buffer is too
     full.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 是什么决定了缓冲区排空的速率？这完全取决于`_write()`方法的实现和底层目标性能。如果你正在向快速的SSD写入，缓冲区会快速排空。如果你正在向慢速的网络连接写入，缓冲区会缓慢排空。可写流本身并不控制排空速率
+    - 它只测量它，并在缓冲区太满时发出信号。
 - en: This is why `highWaterMark` is a **tuning parameter**. If you set it too low,
     you'll get backpressure signals very frequently, even though the destination could
     handle more data. This can reduce throughput because you're constantly pausing
     and resuming. If you set it too high, you'll buffer a lot of data in memory, which
     might be fine if you have memory to spare, but can lead to problems if you're
     processing many streams simultaneously or running in a memory-constrained environment.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是为什么`highWaterMark`是一个**调整参数**。如果你设置得太低，你将非常频繁地收到背压信号，即使目标可以处理更多数据。这可能会降低吞吐量，因为你一直在暂停和恢复。如果你设置得太高，你将在内存中缓冲大量数据，如果你有额外的内存，这可能没问题，但如果你在处理多个流的同时或在内存受限的环境中运行，可能会导致问题。
 - en: The **default 16KB** is a reasonable middle ground for most use cases. It's
     large enough that you're not hitting backpressure constantly for typical write
     operations, but small enough that you're not buffering massive amounts of data
     if the destination is slow.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '**默认的16KB**对于大多数用例来说是一个合理的折中方案。它足够大，以至于你不会在典型的写入操作中不断遇到背压，但足够小，以至于如果目标较慢，你不会缓冲大量数据。'
 - en: What happens when you ignore backpressure? Suppose you write a million 1KB chunks
     to a Writable stream that's writing to a slow destination. You call `write()`
     a million times without checking the return value. Each call adds 1KB to the internal
     buffer. The buffer grows to 1GB. Your process now has **1GB of data sitting in
     memory** just for this one stream's buffer, waiting to be written.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你忽略背压时会发生什么？假设你向一个正在向慢速目标写入的Writable流写入了一百万个1KB的数据块。你调用`write()`一百万次而不检查返回值。每次调用都会向内部缓冲区添加1KB。缓冲区增长到1GB。现在你的进程在内存中就有**1GB的数据**仅为此流的缓冲区等待写入。
 - en: If you're processing multiple files simultaneously, or handling multiple concurrent
     HTTP requests, this memory usage multiplies. You might have 10GB or more of buffered
     write data across all your streams. At some point, the operating system's memory
     allocator can't keep up, and your process crashes with an **out-of-memory error**.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你同时处理多个文件，或者处理多个并发HTTP请求，这种内存使用会成倍增加。你可能在所有流中都有10GB或更多的缓冲写入数据。在某个时刻，操作系统的内存分配器可能跟不上了，你的进程会因**内存不足错误**而崩溃。
 - en: 'This happens frequently in production systems when developers don''t respect
     backpressure. I''ve debugged memory issues in Node.js applications where the root
     cause was exactly this: streaming data from a fast source to a slow destination
     without handling `write()`''s return value.'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 这在生产系统中很常见，当开发者不尊重背压时就会发生。我在Node.js应用程序中调试过内存问题，其根本原因正是这一点：从快速源向慢速目标流式传输数据，而没有处理`write()`的返回值。
 - en: The fix is simple but requires discipline. **Check the return value. Pause the
     producer. Wait for `drain`. Resume.** It's a pattern that becomes second nature
     once you've internalized it.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 修复方法简单但需要自律。**检查返回值。暂停生产者。等待`drain`。恢复。** 这是一种一旦内化就会变得自然而然的模式。
 - en: Internal Buffering in Writable Streams
+  id: totrans-67
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可写流中的内部缓冲
 - en: The internal buffer's structure and management determines how streams handle
     memory usage and performance. This will help you reason about memory usage and
     performance in your streaming code.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 内部缓冲的结构和管理决定了流如何处理内存使用和性能。这有助于你在流代码中推理内存使用和性能。
 - en: The Writable stream maintains a `_writableState` object that tracks its internal
     state. This object is **private** (indicated by the leading underscore), but it's
     useful to understand what's in there because it affects the stream's behavior.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写流维护一个`_writableState`对象，用于跟踪其内部状态。这个对象是**私有的**（由前面的下划线表示），但了解其中内容是有用的，因为它会影响流的行为。
 - en: 'One key property is `bufferedRequestCount`, which is exactly what it sounds
     like: the number of write requests currently buffered. Each time you call `write()`,
     if the stream is already busy writing, the new chunk becomes a buffered request,
     and `bufferedRequestCount` increments. As chunks are written to the destination,
     `bufferedRequestCount` decrements.'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个关键属性是`bufferedRequestCount`，正如其名：当前缓冲的写请求的数量。每次调用`write()`时，如果流已经在写入，则新的块会变成一个缓冲请求，并且`bufferedRequestCount`增加。随着块被写入目的地，`bufferedRequestCount`减少。
 - en: Another property is `length`, which tracks the total size of buffered data.
     For byte streams, this is the sum of all buffered chunk lengths. For `objectMode`
     streams, this is the count of buffered objects. This is the value that gets compared
     to `highWaterMark` to determine whether `write()` should return `false`.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个属性是`length`，它跟踪缓冲数据的总大小。对于字节流，这是所有缓冲块长度的总和。对于`objectMode`流，这是缓冲对象的计数。这是与`highWaterMark`比较的值，以确定`write()`是否应该返回`false`。
 - en: There's also a `writing` flag that indicates whether the stream is currently
     in the middle of a write operation. When `_write()` is called, `writing` is set
     to `true`. When the callback passed to `_write()` is invoked (indicating the write
     completed), `writing` is set to `false`. While `writing` is `true`, new chunks
     get buffered rather than being passed directly to `_write()`.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，还有一个`writing`标志，表示流是否正在执行写入操作。当调用`_write()`时，`writing`被设置为`true`。当传递给`_write()`的回调被调用（表示写入完成）时，`writing`被设置为`false`。在`writing`为`true`时，新的块会被缓冲而不是直接传递给`_write()`。
 - en: 'The buffer itself (in older Node.js versions) was a **linked list** of write
     request objects. In newer versions, it''s implemented as a more efficient data
     structure, but conceptually it''s still a **queue: first-in, first-out**. The
     oldest buffered chunk is written first, then the next oldest, and so on.'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 在较老的Node.js版本中，缓冲本身是一个写请求对象的**链表**。在新版本中，它实现为一个更有效的数据结构，但从概念上讲，它仍然是一个**队列：先进先出**。最老的缓冲块首先被写入，然后是下一个最老的，依此类推。
 - en: When `write()` is called, the stream checks the `writing` flag. If it's `false`,
     the chunk is passed immediately to `_write()` along with a callback. The callback
     is invoked by the `_write()` implementation when the write operation completes
     (or errors). When that callback runs, the stream checks if there are more buffered
     chunks. If there are, it pulls the next chunk from the buffer and calls `_write()`
     again. This continues until the buffer is empty.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 当调用`write()`时，流会检查`writing`标志。如果它是`false`，则将块立即传递给`_write()`并附带一个回调。当写入操作完成（或出错）时，`_write()`实现会调用回调。当回调运行时，流会检查是否有更多缓冲块。如果有，它会从缓冲区中拉取下一个块并再次调用`_write()`。这个过程会一直持续到缓冲区为空。
 - en: If at any point during this process the buffer size drops below `highWaterMark`,
     and the buffer size was previously at or above `highWaterMark`, the stream emits
     `drain`. This is the signal that **backpressure is relieved**.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果在这个过程中缓冲区大小降至`highWaterMark`以下，并且缓冲区大小之前在或高于`highWaterMark`，则流会发出`drain`事件。这是**背压已缓解**的信号。
 - en: 'A more detailed mental model:'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个更详细的心智模型：
 - en: '[PRE11]'
+  id: totrans-77
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: This is still simplified, but it shows the core flow. The `write()` method adds
     chunks to a buffer and returns `false` if the buffer exceeds `highWaterMark`.
     The `_doWrite()` method processes the buffer one chunk at a time, calling `_write()`
     and waiting for its callback before moving to the next chunk. When the buffer
     is empty and `needDrain` is `true`, `drain` is emitted.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 这仍然是一个简化的版本，但它展示了核心流程。`write()`方法将块添加到缓冲区，如果缓冲区超过`highWaterMark`，则返回`false`。`_doWrite()`方法一次处理一个缓冲块，调用`_write()`并在回调执行后再处理下一个块。当缓冲区为空且`needDrain`为`true`时，会触发`drain`事件。
 - en: The buffer is a **queue between the producer** (the code calling `write()`)
     and the underlying destination (the code in `_write()`). The producer can add
     to the queue as fast as it wants, but if the destination is slow, the queue grows.
     The backpressure mechanism (`write()` returning `false`, `drain` event) is the
     feedback loop that tells the producer to slow down when the queue gets too large.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓冲区是 **生产者**（调用 `write()` 的代码）和底层目的地（`_write()` 中的代码）之间的 **队列**。生产者可以尽可能快地向队列中添加内容，但如果目的地较慢，队列就会增长。反压机制（`write()`
+    返回 `false`，`drain` 事件）是反馈循环，告诉生产者在队列变得过大时减速。
 - en: The stream doesn't *enforce* backpressure - it just **signals** it. If you keep
     calling `write()` even when it returns `false`, the stream will keep buffering.
     It won't throw an error. It won't drop data. It will just keep growing the buffer
@@ -433,387 +595,573 @@
     hard real-time constraints and choose to drop data rather than pause. Others might
     choose to buffer more aggressively because they have memory to spare. But the
     **default, correct behavior is to pause when `write()` returns `false`**.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 流不会 **强制** 反压 - 它只是 **信号**。即使 `write()` 返回 `false`，你仍然继续调用 `write()`，流会继续缓冲。它不会抛出错误。它不会丢弃数据。它只是会继续增长缓冲区，直到内存耗尽。这个设计选择是有意为之的
+    - 它给应用程序提供了灵活性，以决定如何处理反压。一些应用程序可能具有硬实时约束，并选择丢弃数据而不是暂停。其他应用程序可能会选择更积极地缓冲，因为它们有额外的内存。但
+    **默认的正确行为是在 `write()` 返回 `false` 时暂停**。
 - en: The memory used by the buffer is in addition to the memory used by the chunks
     themselves. Each write request is an object that holds the chunk, encoding, callback,
     and other metadata. For very large numbers of small writes, the overhead of these
     objects can be non-trivial. This is one reason why batching small writes into
     larger chunks can improve performance - fewer write requests means less object
     overhead.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓冲区使用的内存是除了块本身使用的内存之外的。每个写入请求都是一个对象，它包含块、编码、回调和其他元数据。对于大量的小写入，这些对象的开销可能是相当大的。这就是为什么将小写入批处理到更大的块中可以提高性能的原因之一
+    - 更少的写入请求意味着更少的对象开销。
 - en: The `cork()` and `uncork()` methods are specifically designed to optimize buffering
     for scenarios where you're making many small writes.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '`cork()` 和 `uncork()` 方法是专门设计来优化在执行许多小写入时的缓冲。'
 - en: When you call `writable.cork()`, the stream enters a **corked state**. In this
     state, all writes are buffered, and `_write()` is not called at all. The idea
     is that you're about to make a bunch of small writes, and you want to buffer them
     all and then write them in one batch.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你调用 `writable.cork()` 时，流进入 **corked 状态**。在这个状态下，所有写入都会被缓冲，并且根本不会调用 `_write()`。这个想法是，你即将进行一系列小写入，你希望将它们全部缓冲起来，然后一次性写入。
 - en: After you've made all your writes, you call `writable.uncork()`. This flushes
     the buffered writes. If the stream's `_writev()` method is implemented (which
     allows writing multiple chunks at once), `uncork()` will call `_writev()` with
     all the buffered chunks. Otherwise, it calls `_write()` repeatedly for each chunk.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 在完成所有写入后，你调用 `writable.uncork()`。这将刷新缓冲的写入。如果流的 `_writev()` 方法已实现（允许一次性写入多个块），`uncork()`
+    将使用所有缓冲的块调用 `_writev()`。否则，它将为每个块重复调用 `_write()`。
 - en: 'Here''s an example:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个例子：
 - en: '[PRE12]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: Without `cork()`, each `write()` call might immediately call `_write()`, resulting
     in three separate I/O operations. With `cork()`, all three writes are buffered,
     and when `uncork()` is called, they're written together (if `_writev()` is implemented)
     or sequentially without any pause in between.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有使用 `cork()`，每次 `write()` 调用可能会立即调用 `_write()`，导致三个独立的 I/O 操作。使用 `cork()` 后，所有三个写入都会被缓冲，当调用
+    `uncork()` 时，它们会一起写入（如果实现了 `_writev()`），或者在没有停顿的情况下顺序写入。
 - en: This can significantly improve performance when you're making many small writes,
     because it reduces the number of system calls. Writing three 8-byte chunks in
     three separate calls to the `write()` syscall is slower than writing one 24-byte
     chunk in a single call.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你进行许多小写入时，这可以显著提高性能，因为它减少了系统调用的次数。在三次单独的 `write()` 系统调用中写入三个 8 字节块比在一次调用中写入一个
+    24 字节块要慢。
 - en: However, `cork()` and `uncork()` are not something you need to think about in
     most application code. They're most useful when you're implementing a library
     or protocol handler that's generating many small chunks. For typical application
     code, just calling `write()` directly is fine.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，`cork()`和`uncork()`在大多数应用程序代码中并不需要考虑。它们在实现生成许多小数据块的库或协议处理程序时最有用。对于典型应用程序代码，直接调用`write()`就足够了。
 - en: 'One important note: `cork()` can be called multiple times, and each call increments
     an internal counter. You need to call `uncork()` the same number of times to actually
     flush the buffer. This allows **nested corking** in complex code paths.'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要提示：`cork()`可以被多次调用，并且每次调用都会增加一个内部计数器。您需要以相同次数调用`uncork()`来实际刷新缓冲区。这允许在复杂的代码路径中进行**嵌套塞住**。
 - en: Implementing Custom Writable Streams
+  id: totrans-91
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实现自定义可写流
 - en: Understanding how to use Writable streams is one thing. Understanding how they
     work internally is another. The **best way to solidify that understanding is to
     implement your own Writable stream**.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解如何使用可写流是一回事。理解它们内部的工作原理则是另一回事。**最有效的方法是实现自己的可写流**。
 - en: 'The pattern is straightforward. You extend the `Writable` class and implement
     the `_write()` method. This method receives **three arguments**: the chunk to
     write, the encoding (if it''s a string), and a callback to invoke when the write
     completes.'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 模式很简单。您扩展`Writable`类并实现`_write()`方法。此方法接收**三个参数**：要写入的数据块、编码（如果它是字符串）以及写入完成后要调用的回调。
 - en: 'Here''s the simplest possible custom Writable stream:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是最简单的自定义可写流：
 - en: '[PRE13]'
+  id: totrans-95
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: This is essentially `/dev/null`. It accepts data and does nothing with it. The
     `_write()` method just calls the callback immediately, signaling that the write
     succeeded.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 这实际上等同于`/dev/null`。它接受数据但不做任何处理。`_write()`方法只是立即调用回调，表示写入成功。
 - en: 'A Writable stream that writes to an array:'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个写入数组的可写流：
 - en: '[PRE14]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: Now chunks are accumulated in the `data` array. Each write just pushes the chunk
     and calls the callback.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，数据块累积在`data`数组中。每次写入只是将数据块推入并调用回调。
 - en: But what if the write operation is **asynchronous**? What if we're writing to
     a database, or sending data over a network? This is where the callback becomes
     important. **The callback must be invoked after the asynchronous operation completes.**
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 但如果写入操作是**异步的**呢？如果我们正在向数据库写入，或者通过网络发送数据呢？这就是回调变得重要的地方。**回调必须在异步操作完成后被调用**。
 - en: 'A simulated async write:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 模拟的异步写入：
 - en: '[PRE15]'
+  id: totrans-102
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: The `setTimeout` simulates an asynchronous I/O operation that takes 100ms. The
     callback is invoked inside the `setTimeout` callback, signaling that the write
     has completed. Until `callback()` is called, the stream won't process the next
     buffered chunk. **This is how the stream paces itself to match the destination's
     speed.**
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '`setTimeout`模拟了一个耗时100毫秒的异步I/O操作。回调在`setTimeout`回调内部被调用，表示写入已完成。在`callback()`被调用之前，流不会处理下一个缓冲的数据块。**这就是流如何调整自己的速度以匹配目标速度的方式**。'
 - en: 'If an error occurs during writing, you pass the error to the callback:'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果在写入过程中发生错误，您将错误传递给回调：
 - en: '[PRE16]'
+  id: totrans-105
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: When you pass an error to the callback, the stream emits an `error` event. Any
     buffered writes are discarded, and the stream enters an **errored state**.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您将错误传递给回调时，流会发出一个`error`事件。任何缓冲的写入都会被丢弃，流进入**错误状态**。
 - en: The `_writev()` method is an **optional optimization** you can implement to
     handle batch writes more efficiently. If `_writev()` is implemented, and multiple
     chunks are buffered (or the stream is corked), the stream will call `_writev()`
     with an array of all buffered chunks instead of calling `_write()` repeatedly.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_writev()`方法是一个可选的优化，您可以使用它更有效地处理批量写入。如果实现了`_writev()`，并且有多个数据块被缓冲（或流被塞住），流将使用所有缓冲数据块的数组调用`_writev()`，而不是反复调用`_write()`。'
 - en: 'The `_writev()` signature is slightly different:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_writev()`的签名略有不同：'
 - en: '[PRE17]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: The `chunks` parameter is an array of objects, each with a `chunk` property
     (the data) and an `encoding` property. You can process them all at once and call
     the callback when done.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '`chunks`参数是一个对象数组，每个对象都有一个`chunk`属性（数据）和一个`encoding`属性。您可以一次性处理它们并完成时调用回调。'
 - en: Implementing `_writev()` is optional. If you don't implement it, the stream
     will call `_write()` once for each buffered chunk. But if your underlying destination
     has an API for batch writes (like SQL `INSERT` with multiple rows, or a network
     protocol that supports bundling multiple messages), implementing `_writev()` can
     **significantly improve performance**.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现 `_writev()` 是可选的。如果你没有实现它，流将为每个缓冲块调用一次 `_write()`。但是，如果你的底层目标有一个批处理写入的 API（例如，具有多行的
+    SQL `INSERT` 或支持捆绑多个消息的网络协议），实现 `_writev()` 可以**显著提高性能**。
 - en: The `_final()` hook is called when the stream is ending (after `end()` is called
     and all buffered writes have been processed), but *before* the `finish` event
     is emitted. It's useful for cleanup or final actions, like closing a file descriptor
     or flushing a buffer.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_final()` 钩子在流结束时被调用（在调用 `end()` 之后并且所有缓冲写入都已处理），但在发出 `finish` 事件之前。它对于清理或最终操作很有用，例如关闭文件描述符或刷新缓冲区。'
 - en: '[PRE18]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: The `_final()` callback must be invoked to signal that finalization is complete.
     After it's called, the stream emits `finish`.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_final()` 回调必须在最终化完成后被调用，以表示最终化完成。在它被调用后，流发出 `finish` 事件。'
 - en: 'A more realistic custom Writable stream that writes to a log file with a custom
     format:'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个更现实的自定义可写流，它以自定义格式写入日志文件：
 - en: '[PRE19]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: This stream opens a file for appending in the constructor. When `_write()` is
     called, it formats the chunk with a timestamp and writes it to the file using
     the low-level `fs.write()` function. In `_final()`, it closes the file descriptor.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 此流在构造函数中打开一个用于追加的文件。当调用 `_write()` 时，它使用时间戳格式化块，并使用低级 `fs.write()` 函数将块写入文件。在
+    `_final()` 中，它关闭文件描述符。
 - en: Note how `_write()` handles the case where the file isn't open yet by waiting
     for the `open` event. This is a **common pattern** when the underlying resource
     initialization is asynchronous.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 `_write()` 如何处理文件尚未打开的情况，通过等待 `open` 事件。这是当底层资源初始化是异步时的**常见模式**。
 - en: Implementing custom Writable streams like this gives you **complete control**
     over where data goes and how it's processed. You can write to databases, to external
     APIs, to compression streams, to anything. The Writable interface is flexible
     enough to accommodate any destination.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现这样的自定义可写流让你**完全控制**数据去向和数据处理方式。你可以将数据写入数据库、外部 API、压缩流，或任何其他地方。可写接口足够灵活，可以适应任何目标。
 - en: Writing to Writable Streams Correctly
+  id: totrans-120
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 正确写入可写流
 - en: With an understanding of how Writable streams work internally, here are the
     practical patterns for writing to them correctly in application code.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 在理解了可写流内部工作原理的基础上，以下是应用代码中正确写入它们的实用模式。
 - en: 'The **most important rule**: always check `write()`''s return value. If it
     returns `false`, pause your data source and wait for `drain` before continuing.'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '**最重要的规则**：始终检查 `write()` 的返回值。如果它返回 `false`，暂停你的数据源，并在继续之前等待 `drain`。'
 - en: 'The pattern in the context of reading from one stream and writing to another:'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 在从流中读取并写入另一个流的上下文中的模式：
 - en: '[PRE20]'
+  id: totrans-124
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: We call `write()` and capture the return value. If it's `false`, we pause the
     reader. When `drain` fires on the writer, we resume the reader. This ensures that
     the writer's buffer never grows unbounded.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们调用 `write()` 并捕获返回值。如果它是 `false`，我们暂停读取器。当写入器的 `drain` 事件触发时，我们恢复读取器。这确保了写入器的缓冲区永远不会无限制地增长。
 - en: 'When you''re done writing, you must call `end()` to signal that no more data
     will be written. You can optionally pass a final chunk to `end()`:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你完成写入后，你必须调用 `end()` 来表示不再写入更多数据。你可以选择性地将一个最终块传递给 `end()`：
 - en: '[PRE21]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 'This is equivalent to:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 这与以下操作等价：
 - en: '[PRE22]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: After `end()` is called, the stream processes any remaining buffered writes,
     calls `_final()` if it's implemented, and then emits `finish`. At that point,
     calling `write()` will throw an error.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 在调用 `end()` 之后，流会处理任何剩余的缓冲写入，如果实现了 `_final()`，则调用 `_final()`，然后发出 `finish` 事件。在那个时刻，调用
+    `write()` 将会抛出错误。
 - en: 'The error is specifically a **write-after-end error**, and it looks like this:'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 错误是特定的**写入后结束错误**，其外观如下：
 - en: '[PRE23]'
+  id: totrans-132
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: This is a **common mistake** when you have asynchronous code that writes to
     a stream and another part of the code calls `end()` before the async writes complete.
     You need to ensure that all writes are finished before calling `end()`.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你有异步代码写入流，并且代码的另一部分在异步写入完成之前调用 `end()` 时，这是一个**常见错误**。你需要确保在调用 `end()` 之前所有写入都已完成。
 - en: 'In application code, `cork()` and `uncork()` have specific uses. If you''re
     making many small writes in quick succession, you can use `cork()` to buffer them
     and `uncork()` to flush:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 在应用程序代码中，`cork()` 和 `uncork()` 有特定的用途。如果你正在快速连续进行许多小写入，你可以使用 `cork()` 来缓冲它们，并使用
+    `uncork()` 来刷新：
 - en: '[PRE24]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: But in practice, you rarely need to do this manually. If you're using `pipe()`
     or `pipeline()`, backpressure is handled automatically. If you're writing to a
     stream directly, the buffering in the stream already provides some batching. **Cork
     is mainly useful in library code** that's generating structured output, like an
     HTTP/2 frame encoder or a database protocol handler.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 但在实践中，你很少需要手动这样做。如果你使用 `pipe()` 或 `pipeline()`，背压会自动处理。如果你直接写入流，流中的缓冲已经提供了一些批处理。**`Cork`
+    主要用于生成结构化输出的库代码**，如 HTTP/2 帧编码器或数据库协议处理程序。
 - en: 'One scenario where manual backpressure handling is unavoidable is when you''re
     generating data from a **non-stream source**. For example, iterating over an array
     and writing each element:'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个不可避免需要手动处理背压的场景是当你从**非流式源**生成数据时。例如，遍历一个数组并将每个元素写入：
 - en: '[PRE25]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: This function writes each array element to the stream. If `write()` returns
     `false`, it waits for the `drain` event before continuing. This ensures that the
     stream's buffer doesn't overflow, even if the array is huge and the stream is
     slow.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 此函数将每个数组元素写入流。如果 `write()` 返回 `false`，它将在继续之前等待 `drain` 事件。这确保了即使数组很大且流很慢，流缓冲区也不会溢出。
 - en: Another pattern is using Writable streams with async iteration. Node.js provides
     a `stream.Writable.toWeb()` method that creates a `WritableStream` (from the WHATWG
     Streams standard), which can be used with async iteration. But that's a more advanced
     topic we'll cover in the context of modern web APIs.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种模式是使用具有异步迭代的可写流。Node.js 提供了一个 `stream.Writable.toWeb()` 方法，它创建一个 `WritableStream`（来自
+    WHATWG Streams 标准），这可以与异步迭代一起使用。但这是一个更高级的话题，我们将在现代网络API的上下文中进行讨论。
 - en: Writable streams have built-in flow control through the `write()` return value
     and the `drain` event. **Respecting this flow control is not optional.** It's
     the difference between code that works under light load but crashes under heavy
     load, and code that works reliably in production.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写流通过 `write()` 返回值和 `drain` 事件内置了流控制。**尊重这种流控制是强制性的**。这是在轻负载下工作但重负载时崩溃的代码与在生产环境中可靠工作的代码之间的区别。
 - en: 'A complete example that ties everything together: We''ll write a program that
     reads a large CSV file, parses each line, transforms the data, and writes it to
     a database. We''ll use Writable streams and handle backpressure correctly.'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个将所有内容结合起来的完整示例：我们将编写一个程序，读取一个大型CSV文件，解析每一行，转换数据，并将其写入数据库。我们将使用可写流并正确处理背压。
 - en: '[PRE26]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: This example uses `pipeline()`, which handles backpressure automatically. The
     `DatabaseWriter` is a custom Writable that writes each row to a database. The
     `_write()` method is `async`, which is allowed - you can use async functions or
     return promises from `_write()`, and Node.js will wait for them to resolve before
     processing the next chunk.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 此示例使用 `pipeline()`，它自动处理背压。`DatabaseWriter` 是一个自定义的可写流，它将每一行写入数据库。`_write()`
+    方法是异步的，这是允许的 - 你可以使用异步函数或从 `_write()` 返回承诺，Node.js 将等待它们解决后再处理下一个块。
 - en: 'Notice that we don''t manually check `write()` return values or listen for
     `drain`. That''s because `pipeline()` does it for us. This is the **recommended
     pattern for most streaming code**: use `pipeline()` or `pipe()`, let Node.js handle
     backpressure, and focus on the transformation logic.'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，我们并没有手动检查 `write()` 的返回值或监听 `drain` 事件。这是因为 `pipeline()` 会为我们处理这些。这是**大多数流代码的推荐模式**：使用
+    `pipeline()` 或 `pipe()`，让 Node.js 处理背压，并专注于转换逻辑。
 - en: 'But when you can''t use `pipeline()` - when you''re dealing with multiple sources
     or destinations, or when you''re integrating with non-stream APIs - you need to
     handle backpressure manually. And when you do, the pattern is always the same:
     **check `write()`, pause when it returns `false`, resume when `drain` fires**.'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 但当你不能使用 `pipeline()` - 当你处理多个来源或目的地，或者当你与非流式API集成时 - 你需要手动处理背压。当你这样做时，模式总是相同的：**检查
+    `write()`，当它返回 `false` 时暂停，当 `drain` 触发时恢复**。
 - en: The Mechanics of Buffer Overflow
+  id: totrans-147
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 缓冲区溢出的机制
 - en: Tracing through the exact sequence of events that leads to memory exhaustion
     helps you understand why the backpressure prevention mechanism exists.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过追踪导致内存耗尽的确切事件序列，有助于你理解为什么存在背压预防机制。
 - en: Consider a scenario where you're reading from a fast source and writing to a
     slow destination. You're copying a 1GB file from an SSD to a network share over
     a congested link. The SSD can deliver data at 500 MB/sec. The network can only
     send at 10 MB/sec. That's a **50x speed differential**.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑一个场景，你从快速源读取并写入慢速目标。你正在将1GB的文件从固态硬盘复制到网络共享，通过一个拥挤的链路。固态硬盘可以以500 MB/sec的速度提供数据。网络只能以10
+    MB/sec的速度发送。这是一个**50倍的速度差异**。
 - en: 'Your code looks like this:'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的代码看起来像这样：
 - en: '[PRE27]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: The Readable stream starts delivering 64KB chunks as fast as the SSD can provide
     them. Every **128 microseconds**, a new chunk arrives (64KB at 500 MB/sec). Each
     chunk is passed to `write()`. The Writable stream attempts to send each chunk
     over the network, but the network can only handle about one 64KB chunk every **6.4
     milliseconds** (64KB at 10 MB/sec).
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 可读流开始以固态硬盘能提供的速度传输64KB的块。每**128微秒**，一个新的块到达（500 MB/sec的64KB）。每个块都传递给`write()`。可写流尝试通过网络发送每个块，但网络每**6.4毫秒**只能处理大约一个64KB的块（10
+    MB/sec的64KB）。
 - en: In the first 6.4 milliseconds, the Readable stream delivers 50 chunks. The Writable
     stream sends 1 chunk. The other 49 chunks are buffered. That's 3.1MB of buffered
     data.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 在最初的6.4毫秒内，可读流传输了50个块。可写流发送了1个块。其他49个块被缓冲。这是3.1MB的缓冲数据。
 - en: After 64 milliseconds, the Readable stream has delivered 500 chunks. The Writable
     stream has sent 10 chunks. There are 490 chunks buffered. That's 30.6MB.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 在64毫秒后，可读流已传输了500个块。可写流已发送了10个块。还有490个块被缓冲。这是30.6MB。
 - en: After one second, there's 490MB buffered. After two seconds, 980MB. At some
     point, the process runs out of heap space and crashes.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 一秒后，缓冲区有490MB。两秒后，980MB。在某个时刻，进程耗尽堆空间并崩溃。
 - en: This isn't a gradual slowdown. **The process runs fine until it suddenly dies.**
     The event loop is responsive right up until the moment the allocator fails to
     allocate memory for the next buffer, and V8 throws an out-of-memory exception.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 这不是逐渐减速。**这个过程运行良好，直到突然崩溃**。事件循环一直响应，直到分配器无法为下一个缓冲区分配内存，V8抛出内存不足异常。
 - en: 'In contrast, code that **respects backpressure**:'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 相比之下，**尊重背压**的代码：
 - en: '[PRE28]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: When the buffer reaches `highWaterMark` (16KB by default), `write()` returns
     `false`. The Readable stream is paused. It stops delivering chunks. The Writable
     stream continues sending buffered chunks over the network. When the buffer drops
     below `highWaterMark`, `drain` fires, and the Readable stream resumes.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 当缓冲区达到`highWaterMark`（默认为16KB）时，`write()`返回`false`。可读流被暂停。它停止传输块。可写流继续通过网络发送缓冲的块。当缓冲区低于`highWaterMark`时，`drain`事件触发，可读流恢复。
 - en: The buffer size oscillates between 0 and `highWaterMark`. It never grows unbounded.
     Memory usage is bounded by `highWaterMark` plus the size of a single chunk from
     the Readable stream. For default settings, that's about **32KB total for buffering**,
     regardless of how large the file is or how slow the destination is.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓冲区大小在0和`highWaterMark`之间波动。它永远不会无限制增长。内存使用量由`highWaterMark`加上可读流单个块的大小限制。对于默认设置，这是**32KB的总缓冲空间**，无论文件有多大或目标有多慢。
 - en: This is the **power of backpressure**. It decouples the speed of the producer
     from the speed of the consumer while maintaining bounded memory usage.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是**背压的力量**。它将生产者的速度与消费者的速度解耦，同时保持内存使用的界限。
 - en: But there's a subtlety here that's worth exploring. The `highWaterMark` **isn't
     a hard limit**. The buffer can exceed `highWaterMark`. What `highWaterMark` controls
     is *when* `write()` returns `false`. If you call `write()` with a 10MB chunk,
     and the buffer is empty, the chunk gets buffered, and the buffer size is now 10MB,
     far exceeding the 16KB `highWaterMark`. But `write()` will return `false` on this
     call, signaling backpressure.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 但这里有一个值得探讨的微妙之处。`highWaterMark`**不是一个硬限制**。缓冲区可以超过`highWaterMark`。`highWaterMark`控制的是`write()`何时返回`false`。如果你用一个10MB的块调用`write()`，并且缓冲区为空，该块将被缓冲，缓冲区大小现在是10MB，远远超过了16KB的`highWaterMark`。但`write()`在这个调用上会返回`false`，表示背压。
 - en: This means that the actual peak memory usage is **`highWaterMark` plus the size
     of the largest single chunk**. If you're streaming with 64KB chunks and a 16KB
     `highWaterMark`, peak buffering is around 80KB. If you're streaming with 1MB chunks,
     peak buffering is around 1MB. This is why **choosing appropriate chunk sizes matters**,
     especially in memory-constrained environments.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着实际的峰值内存使用量是 **`highWaterMark` 加上最大单个块的大小**。如果你以 64KB 的块进行流式传输，并且 `highWaterMark`
+    为 16KB，则峰值缓冲区约为 80KB。如果你以 1MB 的块进行流式传输，则峰值缓冲区约为 1MB。这就是为什么**选择合适的块大小很重要**，尤其是在内存受限的环境中。
 - en: 'There''s another scenario where ignoring backpressure causes problems: **writing
     from multiple producers to a single Writable stream**. Suppose you have 10 concurrent
     operations all writing to the same log file stream. If none of them respect backpressure,
@@ -821,622 +1169,926 @@
     all 10 streams'' output. What might be 16KB of buffering for one stream becomes
     160KB or more for 10 streams. Multiply this across hundreds or thousands of concurrent
     operations in a busy server, and you have a memory leak.'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 有另一种场景，忽略背压会导致问题：**从多个生产者向单个可写流写入**。假设你有 10 个并发操作都在向同一个日志文件流写入。如果它们都不尊重背压，并且每个都以尽可能快的速度产生数据，缓冲区将增长以容纳所有
+    10 个流的输出。一个流的 16KB 缓冲区可能变成 160KB 或更多。在繁忙的服务器上，如果有数百或数千个并发操作，这可能会导致内存泄漏。
 - en: 'The solution is the same: respect backpressure. Each producer checks `write()`''s
     return value and pauses when it returns `false`. The Writable stream emits `drain`
     once, and all paused producers resume. The buffer stays bounded.'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决方案是相同的：尊重背压。每个生产者都会检查 `write()` 的返回值，并在返回 `false` 时暂停。可写流会发出一次 `drain` 事件，然后所有暂停的生产者都会恢复。缓冲区保持有界。
 - en: Error Handling in Writable Streams
+  id: totrans-166
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可写流中的错误处理
 - en: We've talked about the happy path - data flows, backpressure is respected, the
     stream ends cleanly. But what happens when things go wrong?
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经讨论了“快乐路径”——数据流动，尊重背压，流干净结束。但当事情出错时会发生什么呢？
 - en: Errors in Writable streams can occur at several points. The underlying destination
     might fail - the disk might fill up, the network might disconnect, a permission
     error might occur. The data itself might be invalid for the destination. The stream
     might be in an invalid state when an operation is attempted.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写流中的错误可能在多个点发生。底层目的地可能失败——磁盘可能已满，网络可能断开，可能发生权限错误。数据本身可能对目的地无效。当尝试操作时，流可能处于无效状态。
 - en: When an error occurs in `_write()`, `_writev()`, or `_final()`, the error is
     passed to the callback. The stream handles this by emitting an `error` event.
     After an `error` event is emitted, the stream enters an **errored state**. Any
     buffered writes are discarded, and further writes will throw an error.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 当在 `_write()`、`_writev()` 或 `_final()` 中发生错误时，错误会被传递给回调。流通过发出一个 `error` 事件来处理这个问题。在发出
+    `error` 事件后，流进入一个**错误状态**。任何缓冲的写入都会被丢弃，并且进一步的写入将抛出错误。
 - en: 'This looks like:'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 这看起来像：
 - en: '[PRE29]'
+  id: totrans-171
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: The first `write()` triggers the `error` event. After that, the stream is destroyed,
     and subsequent writes throw an exception.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个 `write()` 触发 `error` 事件。之后，流被销毁，后续的写入将抛出异常。
 - en: If you don't attach an `error` event listener, the error is thrown, potentially
     crashing your process. **You must always attach error handlers to streams**, especially
     in production code. An unhandled stream error is one of the most common causes
     of unexpected Node.js process crashes.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你没有附加 `error` 事件监听器，错误将被抛出，可能会使你的进程崩溃。**你必须始终将错误处理程序附加到流上**，尤其是在生产代码中。未处理的流错误是
+    Node.js 进程意外崩溃的最常见原因之一。
 - en: There's a pattern for handling errors gracefully in stream pipelines, which
     we'll cover in depth in the sub-chapter on pipelines. But for now, understand
     that **error handling is not optional**. Every Writable stream you create or receive
     must have an error handler.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 在流管道中优雅地处理错误的模式，我们将在管道子章节中深入探讨。但就目前而言，要明白**错误处理是必不可少的**。你创建或接收的每个可写流都必须有一个错误处理程序。
 - en: Another error scenario is calling `write()` after calling `end()`. This is a
     **programming error**, not a runtime error. It indicates a bug in your code's
     logic. When you call `end()`, you're telling the stream "no more writes." If you
     then call `write()`, the stream throws an `ERR_STREAM_WRITE_AFTER_END` error.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个错误场景是在调用 `end()` 之后调用 `write()`。这是一个**编程错误**，而不是运行时错误。它表明你的代码逻辑中存在一个错误。当你调用
+    `end()` 时，你是在告诉流“没有更多的写入。”如果你随后调用 `write()`，流将抛出 `ERR_STREAM_WRITE_AFTER_END`
+    错误。
 - en: This often happens in asynchronous code where multiple code paths are writing
     to the same stream, and one path calls `end()` while another still has writes
     pending. The fix is to coordinate your code so that `end()` is only called after
     all writes are complete. This might involve using `Promise.all()` to wait for
     all async writes, or using a counter to track pending writes.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 这通常发生在异步代码中，其中多个代码路径正在写入同一个流，其中一个路径调用 `end()`，而另一个路径仍有写入待处理。修复方法是协调你的代码，确保只有在所有写入都完成后才调用
+    `end()`。这可能涉及使用 `Promise.all()` 等待所有异步写入，或者使用计数器来跟踪待处理的写入。
 - en: 'An example of the problem:'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 问题的例子：
 - en: '[PRE30]'
+  id: totrans-178
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: 'And the fix:'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 以及修复方法：
 - en: '[PRE31]'
+  id: totrans-180
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: Now `end()` is only called after the async write completes.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在只有在异步写入完成后才会调用 `end()`。
 - en: There's also the `destroy()` method, which forcefully closes the stream and
     optionally emits an error. Calling `writable.destroy(err)` immediately puts the
     stream in a destroyed state, discards buffered writes, and emits `error` (if `err`
     is provided) followed by `close`.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，还有 `destroy()` 方法，它强制关闭流并可选择发出错误。调用 `writable.destroy(err)` 立即将流置于已销毁状态，丢弃缓冲写入，并发出
+    `error`（如果提供了 `err`）然后是 `close`。
 - en: '[PRE32]'
+  id: totrans-183
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: This is useful when you need to cancel an in-progress stream operation, like
     when a user cancels a file upload. `destroy()` doesn't wait for buffered writes
     to complete - it's an **immediate, forceful shutdown**.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你需要取消正在进行的流操作时，这很有用，比如当用户取消文件上传时。`destroy()` 不等待缓冲写入完成——它是一个 **立即的、强制性的关闭**。
 - en: 'The `destroyed` property tells you if a stream has been destroyed:'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '`destroyed` 属性告诉你流是否已被销毁：'
 - en: '[PRE33]'
+  id: totrans-186
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: Using this check can prevent errors in code that might attempt to write to a
     stream that's already been destroyed.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用这个检查可以防止尝试写入已被销毁的流的代码中的错误。
 - en: Properties and Introspection
+  id: totrans-188
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 属性和内省
 - en: Writable streams expose several properties that let you introspect their current
     state. These are useful for debugging, monitoring, and making runtime decisions
     about flow control.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 可写流公开了几个属性，让你可以内省其当前状态。这些对于调试、监控以及关于流控制的运行时决策很有用。
 - en: 'The `writableLength` property tells you how many bytes (or objects in `objectMode`)
     are currently buffered:'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '`writableLength` 属性告诉你当前有多少字节（或在 `objectMode` 中是对象）被缓冲：'
 - en: '[PRE34]'
+  id: totrans-191
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: If this value is approaching `writableHighWaterMark`, you know backpressure
     is about to be signaled. You might use this to implement soft rate limiting or
     to provide feedback to users about upload progress.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果这个值接近 `writableHighWaterMark`，你知道即将发出背压信号。你可能使用这个来实施软速率限制或向用户提供上传进度的反馈。
 - en: 'The `writableHighWaterMark` property exposes the `highWaterMark` value:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '`writableHighWaterMark` 属性公开了 `highWaterMark` 值：'
 - en: '[PRE35]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: This is the threshold that determines when `write()` returns `false`. It's set
     during stream construction and generally doesn't change, but you can read it to
     understand the stream's buffering behavior.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是确定 `write()` 返回 `false` 的阈值。它在流构建期间设置，通常不会改变，但你可以读取它来了解流的缓冲行为。
 - en: 'The `writable` property is a boolean indicating whether it''s safe to call
     `write()`:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: '`writable` 属性是一个布尔值，指示是否安全调用 `write()`：'
 - en: '[PRE36]'
+  id: totrans-197
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: This is `false` if the stream has been destroyed or ended. It's a quick check
     before attempting a write.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果流已被销毁或结束，这是 `false`。在尝试写入之前这是一个快速检查。
 - en: 'The `writableEnded` property tells you if `end()` has been called:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: '`writableEnded` 属性告诉你是否已调用 `end()`：'
 - en: '[PRE37]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE37]'
 - en: This is `true` after `end()` is called, even if the `finish` event hasn't fired
     yet. It indicates that no more writes will be accepted.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使 `finish` 事件尚未触发，在调用 `end()` 之后这也是 `true` 的。这表明不再接受更多的写入。
 - en: 'The `writableFinished` property tells you if the `finish` event has been emitted:'
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: '`writableFinished` 属性告诉你是否已发出 `finish` 事件：'
 - en: '[PRE38]'
+  id: totrans-203
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE38]'
 - en: This is `true` after all writes have been processed and `finish` has fired.
     It indicates that the stream has completed its work.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 在所有写入都已处理并且 `finish` 事件已触发后，这是 `true` 的。这表明流已经完成了其工作。
 - en: 'The `writableCorked` property tells you how many times `cork()` has been called
     without a corresponding `uncork()`:'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: '`writableCorked` 属性告诉你 `cork()` 被调用而没有相应 `uncork()` 的次数：'
 - en: '[PRE39]'
+  id: totrans-206
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE39]'
 - en: This is mainly useful for debugging `cork()`/`uncork()` usage.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 这主要用于调试 `cork()`/`uncork()` 的使用。
 - en: 'The `writableObjectMode` property tells you if the stream is in `objectMode`:'
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: '`writableObjectMode` 属性告诉你流是否处于 `objectMode`：'
 - en: '[PRE40]'
+  id: totrans-209
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE40]'
 - en: This is set during construction and doesn't change. It's useful when writing
     generic code that handles both byte streams and object streams.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 这在构建期间设置，不会改变。当编写处理字节流和对象流的通用代码时很有用。
 - en: These properties give you visibility into the stream's internal state. In most
     application code, you won't need them. But when debugging stream issues, or when
     implementing generic stream utilities, they're **invaluable**.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些属性让你能够了解流的内部状态。在大多数应用程序代码中，你不需要它们。但在调试流问题或实现通用流工具时，它们是 **无价的**。
 - en: 'Deep Dive: The Write Request Queue'
+  id: totrans-212
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 深入探讨：写入请求队列
 - en: Understanding how write requests are managed internally in the queue structure
     helps you reason about performance and memory usage.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解在队列结构中如何内部管理写入请求有助于你推理性能和内存使用。
 - en: 'When you call `write()`, the chunk and its associated metadata are wrapped
     in a **write request object**. This object contains:'
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你调用 `write()` 时，数据块及其相关元数据被封装在一个 **写入请求对象** 中。此对象包含：
 - en: The chunk itself (`Buffer`, string, or object)
+  id: totrans-215
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据块本身（`Buffer`、字符串或对象）
 - en: The encoding (if it's a string)
+  id: totrans-216
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 编码（如果它是字符串）
 - en: The callback to invoke when the write completes (optional)
+  id: totrans-217
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 写入完成时调用的回调（可选）
 - en: A reference to the next write request in the queue
+  id: totrans-218
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 队列中下一个写入请求的引用
 - en: These write request objects form a **linked list**. The head of the list is
     the write request currently being processed. The tail is the most recently added
     request. When you call `write()`, a new write request is appended to the tail.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些写入请求对象形成一个 **链表**。链表的头部是当前正在处理写入请求。尾部是最最近添加的请求。当你调用 `write()` 时，一个新的写入请求被追加到尾部。
 - en: When `_write()` completes (when its callback is invoked), the current write
     request is removed from the head of the list, and the next request becomes the
     new head. If there's a next request, `_write()` is called again with that request's
     chunk. If there's no next request, the queue is empty, and the stream waits for
     more `write()` calls.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 `_write()` 完成（当其回调被调用时），当前写入请求从列表的头部移除，下一个请求成为新的头部。如果有下一个请求，则再次调用 `_write()`
+    并使用该请求的数据块。如果没有下一个请求，队列就为空，流等待更多的 `write()` 调用。
 - en: This queue structure has implications for memory usage. Each write request object
     has **overhead** - pointers, metadata, closures. For small writes, this overhead
     can be significant relative to the chunk size. If you call `write()` a million
     times with 1-byte chunks, you have a million write request objects, each with
     50-100 bytes of overhead. That's 50-100 MB of memory just for the queue structure,
     even though the actual data is only 1 MB.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个队列结构对内存使用有影响。每个写入请求对象都有 **开销** - 指针、元数据、闭包。对于小写入，这种开销相对于数据块大小可能是显著的。如果你使用
+    1 字节的数据块调用 `write()` 一百万次，你将有一百万个写入请求对象，每个对象有 50-100 字节的开销。那只是队列结构就需要 50-100 MB
+    的内存，尽管实际数据只有 1 MB。
 - en: This is why **batching small writes improves performance**. Instead of a million
     1-byte writes, do 1000 1KB writes. The data is the same, but the queue overhead
     is 1/1000th.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是为什么 **批量处理小写入可以提高性能**。与其进行一百万个 1 字节写入，不如进行 1000 个 1KB 写入。数据是相同的，但队列开销是 1/1000。
 - en: The `cork()` and `uncork()` methods interact with this queue. When you cork
     a stream, `write()` still creates write request objects and appends them to the
     queue, but `_write()` is not called. The requests accumulate. When you uncork,
     if `_writev()` is implemented, all accumulated requests are passed to `_writev()`
     in a single call. Otherwise, `_write()` is called repeatedly for each request.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: '`cork()` 和 `uncork()` 方法与此队列交互。当你封口一个流时，`write()` 仍然创建写入请求对象并将它们追加到队列中，但不会调用
+    `_write()`。请求累积。当你解封时，如果实现了 `_writev()`，所有累积的请求将在一个调用中传递给 `_writev()`。否则，为每个请求重复调用
+    `_write()`。'
 - en: 'A corked write sequence:'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 封口写入序列：
 - en: '[PRE41]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE41]'
 - en: 'Without `cork()`:'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 无 `cork()`：
 - en: '[PRE42]'
+  id: totrans-227
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE42]'
 - en: The difference is that in the corked case, **all three chunks can be written
     in a single I/O operation** if `_writev()` is implemented efficiently. In the
     uncorked case, each chunk is written separately, resulting in three I/O operations.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 区别在于，在封口的情况下，如果 `_writev()` 被高效实现，**所有三个数据块都可以在一个 I/O 操作中写入**。在未封口的情况下，每个数据块分别写入，导致需要进行三个
+    I/O 操作。
 - en: For some destinations, like network sockets or files, reducing the number of
     I/O operations significantly improves throughput. For others, like in-memory arrays,
     it doesn't matter. This is why `_writev()` is optional - it's an optimization
     that's only worthwhile when the destination benefits from batching.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于某些目的地，如网络套接字或文件，显著减少 I/O 操作的数量可以显著提高吞吐量。对于其他目的地，如内存数组，这并不重要。这就是为什么 `_writev()`
+    是可选的——它是一种只有在目的地从批量处理中受益时才值得优化的优化。
 - en: ObjectMode Writable Streams
+  id: totrans-230
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可写入流的对象模式
 - en: We've mostly talked about byte streams, but `objectMode` is a critical feature
     for building data processing pipelines. In `objectMode`, the behavior of Writable
     streams changes in specific ways.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们主要讨论了字节流，但`objectMode`是构建数据处理管道的关键特性。在`objectMode`中，`Writable`流的行为以特定的方式改变。
 - en: In `objectMode`, `highWaterMark` is measured in **object count**, not byte count.
     The default is 16 objects. When you write objects to an `objectMode` stream, the
     stream increments its buffer count by 1 for each object, regardless of the object's
     size in memory.
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`objectMode`模式下，`highWaterMark`是以**对象计数**来衡量的，而不是以字节计数。默认值为16个对象。当你向一个`objectMode`流写入对象时，流会根据每个对象在内存中的大小，将缓冲区计数增加1。
 - en: This means that `highWaterMark` in `objectMode` **is not a memory limit**. It's
     a count limit. If you write 16 objects, each of which is a 10MB buffer, the stream
     has buffered 160MB of data, even though `highWaterMark` is 16.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着在`objectMode`中的`highWaterMark**不是一个内存限制**。它是一个计数限制。如果你写入16个对象，每个对象是一个10MB的缓冲区，那么流已经缓冲了160MB的数据，尽管`highWaterMark`是16。
 - en: This is intentional. `objectMode` is designed for scenarios where each chunk
     represents a **logical unit of work**, and you want to limit the number of units
     in flight, not the total byte size. For example, if you're processing database
     rows, you might want to buffer 100 rows at a time, regardless of whether each
     row is 100 bytes or 10KB.
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是故意的。`objectMode`是为了那些每个数据块代表一个**逻辑工作单元**的场景而设计的，你希望限制正在传输的单元数量，而不是总字节数。例如，如果你正在处理数据库行，你可能希望一次缓冲100行，无论每行是100字节还是10KB。
 - en: 'Implementing an `objectMode` Writable is the same as a byte stream, except
     you set `objectMode: true` in the options:'
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: '实现`objectMode`的`Writable`与字节流相同，只是你在选项中设置`objectMode: true`：'
 - en: '[PRE43]'
+  id: totrans-236
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE43]'
 - en: Each `write()` call passes a row object. The `_write()` method receives the
     row and inserts it into the database. The `encoding` parameter is ignored in `objectMode`
     (it's always `'buffer'`), but it's still passed to maintain the signature.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 每次调用`write()`都会传递一个行对象。`_write()`方法接收行并将其插入数据库。在`objectMode`中，`encoding`参数被忽略（它总是`'buffer'`），但它仍然被传递以保持签名的一致性。
 - en: 'One common pattern is converting a byte stream to an `objectMode` stream using
     a `Transform`. For example, parsing JSON lines:'
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种常见的模式是将字节流转换为`objectMode`流，使用`Transform`。例如，解析JSON行：
 - en: '[PRE44]'
+  id: totrans-239
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE44]'
 - en: This `Transform` reads byte chunks, accumulates them into lines, and pushes
     parsed JSON objects. The output is an `objectMode` stream, even though the input
     is a byte stream.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个`Transform`读取字节数据块，将它们累积成行，并推送解析后的JSON对象。输出是一个`objectMode`流，尽管输入是字节流。
 - en: '`objectMode` streams are essential for building composable data pipelines where
     each stage processes logical records rather than byte chunks. They''re common
     in **ETL** (extract, transform, load) systems, log processing, data import/export,
     and anywhere you''re dealing with structured data.'
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: '`objectMode`流对于构建可组合的数据管道至关重要，其中每个阶段处理逻辑记录而不是字节块。它们在**ETL**（提取、转换、加载）系统、日志处理、数据导入/导出以及处理结构化数据的任何地方都很常见。'
 - en: The `_final()` Hook in Detail
+  id: totrans-242
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '`_final()`钩子的详细说明'
 - en: The `_final()` method deserves more attention because it's often misunderstood.
     It's **not a destructor**. It's not called when the stream is destroyed. It's
     called when the stream is ending normally, after all writes have completed, but
     *before* the `finish` event is emitted.
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_final()`方法值得更多关注，因为它经常被误解。它**不是一个析构函数**。当流被销毁时不会调用它。它在流正常结束时被调用，在所有写入完成后，但在`finish`事件发出之前。'
 - en: The purpose of `_final()` is to perform any cleanup or final writes that need
     to happen before the stream is considered finished. For example, if you're writing
     to a compressed file, `_final()` is where you'd write the final compression footer.
     If you're accumulating data for a batch write, `_final()` is where you'd flush
     that batch.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_final()`方法的目的是在流被认为完成之前执行任何清理或最终写入。例如，如果你正在写入一个压缩文件，`_final()`就是写入最终压缩脚注的地方。如果你正在累积数据以进行批量写入，`_final()`就是刷新那个批次的地方。'
 - en: 'A Writable that accumulates writes and flushes them in batches:'
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个累积写入并在批次中刷新的`Writable`：
 - en: '[PRE45]'
+  id: totrans-246
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE45]'
 - en: The `_write()` method adds chunks to a batch. When the batch reaches `batchSize`,
     it's flushed. The `_final()` method ensures that any remaining partial batch is
     flushed when the stream ends.
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_write()`方法将数据块添加到批次中。当批次达到`batchSize`时，它会被刷新。`_final()`方法确保在流结束时，任何剩余的未完成批次都会被刷新。'
 - en: '**Without `_final()`, the partial batch would be lost** when the stream ends.
     The `finish` event would fire, but the last few chunks wouldn''t have been written
     to the destination. This is a **common bug** in custom Writable streams that perform
     batching or buffering.'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: '**如果没有 `_final()`，当流结束时，部分批次将会丢失**。`finish` 事件会触发，但最后几个块没有被写入目标。这是自定义可写流中常见的**错误**，这些流执行批处理或缓冲。'
 - en: The `_final()` callback must be invoked, just like the `_write()` callback.
     If you don't invoke it, the `finish` event never fires, and the stream hangs.
     If you pass an error to the callback, the stream emits an `error` event instead
     of `finish`.
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_final()` 回调必须被调用，就像 `_write()` 回调一样。如果你不调用它，`finish` 事件永远不会触发，流会挂起。如果你向回调传递一个错误，流会发出一个
+    `error` 事件而不是 `finish`。'
 - en: 'An async version:'
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 异步版本：
 - en: '[PRE46]'
+  id: totrans-251
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE46]'
 - en: 'Or, since Node.js supports returning promises from stream methods, you can
     omit the callback:'
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，由于 Node.js 支持从流方法返回承诺，你可以省略回调：
 - en: '[PRE47]'
+  id: totrans-253
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE47]'
 - en: If `_final()` returns a promise, Node.js waits for it to resolve before emitting
     `finish`, or emits `error` if it rejects.
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果 `_final()` 返回一个承诺，Node.js 会等待它解析后再发出 `finish`，或者如果它拒绝，则发出 `error`。
 - en: 'Advanced Custom Writable Example: Rate-Limited Writer'
+  id: totrans-255
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 高级自定义可写示例：速率限制写入器
 - en: 'A more complex custom Writable stream that rate-limits writes to a destination:
     This demonstrates several advanced concepts: backpressure management, timing control,
     and queue manipulation.'
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个更复杂的自定义可写流，它将写入速率限制到目标：这演示了几个高级概念：背压管理、时间控制和队列操作。
 - en: '[PRE48]'
+  id: totrans-257
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE48]'
 - en: This stream uses a **token bucket algorithm** to rate-limit writes. It maintains
     a count of available tokens (bytes). Each second, `bytesPerSecond` tokens are
     added. When writing, if there are enough tokens, the write happens immediately.
     If not, the write is delayed until enough time has passed to accumulate the needed
     tokens.
+  id: totrans-258
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个流使用**令牌桶算法**来速率限制写入。它维护一个可用令牌（字节）的计数。每秒添加 `bytesPerSecond` 令牌。在写入时，如果有足够的令牌，写入会立即发生。如果没有，写入会延迟，直到有足够的时间积累所需的令牌。
 - en: The `_refillTokens()` method is called before each write to add tokens based
     on elapsed time. The `_write()` method checks if there are enough tokens, and
     if not, schedules the write for later using `setTimeout`.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: '`_refillTokens()` 方法在每次写入之前被调用，根据经过的时间添加令牌。`_write()` 方法检查是否有足够的令牌，如果没有，则使用
+    `setTimeout` 将写入操作安排在稍后进行。'
 - en: 'This pattern can be adapted for various rate-limiting scenarios: limiting requests
     per second to an API, throttling log writes, pacing data exports, etc.'
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式可以适应各种速率限制场景：限制每秒对 API 的请求次数、节流日志写入、调整数据导出等。
 - en: Note that this implementation doesn't invoke the callback immediately if the
     write is delayed. The callback is passed to `setTimeout` and eventually to the
     destination's `write()` call. This means the Writable stream's internal queue
     is blocked while waiting. This is **correct behavior** - the stream should signal
     backpressure if writes are being rate-limited, which happens naturally because
     the callback isn't invoked until the delayed write completes.
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，如果写入被延迟，此实现不会立即调用回调。回调会被传递给 `setTimeout`，最终传递给目标 `write()` 调用。这意味着可写流内部队列在等待时会被阻塞。这是**正确的行为**
+    - 如果正在速率限制写入，流应该发出背压信号，这是自然发生的，因为回调只有在延迟写入完成后才会被调用。
 - en: Backpressure Across Multiple Writers
+  id: totrans-262
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 多个写入器之间的背压
 - en: We touched on this earlier, but it's worth exploring in more depth. When multiple
     producers are writing to a single Writable stream, backpressure becomes more complex.
+  id: totrans-263
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们之前提到过这一点，但值得更深入地探讨。当多个生产者向单个可写流写入时，背压变得更加复杂。
 - en: Each producer calls `write()` independently. Each sees the return value indicating
     whether the buffer is full. But the `drain` event is broadcast to all listeners.
     When one producer pauses because `write()` returned `false`, and then `drain`
     fires, all paused producers resume simultaneously.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个生产者独立调用 `write()`。每个生产者都会看到返回值，指示缓冲区是否已满。但是 `drain` 事件会广播给所有监听者。当一个生产者因为 `write()`
+    返回 `false` 而暂停时，然后 `drain` 事件触发，所有暂停的生产者会同时恢复。
 - en: This can lead to a **thundering herd problem**. Suppose 100 producers are all
     paused waiting for `drain`. When `drain` fires, all 100 resume and immediately
     call `write()`. The buffer, which just drained, instantly fills up again, and
     all 100 producers pause again.
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可能导致**雷鸣般的群体问题**。假设有 100 个生产者都暂停等待 `drain`。当 `drain` 触发时，所有 100 个生产者都会恢复并立即调用
+    `write()`。刚刚排空的缓冲区会立即再次填满，所有 100 个生产者再次暂停。
 - en: 'The stream oscillates between drained and full, making no forward progress.
     This is an extreme case, but it illustrates a real issue: coordinating backpressure
     across multiple producers is non-trivial.'
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 流在排空和满载之间波动，没有取得任何进展。这是一个极端情况，但它说明了真实问题：在多个生产者之间协调背压是非平凡的。
 - en: One solution is to use a queue at a higher level. Instead of having 100 producers
     write directly to the stream, have them enqueue their data, and have a single
     consumer read from the queue and write to the stream. The single consumer handles
     backpressure, and the queue coordinates the producers.
+  id: totrans-267
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个解决方案是在更高层次使用队列。不是让100个生产者直接写入流，而是让他们将数据入队，然后让单个消费者从队列中读取并写入流。单个消费者处理背压，队列协调生产者。
 - en: Another solution is to use a semaphore or similar coordination primitive to
     limit how many producers can write concurrently. Only N producers are allowed
     to write at once. When one finishes, another gets a turn. This prevents the thundering
     herd.
+  id: totrans-268
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个解决方案是使用信号量或类似的协调原语来限制可以同时写入的生产者数量。一次只允许N个生产者写入。当一个完成时，另一个获得机会。这防止了暴风雨般的群体。
 - en: In practice, the simplest solution is often to **avoid having many concurrent
     writers to a single stream**. If you need to aggregate writes from multiple sources,
     consider using a higher-level abstraction, like a log library that internally
     coordinates writes, or a stream multiplexer that interleaves data from multiple
     sources.
+  id: totrans-269
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实践中，最简单的解决方案通常是**避免许多并发写入单个流**。如果你需要从多个来源聚合写入，考虑使用更高层次的抽象，比如内部协调写入的日志库，或者交错多个来源数据的流多路复用器。
 - en: '**Backpressure is a per-stream signal, not a per-producer signal.** If you
     have multiple producers, you need higher-level coordination to avoid pathological
     behavior.'
+  id: totrans-270
   prefs: []
   type: TYPE_NORMAL
+  zh: '**背压是针对流的信号，而不是针对生产者的信号**。如果你有多个生产者，你需要更高层次的协调来避免病态行为。'
 - en: Memory Profiling a Writable Stream
+  id: totrans-271
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 可写流的内存分析
 - en: Debugging memory issues in code that uses Writable streams requires systematic
     approaches. Suppose your application's memory usage is growing over time, and
     you suspect it's related to streaming. How do you diagnose it?
+  id: totrans-272
   prefs: []
   type: TYPE_NORMAL
+  zh: 在使用可写流的代码中调试内存问题需要系统性的方法。假设你的应用程序的内存使用量随时间增长，你怀疑它与流有关。你如何诊断它？
 - en: 'First, check if you''re respecting backpressure. Add logging to your `write()`
     calls:'
+  id: totrans-273
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，检查你是否尊重背压。在你的`write()`调用中添加日志：
 - en: '[PRE49]'
+  id: totrans-274
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE49]'
 - en: If you see "Backpressure!" messages but your code isn't pausing, that's the
     problem. You're **ignoring backpressure**.
+  id: totrans-275
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你看到“Backpressure!”消息，但你的代码没有暂停，那就是问题所在。你正在**忽略背压**。
 - en: 'If you are pausing correctly but memory is still growing, check `writableLength`
     periodically:'
+  id: totrans-276
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你正确地暂停了，但内存仍在增长，请定期检查`writableLength`：
 - en: '[PRE50]'
+  id: totrans-277
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE50]'
 - en: If this value is steadily increasing, the stream's buffer is growing, which
     means the destination is slower than the producer. This might be expected (if
     the destination is legitimately slow), or it might indicate a problem with the
     destination (if it's blocked or stalled).
+  id: totrans-278
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果这个值持续增加，流的缓冲区正在增长，这意味着目标比生产者慢。这可能是有预期的（如果目标是合法慢速的），或者可能表明目标存在问题（如果它被阻塞或停滞）。
 - en: 'Use Node.js''s built-in **heap snapshot feature** to see where memory is allocated:'
+  id: totrans-279
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用Node.js的内置**堆快照功能**来查看内存分配的位置：
 - en: '[PRE51]'
+  id: totrans-280
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE51]'
 - en: Load the snapshot in Chrome DevTools to see object allocations. Look for large
     numbers of `Buffer` objects or write request objects. If you see millions of small
     objects related to streams, you've found your leak.
+  id: totrans-281
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Chrome DevTools中加载快照以查看对象分配。寻找大量`Buffer`对象或写入请求对象。如果你看到与流相关的大量小对象，那么你已经找到了泄漏。
 - en: 'Another useful tool is the `--trace-gc` flag, which logs garbage collection
     events:'
+  id: totrans-282
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个有用的工具是`--trace-gc`标志，它记录垃圾回收事件：
 - en: '[PRE52]'
+  id: totrans-283
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE52]'
 - en: If you see frequent GC cycles and high memory usage despite GC running, it means
     you're allocating faster than GC can reclaim, which is consistent with an unbounded
     buffer growing.
+  id: totrans-284
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你看到频繁的GC周期和高内存使用，尽管GC正在运行，这意味着你分配的速度比GC可以回收的速度快，这与无界缓冲区增长一致。
 - en: For production monitoring, track `writable.writableLength` as a metric. If it's
     consistently near `writableHighWaterMark`, you're hitting backpressure frequently,
     which might indicate a bottleneck in your pipeline.
+  id: totrans-285
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于生产监控，跟踪`writable.writableLength`作为一个指标。如果它始终接近`writableHighWaterMark`，你经常遇到背压，这可能会表明你的管道存在瓶颈。
 - en: 'Practical Patterns: Combining Multiple Writables'
+  id: totrans-286
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 实用模式：组合多个可写对象
 - en: Sometimes you need to write the same data to multiple destinations simultaneously.
     For example, writing to a file and to a database, or sending data to multiple
     network endpoints. How do you structure this?
+  id: totrans-287
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时候你需要同时将相同的数据写入多个目的地。例如，写入文件和数据库，或者将数据发送到多个网络端点。你该如何构建这种结构？
 - en: 'One approach is to write to multiple streams manually:'
+  id: totrans-288
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种方法是手动写入多个流：
 - en: '[PRE53]'
+  id: totrans-289
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE53]'
 - en: This works, but handling backpressure is tricky. If one stream signals backpressure
     but others don't, should you pause? If you wait for all streams to drain, the
     fast streams are unnecessarily slowed down. If you don't wait, the slow stream's
     buffer grows.
+  id: totrans-290
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可行，但处理背压是棘手的。如果一个流信号背压而其他流没有，你应该暂停吗？如果你等待所有流都排空，那么快速的流会被不必要地减慢。如果你不等待，慢速流的缓冲区会增长。
 - en: 'A better approach is to use a fan-out stream that handles this internally:'
+  id: totrans-291
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个更好的方法是使用一个内部处理此功能的扇出流：
 - en: '[PRE54]'
+  id: totrans-292
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE54]'
 - en: This stream writes to all destinations concurrently and waits for all to complete
     before invoking the callback. If any destination errors, the error is passed to
     the callback. Backpressure is handled naturally - the callback isn't invoked until
     all destinations finish, so if one is slow, the `FanOutWritable`'s buffer fills
     up, signaling backpressure to its producer.
+  id: totrans-293
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个流同时写入所有目的地，并在调用回调之前等待所有目的地完成。如果任何目的地出错，错误会被传递到回调。背压自然处理——回调只有在所有目的地完成时才会被调用，所以如果其中一个较慢，`FanOutWritable`
+    的缓冲区会填满，向其生产者发出背压信号。
 - en: This pattern is useful for logging to multiple outputs, replicating data, or
     broadcasting events.
+  id: totrans-294
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种模式对于将日志记录到多个输出、复制数据或广播事件很有用。
 - en: Choosing highWaterMark for Writable Streams
+  id: totrans-295
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 选择可写流的 `highWaterMark`
 - en: We've mentioned `highWaterMark` throughout this chapter, but how do you choose
     the right value?
+  id: totrans-296
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在本章中多次提到了 `highWaterMark`，但你如何选择正确的值？
 - en: The **default 16KB** is a reasonable balance for most scenarios. It's large
     enough to avoid excessive backpressure signals for typical write patterns, but
     small enough that you're not buffering unreasonable amounts of data.
+  id: totrans-297
   prefs: []
   type: TYPE_NORMAL
+  zh: '**默认的 16KB** 对于大多数场景来说是一个合理的平衡。它足够大，可以避免典型的写入模式产生过多的背压信号，但足够小，以至于你不会缓冲不合理数量的数据。'
 - en: If you're writing large chunks, consider **increasing `highWaterMark` to match**.
     If your chunks are 1MB each, a 16KB `highWaterMark` means you'll signal backpressure
     on every write, which is inefficient. Setting `highWaterMark` to 2MB or 4MB gives
     the stream some breathing room.
+  id: totrans-298
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你正在写入大块数据，考虑 **将 `highWaterMark` 增加以匹配**。如果你的块大小为 1MB，16KB 的 `highWaterMark`
+    意味着每次写入都会触发背压信号，这是低效的。将 `highWaterMark` 设置为 2MB 或 4MB 给流留出一些空间。
 - en: If you're running in a **memory-constrained environment** (like a Docker container
     with strict limits, or on an embedded device), consider decreasing `highWaterMark`
     to reduce memory footprint. Setting it to 4KB or 8KB means less data is buffered
     at any given time.
+  id: totrans-299
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你在一个 **内存受限的环境** 中运行（如具有严格限制的 Docker 容器或嵌入式设备），考虑将 `highWaterMark` 减小以减少内存占用。将其设置为
+    4KB 或 8KB 意味着在任何给定时间缓冲的数据更少。
 - en: If you're processing many streams concurrently, multiply your per-stream `highWaterMark`
     by the number of concurrent streams to estimate total buffer memory usage. If
     you have 1000 concurrent HTTP response streams, and each has a 16KB `highWaterMark`,
     that's potentially 16MB of buffer memory just for stream buffers. If that's too
     much, lower the `highWaterMark`.
+  id: totrans-300
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你正在同时处理许多流，将每个流的 `highWaterMark` 乘以并发流的数量，以估计总缓冲内存使用量。如果你有 1000 个并发的 HTTP
+    响应流，并且每个流都有一个 16KB 的 `highWaterMark`，那么仅用于流缓冲的潜在缓冲内存就有 16MB。如果这太多，降低 `highWaterMark`。
 - en: For `objectMode` streams, `highWaterMark` controls the **object count**, not
     byte size. Choose a value based on how many objects you want in flight. For database
     writes, 100 or 1000 might make sense. For file parsing, 10 or 50 might be appropriate.
     There's no universal answer - it depends on your objects' size and your throughput
     requirements.
+  id: totrans-301
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于 `objectMode` 流，`highWaterMark` 控制的是 **对象数量**，而不是字节大小。根据你希望有多少对象在传输中选择一个值。对于数据库写入，100
+    或 1000 可能是合理的。对于文件解析，10 或 50 可能是合适的。没有通用的答案——这取决于你对象的大小和你的吞吐量需求。
 - en: One technique is to make `highWaterMark` **configurable** and tune it based
     on observed performance. Start with defaults, measure throughput and memory usage,
     and adjust as needed.
+  id: totrans-302
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种技术是使 `highWaterMark` **可配置** 并根据观察到的性能进行调整。从默认值开始，测量吞吐量和内存使用情况，并根据需要进行调整。
 - en: Remember that `highWaterMark` is a **threshold, not a limit**. The buffer can
     exceed `highWaterMark`, especially if chunks are large. So don't treat `highWaterMark`
     as a hard memory budget - treat it as a signal point.
+  id: totrans-303
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住`highWaterMark`是一个**阈值，而不是限制**。缓冲区可以超过`highWaterMark`，尤其是如果数据块很大。所以不要将`highWaterMark`视为严格的内存预算——将其视为一个信号点。

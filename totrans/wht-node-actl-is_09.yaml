@@ -1,35 +1,47 @@
 - en: Buffer Fragmentation and Challenges
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 缓冲区碎片化和挑战
 - en: 原文：[https://www.thenodebook.com/buffers/fragmentation-and-challenges](https://www.thenodebook.com/buffers/fragmentation-and-challenges)
+  id: totrans-1
   prefs:
   - PREF_BQ
   type: TYPE_NORMAL
+  zh: 原文：[https://www.thenodebook.com/buffers/fragmentation-and-challenges](https://www.thenodebook.com/buffers/fragmentation-and-challenges)
 - en: ⚠️Warning
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: ⚠️警告
 - en: You've received an early-access to this chapter. Your feedback is invaluable,
     so please share your thoughts in the comment section at the bottom or in [GitHub
     discussions](https://github.com/ishtms/nodebook).
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 你已经提前获得了这一章节的内容。你的反馈非常宝贵，请在下面的评论部分或[GitHub讨论](https://github.com/ishtms/nodebook)中分享你的想法。
 - en: Alright, we've covered a lot of ground. You now have a solid mental model of
     what a `Buffer` is, where it lives in memory, and the critical distinction between
     a view and a copy. You've seen the raw power of zero-copy operations and the leaks
     they can cause if you're not careful. We've talked about the internal buffer pool
     and how Node.js cleverly optimizes small, frequent allocations to avoid the performance
     penalty of constant system calls.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 好的，我们已经覆盖了很多内容。你现在对`Buffer`有一个稳固的心理模型，知道它在内存中的位置，以及视图和副本之间的关键区别。你看到了零拷贝操作的原始力量，以及如果你不小心可能会造成的泄漏。我们讨论了内部缓冲池以及Node.js如何巧妙地优化小而频繁的分配，以避免频繁系统调用带来的性能惩罚。
 - en: 'This chapter is where it all comes together. We''re going to dive deep into
     a classic, low-level problem that most JavaScript developers never have to think
     about: **memory fragmentation**. It''s an issue that feels abstract until it crashes
     your production server, even when your monitoring dashboards swear you have plenty
     of RAM available. We''ll dissect what it is, why it happens, and how Node''s memory
     architecture both helps and sometimes hinders the situation.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章是所有内容汇聚的地方。我们将深入探讨一个经典且低级的问题，大多数JavaScript开发者从未需要考虑：**内存碎片化**。这是一个感觉抽象的问题，直到它让你的生产服务器崩溃，即使你的监控仪表板显示你有足够的RAM可用。我们将剖析它是如何发生的，为什么会发生，以及Node的内存架构如何既帮助又有时阻碍这种情况。
 - en: Then, we're shifting gears. The second, larger part of this chapter is dedicated
     to a bunch of comprehensive code challenges. This chapter is about taking everything
     we've discussed - from byte-level interpretation and endianness to the view-vs-copy
@@ -37,30 +49,40 @@
     build a binary protocol parser, profile memory usage to see the leaks for yourself,
     implement a stateful stream processor, and even construct your own application-level
     buffer pool.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，我们将转换方向。本章的第二部分，更大的部分，致力于一系列综合性的代码挑战。本章是关于将我们讨论的所有内容——从字节级解释和字节序到视图与副本的权衡以及缓冲池——应用到解决现实世界的问题。你将构建一个二进制协议解析器，分析内存使用情况以亲自查看泄漏，实现一个有状态的流处理器，甚至构建你自己的应用级缓冲池。
 - en: I'm not giving you the answers here. Reading is one thing; doing is another.
     By the end of this chapter, you won't just *know* about Buffers. You'll have the
     experience to prove you can wield them effectively, safely, and efficiently in
     a high-performance production environment, not just in Node.js but any other language
     that is thrown at you.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 我不会在这里给你答案。阅读是一回事；做是另一回事。到本章结束时，你不仅会*知道*关于缓冲区的内容。你将拥有证明你可以在高性能生产环境中有效、安全、高效地使用它们的经验，而不仅仅是Node.js，还包括任何其他抛给你的语言。
 - en: Memory Fragmentation
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 内存碎片化
 - en: 💡Tip
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 💡提示
 - en: 'Want to dive deeper into memory fundamentals? Check out my blog post on [Memory:
     The Stack & Heap](https://www.ishtms.com/blog/basic-system-concepts/memory-stack-heap),
     where I cover everything from how RAM and virtual memory work, to stack frames
     and heap allocation, cache performance, common memory issues (leaks, dangling
     pointers, fragmentation), and why different languages choose different memory
     management strategies.'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 想要深入了解内存基础知识？请查看我的博客文章[内存：栈和堆](https://www.ishtms.com/blog/basic-system-concepts/memory-stack-heap)，其中我涵盖了从RAM和虚拟内存的工作原理，到栈帧和堆分配，缓存性能，常见的内存问题（泄漏、悬垂指针、碎片化），以及为什么不同的语言选择不同的内存管理策略。
 - en: 'Memory fragmentation is one of the silent killers of long-running applications.
     The core concept is simple: your application''s memory becomes broken up into
     many small, non-contiguous chunks over time. The total amount of free memory might
@@ -68,73 +90,106 @@
     satisfying a large allocation request. You can have 100MB of free RAM available
     to your process, but if you ask for a single 1MB buffer, the request can fail
     because there isn''t a single, unbroken 1MB block of free memory anywhere.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 内存碎片化是长期运行应用程序的隐形杀手之一。其核心概念很简单：随着时间的推移，你的应用程序的内存被分割成许多小而分散的块。尽管可用内存总量可能很大，但如果它被分散成成千上万的微小部分，它对于满足大型分配请求就毫无用处。你可能有一个
+    100MB 的可用 RAM 供你的进程使用，但如果请求一个单独的 1MB 缓冲区，请求可能会失败，因为没有一块连续的 1MB 可用内存。
 - en: To really get this, we have to talk about how the operating system gives memory
     to your Node.js process.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 要真正理解这一点，我们必须谈谈操作系统是如何将内存分配给 Node.js 进程的。
 - en: Virtual vs. Physical Memory
+  id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 虚拟内存与物理内存
 - en: Your Node.js process doesn't directly interact with your computer's physical
     RAM sticks. Instead, it operates within a **virtual address space**. This is a
     massive, contiguous address range that the operating system provides to every
     process. On a 64-bit system, this address space is huge - theoretically 16 exabytes.
     It's a clean, linear abstraction. When your code asks for memory, the OS finds
     a free chunk within this virtual address space and gives it to your process.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的 Node.js 进程并不直接与你的计算机的物理 RAM 条交互。相反，它在一个 **虚拟地址空间** 内运行。这是操作系统为每个进程提供的庞大、连续的地址范围。在
+    64 位系统上，这个地址空间非常巨大——理论上 16 兆字节。这是一个干净、线性的抽象。当你的代码请求内存时，操作系统会在这个虚拟地址空间中找到一个空闲块并将其分配给你的进程。
 - en: Behind the scenes, the Memory Management Unit (MMU), a piece of hardware in
     your CPU, works with the OS to map these virtual addresses to actual physical
     addresses in RAM. This mapping happens in chunks called **pages**, which are typically
     4KB in size. This system is what allows for magic like swapping memory to disk
     and preventing processes from stomping on each other's memory.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在幕后，内存管理单元 (MMU)，这是你 CPU 中的一块硬件，与操作系统合作将这些虚拟地址映射到 RAM 中的实际物理地址。这种映射发生在称为 **页**
+    的块中，通常大小为 4KB。这个系统允许像将内存交换到磁盘上和防止进程相互干扰这样的魔法。
 - en: The important takeaway here is that when Node.js allocates a large buffer, it's
     asking the OS for a contiguous block of *virtual* memory. The OS then has the
     job of finding enough free *physical* memory pages to back that virtual allocation.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的重要启示是，当 Node.js 分配一个大缓冲区时，它是在向操作系统请求一个连续的 *虚拟* 内存块。然后操作系统有责任找到足够的空闲 *物理*
+    内存页来支持这个虚拟分配。
 - en: The Allocator's Dilemma
+  id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 分配器的困境
 - en: When you call `Buffer.alloc(65536)` to get a 64KB buffer for a file read, Node.js
     bypasses its internal 8KB pool. It needs to get this memory from the system. It
     does this via system calls like `mmap` on Linux/macOS or `VirtualAlloc` on Windows.
     The system's memory allocator (like `glibc`'s `malloc` on Linux) finds a suitable
     64KB block in your process's virtual address space and maps it.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你调用 `Buffer.alloc(65536)` 来获取一个用于文件读取的 64KB 缓冲区时，Node.js 会绕过其内部的 8KB 池。它需要从系统中获取这些内存。它通过系统调用如
+    Linux/macOS 上的 `mmap` 或 Windows 上的 `VirtualAlloc` 来实现。系统的内存分配器（如 Linux 上的 `glibc`
+    的 `malloc`）在你的进程的虚拟地址空间中找到一个合适的 64KB 块并将其映射。
 - en: Now, your code processes the file, and eventually, that 64KB buffer is no longer
     referenced. The V8 garbage collector reclaims the JavaScript handle, and Node's
     C++ layer is notified to free the underlying memory. It calls `munmap` or `free`,
     returning that 64KB block to the system allocator.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，你的代码处理文件，最终那个 64KB 缓冲区不再被引用。V8 垃圾收集器回收了 JavaScript 处理器，Node 的 C++ 层被通知释放底层内存。它调用
+    `munmap` 或 `free`，将那个 64KB 块返回给系统分配器。
 - en: The problem starts when your application does this thousands of times with buffers
     of varying sizes. This constant allocation and deallocation, especially with different
     sizes, is what chews up your memory space. It's like taking a whole sheet of paper,
     cutting out a 5-inch square, then a 2-inch square, then putting the 5-inch square
     back, then cutting out a 3-inch square. After a while, the paper is full of holes.
     You might have enough total paper left, but you can't cut out a new 6-inch square.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 问题始于你的应用程序多次使用不同大小的缓冲区进行这种操作。这种持续的分配和释放，尤其是不同大小的，消耗了你的内存空间。这就像拿一张整张纸，剪下一个 5
+    英寸的正方形，然后是一个 2 英寸的正方形，然后把 5 英寸的正方形放回去，然后剪下一个 3 英寸的正方形。过了一会儿，纸上满是洞。你可能还有足够的总纸张，但你无法剪出一个新的
+    6 英寸正方形。
 - en: 'This leads to two types of fragmentation: **External Fragmentation** and **Internal
     Fragmentation.**'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 这导致了两种类型的碎片化：**外部碎片化**和**内部碎片化**。
 - en: '**External Fragmentation** is the scenario we''ve been describing. There is
     enough total free memory, but it''s divided into many non-contiguous blocks (holes).
     A new allocation request fails because no single hole is large enough. This is
     the primary concern for applications that allocate and free many large, non-pooled
     buffers.'
+  id: totrans-22
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**外部碎片化**是我们一直在描述的情况。总空闲内存足够，但它被分割成许多非连续的块（空洞）。新的分配请求失败，因为没有足够大的单个空洞来满足请求。这是对分配和释放许多大型、非池化缓冲区的应用程序的主要关注点。'
 - en: '**Internal Fragmentation** is a more subtle problem. It happens when memory
     is allocated in fixed-size chunks, and an allocation request is satisfied by a
     chunk larger than the request. For example, if an allocator only deals in blocks
@@ -146,876 +201,1288 @@
     "wasted" in the gaps between allocations. However, this is a conscious trade-off
     made to prevent external fragmentation and reduce system call overhead, and it''s
     generally a very effective one.'
+  id: totrans-23
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**内部碎片化**是一个更微妙的问题。它发生在内存以固定大小的块分配时，且一个分配请求被一个比请求更大的块满足。例如，如果一个分配器只处理32、64和128字节的块，而你请求33字节，它将给你一个64字节的块。剩余的31字节被浪费了。它们被分配了但未使用——这是你分配块内部的一个空洞。Node的内部8KB缓冲池是这样一个可以导致内部碎片化的系统的完美例子。如果它从其8KB的slab中满足数百个10字节的请求，那么该slab的很大一部分可能会在分配之间的间隙中被“浪费”。然而，这是为了防止外部碎片化和减少系统调用开销而做出的有意识的权衡，并且通常是非常有效的。'
 - en: Initial State
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 初始状态
 - en: Your process has a large, clean region of free virtual memory.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的进程有一个大型的干净区域空闲虚拟内存。
 - en: Node.js Runtime & V8 HeapF R E E M E M O R Y
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js运行时 & V8堆F R E E M E M O R Y
 - en: Allocate a 1MB buffer for an image upload (bufA)
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 为图像上传分配一个1MB的缓冲区（bufA）
 - en: RuntimebufA (1MB)F R E E
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行时bufA (1MB)F R E E
 - en: Allocate a 512KB buffer for a video chunk (bufB)
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 为视频块分配一个512KB的缓冲区（bufB）
 - en: RuntimebufA (1MB)bufB (512KB)F R E E
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行时缓冲区A (1MB)bufB (512KB)F R E E
 - en: The image processing is done. Free bufA.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 图像处理已完成。释放bufA。
 - en: RuntimeF R E E (1MB)bufB (512KB)F R E ELook at the memory now.We've created
     a 1MB **hole**. The total free memory is large, but it's split into two non-contiguous
     chunks.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行时F R E E (1MB)bufB (512KB)F R E E查看现在的内存。我们创建了一个1MB的**空洞**。总空闲内存很大，但它被分割成两个非连续的块。
 - en: '**A new request comes in, needing a 1.2MB buffer for a database dump.**'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '**一个新的请求到来，需要一个1.2MB的缓冲区来执行数据库转储。**'
 - en: The allocation fails. Even though you have well over 1.2MB of total free memory,
     there is no single block large enough to satisfy the request. This is external
     fragmentation in action. In a real server running for days, this process repeats
     thousands of times, leaving the memory space looking like Swiss cheese. Eventually,
     a critical allocation fails, and your application crashes with an `ENOMEM` (Out
     of Memory) error.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 分配失败。尽管你有超过1.2MB的总空闲内存，但没有足够大的单个块来满足请求。这是外部碎片化的实际表现。在一个运行数天的真实服务器上，这个过程会重复数千次，使内存空间看起来像瑞士奶酪。最终，一个关键的分配失败，你的应用程序会因`ENOMEM`（内存不足）错误而崩溃。
 - en: What can I do... ?
+  id: totrans-35
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 我能做什么...？
 - en: The risk of fragmentation emerges when you work with buffers that are too large
     for the pool (larger than 4KB by default). If your application allocates and frees
     many large buffers of varying sizes, it's acting like a chaotic memory client.
     This churn is what gradually chops up the free memory available to your Node.js
     process.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你处理比池大的缓冲区（默认情况下大于4KB）时，碎片化的风险就会出现。如果你的应用程序分配和释放了许多大小不一的大型缓冲区，它就像一个混乱的内存客户端。这种碎片是逐渐分割你Node.js进程可用空闲内存的原因。
 - en: So, how do you fight this? You can't change how the OS allocator works, but
     you can change how your application *behaves*. The key is to reduce memory churn.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么，你如何应对这个问题？你不能改变操作系统分配器的工作方式，但你可以通过改变你的应用程序*行为*来改变它。关键是减少内存碎片。
 - en: Buffer Reuse
+  id: totrans-38
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 缓冲区重用
 - en: This is the single most powerful technique for reducing allocation churn. Instead
     of allocating a new buffer for every task, you allocate a single, larger buffer
     upfront and reuse it. This is especially critical in hot paths of your code, like
     inside a network `data` event handler or a tight loop.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是减少分配 churn 的最强大技术。不是为每个任务分配一个新的缓冲区，而是预先分配一个单一、更大的缓冲区并重复使用它。这在代码的热路径中尤为重要，比如在网络的
+    `data` 事件处理程序内部或一个紧密的循环中。
 - en: Let's imagine a server that processes incoming TCP packets. Each packet needs
     to be framed with a 4-byte length header.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们想象一个处理传入 TCP 数据包的服务器。每个数据包都需要用 4 字节长度头进行封装。
 - en: '**The Bad, High-Churn Approach**'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '**不良、高 churn 方法**'
 - en: '[PRE0]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: If this server handles 10,000 packets per second, that's 20,000 buffer allocations
     per second (though Node's small-buffer pool may optimize some of these). The garbage
     collector will be working overtime, and the memory allocator will be struggling
     to keep up, leading to potential fragmentation.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果这个服务器每秒处理 10,000 个数据包，那么每秒将有 20,000 个缓冲区分配（尽管 Node 的小缓冲池可能会优化其中一些）。垃圾收集器将超负荷工作，内存分配器将努力跟上，导致潜在的碎片化。
 - en: '**A Better, Reusable Approach**'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '**更好的、可重用方法**'
 - en: '[PRE1]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: In this version, we've eliminated the large backing-memory allocations (from
     two per packet to zero per packet). While we do create a small Buffer wrapper
     object for the view, we've removed the expensive memory allocation and copying
     that `Buffer.concat` performs. The performance difference is significant.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个版本中，我们消除了大后端内存分配（从每个数据包两个减少到零）。虽然我们确实为视图创建了一个小的 Buffer 包装对象，但我们已经移除了 `Buffer.concat`
+    执行的昂贵内存分配和复制。性能差异是显著的。
 - en: '**Shared Memory Hazard**'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: '**共享内存风险**'
 - en: The optimization above has a **serious issue** that can cause data corruption
     if not handled correctly. The `framedPacketView` created by `subarray()` shares
     the underlying memory with `reusableBuffer`.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 上述优化有一个**严重问题**，如果不正确处理，可能会导致数据损坏。由 `subarray()` 创建的 `framedPacketView` 与 `reusableBuffer`
+    共享底层内存。
 - en: '**If `sendToNextService` is asyync** (which is typical for network operations,
     queuing systems, or pipelines), and you immediately handle the next packet, you''ll
     **overwrite the buffer contents while the previous consumer is still reading it**.
     This causes silent data corruption.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '**如果 `sendToNextService` 是异步的**（这对于网络操作、排队系统或管道来说是典型的），并且你立即处理下一个数据包，你将在**前一个消费者仍在读取时覆盖缓冲区内容**。这会导致数据损坏。'
 - en: This approach is only safe when the consumer uses the data synchronously before
     the function returns (rare), or you coordinate buffer lifetimes carefully.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 只有当消费者在函数返回之前同步使用数据（很少见），或者你仔细协调缓冲区生命周期时，这种方法才是安全的。
 - en: '**Safer Alternative? A Buffer Pool**'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '**更安全的替代方案？缓冲池**'
 - en: 'For asynchronous consumers, use a ring buffer pool with multiple buffers:'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于异步消费者，使用具有多个缓冲区的环形缓冲池：
 - en: '[PRE2]'
+  id: totrans-53
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: The pool gives each in-flight packet its own distinct backing buffer, preventing
     overwrites as long as `POOL_SIZE` is large enough to accommodate your maximum
     concurrent operations.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 池为每个在途数据包提供其自己的独立后端缓冲区，只要 `POOL_SIZE` 足够大以容纳你的最大并发操作，就可以防止覆盖。
 - en: So, in case (you probably won't) ever run into the issue, how would you decide
     when to Use which approach -
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以，在（你很可能不会）遇到问题的前提下，你将如何决定何时使用哪种方法 -
 - en: '**Single reusable buffer** only if consumers are truly synchronous (very rare)'
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**单一可重用缓冲区**仅当消费者真正同步时（非常罕见）'
 - en: '**Buffer pool** for asynchronous consumers with bounded concurrency'
+  id: totrans-57
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**缓冲池**用于具有有限并发性的异步消费者'
 - en: '**Copy to new buffer** if you can''t bound in-flight work, copy the data to
     a new buffer at send time (e.g., `Buffer.from(framedPacketView)`) - this costs
     an allocation per packet but is simple and safe'
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果无法限制在途工作，请**复制到新缓冲区**（例如，`Buffer.from(framedPacketView)`）- 这会为每个数据包分配一次，但简单且安全。
 - en: 📌Important
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: Node.js has an internal buffer pool for small allocations, so tiny buffers may
     already benefit from some optimization. You still pay CPU cost to copy bytes with
     `chunk.copy()` - you're trading allocation cost for CPU copy cost (usually worth
     it in GC-sensitive hot paths)
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: Node.js 有一个用于小分配的内部缓冲池，因此微小的缓冲区可能已经从某些优化中受益。你仍然需要为 `chunk.copy()` 复制字节支付 CPU
+    成本 - 你是在交换分配成本和 CPU 复制成本（通常在 GC 敏感的热路径中是值得的）。
 - en: The key takaway is - buffer reuse can dramatically improve performance, but
     shared memory requires careful lifetime management to avoid corruption.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键的收获是 - 缓冲区重用可以显著提高性能，但共享内存需要仔细的生命周期管理以避免损坏。
 - en: Understanding fragmentation is about seeing `Buffer.alloc()` not as a cheap
     operation, but as a request that has a real cost, a cost that accumulates over
     the lifetime of a server. By consciously designing your application to reduce
     this churn through reuse and pooling, you can build systems that are not just
     fast, but stable and resilient enough to run for months or years without issue.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解碎片化是将`Buffer.alloc()`不仅仅视为一个便宜的操作，而视为一个具有实际成本、在服务器生命周期内累积成本的操作。通过有意识地设计你的应用程序以通过重用和池化来减少这种
+    churn，你可以构建不仅速度快，而且稳定、有弹性的系统，可以在数月或数年内无问题地运行。
 - en: Code Challenges
+  id: totrans-63
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 代码挑战
 - en: Theory is important, but there's no substitute for getting your hands dirty.
     I've created the challenges below to take the concepts from the previous chapters
     and force you to apply them in a practical context. Each challenge builds on the
     last, increasing in complexity and trying to be pretty close to the real-world
     problems you'll face when working with binary data in Node.js.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 理论很重要，但没有什么能替代亲自动手。我已经创建了以下挑战，以便将前几章的概念应用到实际环境中。每个挑战都建立在上一个挑战的基础上，复杂性增加，并试图尽可能接近你在使用Node.js处理二进制数据时可能遇到的真实世界问题。
 - en: I am not providing the solutions. The goal is for you to build them. Struggle
     with the code. Consult the Node.js documentation. The insights you gain from building
     a working solution yourself are worth far more than anything you can get from
     copy-pasting an answer.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 我不会提供解决方案。目标是让你自己构建它们。与代码斗争。查阅Node.js文档。你自己构建一个有效解决方案所获得的见解比从复制粘贴答案中获得的东西要宝贵得多。
 - en: Let's begin.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们开始。
 - en: 'Challenge #1'
+  id: totrans-67
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '挑战 #1'
 - en: 'Imagine you''re working on an IoT project. A fleet of sensors sends data packets
     over TCP to your Node.js server. The protocol is simple and fixed-size. Every
     packet is exactly 24 bytes long and has the following structure:'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象你正在做一个物联网项目。一组传感器通过TCP将数据包发送到你的Node.js服务器。该协议简单且固定大小。每个数据包正好24字节长，具有以下结构：
 - en: '| Offset (Bytes) | Length (Bytes) | Data Type | Description |'
+  id: totrans-69
   prefs: []
   type: TYPE_TB
+  zh: '| 偏移量（字节） | 长度（字节） | 数据类型 | 描述 |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-70
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| 0-3 | 4 | `UInt32BE` | Sensor ID |'
+  id: totrans-71
   prefs: []
   type: TYPE_TB
+  zh: '| 0-3 | 4 | `UInt32BE` | 传感器ID |'
 - en: '| 4-11 | 8 | `Float64BE` | Timestamp (Unix epoch, ms) |'
+  id: totrans-72
   prefs: []
   type: TYPE_TB
+  zh: '| 4-11 | 8 | `Float64BE` | 时间戳（Unix纪元，毫秒） |'
 - en: '| 12-13 | 2 | `UInt16BE` | Sensor Type Code |'
+  id: totrans-73
   prefs: []
   type: TYPE_TB
+  zh: '| 12-13 | 2 | `UInt16BE` | 传感器类型代码 |'
 - en: '| 14 | 1 | `UInt8` | Status Flags (a bitmask) |'
+  id: totrans-74
   prefs: []
   type: TYPE_TB
+  zh: '| 14 | 1 | `UInt8` | 状态标志（位掩码）|'
 - en: '| 15 | 1 | `Int8` | Temperature (°C) |'
+  id: totrans-75
   prefs: []
   type: TYPE_TB
+  zh: '| 15 | 1 | `Int8` | 温度（°C） |'
 - en: '| 16-19 | 4 | `Float32BE` | Humidity (%) |'
+  id: totrans-76
   prefs: []
   type: TYPE_TB
+  zh: '| 16-19 | 4 | `Float32BE` | 湿度（%） |'
 - en: '| 20-23 | 4 | `Float32BE` | Pressure (kPa) |'
+  id: totrans-77
   prefs: []
   type: TYPE_TB
+  zh: '| 20-23 | 4 | `Float32BE` | 压力（kPa） |'
 - en: Your Task
+  id: totrans-78
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 你的任务
 - en: Write a Node.js function called `parseSensorData` that accepts a 24-byte `Buffer`
     as input. The function should parse the buffer according to the specification
     above and return a JavaScript object with the decoded values.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个名为`parseSensorData`的Node.js函数，该函数接受一个24字节的`Buffer`作为输入。该函数应根据上述规范解析缓冲区，并返回一个包含解码值的JavaScript对象。
 - en: Use this sample `Buffer` to test your function.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用此示例`Buffer`来测试您的函数。
 - en: '[PRE3]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '**The Goal**'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '**目标**'
 - en: 'Your `parseSensorData(samplePacket)` function should return an object that
     looks like this:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的`parseSensorData(samplePacket)`函数应该返回一个看起来像这样的对象：
 - en: '[PRE4]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ℹ️Note
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: Floating point precsion might cause slight variations in the last decimal places,
     which is normal.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 浮点精度可能在最后几位小数上造成轻微的变化，这是正常的。
 - en: '**Things to Consider**'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: '**需要考虑的事项**'
 - en: Which `Buffer` methods will you need for each field? The method names are very
     descriptive.
+  id: totrans-88
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你需要哪些`Buffer`方法来处理每个字段？方法名非常具有描述性。
 - en: Pay close attention to the data types (`UInt`, `Int`, `Float64`/`Double`, `Float32`/`Float`)
     and the endianness (`BE` - Big Endian).
+  id: totrans-89
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 请密切关注数据类型（`UInt`、`Int`、`Float64`/`Double`、`Float32`/`Float`）和字节序（`BE` - 大端）。
 - en: The offset for each read is critical. This is a fixed-size protocol, so the
     offsets are constant.
+  id: totrans-90
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 每次读取的偏移量至关重要。这是一个固定大小的协议，因此偏移量是固定的。
 - en: Good practice dictates you should validate the input buffer's length before
     attempting to parse it.
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 良好的实践规定，在尝试解析之前，你应该验证输入缓冲区的长度。
 - en: 'Challenge #2'
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '挑战 #2'
 - en: We've talked at length about the memory retention issue where a small `Buffer`
     view can hold a massive parent buffer hostage. It's time to prove it to yourself
     with code.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经详细讨论了内存保留问题，其中一个小型的`Buffer`视图可以控制一个庞大的父缓冲区。现在是时候用代码来证明这一点了。
 - en: Your Task
+  id: totrans-94
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 你的任务
 - en: 'Write a Node.js program that demonstrates and quantifies this memory leak.
     The script should perform two separate tests:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个Node.js程序来演示和量化这种内存泄漏。该脚本应执行两个单独的测试：
 - en: '**The "View" Test**'
+  id: totrans-96
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**“视图”测试**'
 - en: Allocate a single, large `Buffer` (e.g., 50MB).
+  id: totrans-97
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 分配一个单个、大`Buffer`（例如，50MB）。
 - en: In a loop, create a large number of small *views* (e.g., 100,000 views of 16
     bytes each) from this large buffer using `buf.slice()` or `buf.subarray()` (preferred).
+  id: totrans-98
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在循环中，使用`buf.slice()`或`buf.subarray()`（首选）从这个大缓冲区创建大量小的*视图*（例如，每个16字节的100,000个视图）。
 - en: Store these views in an array so they are not garbage collected.
+  id: totrans-99
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将这些视图存储在数组中，以便它们不会被垃圾回收。
 - en: After the loop, log the memory usage using `process.memoryUsage()`. Pay close
     attention to the `external` property.
+  id: totrans-100
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 循环结束后，使用`process.memoryUsage()`记录内存使用情况。请密切关注`external`属性。
 - en: '**The "Copy" Test**'
+  id: totrans-101
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**"Copy"测试**'
 - en: Allocate a single, large `Buffer` of the same size (50MB).
+  id: totrans-102
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 分配一个大小相同的单个、大`Buffer`（例如，50MB）。
 - en: In a loop, create a large number of small *copies* (e.g., 100,000 copies of
     16 bytes each).
+  id: totrans-103
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在循环中，创建大量小的*副本*（例如，每个16字节的100,000个副本）。
 - en: Store these copies in an array.
+  id: totrans-104
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将这些副本存储在数组中。
 - en: After the loop, ensure the original large buffer is eligible for garbage collection
     and, if possible, invoke the GC.
+  id: totrans-105
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 循环结束后，确保原始大缓冲区适用于垃圾回收，如果可能，调用GC。
 - en: Log the memory usage again.
+  id: totrans-106
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 再次记录内存使用情况。
 - en: '**The Goal**'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '**目标**'
 - en: Your script's output should show a dramatic difference in the `external` memory
     reported by `process.memoryUsage()` between the two tests. The "View" test's external
     memory should be slightly over 50MB, while the "Copy" test's external memory should
     be much smaller.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 您的脚本输出应显示两次测试中`process.memoryUsage()`报告的`external`内存存在显著差异。 "View"测试的外部内存应略超过50MB，而"Copy"测试的外部内存应小得多。
 - en: '**Things to Consider**'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: '**需要考虑的事项**'
 - en: You'll need to run your script with the `--expose-gc` flag to be able to call
     `global.gc()`. This makes the results much more deterministic.
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 您需要使用`--expose-gc`标志运行您的脚本，以便能够调用`global.gc()`。这使得结果更加确定。
 - en: Why is the `external` value in `process.memoryUsage()` the most important metric
     for this experiment? What do `rss` and `heapUsed` represent?
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为什么`process.memoryUsage()`中的`external`值是这个实验最重要的指标？`rss`和`heapUsed`代表什么？
 - en: The total size of the copies is `100,000 * 16 bytes = 1.6MB`. Your result for
     the copy test should be in this ballpark.
+  id: totrans-112
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 复制的总大小为`100,000 * 16字节 = 1.6MB`。您的复制测试结果应该在这个范围内。
 - en: A helper function to format the byte counts into KB/MB will make your output
     much easier to read.
+  id: totrans-113
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个将字节数格式化为KB/MB的辅助函数将使您的输出更容易阅读。
 - en: 'Challenge #3'
+  id: totrans-114
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 挑战#3
 - en: 'Your fixed-protocol from Challenge #1 was a success, but now you need to handle
     a more complex, variable-length protocol. This is common in network applications.
     You''ll be parsing a stream of messages formatted using a Type-Length-Value (TLV)
     encoding.'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 您在挑战#1中使用的固定协议是成功的，但现在您需要处理一个更复杂、可变长度的协议。这在网络应用中很常见。您将解析使用类型-长度-值（TLV）编码格式化的消息流。
 - en: The problem is, you're reading from a TCP stream. Data can arrive in arbitrary
     chunks. A single `data` event might contain multiple TLV messages, or just a partial
     message. Your parser needs to be stateful - it must hold onto partial data and
     wait for the rest of the message to arrive in the next chunk.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 问题在于，您正在从TCP流中读取。数据可以以任意块的形式到达。单个`data`事件可能包含多个TLV消息，或者只是一个部分消息。您的解析器需要是状态的
+    - 它必须保留部分数据并等待下一块中到达的其余消息。
 - en: The Protocol Specification
+  id: totrans-117
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 协议规范
 - en: Each TLV message has a 3-byte header followed by a variable-length value.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个TLV消息都有一个3字节的头部，后面跟着一个可变长度的值。
 - en: '| Offset (Bytes) | Length (Bytes) | Data Type | Description |'
+  id: totrans-119
   prefs: []
   type: TYPE_TB
+  zh: '| 偏移（字节） | 长度（字节） | 数据类型 | 描述 |'
 - en: '| --- | --- | --- | --- |'
+  id: totrans-120
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- |'
 - en: '| 0 | 1 | `UInt8` | Message **T**ype (a number from 1-255) |'
+  id: totrans-121
   prefs: []
   type: TYPE_TB
+  zh: '| 0 | 1 | `UInt8` | 消息**T**ype（1-255之间的数字） |'
 - en: '| 1-2 | 2 | `UInt16BE` | **L**ength of the value part in bytes (0-65535) |'
+  id: totrans-122
   prefs: []
   type: TYPE_TB
+  zh: '| 1-2 | 2 | `UInt16BE` | 值部分的长度（以字节为单位，0-65535） |'
 - en: '| 3 to 3+L | L | `Buffer` | The **V**alue (payload) |'
+  id: totrans-123
   prefs: []
   type: TYPE_TB
+  zh: '| 3到3+L | L | `Buffer` | **V**alue（有效负载） |'
 - en: '**Your Task**'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '**你的任务**'
 - en: ℹ️Note
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: ℹ️注意
 - en: The [next chapter of **NodeBook** covers Streams](https://thenodebook.com/streams/intro-to-streams).
     If you haven't worked with Streams in Node or don't feel comfortable with them,
     feel free to skip this challenge. If you do want to continue, please read the
     Streams chapter before attempting the challenge. The introductory Streams chapter
     will be published before the challenges go live.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '[NodeBook的下一章涵盖了流](https://thenodebook.com/streams/intro-to-streams)。如果您还没有在Node中使用流或者对它们不熟悉，请随意跳过这个挑战。如果您想继续，请在尝试挑战之前阅读流的章节。简介性流的章节将在挑战上线之前发布。'
 - en: 'Create a `TlvParser` class that extends `stream.Transform`. This class will
     be the core of your solution. It needs to:'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个扩展`stream.Transform`的`TlvParser`类。这个类将是你的解决方案的核心。它需要：
 - en: Maintain an internal buffer for incomplete message chunks.
+  id: totrans-128
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 维护一个用于不完整消息块的内部缓冲区。
 - en: In its `_transform` method, append incoming data to the internal buffer.
+  id: totrans-129
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在其`_transform`方法中，将传入的数据追加到内部缓冲区。
 - en: Continuously try to parse complete TLV messages from its internal buffer.
+  id: totrans-130
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 不断尝试从其内部缓冲区中解析完整的TLV消息。
 - en: If a full message is parsed, it should `push` a JavaScript object `{ type, value
     }` downstream. The `value` should be a *copy* of the payload buffer.
+  id: totrans-131
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果一条完整的消息被解析，它应该将一个JavaScript对象`{ type, value }`推送到下游。`value`应该是有效载荷缓冲区的副本。
 - en: The remaining unparsed data must be kept in the internal buffer for the next
     chunk.
+  id: totrans-132
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 剩余未解析的数据必须保留在内部缓冲区中，以供下一个数据块使用。
 - en: '**Sample Data Stream**'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '**示例数据流**'
 - en: The data will arrive in chunks. Here's an example sequence -
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据将以块的形式到达。这里有一个示例序列 -
 - en: '[PRE5]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: '**The Goal**'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: '**目标**'
 - en: When you pipe these chunks through an instance of your `TlvParser`, it should
     emit two `data` events, producing these objects in order -
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你将这些数据块通过你的`TlvParser`实例时，它应该发出两个`data`事件，按顺序产生这些对象 -
 - en: '`{ type: 1, value: <Buffer 68 65 6c 6c 6f> }` (value is "hello")'
+  id: totrans-138
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`{ type: 1, value: <Buffer 68 65 6c 6c 6f> }`（值是"hello"）'
 - en: '`{ type: 2, value: <Buffer 67 6f 6f 64 62 79 65 21> }` (value is "goodbye!")'
+  id: totrans-139
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '`{ type: 2, value: <Buffer 67 6f 6f 64 62 79 65 21> }`（值是"goodbye!"）'
 - en: '**Things to Consider**'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '**需要考虑的事项**'
 - en: How will you manage your internal buffer? `Buffer.concat` will be your best
     friend.
+  id: totrans-141
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你将如何管理你的内部缓冲区？`Buffer.concat`将是你的最佳朋友。
 - en: Your parsing loop needs to check if you have enough data for a header (3 bytes),
     then read the length, and then check if you have enough data for the full value.
+  id: totrans-142
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你的解析循环需要检查你是否有了足够的数据来读取头部（3个字节），然后读取长度，然后检查你是否有了足够的数据来读取完整的值。
 - en: Once a message is successfully parsed, how do you remove it from your internal
     buffer so you can parse the next one? `buf.subarray()` is the tool for this.
+  id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一旦一条消息成功解析，你如何从内部缓冲区中移除它以便解析下一条消息？`buf.subarray()`是这个工具。
 - en: Why is it important for the parser to emit a *copy* of the value buffer, not
     a view into its internal buffer? Think about what happens to the internal buffer
     over time.
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为什么解析器输出值缓冲区的副本而不是其内部缓冲区的视图很重要？想想随着时间的推移内部缓冲区会发生什么。
 - en: 'Challenge #4'
+  id: totrans-145
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 挑战#4
 - en: Your video processing service is suffering from memory fragmentation. It constantly
     allocates and frees large (64KB) buffers, and after running for a few days, it
     crashes with out-of-memory errors. You've decided to implement a custom, application-level
     buffer pool to mitigate this churn.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的视频处理服务正遭受内存碎片化。它不断分配和释放大（64KB）的缓冲区，运行几天后，由于内存不足错误而崩溃。你已经决定实现一个自定义的应用级缓冲池来减轻这种碎片化。
 - en: Your Task
+  id: totrans-147
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 你的任务
 - en: Create a `BufferPool` class. This class should be designed to manage a fixed
     number of pre-allocated buffers of a specific size.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个`BufferPool`类。这个类应该被设计用来管理一定数量的预分配的特定大小的缓冲区。
 - en: The class must have the following features -
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个类必须具有以下功能 -
 - en: '**Constructor `(bufferSize, poolSize)`:**'
+  id: totrans-150
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**构造函数`(bufferSize, poolSize)`**：'
 - en: Takes the size of each buffer (e.g., 65536) and the number of buffers to keep
     in the pool (e.g., 100).
+  id: totrans-151
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 接收每个缓冲区的大小（例如，65536）和池中要保留的缓冲区数量（例如，100）。
 - en: It should pre-allocate all these buffers and store them, perhaps in an array.
+  id: totrans-152
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它应该预先分配所有这些缓冲区并将它们存储起来，可能在一个数组中。
 - en: '**Method `get()`:**'
+  id: totrans-153
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**方法`get()`**：'
 - en: If the pool has an available buffer, it should return one.
+  id: totrans-154
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果池有可用的缓冲区，它应该返回一个。
 - en: If the pool is empty, it should log a warning and allocate a new, temporary
     buffer of the correct size. This prevents the application from crashing but signals
     that the pool might be too small.
+  id: totrans-155
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果池为空，它应该记录一个警告并分配一个正确大小的新的临时缓冲区。这可以防止应用程序崩溃，但同时也表明池可能太小。
 - en: It should return a `Buffer`.
+  id: totrans-156
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它应该返回一个`Buffer`。
 - en: '**Method `release(buffer)`:**'
+  id: totrans-157
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**方法`release(buffer)`**：'
 - en: Takes a buffer that was previously acquired from the pool.
+  id: totrans-158
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 接收从池中之前获取的缓冲区。
 - en: Returns the buffer to the pool, making it available for the next `get()` call.
+  id: totrans-159
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将缓冲区返回到池中，使其对下一个`get()`调用可用。
 - en: It should have a check to prevent the pool from growing beyond its initial size
     (i.e., don't add buffers that weren't originally from the pool or extra ones created
     when the pool was empty).
+  id: totrans-160
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它应该有一个检查来防止池的大小超过其初始大小（即，不要添加原本不在池中的缓冲区或当池为空时创建的额外缓冲区）。
 - en: '**Property `used`:**'
+  id: totrans-161
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**属性`used`**：'
 - en: A getter that returns the number of buffers currently checked out from the pool.
+  id: totrans-162
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个返回当前从池中借出的缓冲区数量的getter。
 - en: '**The Goal**'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: '**目标**'
 - en: 'Write the `BufferPool` class and then write a small simulation to test it.
     The simulation should:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写`BufferPool`类，然后编写一个小型模拟来测试它。模拟应该：
 - en: Create a pool.
+  id: totrans-165
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 创建一个池。
 - en: Get several buffers from it, checking the `used` count.
+  id: totrans-166
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 从中获取几个缓冲区，检查`used`计数。
 - en: Release those buffers back to the pool.
+  id: totrans-167
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将这些缓冲区释放回池中。
 - en: Test the "pool empty" condition by trying to get more buffers than the pool
     size.
+  id: totrans-168
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 通过尝试获取比池大小更多的缓冲区来测试“池为空”的条件。
 - en: Test the `release` logic for an "extra" buffer that was created when the pool
     was empty.
+  id: totrans-169
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 测试当池为空时创建的“额外”缓冲区的`release`逻辑。
 - en: '**Things to Consider**'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '**需要考虑的事项**'
 - en: What's the best data structure to hold the available buffers? An array with
     `push()` and `pop()` is simple and efficient.
+  id: totrans-171
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 最好的数据结构来保存可用缓冲区是什么？一个具有`push()`和`pop()`操作的数组既简单又高效。
 - en: How can you be sure a buffer being released is valid? You could add checks for
     its size or even tag the buffers in some way, though that's more advanced. For
     this challenge, a size check is sufficient.
+  id: totrans-172
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如何确保释放的缓冲区是有效的？你可以添加对其大小的检查，甚至以某种方式标记缓冲区，尽管这更高级。对于这个挑战，大小检查就足够了。
 - en: In a real-world multi-threaded application (using worker threads), how would
     you need to change this class to make it thread-safe? (This is a thought experiment;
     you don't need to implement it for this challenge).
+  id: totrans-173
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在一个现实世界的多线程应用程序（使用工作线程）中，你需要如何更改这个类以使其线程安全？（这是一个思想实验；你不需要为这个挑战实现它）。
 - en: The `try...finally` block is your best friend when using this pool to ensure
     buffers are always released, even if errors occur.
+  id: totrans-174
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当使用此池时，`try...finally`块是你的好朋友，可以确保即使在发生错误的情况下也能始终释放缓冲区。
 - en: 'Challenge #5'
+  id: totrans-175
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 挑战#5
 - en: You are interfacing with a legacy piece of hardware that uses a bizarre binary
     format. It mixes Big-Endian and Little-Endian byte orders within the same data
     packet. The `Buffer`'s standard `read*BE()` and `read*LE()` methods are great,
     but for maximum clarity and safety, you've decided to use a `DataView`.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 你正在与一个使用奇怪二进制格式的旧硬件接口。它在同一数据包中混合了大端和小端字节顺序。`Buffer`的标准`read*BE()`和`read*LE()`方法很棒，但为了最大限度的清晰度和安全性，你决定使用`DataView`。
 - en: '**The Protocol Specification**'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: '**协议规范**'
 - en: The packet is 16 bytes long.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据包长度为16字节。
 - en: '| Offset (Bytes) | Length (Bytes) | Data Type | Endianness | Description |'
+  id: totrans-179
   prefs: []
   type: TYPE_TB
+  zh: '| 偏移量（字节） | 长度（字节） | 数据类型 | 顺序 | 描述 |'
 - en: '| --- | --- | --- | --- | --- |'
+  id: totrans-180
   prefs: []
   type: TYPE_TB
+  zh: '| --- | --- | --- | --- | --- |'
 - en: '| 0-1 | 2 | `UInt16` | **Big** | Packet Magic Number (must be `0xCAFE`) |'
+  id: totrans-181
   prefs: []
   type: TYPE_TB
+  zh: '| 0-1 | 2 | `UInt16` | **Big** | 数据包魔数（必须是`0xCAFE`） |'
 - en: '| 2-5 | 4 | `Int32` | **Little** | Device ID |'
+  id: totrans-182
   prefs: []
   type: TYPE_TB
+  zh: '| 2-5 | 4 | `Int32` | **Little** | 设备ID |'
 - en: '| 6-9 | 4 | `Float32` | **Big** | Voltage Reading |'
+  id: totrans-183
   prefs: []
   type: TYPE_TB
+  zh: '| 6-9 | 4 | `Float32` | **Big** | 电压读数 |'
 - en: '| 10 | 1 | `UInt8` | N/A | Status Code |'
+  id: totrans-184
   prefs: []
   type: TYPE_TB
+  zh: '| 10 | 1 | `UInt8` | N/A | 状态码 |'
 - en: '| 11 | 1 | `UInt8` | N/A | Checksum |'
+  id: totrans-185
   prefs: []
   type: TYPE_TB
+  zh: '| 11 | 1 | `UInt8` | N/A | 校验和 |'
 - en: '| 12-15 | 4 | `UInt32` | **Little** | Uptime in seconds |'
+  id: totrans-186
   prefs: []
   type: TYPE_TB
+  zh: '| 12-15 | 4 | `UInt32` | **Little** | 运行时间（秒） |'
 - en: Your Task
+  id: totrans-187
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 你的任务
 - en: Write a function `parseLegacyPacket(buffer)` that takes a 16-byte `Buffer`.
     Inside this function, you must create a `DataView` over the buffer's underlying
     `ArrayBuffer`. Use the `DataView` methods (`getUint16`, `getInt32`, `getFloat32`,
     etc.) to parse the packet according to the specification. Remember that `DataView`
     methods take an optional final boolean argument to specify endianness (`true`
     for little-endian, `false` for big-endian).
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个函数`parseLegacyPacket(buffer)`，它接受一个16字节的`Buffer`。在这个函数内部，你必须创建一个覆盖缓冲区底层`ArrayBuffer`的`DataView`。使用`DataView`方法（`getUint16`、`getInt32`、`getFloat32`等）根据规范解析数据包。记住，`DataView`方法接受一个可选的布尔参数来指定顺序（`true`为小端，`false`为大端）。
 - en: '**Sample Data**'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '**样本数据**'
 - en: '[PRE6]'
+  id: totrans-190
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: '**The Goal**'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: '**目标**'
 - en: 'Your `parseLegacyPacket(legacyPacket)` function should return an object that
     looks like this:'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 你的`parseLegacyPacket(legacyPacket)`函数应该返回一个看起来像这样的对象：
 - en: '[PRE7]'
+  id: totrans-193
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: '**Things to Considr**'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: '**需要考虑的事项**'
 - en: How do you get the underlying `ArrayBuffer` from a `Buffer` to create a `DataView`?
     Every `Buffer` instance has a `.buffer` property.
+  id: totrans-195
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如何从一个`Buffer`获取底层的`ArrayBuffer`以创建`DataView`？每个`Buffer`实例都有一个`.buffer`属性。
 - en: Be careful with the `byteOffset`. The `DataView` needs to be created with the
     correct offset if the `Buffer` is a slice of a larger `ArrayBuffer`. For this
     challenge, you can assume the buffer is not a slice, but it's good to be aware
     of the `buf.byteOffset` property.
+  id: totrans-196
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 注意`byteOffset`。如果`Buffer`是更大的`ArrayBuffer`的切片，`DataView`需要使用正确的偏移量来创建。对于这个挑战，你可以假设缓冲区不是切片，但了解`buf.byteOffset`属性是好的。
 - en: The third argument to `DataView` methods is the endianness flag. `false` (or
     omitted) is Big-Endian. `true` is Little-Endian. You will need to use both.
+  id: totrans-197
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`DataView` 方法的第三个参数是字节序标志。`false`（或省略）是大端字节序。`true` 是小端字节序。你需要使用两者。'
 - en: This is a great exercise in careful, methodical parsing where every single byte
     and its interpretation matters.
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这是一个很好的练习，需要仔细、有系统地解析，因为每个字节及其解释都很重要。
 - en: 'Challenge #6 (Advanced)'
+  id: totrans-199
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '挑战 #6（高级）'
 - en: 📌Important
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 📌重要
 - en: This is an advanced, optional challenge. If you haven’t worked with Node.js
     worker threads, shared memory, or `Atomics` before, feel free to skip it for now.
     Come back after you’ve read those chapters in the book. I'll add a link in the
     future chapters as a reminder for you to finish this challenge.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个高级的、可选的挑战。如果你之前没有使用过 Node.js 工作线程、共享内存或 `Atomics`，现在可以跳过这个挑战。在阅读完书中的相关章节后回来。我将在未来的章节中添加一个链接，作为提醒你完成这个挑战。
 - en: You have a performance-critical application where multiple worker threads need
     to increment a shared counter. Passing messages back and forth to the main thread
     for every increment would be too slow due to serialization overhead. You need
     a way for all threads to access and modify the same piece of memory directly and
     safely.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 你有一个性能关键的应用程序，其中多个工作线程需要增加一个共享计数器。由于序列化开销，每次增加都需要在主线程之间传递消息将会太慢。你需要一种方式让所有线程可以直接且安全地访问和修改同一块内存。
 - en: Your Task
+  id: totrans-203
   prefs:
   - PREF_H4
   type: TYPE_NORMAL
+  zh: 你的任务
 - en: Write a script that demonstrates a thread-safe counter using a `SharedArrayBuffer`
     and `Atomics`.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 编写一个脚本，演示使用 `SharedArrayBuffer` 和 `Atomics` 实现的线程安全计数器。
 - en: '**Main Script (`main.js`)**'
+  id: totrans-205
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**主脚本 (`main.js`)**'
 - en: Create a `SharedArrayBuffer` large enough to hold one 32-bit integer (4 bytes).
+  id: totrans-206
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 创建一个足够大的 `SharedArrayBuffer` 来存储一个32位整数（4字节）。
 - en: Create an `Int32Array` view over it.
+  id: totrans-207
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在其上创建一个 `Int32Array` 视图。
 - en: Initialize the counter at that memory location to 0.
+  id: totrans-208
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将计数器初始化为该内存位置的0。
 - en: Create two `Worker` threads, passing the `SharedArrayBuffer` to each of them.
+  id: totrans-209
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 创建两个 `Worker` 线程，并将 `SharedArrayBuffer` 传递给每个线程。
 - en: Each worker will increment the counter a large number of times (e.g., 1 million).
+  id: totrans-210
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 每个工作线程将多次增加计数器（例如，1百万次）。
 - en: Wait for both workers to signal that they are finished.
+  id: totrans-211
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 等待两个工作线程都发出完成信号。
 - en: Read the final value from the `SharedArrayBuffer` using `Atomics.load()` and
     print it. The final value should be the sum of all increments (e.g., 2 million).
+  id: totrans-212
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 `Atomics.load()` 从 `SharedArrayBuffer` 中读取最终值并打印出来。最终值应该是所有增加的总和（例如，200万）。
 - en: '**Worker Script (`worker.js`)**'
+  id: totrans-213
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '**工作脚本 (`worker.js`)**'
 - en: Receive the `SharedArrayBuffer` via a message.
+  id: totrans-214
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过消息接收 `SharedArrayBuffer`。
 - en: Create its own `Int32Array` view over the shared buffer.
+  id: totrans-215
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在共享缓冲区上创建自己的 `Int32Array` 视图。
 - en: In a tight loop, increment the shared counter using `Atomics.add()`. This is
     the key to thread safety.
+  id: totrans-216
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在一个紧密的循环中，使用 `Atomics.add()` 增加共享计数器。这是线程安全的关键。
 - en: When the loop is done, send a 'done' message back to the main thread.
+  id: totrans-217
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当循环完成后，向主线程发送一个 'done' 消息。
 - en: '**The Goal**'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: '**目标**'
 - en: 'The final output on the main thread should be `Final counter value: 2000000`.
     If you were to use a non-atomic operation like `view[0]++`, you would likely get
     a final value less than 2 million due to race conditions, where one worker''s
     read-modify-write cycle overwrites another''s.'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: '主线程上的最终输出应该是 `Final counter value: 2000000`。如果你使用非原子操作如 `view[0]++`，由于竞争条件，你可能会得到小于200万的最终值，其中一个工作线程的读取-修改-写入周期会覆盖另一个的。'
 - en: '**Things to Consider**'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: '**需要考虑的事项**'
 - en: This is the only challenge that requires two separate files.
+  id: totrans-221
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这是唯一需要两个单独文件的挑战。
 - en: '`SharedArrayBuffer` is the core component that allows memory to be visible
     across threads.'
+  id: totrans-222
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`SharedArrayBuffer` 是允许内存跨线程可见的核心组件。'
 - en: Why is `Atomics.add(view, 0, 1)` required instead of `view[0]++`? Research what
     a "race condition" is in the context of a read-modify-write operation.
+  id: totrans-223
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为什么需要 `Atomics.add(view, 0, 1)` 而不是 `view[0]++`？研究在读取-修改-写入操作上下文中“竞争条件”是什么。
 - en: How does the main thread know when both workers are finished? You can use Promises
     to wait for the 'done' message from each worker. `Promise.all` is a good tool
     for this.
+  id: totrans-224
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 主线程如何知道两个工作线程都已完成？你可以使用 Promises 等待每个工作线程的 'done' 消息。`Promise.all` 是这个任务的理想工具。
 - en: This demonstrates the absolute lowest-level and highest-performance way to share
     state between threads in Node.js, built directly on the memory primitives we've
     been studying.
+  id: totrans-225
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这展示了在 Node.js 中在线程之间共享状态的绝对最低级和最高性能的方法，这是直接建立在我们所研究的内存原语之上的。
